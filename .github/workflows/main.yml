@@ -31,6 +31,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.6.1
         with:
+          folder: dist 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: build
           FOLDER: build
