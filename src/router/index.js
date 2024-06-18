@@ -7,7 +7,15 @@ const routes = [
     {
 		path: '/',
 		name: 'MainPage',
-		component: () => import('../views/IndePage.vue'),
+		component: () => import('../views/IndexPage.vue'),
+		meta: {
+			layout: defaultLayout
+		}
+	},
+	{
+		path: '/create_wallet',
+		name: 'CreateWallet',
+		component: () => import('../views/CreateWalletPage.vue'),
 		meta: {
 			layout: defaultLayout
 		}

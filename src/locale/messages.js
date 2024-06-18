@@ -4,6 +4,13 @@ export default {
         message: {
             // Page title
             'page_title': 'Bro wallet',
+
+
+            // Buttons
+            'btn_create_wallet': 'Create new wallet',
+            'btn_import_wallet': 'Import wallet',
+            'btn_next': 'Next',
+            'btn_copy': 'Copy to clipboard'
         }
     }
 }

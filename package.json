@@ -7,6 +7,7 @@
         "build": "vue-cli-service build"
     },
     "dependencies": {
+        "@cosmjs/stargate": "^0.32.3",
         "@vueuse/core": "^10.11.0",
         "core-js": "^3.8.3",
         "mitt": "^3.0.1",

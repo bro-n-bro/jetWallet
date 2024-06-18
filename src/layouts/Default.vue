@@ -1,9 +1,7 @@
 <template>
     <div class="main">
-        <div class="cont">
-           <!-- Router view -->
-           <RouterView />
-        </div>
+        <!-- Router view -->
+        <RouterView />
     </div>
 </template>
 

@@ -204,6 +204,9 @@ button
 
 .cont
 {
+    width: 100%;
+    max-width: 414px;
+    margin: 0 auto;
     padding: 0 24px;
 }
 
