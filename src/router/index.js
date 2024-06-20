@@ -20,6 +20,14 @@ const routes = [
 			layout: defaultLayout
 		}
 	},
+	{
+		path: '/create_wallet_confirm',
+		name: 'CreateWalletConfirm',
+		component: () => import('../views/CreateWalletConfirmPage.vue'),
+		meta: {
+			layout: defaultLayout
+		}
+	},
 ]
 
 

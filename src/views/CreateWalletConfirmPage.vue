@@ -1,15 +1,11 @@
 <template>
     <Loader v-if="loading" />
 
-    <section class="page_container index_page" v-else>
+    <section class="page_container careate_wallet_confirm_page" v-else>
         <div class="cont">
             <div class="btns">
-                <router-link to="/create_wallet" class="btn">
-                    {{ $t('message.btn_create_wallet') }}
-                </router-link>
-
-                <router-link to="/import_wallet" class="btn">
-                    {{ $t('message.btn_import_wallet') }}
+                <router-link to="/account" class="btn">
+                    {{ $t('message.btn_next') }}
                 </router-link>
             </div>
         </div>
@@ -68,3 +64,5 @@
         margin-top: 12px;
     }
 </style>
+
+

@@ -202,8 +202,22 @@ button
 }
 
 
+.page_container
+{
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+
+    padding: 24px 0;
+}
+
+
 .cont
 {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+
     width: 100%;
     max-width: 414px;
     margin: 0 auto;
