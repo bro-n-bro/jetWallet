@@ -213,28 +213,6 @@
     }
 
 
-    .mnemonic ::-webkit-input-placeholder
-    {
-        color: #fff;
-    }
-
-    .mnemonic :-moz-placeholder
-    {
-        color: #fff;
-    }
-
-    .mnemonic ::-moz-placeholder
-    {
-        opacity: 1;
-        color: #fff;
-    }
-
-    .mnemonic :-ms-input-placeholder
-    {
-        color: #fff;
-    }
-
-
     .mnemonic .input
     {
         font-family: var(--font_family);

@@ -4,7 +4,7 @@
 
 
 <script setup>
-    import { onBeforeMount, inject, computed } from 'vue'
+    import { onBeforeMount, inject, computed, onMounted } from 'vue'
     import { useRoute } from 'vue-router'
     import { useTitle } from '@vueuse/core'
 
@@ -18,5 +18,16 @@
     onBeforeMount(() => {
         // Set title
         title.value = i18n.global.t('message.page_title')
-  })
+    })
+
+
+    onMounted(() => {
+        if (window.Telegram && window.Telegram.WebApp) {
+            // Initialize the mini-application
+            Telegram.WebApp.ready()
+
+            // Call the expand method to open to full height
+            Telegram.WebApp.expand()
+        }
+    })
 </script>

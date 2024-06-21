@@ -17,6 +17,13 @@ export async function getAllData(storeName) {
 }
 
 
+export async function getData(storeName, key) {
+    let db = await dbPromise
+
+    return db.get(storeName, key)
+  }
+
+
 export async function addData(storeName, data) {
     let db = await dbPromise,
         tx = db.transaction(storeName, 'readwrite'),
