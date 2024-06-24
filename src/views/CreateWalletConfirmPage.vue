@@ -28,7 +28,11 @@
             </div>
 
             <div class="btns">
-                <router-link to="/account" class="btn" :class="{ disabled: !isValidWordOne && !isValidWordTwo }">
+                <router-link to="/create_pin" class="btn" :class="{ disabled: !isValidWordOne && !isValidWordTwo }">
+                    {{ $t('message.btn_next') }}
+                </router-link>
+
+                <router-link to="/create_pin" class="btn">
                     {{ $t('message.btn_next') }}
                 </router-link>
             </div>
@@ -38,7 +42,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount } from 'vue'
+    import { ref, onBeforeMount, computed } from 'vue'
     import { getData } from '@/utils/db'
 
 
@@ -80,7 +84,6 @@
 
     // Validate word one
     function validateWordOne() {
-        console.log('sdgsdgsdg')
         validWordOne.value = true
 
         wordOne.value === secret.value.split(' ')[wordOneNumber.value - 1]

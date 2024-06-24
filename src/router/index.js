@@ -28,6 +28,30 @@ const routes = [
 			layout: defaultLayout
 		}
 	},
+	{
+		path: '/create_pin',
+		name: 'CreatePin',
+		component: () => import('../views/CreatePinPage.vue'),
+		meta: {
+			layout: defaultLayout
+		}
+	},
+	{
+		path: '/wallet_created',
+		name: 'WalletCreated',
+		component: () => import('../views/WalletCreatedPage.vue'),
+		meta: {
+			layout: defaultLayout
+		}
+	},
+	{
+		path: '/account',
+		name: 'Account',
+		component: () => import('../views/AccountPage.vue'),
+		meta: {
+			layout: defaultLayout
+		}
+	},
 ]
 
 

@@ -2,7 +2,7 @@
     <Loader v-if="loading" />
 
     <section class="page_container careate_wallet_page" v-else>
-        <div class="cont" v-if="!loading">
+        <div class="cont">
             <div class="tabs" :class="{disabled: !agreed}">
                 <button class="btn" @click.prevent="count = 12" :class="{ active: count === 12 }">12 words</button>
 
