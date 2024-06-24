@@ -202,16 +202,6 @@ button
 }
 
 
-.page_container
-{
-    display: flex;
-    flex: 1 0 auto;
-    flex-direction: column;
-
-    padding: 24px 0;
-}
-
-
 .cont
 {
     display: flex;
@@ -232,4 +222,35 @@ button
     align-items: flex-start;
     flex-wrap: wrap;
     justify-content: flex-start;
+}
+
+
+.page_container
+{
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+
+    padding: 24px 0;
+}
+
+
+.page_title
+{
+    font-size: 22px;
+
+    margin-bottom: 20px;
+}
+
+
+.back_btn
+{
+    display: inline-block;
+
+    margin-bottom: 20px;
+
+    vertical-align: top;
+    text-decoration: none;
+
+    color: currentColor;
 }
