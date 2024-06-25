@@ -101,6 +101,7 @@
 <script setup>
     import { onBeforeMount, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
+    import { hashDataWithKey, generateHMACKey } from '@/utils/'
     import { addData } from '@/utils/db'
 
 
@@ -147,9 +148,13 @@
 
     // Save data
     async function save() {
+        // Generate HMAC key
+        let hmacKey = await generateHMACKey()
+
         // Save in DB
         await addData('wallet', [
-            ['pin', pinCode.value.join('')],
+            ['hmacKey', hmacKey],
+            ['pin', await hashDataWithKey(pinCode.value.join(''), hmacKey)],
             ['name', walletName.value]
         ])
 
@@ -271,6 +276,4 @@
 
     opacity: .5;
 }
-
-
 </style>

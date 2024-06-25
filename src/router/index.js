@@ -52,6 +52,14 @@ const routes = [
 			layout: defaultLayout
 		}
 	},
+	{
+		path: '/import_wallet',
+		name: 'ImportWallet',
+		component: () => import('../views/ImportWalletPage.vue'),
+		meta: {
+			layout: defaultLayout
+		}
+	},
 ]
 
 
