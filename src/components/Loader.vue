@@ -14,16 +14,16 @@
         left: 0;
 
         display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
 
         width: 100%;
         height: 100%;
 
-        background: rgba(0, 0, 0, .65);
-
-        justify-content: center;
-        align-items: center;
-        align-content: center;
-        flex-wrap: wrap;
+        border-radius: inherit;
+        background: rgba(0, 0, 0, .5);
     }
 
 

@@ -102,12 +102,12 @@ input[type=number]
 -------------------*/
 :root
 {
-    --bg: #000;
+    --bg: radial-gradient(128.14% 92.19% at 50% 25.39%, rgba(71, 26, 146, .70) 0%, rgba(35, 6, 83, .70) 43.23%, rgba(0, 0, 0, .70) 100%), linear-gradient(182deg, #8f00b0 -30.77%, #570099 42.42%, #1b0044 109.39%);
     --scroll_width: 17px;
     --text_color: #fff;
-    --font_size: 16px;
-    --font_size_title: 24px;
-    --font_family: 'Poppins', 'Arial', sans-serif;
+    --font_size: 12px;
+    --font_size_title: 22px;
+    --font_family: 'Outfit', 'Arial', sans-serif;
 }
 
 
@@ -211,7 +211,7 @@ button
     width: 100%;
     max-width: 414px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 16px;
 }
 
 
@@ -231,26 +231,325 @@ button
     flex: 1 0 auto;
     flex-direction: column;
 
-    padding: 24px 0;
+    padding: 0 0 14px;
 }
 
 
 .page_title
 {
     font-size: 22px;
+    font-weight: 500;
 
-    margin-bottom: 20px;
+    padding: 8px 20px;
 }
 
 
+
+/*--------------
+    Back btn
+--------------*/
 .back_btn
 {
-    display: inline-block;
+    position: absolute;
+    z-index: 5;
+    top: 9px;
+    left: 9px;
 
-    margin-bottom: 20px;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 
-    vertical-align: top;
+    width: 48px;
+    height: 48px;
+
     text-decoration: none;
 
     color: currentColor;
+}
+
+
+.back_btn .icon
+{
+    display: block;
+
+    width: 24px;
+    height: 24px;
+}
+
+
+
+/*----------
+    Tabs
+----------*/
+.tabs_wrap
+{
+    margin: 0 auto 13px;
+    padding: 1px;
+
+    border-radius: 33px;
+    background: linear-gradient(to bottom,  #7544ff 0%,#1a0242 100%);
+}
+
+
+.tabs
+{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    padding: 2px;
+
+    border-radius: 32px;
+    background: #170232;
+}
+
+
+.tabs.disabled
+{
+    pointer-events: none;
+
+    opacity: .3;
+}
+
+
+.tabs .btn
+{
+    font-size: 14px;
+
+    display: block;
+
+    padding: 1px;
+
+    border-radius: 33px;
+}
+
+
+.tabs .btn span
+{
+    display: block;
+
+    padding: 3px 14px;
+
+    border-radius: 32px;
+}
+
+
+.tabs .btn.active
+{
+    background: linear-gradient(to bottom,  #7544ff 0%,#1a0242 100%);
+}
+
+
+.tabs .btn.active span
+{
+    background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+}
+
+
+
+/*---------------
+    Page data
+---------------*/
+.page_data_wrap
+{
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+
+    padding: 1px;
+
+    border-radius: 18px;
+    background: linear-gradient(to bottom,  #7544ff 0%,#1a0242 100%);
+}
+
+
+.page_data
+{
+    position: relative;
+
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+
+    padding: 19px;
+
+    border-radius: 17px;
+    background: var(--Frames, radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%));
+}
+
+
+
+/*-----------
+    Input
+-----------*/
+.input,
+.input:focus
+{
+    font-family: var(--font_family);
+    font-size: 14px;
+
+    display: block;
+
+    width: 100%;
+    height: 26px;
+    padding: 0 7px;
+
+    color: currentColor;
+    border: 1px solid #1a0242;
+    border-radius: 4px;
+    background: #170232;
+}
+
+.input:-webkit-autofill
+{
+    -webkit-box-shadow: inset 0 0 0 50px var(--form_bg_color) !important;
+}
+
+
+
+/*--------------
+    Checkbox
+--------------*/
+.checkbox
+{
+    font-size: 12px;
+    line-height: 100%;
+
+    position: relative;
+
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+
+    min-height: 18px;
+    padding-left: 38px;
+
+    cursor: pointer;
+}
+
+
+.checkbox input
+{
+    display: none;
+}
+
+
+.checkbox .check
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 7px;
+
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+    margin: auto 0;
+
+    border: 1px solid currentColor;
+    border-radius: 3px;
+}
+
+
+.checkbox .check .icon
+{
+    display: block;
+
+    width: 13px;
+    height: 10px;
+
+    content: '';
+    transition: opacity .2s linear;
+
+    opacity: 0;
+}
+
+
+.checkbox input:checked ~ .check
+{
+    border: none;
+    background: linear-gradient(173deg, #67bbf8 -1.79%, #02438f 90.9%);
+}
+
+
+.checkbox input:checked ~ .check .icon
+{
+    opacity: 1;
+}
+
+
+
+/*-------------
+    Buttons
+-------------*/
+.btns
+{
+    margin-top: auto;
+    padding-top: 18px;
+}
+
+
+.btns .btn
+{
+    font-size: 18px;
+    font-weight: 500;
+
+    display: block;
+
+    width: 100%;
+    padding: 1px;
+
+    transition: opacity .2s linear;
+    text-align: center;
+    text-decoration: none;
+
+    color: currentColor;
+    border-radius: 10px;
+    background: linear-gradient(to bottom,  #1e5799 0%,#002648 100%);
+}
+
+.btns .btn.purple_btn
+{
+    background: linear-gradient(to bottom,  #dd93fe 0%,#2f0244 100%);
+}
+
+
+.btns .btn + .btn
+{
+    margin-top: 10px;
+}
+
+
+.btns .btn.disabled
+{
+    pointer-events: none;
+
+    opacity: .3;
+}
+
+
+.btns .btn span
+{
+    display: block;
+
+    padding: 11px;
+
+    border-radius: 9px;
+    background: linear-gradient(173deg, #67bbf8 -1.79%, #02438f 90.9%);
+}
+
+.btns .btn.purple_btn span
+{
+    background: linear-gradient(180deg, #af60d3 0%, #56007e 100%);
 }

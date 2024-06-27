@@ -1,71 +1,98 @@
 <template>
-    <Loader v-if="loading" />
-
-    <section class="page_container careate_wallet_page" v-else>
+    <section class="page_container careate_wallet_page">
         <div class="cont">
-            <div class="tabs" :class="{disabled: !agreed}">
-                <button class="btn" @click.prevent="count = 12" :class="{ active: count === 12 }">12 words</button>
-
-                <button class="btn" @click.prevent="count = 24" :class="{ active: count === 24 }">24 words</button>
+            <div class="page_title">
+                {{ $t('message.create_wallet_title') }}
             </div>
 
-            <!-- <pre>{{ wallet }}</pre> -->
+            <div class="page_data_wrap">
+                <div class="page_data">
+                    <Loader v-if="loading" />
 
-            <div class="mnemonic">
-                <div class="row">
-                    <div v-for="(word, index) in wallet.secret.data.split(' ')" :key="index">
-                        <input type="text" class="input" readonly :value="word">
+                    <template v-else>
+                    <router-link class="back_btn" to="/">
+                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
+                    </router-link>
+
+                    <div class="tabs_wrap">
+                        <div class="tabs" :class="{disabled: !agreed}">
+                            <button class="btn" @click.prevent="count = 12" :class="{ active: count === 12 }">
+                                <span>12 words</span>
+                            </button>
+
+                            <button class="btn" @click.prevent="count = 24" :class="{ active: count === 24 }">
+                                <span>24 words</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="blur" v-if="!agreed"></div>
-                </div>
+                    <!-- <pre>{{ wallet }}</pre> -->
 
-                <button class="copy_btn" :disabled="!agreed" @click.prevent="copy(wallet.secret.data)" v-if="isSupported" :class="{green: copied}">
-                    <span v-if="!copied">{{ $t('message.btn_copy') }}</span>
-                    <span v-else>{{ $t('message.btn_copied') }}</span>
-                </button>
-            </div>
+                    <div class="mnemonic">
+                        <div class="row">
+                            <div v-for="(word, index) in wallet.secret.data.split(' ')" :key="index">
+                                <div class="number">{{ index + 1 }}.</div>
+                                <div class="input">{{ word }}</div>
+                            </div>
 
-
-            <div class="agree" v-if="!agreed">
-                <div>
-                    <div class="label">Какой-то текст</div>
-
-                    <label class="checkbox">
-                        <input type="checkbox" v-model="agreeFirst" value="true">
-
-                        <div class="check">
-                            <!-- <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg> -->
+                            <div class="blur" v-if="!agreed"></div>
                         </div>
 
-                        <div>Текст чекбокса</div>
-                    </label>
-                </div>
+                        <button class="copy_btn" :disabled="!agreed" @click.prevent="copy(wallet.secret.data)" v-if="isSupported" :class="{green: copied}">
+                            <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy"></use></svg>
 
-                <div>
-                    <div class="label">Какой-то текст</div>
+                            <span v-if="!copied">{{ $t('message.btn_copy') }}</span>
+                            <span v-else>{{ $t('message.btn_copied') }}</span>
+                        </button>
+                    </div>
 
-                    <label class="checkbox">
-                        <input type="checkbox" v-model="agreeSecond" value="true">
 
-                        <div class="check">
-                            <!-- <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg> -->
+                    <div class="agree" v-if="!agreed">
+                        <div>
+                            <div class="label">
+                                {{ $t('message.careate_wallet_agree_label1') }}
+                            </div>
+
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="agreeFirst" value="true">
+
+                                <div class="check">
+                                    <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
+                                </div>
+
+                                <div>{{ $t('message.careate_wallet_agree_checkbox1') }}</div>
+                            </label>
                         </div>
 
-                        <div>Текст чекбокса</div>
-                    </label>
+                        <div>
+                            <div class="label">
+                                {{ $t('message.careate_wallet_agree_label2') }}
+                            </div>
+
+                            <label class="checkbox">
+                                <input type="checkbox" v-model="agreeSecond" value="true">
+
+                                <div class="check">
+                                    <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
+                                </div>
+
+                                <div>{{ $t('message.careate_wallet_agree_checkbox2') }}</div>
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <div class="btns">
+                        <button class="btn" :class="{disabled: !agreeFirst || !agreeSecond}" @click.prevent="agreed = true" v-if="!agreed">
+                            <span>{{ $t('message.btn_show') }}</span>
+                        </button>
+
+                        <button class="btn" v-if="agreed" @click.prevent="saveWallet">
+                            <span>{{ $t('message.btn_next') }}</span>
+                        </button>
+                    </div>
+                    </template>
                 </div>
-            </div>
-
-
-            <div class="btns">
-                <button class="btn" :class="{disabled: !agreeFirst || !agreeSecond}" @click.prevent="agreed = true" v-if="!agreed">
-                    {{ $t('message.btn_show') }}
-                </button>
-
-                <button class="btn" v-if="agreed" @click.prevent="saveWallet">
-                    {{ $t('message.btn_next') }}
-                </button>
             </div>
         </div>
    </section>
@@ -127,56 +154,6 @@
 
 
 <style scoped>
-    .tabs
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        margin: 0 auto 24px;
-        padding: 4px;
-
-        border-radius: 20px;
-    }
-
-
-    .tabs.disabled
-    {
-        pointer-events: none;
-
-        opacity: .5;
-    }
-
-
-    .tabs .btn
-    {
-        font-size: 14px;
-
-        padding: 0 19px;
-
-        transition: .2s linear;
-
-        border: 1px solid;
-        border-radius: 20px;
-    }
-
-
-    .tabs .btn.active
-    {
-        color: #000;
-        background: #fff;
-    }
-
-
-
-    .mnemonic
-    {
-        margin-bottom: auto;
-    }
-
-
     .mnemonic .row
     {
         position: relative;
@@ -184,108 +161,61 @@
         align-content: stretch;
         align-items: stretch;
 
-        margin-bottom: -12px;
-        margin-left: -12px;
+        margin-bottom: -10px;
+        margin-left: -8px;
     }
 
 
     .mnemonic .row > *
     {
-        width: calc(33.333% - 12px);
-        margin-bottom: 12px;
-        margin-left: 12px;
+        position: relative;
+
+        width: calc(33.333% - 8px);
+        margin-bottom: 10px;
+        margin-left: 8px;
     }
 
 
     .mnemonic .row .blur
     {
         position: absolute;
-        z-index: 5;
-        top: 0;
-        right: 0;
+        z-index: 3;
+        top: -9px;
+        left: 0;
 
-        width: calc(100% - 12px);
-        height: calc(100% - 12px);
+        width: calc(100% + 8px);
+        height: calc(100% + 8px);
         margin: 0;
 
-        opacity: .9;
-        background: #fff;
+        border-radius: 14px;
+        background: rgba(217, 217, 217, .50);
+
+                backdrop-filter: blur(5.65px);
+        -webkit-backdrop-filter: blur(5.65px);
     }
 
 
     .mnemonic .input
     {
-        font-family: var(--font_family);
-        font-size: 14px;
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
 
-        display: block;
-
-        width: 100%;
-        height: 28px;
-        padding: 0 11px;
-
-        color: currentColor;
-        border: 1px solid;
-        background: #000;
-    }
-
-    .mnemonic .input:-webkit-autofill
-    {
-        -webkit-box-shadow: inset 0 0 0 50px var(--form_bg_color) !important;
+        padding-left: 27px;
     }
 
 
-    .mnemonic .copy_btn
+    .mnemonic .number
     {
-        font-size: 14px;
+        font-size: 12px;
+        font-weight: 500;
 
-        display: block;
-
-        margin: 12px auto 0;
-
-        transition: .2s linear;
-    }
-
-
-    .mnemonic .copy_btn.green
-    {
-        color: green;
-    }
-
-
-    .mnemonic .copy_btn:disabled
-    {
-        pointer-events: none;
-
-        opacity: .5;
-    }
-
-
-
-    .agree
-    {
-        padding-top: 24px;
-    }
-
-
-    .agree > *
-    {
-        margin-top: 12px;
-    }
-
-
-    .agree .label
-    {
-        margin-bottom: 10px;
-    }
-
-
-    .agree .checkbox
-    {
-        font-size: 14px;
-        line-height: 20px;
-
-        position: relative;
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 8px;
 
         display: flex;
         align-content: center;
@@ -293,24 +223,16 @@
         flex-wrap: wrap;
         justify-content: flex-start;
 
-        min-height: 20px;
-        padding-left: 31px;
+        height: 100%;
 
-        cursor: pointer;
+        user-select: none;
     }
 
 
-    .agree .checkbox input
-    {
-        display: none;
-    }
 
-
-    .agree .checkbox .check
+    .mnemonic .copy_btn
     {
-        position: absolute;
-        top: 0;
-        left: 0;
+        font-size: 14px;
 
         display: flex;
         align-content: center;
@@ -318,68 +240,56 @@
         flex-wrap: wrap;
         justify-content: center;
 
-        width: 20px;
-        height: 20px;
+        margin: 8px auto 0;
 
-        border: 1px solid currentColor;
+        transition: .2s linear;
     }
 
 
-    .agree .checkbox .check .icon
+    .mnemonic .copy_btn .icon
     {
         display: block;
 
-        width: 14px;
-        height: 7px;
-
-        content: '';
-        transition: opacity .2s linear;
-
-        opacity: 0;
+        width: 24px;
+        height: 24px;
+        margin-right: 4px;
     }
 
 
-    .agree .checkbox input:checked ~ .check
+    .mnemonic .copy_btn.green
     {
-        background: #fff;
-    }
-
-    .agree .checkbox input:checked ~ .check .icon
-    {
-        opacity: 1;
+        color: #00aa63;
     }
 
 
-
-    .btns
-    {
-        padding-top: 24px;
-    }
-
-
-    .btns .btn
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 100%;
-        height: 50px;
-
-        text-align: center;
-        text-decoration: none;
-
-        color: #fff;
-        border: 1px solid;
-        border-radius: 10px;
-    }
-
-    .btns .btn.disabled
+    .mnemonic .copy_btn:disabled
     {
         pointer-events: none;
 
-        opacity: .5;
+        opacity: .2;
+    }
+
+
+
+    .agree
+    {
+        padding-top: 18px;
+    }
+
+
+    .agree > *
+    {
+        margin-top: 8px;
+    }
+
+
+    .agree .label
+    {
+        font-size: 14px;
+        line-height: 100%;
+
+        margin-bottom: 4px;
+
+        color: #ffc700;
     }
 </style>

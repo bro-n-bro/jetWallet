@@ -1,5 +1,4 @@
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
-import { stringToUint8Array } from '@cosmjs/crypto'
 
 
 // Generate wallet
@@ -16,7 +15,7 @@ export const importWalletFromMnemonic = async mnemonic => {
 
 // Import wallet from private key
 export const importWalletFromPrivateKey = async privateKey => {
-    return await DirectSecp256k1Wallet.fromKey(stringToUint8Array(privateKey))
+    return await DirectSecp256k1Wallet.fromKey(Buffer.from(privateKey, 'hex'))
 }
 
 

@@ -4,6 +4,15 @@ export default {
         message: {
             // Page title
             'page_title': 'Bro wallet',
+            'create_wallet_title': 'New Recovery Phrase',
+
+
+            // Create page agree
+            'careate_wallet_agree_label1': 'Do not share your recovery phrase with ANYMORE.',
+            'careate_wallet_agree_label2': 'Back up the phrase safely.',
+
+            'careate_wallet_agree_checkbox1': 'Anymone withyour recovery phrases can have full control over your assets. Plese stay vigilant against phishing attacks at all times.',
+            'careate_wallet_agree_checkbox2': 'You will never be able to restore your account without your recovery phrase.',
 
 
             // Buttons

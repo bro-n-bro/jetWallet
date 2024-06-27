@@ -3,14 +3,26 @@
 
     <section class="page_container index_page" v-else>
         <div class="cont">
-            <div class="btns">
-                <router-link to="/create_wallet" class="btn">
-                    {{ $t('message.btn_create_wallet') }}
-                </router-link>
+            <div class="logo">
+                <img src="@/assets/logo.svg" alt="" loading="lazy">
+            </div>
 
-                <router-link to="/import_wallet" class="btn">
-                    {{ $t('message.btn_import_wallet') }}
-                </router-link>
+            <div class="page_data_wrap">
+                <div class="page_data">
+                    <div class="image">
+                        <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
+                    </div>
+
+                    <div class="btns">
+                        <router-link to="/create_wallet" class="btn">
+                            <span>{{ $t('message.btn_create_wallet') }}</span>
+                        </router-link>
+
+                        <router-link to="/import_wallet" class="btn purple_btn">
+                            <span>{{ $t('message.btn_import_wallet') }}</span>
+                        </router-link>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -36,35 +48,37 @@
 
 
 <style scoped>
-    .btns
+    .logo
+    {
+        padding: 16px 0 13px;
+    }
+
+
+    .logo img
+    {
+        display: block;
+
+        width: 161px;
+        max-width: 100%;
+        height: 63px;
+        margin: 0 auto;
+
+        filter: drop-shadow(0px 0px 180px rgba(231, 200, 255, .5));
+    }
+
+
+
+    .image
     {
         margin-top: auto;
-        padding-top: 24px;
     }
 
 
-    .btns .btn
+    .image img
     {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: block;
 
-        width: 100%;
-        height: 50px;
-
-        text-align: center;
-        text-decoration: none;
-
-        color: #fff;
-        border: 1px solid;
-        border-radius: 10px;
-    }
-
-
-    .btns .btn + .btn
-    {
-        margin-top: 12px;
+        max-width: 100%;
+        margin: 0 auto;
     }
 </style>
