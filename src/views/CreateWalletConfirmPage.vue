@@ -1,40 +1,67 @@
 <template>
-    <Loader v-if="loading" />
-
-    <section class="page_container careate_wallet_confirm_page" v-else>
+    <section class="page_container create_wallet_confirm_page">
         <div class="cont">
-            <div class="confirm">
-                <div class="label">Words:</div>
-
-                <div class="row">
-                    <div>
-                        <span class="number">{{ wordOneNumber }}.</span>
-
-                        <input type="text" class="input" v-model="wordOne" @keyup="validateWordOne" :class="{
-                            success: validWordOne && isValidWordOne,
-                            error: validWordOne && !isValidWordOne
-                        }">
-                    </div>
-
-                    <div>
-                        <span class="number">{{ wordTwoNumber }}.</span>
-
-                        <input type="text" class="input" v-model="wordTwo" @keyup="validateWordTwo" :class="{
-                            success: validWordTwo && isValidWordTwo,
-                            error: validWordTwo && !isValidWordTwo
-                        }">
-                    </div>
-                </div>
+            <div class="page_title">
+                {{ $t('message.create_wallet_confirm_title') }}
             </div>
 
-            <div class="btns">
-                <router-link to="/create_pin" class="btn" :class="{ disabled: !isValidWordOne && !isValidWordTwo }">
-                    {{ $t('message.btn_next') }}
-                </router-link>
 
-                <router-link to="/create_pin" class="btn">
-                    {{ $t('message.btn_next') }}
-                </router-link>
+            <div class="page_data_wrap">
+                <div class="page_data">
+                    <Loader v-if="loading" />
+
+                    <template v-else>
+                    <router-link class="back_btn" to="/create_wallet">
+                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
+                    </router-link>
+
+                    <div class="confirm">
+                        <div class="row">
+                            <div>
+                                <div class="label">
+                                    <span>{{ $t('message.confirm_label') }}</span>
+                                    <span>{{ wordOneNumber }}.</span>
+                                </div>
+
+                                <input type="text" class="input" v-model="wordOne" @keyup="validateWordOne" :class="{
+                                    success: validWordOne && isValidWordOne,
+                                    error: validWordOne && !isValidWordOne
+                                }">
+                            </div>
+
+                            <div>
+                                <div class="label">
+                                    <span>{{ $t('message.confirm_label') }}</span>
+                                    <span>{{ wordTwoNumber }}.</span>
+                                </div>
+
+                                <input type="text" class="input" v-model="wordTwo" @keyup="validateWordTwo" :class="{
+                                    success: validWordTwo && isValidWordTwo,
+                                    error: validWordTwo && !isValidWordTwo
+                                }">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="image">
+                        <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
+                    </div>
+
+                    <div class="btns">
+                        <router-link to="/create_pin" class="btn" :class="{ disabled: !isValidWordOne && !isValidWordTwo }">
+                            <span>{{ $t('message.btn_next') }}</span>
+                        </router-link>
+
+                        <router-link to="/create_pin" class="btn">
+                            <span>{{ $t('message.btn_next') }}</span>
+                        </router-link>
+                    </div>
+
+                    <div class="exp">
+                        {{ $t('message.confirm_exp') }}
+                    </div>
+                    </template>
+                </div>
             </div>
         </div>
     </section>
@@ -42,7 +69,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, computed } from 'vue'
+    import { ref, onBeforeMount } from 'vue'
     import { getData } from '@/utils/db'
 
 
@@ -106,15 +133,17 @@
 <style scoped>
     .confirm
     {
-        padding: 20px;
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
 
-        background: #333;
-    }
+        margin-top: 54px;
+        padding: 11px 13px;
 
-
-    .confirm .label
-    {
-        margin-bottom: 10px;
+        border-radius: 10px;
+        background: #b44ae4;
     }
 
 
@@ -130,91 +159,54 @@
         align-content: center;
         align-items: center;
         flex-wrap: nowrap;
-        justify-content: flex-start;
+        justify-content: space-between;
 
-        width: calc(50% - 10px);
+        width: calc(50% - 5px);
     }
 
 
-    .confirm .number
+    .confirm .label
     {
-        margin-right: 6px;
+        font-size: 12px;
 
-        white-space: nowrap;
+        display: flex;
+        align-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        width: 48px;
     }
 
 
     .confirm .input
     {
-        font-family: var(--font_family);
-        font-size: 14px;
-
-        display: block;
-
-        width: 100%;
-        height: 28px;
-        padding: 0 11px;
-
-        color: currentColor;
-        border: 1px solid;
-        background: #000;
-    }
-
-    .confirm .input.error
-    {
-        border-color: red;
-    }
-
-    .confirm .input.success
-    {
-        border-color: green;
-    }
-
-    .confirm .input:-webkit-autofill
-    {
-        -webkit-box-shadow: inset 0 0 0 50px var(--form_bg_color) !important;
+        width: calc(100% - 56px);
     }
 
 
-    .btns
+
+    .image
     {
         margin-top: auto;
-        padding-top: 24px;
     }
 
 
-    .btns .btn
+    .image img
     {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: block;
 
-        width: 100%;
-        height: 50px;
-
-        text-align: center;
-        text-decoration: none;
-
-        color: #fff;
-        border: 1px solid;
-        border-radius: 10px;
-    }
-
-
-    .btns .btn + .btn
-    {
-        margin-top: 12px;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
 
 
-    .btns .btn.disabled
+    .exp
     {
-        pointer-events: none;
+        font-size: 12px;
 
-        opacity: .5;
+        margin-top: 6px;
     }
 </style>
 

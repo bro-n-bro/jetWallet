@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container careate_wallet_page">
+    <section class="page_container create_wallet_page">
         <div class="cont">
             <div class="page_title">
                 {{ $t('message.create_wallet_title') }}
@@ -15,13 +15,13 @@
                     </router-link>
 
                     <div class="tabs_wrap">
-                        <div class="tabs" :class="{disabled: !agreed}">
+                        <div class="tabs" :class="{ disabled: !agreed }">
                             <button class="btn" @click.prevent="count = 12" :class="{ active: count === 12 }">
-                                <span>12 words</span>
+                                <span>{{ $t('message.mnemonic_tab1') }}</span>
                             </button>
 
                             <button class="btn" @click.prevent="count = 24" :class="{ active: count === 24 }">
-                                <span>24 words</span>
+                                <span>{{ $t('message.mnemonic_tab2') }}</span>
                             </button>
                         </div>
                     </div>
@@ -30,8 +30,7 @@
 
                     <div class="mnemonic">
                         <div class="row">
-                            <div v-for="(word, index) in wallet.secret.data.split(' ')" :key="index">
-                                <div class="number">{{ index + 1 }}.</div>
+                            <div class="word" v-for="(word, index) in wallet.secret.data.split(' ')" :key="index">
                                 <div class="input">{{ word }}</div>
                             </div>
 
@@ -50,7 +49,7 @@
                     <div class="agree" v-if="!agreed">
                         <div>
                             <div class="label">
-                                {{ $t('message.careate_wallet_agree_label1') }}
+                                {{ $t('message.create_wallet_agree_label1') }}
                             </div>
 
                             <label class="checkbox">
@@ -60,13 +59,13 @@
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
                                 </div>
 
-                                <div>{{ $t('message.careate_wallet_agree_checkbox1') }}</div>
+                                <div>{{ $t('message.create_wallet_agree_checkbox1') }}</div>
                             </label>
                         </div>
 
                         <div>
                             <div class="label">
-                                {{ $t('message.careate_wallet_agree_label2') }}
+                                {{ $t('message.create_wallet_agree_label2') }}
                             </div>
 
                             <label class="checkbox">
@@ -76,7 +75,7 @@
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
                                 </div>
 
-                                <div>{{ $t('message.careate_wallet_agree_checkbox2') }}</div>
+                                <div>{{ $t('message.create_wallet_agree_checkbox2') }}</div>
                             </label>
                         </div>
                     </div>
@@ -154,125 +153,9 @@
 
 
 <style scoped>
-    .mnemonic .row
-    {
-        position: relative;
-
-        align-content: stretch;
-        align-items: stretch;
-
-        margin-bottom: -10px;
-        margin-left: -8px;
-    }
-
-
-    .mnemonic .row > *
-    {
-        position: relative;
-
-        width: calc(33.333% - 8px);
-        margin-bottom: 10px;
-        margin-left: 8px;
-    }
-
-
-    .mnemonic .row .blur
-    {
-        position: absolute;
-        z-index: 3;
-        top: -9px;
-        left: 0;
-
-        width: calc(100% + 8px);
-        height: calc(100% + 8px);
-        margin: 0;
-
-        border-radius: 14px;
-        background: rgba(217, 217, 217, .50);
-
-                backdrop-filter: blur(5.65px);
-        -webkit-backdrop-filter: blur(5.65px);
-    }
-
-
-    .mnemonic .input
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-
-        padding-left: 27px;
-    }
-
-
-    .mnemonic .number
-    {
-        font-size: 12px;
-        font-weight: 500;
-
-        position: absolute;
-        z-index: 2;
-        top: 0;
-        left: 8px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-
-        height: 100%;
-
-        user-select: none;
-    }
-
-
-
-    .mnemonic .copy_btn
-    {
-        font-size: 14px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        margin: 8px auto 0;
-
-        transition: .2s linear;
-    }
-
-
-    .mnemonic .copy_btn .icon
-    {
-        display: block;
-
-        width: 24px;
-        height: 24px;
-        margin-right: 4px;
-    }
-
-
-    .mnemonic .copy_btn.green
-    {
-        color: #00aa63;
-    }
-
-
-    .mnemonic .copy_btn:disabled
-    {
-        pointer-events: none;
-
-        opacity: .2;
-    }
-
-
-
     .agree
     {
+        margin-top: auto;
         padding-top: 18px;
     }
 
@@ -291,5 +174,12 @@
         margin-bottom: 4px;
 
         color: #ffc700;
+    }
+
+
+
+    .agree + .btns
+    {
+        margin-top: 0;
     }
 </style>

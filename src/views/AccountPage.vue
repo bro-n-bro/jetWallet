@@ -1,9 +1,11 @@
 <template>
-    <Loader v-if="loading" />
-
-    <section class="page_container account_page" v-else>
+    <section class="page_container account_page">
         <div class="cont">
-            <div class="page_title">Account page</div>
+            <Loader v-if="loading" />
+
+            <template v-else>
+            Это страница кошелька
+            </template>
         </div>
     </section>
 </template>

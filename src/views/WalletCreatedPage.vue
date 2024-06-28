@@ -1,14 +1,22 @@
 <template>
-    <Loader v-if="loading" />
-
-    <section class="page_container wallet_created_page" v-else>
+    <section class="page_container wallet_created_page">
         <div class="cont">
-            <div class="page_title">Account created!</div>
+            <div class="page_title">
+                {{ $t('message.wallet_created_title') }}
+            </div>
 
-            <div class="btns">
-                <router-link to="/account" class="btn">
-                    {{ $t('message.btn_join') }}
-                </router-link>
+            <div class="page_data_wrap">
+                <div class="page_data">
+                    <Loader v-if="loading" />
+
+                    <template v-else>
+                    <div class="btns">
+                        <router-link to="/account" class="btn">
+                            <span>{{ $t('message.btn_join') }}</span>
+                        </router-link>
+                    </div>
+                    </template>
+                </div>
             </div>
         </div>
     </section>
@@ -34,30 +42,5 @@
 
 
 <style scoped>
-.btns
-{
-    margin-top: auto;
-    padding-top: 24px;
-}
-
-
-.btns .btn
-{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    width: 100%;
-    height: 50px;
-
-    text-align: center;
-    text-decoration: none;
-
-    color: #fff;
-    border: 1px solid;
-    border-radius: 10px;
-}
 
 </style>
