@@ -5,9 +5,9 @@
                 {{ $t('message.create_wallet_title') }}
             </div>
 
-            {{ initData }}
+            <pre>{{ initData }}</pre>
             ===================
-            {{ initDataUnsafe }}
+            <pre>{{ initDataUnsafe }}</pre>
 
             <div class="page_data_wrap">
                 <div class="page_data">
@@ -132,8 +132,6 @@
 
         initData.value = Telegram.WebApp.initData
         initDataUnsafe.value = Telegram.WebApp.initDataUnsafe
-
-        Telegram.WebApp.showScanQrPopup('Hello world')
 
         // Hide loader
         loading.value = false
