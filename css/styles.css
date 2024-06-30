@@ -23,6 +23,7 @@ html
         -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
 }
 
 body
@@ -30,6 +31,7 @@ body
     margin: 0;
 
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
     -webkit-tap-highlight-color: transparent;
     -webkit-overflow-scrolling: touch;
     text-rendering: optimizeLegibility;
