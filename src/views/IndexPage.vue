@@ -14,13 +14,13 @@
                     </div>
 
                     <div class="btns">
-                        <router-link to="/create_wallet" class="btn">
+                        <button class="btn" @click="router.push('/create_wallet')">
                             <span>{{ $t('message.btn_create_wallet') }}</span>
-                        </router-link>
+                        </button>
 
-                        <router-link to="/import_wallet" class="btn purple_btn">
+                        <button class="btn purple_btn" @click="router.push('/import_wallet')">
                             <span>{{ $t('message.btn_import_wallet') }}</span>
-                        </router-link>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -31,13 +31,15 @@
 
 <script setup>
     import { ref, onBeforeMount } from 'vue'
+    import { useRouter } from 'vue-router'
 
 
     // Components
     import Loader from '@/components/Loader.vue'
 
 
-    const loading = ref(true)
+    const router = useRouter(),
+        loading = ref(true)
 
 
     onBeforeMount(async () => {

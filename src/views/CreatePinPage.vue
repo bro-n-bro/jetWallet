@@ -31,25 +31,25 @@
 
                         <div class="row">
                             <div class="field">
-                                <input type="password" class="input big" v-model="pinCode[0]" maxlength="1"
+                                <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric"
                                     @input="moveFocus($event, 1)"
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
 
                             <div class="field">
-                                <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" :disabled="!pinCode[0].length"
+                                <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" inputmode="numeric" :disabled="!pinCode[0].length"
                                     @input="moveFocus($event, 2)"
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
 
                             <div class="field">
-                                <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" :disabled="!pinCode[1].length"
+                                <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" inputmode="numeric" :disabled="!pinCode[1].length"
                                     @input="moveFocus($event, 3)"
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
 
                             <div class="field">
-                                <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" :disabled="!pinCode[2].length"
+                                <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" inputmode="numeric" :disabled="!pinCode[2].length"
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
@@ -63,25 +63,25 @@
 
                         <div class="row" :class="{ error: confirmPinCode[3].length && !isPinMatching, success: confirmPinCode[3].length && isPinMatching }">
                             <div class="field">
-                                <input type="password" class="input big" v-model="confirmPinCode[0]" maxlength="1" :disabled="!pinCode[3].length"
+                                <input type="password" class="input big" v-model="confirmPinCode[0]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
                                     @input="moveFocus($event, 1)"
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
 
                             <div class="field">
-                                <input type="password" class="input big" v-model="confirmPinCode[1]" maxlength="1" :disabled="!confirmPinCode[0].length"
+                                <input type="password" class="input big" v-model="confirmPinCode[1]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[0].length"
                                     @input="moveFocus($event, 2)"
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
 
                             <div class="field">
-                                <input type="password" class="input big" v-model="confirmPinCode[2]" maxlength="1" :disabled="!confirmPinCode[1].length"
+                                <input type="password" class="input big" v-model="confirmPinCode[2]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[1].length"
                                     @input="moveFocus($event, 3)"
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
 
                             <div class="field">
-                                <input type="password" class="input big" v-model="confirmPinCode[3]" maxlength="1" :disabled="!confirmPinCode[2].length"
+                                <input type="password" class="input big" v-model="confirmPinCode[3]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[2].length"
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
