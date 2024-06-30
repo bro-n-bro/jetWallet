@@ -189,6 +189,7 @@
     .image
     {
         margin-top: auto;
+        padding-top: 24px;
     }
 
 
