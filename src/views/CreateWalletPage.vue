@@ -5,10 +5,6 @@
                 {{ $t('message.create_wallet_title') }}
             </div>
 
-            <pre>{{ initData }}</pre>
-            ===================
-            <pre>{{ initDataUnsafe }}</pre>
-
             <div class="page_data_wrap">
                 <div class="page_data">
                     <Loader v-if="loading" />
@@ -121,17 +117,12 @@
         agreeFirst = ref(false),
         agreeSecond = ref(false),
         agreed = ref(false),
-        { copy, copied, isSupported } = useClipboard(),
-        initData = ref([]),
-        initDataUnsafe = ref([])
+        { copy, copied, isSupported } = useClipboard()
 
 
     onBeforeMount(async () => {
         // Generate wallet
         wallet.value = await generateWallet(count.value)
-
-        initData.value = Telegram.WebApp.initData
-        initDataUnsafe.value = Telegram.WebApp.initDataUnsafe
 
         // Hide loader
         loading.value = false

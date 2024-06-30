@@ -33,99 +33,99 @@
                     <div class="mnemonic" v-if="activeTab != 3">
                         <div class="row">
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[0]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[0]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[1]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[1]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[2]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[2]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[3]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[3]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[4]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[4]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[5]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[5]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[6]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[6]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[7]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[7]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[8]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[8]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[9]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[9]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[10]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[10]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word">
-                                <input type="text" class="input" v-model="secret[11]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[11]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[12]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[12]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[13]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[13]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[14]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[14]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[15]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[15]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[16]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[16]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[17]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[17]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[18]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[18]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[19]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[19]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[20]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[20]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[21]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[21]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[22]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[22]" @input="validateWord" @paste="handlePaste">
                             </div>
 
                             <div class="word" v-if="activeTab === 2">
-                                <input type="text" class="input" v-model="secret[23]" @input="validateWord">
+                                <input type="text" class="input" v-model="secret[23]" @input="validateWord" @paste="handlePaste">
                             </div>
                         </div>
 
@@ -163,6 +163,7 @@
     import { ref, onBeforeMount, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils/'
+    import { addData } from '@/utils/db'
 
 
     // Components
@@ -179,7 +180,7 @@
         isTouchedPrivateKey = ref(false)
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
         // Hide loader
         loading.value = false
     })
@@ -193,16 +194,39 @@
     })
 
 
+    // Event handler for pasting text from clipboard
+    function handlePaste(e) {
+        // Get data from the clipboard
+        let clipboardData = e.clipboardData || window.clipboardData,
+            pastedText = clipboardData.getData('text'),
+            pastedTextArr = pastedText.split(' ')
+
+        if (pastedTextArr.length == 12) {
+            // Set active tab
+            activeTab.value = 1
+
+            // Set secret
+            setTimeout(() => secret.value = pastedTextArr)
+        }
+
+        if (pastedTextArr.length == 24) {
+            // Set active tab
+            activeTab.value = 2
+
+            // Set secret
+            setTimeout(() => secret.value = pastedTextArr)
+        }
+    }
+
+
     // Validate word
     function validateWord(e) {
         let result = []
-
 
         // Validate length
         e.target.value.trim().length
             ? result.push(true)
             : result.push(false)
-
 
         // Validate symbols
         let regex = /^[a-z]+$/
@@ -259,7 +283,7 @@
     async function save() {
         // Import wallet
         activeTab != 3
-            ? wallet.value = await importWalletFromMnemonic()
+            ? wallet.value = await importWalletFromMnemonic(secret.value.join(' '))
             : wallet.value = await importWalletFromPrivateKey(privateKey.value)
 
         // Save in DB

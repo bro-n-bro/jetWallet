@@ -21,10 +21,10 @@
     })
 
 
-    onMounted(() => {
+    onMounted(async () => {
         if (window.Telegram && window.Telegram.WebApp) {
             // Initialize the mini-application
-            Telegram.WebApp.ready()
+            await Telegram.WebApp.ready()
 
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
