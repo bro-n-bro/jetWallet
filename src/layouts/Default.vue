@@ -1,16 +1,8 @@
 <template>
     <div class="main">
         <!-- Router view -->
-        <RouterView />
+        <transition name="fade">
+            <RouterView />
+        </transition>
     </div>
 </template>
-
-
-<script setup>
-
-</script>
-
-
-<style scoped>
-
-</style>

@@ -171,7 +171,7 @@
 
     // Validate form
     const isFormValid = computed(() => {
-        return confirmPinCode.value[3].length !== '' && isPinMatching.value && idValidWalletName.value
+        return confirmPinCode.value[3].length != '' && isPinMatching.value && idValidWalletName.value
     })
 
 
@@ -196,6 +196,9 @@
 
     // Save data
     async function save() {
+        // Show loader
+        loading.value = true
+
         // Generate HMAC key
         let hmacKey = await generateHMACKey()
 

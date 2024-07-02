@@ -1,7 +1,5 @@
 <template>
-    <Loader v-if="loading" />
-
-    <section class="page_container index_page" v-else>
+    <section class="page_container index_page">
         <div class="cont">
             <div class="logo">
                 <img src="@/assets/logo.svg" alt="" loading="lazy">
@@ -9,16 +7,18 @@
 
             <div class="page_data_wrap">
                 <div class="page_data">
+                    <Loader v-if="loading" />
+
                     <div class="image">
                         <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
                     </div>
 
                     <div class="btns">
-                        <button class="btn" @click="router.push('/create_wallet')">
+                        <button class="btn" @click="goTo('/create_wallet')">
                             <span>{{ $t('message.btn_create_wallet') }}</span>
                         </button>
 
-                        <button class="btn purple_btn" @click="router.push('/import_wallet')">
+                        <button class="btn purple_btn" @click="goTo('/import_wallet')">
                             <span>{{ $t('message.btn_import_wallet') }}</span>
                         </button>
                     </div>
@@ -42,10 +42,20 @@
         loading = ref(true)
 
 
-    onBeforeMount(async () => {
+    onBeforeMount(() => {
         // Hide loader
         loading.value = false
     })
+
+
+    // Go to route
+    function goTo(path) {
+        // Show loader
+        loading.value = true
+
+        // Set router
+        router.push(path)
+    }
 </script>
 
 
