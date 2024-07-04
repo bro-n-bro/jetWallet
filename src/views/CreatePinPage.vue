@@ -9,10 +9,9 @@
                 <div class="page_data">
                     <Loader v-if="loading" />
 
-                    <template v-else>
-                    <router-link class="back_btn" to="/create_wallet">
+                    <!-- <router-link class="back_btn" to="/create_wallet">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
-                    </router-link>
+                    </router-link> -->
 
                     <div class="wallet_name">
                         <div class="label">
@@ -24,7 +23,7 @@
                         </div>
                     </div>
 
-                    <div class="create_pin">
+                    <div class="pin">
                         <div class="label">
                             {{ $t('message.create_pin_create_pin_label') }}
                         </div>
@@ -53,15 +52,27 @@
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
+
+                            <div class="field">
+                                <input type="password" class="input big" v-model="pinCode[4]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
+                                    @input="moveFocus($event, 5)"
+                                    @keydown.backspace="moveBack($event, 4)">
+                            </div>
+
+                            <div class="field">
+                                <input type="password" class="input big" v-model="pinCode[5]" maxlength="1" inputmode="numeric" :disabled="!pinCode[4].length"
+                                    @input="moveFocus($event, 6)"
+                                    @keydown.backspace="moveBack($event, 5)">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="confirm_pin">
+                    <div class="pin">
                         <div class="label">
                             {{ $t('message.create_pin_confirm_pin_label') }}
                         </div>
 
-                        <div class="row" :class="{ error: confirmPinCode[3].length && !isPinMatching, success: confirmPinCode[3].length && isPinMatching }">
+                        <div class="row" :class="{ error: confirmPinCode[5].length && !isPinMatching, success: confirmPinCode[5].length && isPinMatching }">
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[0]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
                                     @input="moveFocus($event, 1)"
@@ -85,10 +96,28 @@
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
+
+                            <div class="field">
+                                <input type="password" class="input big" v-model="confirmPinCode[4]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[3].length"
+                                    @input="moveFocus($event, 5)"
+                                    @keydown.backspace="moveBack($event, 4)">
+                            </div>
+
+                            <div class="field">
+                                <input type="password" class="input big" v-model="confirmPinCode[5]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[4].length"
+                                    @input="moveFocus($event, 6)"
+                                    @keydown.backspace="moveBack($event, 5)">
+                            </div>
                         </div>
                     </div>
 
-                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric">
+                    <!-- <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric" v-if="isBiometricAvailable">
+                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
+
+                        <span>{{ $t('message.btn_biometric') }}</span>
+                    </button> -->
+
+                    <button class="biometric_btn" @click.prevent="getBiometric">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
 
                         <span>{{ $t('message.btn_biometric') }}</span>
@@ -99,7 +128,6 @@
                             <span>{{ $t('message.btn_next') }}</span>
                         </button>
                     </div>
-                    </template>
                 </div>
             </div>
         </div>
@@ -108,11 +136,11 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, computed } from 'vue'
+    import { onBeforeMount, ref, computed, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
-    import { hashDataWithKey, generateHMACKey } from '@/utils/'
+    import { hashDataWithKey, generateHMACKey } from '@/utils'
     import { addData } from '@/utils/db'
-
+    import { useGlobalState } from '@/store'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -123,13 +151,21 @@
         walletName = ref(''),
         idValidWalletName = ref(false),
         isTouchedWalletName = ref(false),
-        pinCode = ref(['', '', '', '']),
-        confirmPinCode = ref(['', '', '', ''])
+        pinCode = ref(['', '', '', '', '', '']),
+        confirmPinCode = ref(['', '', '', '', '', '']),
+        isBiometricAvailable = ref(false),
+        { isAuthorized } = useGlobalState()
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
         // Hide loader
         loading.value = false
+    })
+
+
+    onMounted(async () => {
+        // Get info about biomentric
+        isBiometricAvailable.value = await Telegram.WebApp.BiometricManager.isBiometricAvailable
     })
 
 
@@ -147,7 +183,7 @@
 
     // Move focus
     function moveFocus(event, nextIndex) {
-        if (event.target.value.length >= 1 && nextIndex < 4) {
+        if (event.target.value.length >= 1 && nextIndex < 6) {
             event.target.closest('.row').querySelector(`.field:nth-child(${nextIndex + 1}) input`).focus()
         }
     }
@@ -171,26 +207,26 @@
 
     // Validate form
     const isFormValid = computed(() => {
-        return confirmPinCode.value[3].length != '' && isPinMatching.value && idValidWalletName.value
+        return confirmPinCode.value[5].length != '' && isPinMatching.value && idValidWalletName.value
     })
 
 
     // Get biometric
     async function getBiometric() {
         if (!Telegram.WebApp.BiometricManager.isInited) {
-            await Telegram.WebApp.BiometricManager.init()
+            await Telegram.WebApp.BiometricManager.init(async () => {
+                let result = await Telegram.WebApp.BiometricManager.authenticate()
+
+                alert(result)
+            })
         }
 
-        if (await Telegram.WebApp.BiometricManager.isBiometricAvailable()) {
-            let result = await Telegram.WebApp.BiometricManager.authenticate()
-
-            if (result) {
-                console.log('Biometric authentication successful:', result);
-                alert('Authentication successful!');
-            } else {
-                alert('Authentication failed.');
-            }
-        }
+        // if (result) {
+        //     console.log('Biometric authentication successful:', result);
+        //     alert('Authentication successful!');
+        // } else {
+        //     alert('Authentication failed.');
+        // }
     }
 
 
@@ -206,115 +242,104 @@
         await addData('wallet', [
             ['hmacKey', hmacKey],
             ['pin', await hashDataWithKey(pinCode.value.join(''), hmacKey)],
-            ['name', walletName.value]
+            ['name', walletName.value],
+            ['isRegister', true]
         ])
 
-        // Go to confirm
+        // Set authorized status
+        isAuthorized.value = true
+
+        // Redirect
         router.push('/wallet_created')
     }
 </script>
 
 
 <style scoped>
-.wallet_name
-{
-    margin-top: 54px;
-}
+    .pin
+    {
+        margin-top: 8px;
+    }
+
+
+    .pin .label
+    {
+        font-size: 14px;
+
+        margin-bottom: 2px;
+        padding: 0 10px;
+    }
+
+
+    .pin .row
+    {
+        flex-wrap: nowrap;
+    }
+
+
+    .pin .row > *
+    {
+        width: 100%;
+    }
+
+
+    .pin .row > * + *
+    {
+        margin-left: 10px;
+    }
+
+
+    .pin .input
+    {
+        font-size: 20px;
+
+        text-align: center;
+    }
+
+
+    .pin .error .input
+    {
+        border-color: #f00;
+    }
+
+    .pin .success .input
+    {
+        border-color: #00aa63;
+    }
 
 
 
-.label
-{
-    font-size: 14px;
+    .biometric_btn
+    {
+        font-size: 18px;
+        font-weight: 500;
 
-    margin-bottom: 2px;
-    padding: 0 10px;
-}
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
 
+        margin: 12px auto 0;
 
-.create_pin,
-.confirm_pin
-{
-    margin-top: 8px;
-}
-
-
-.create_pin .row,
-.confirm_pin .row
-{
-    flex-wrap: nowrap;
-}
+        transition: opacity .2s linear;
+    }
 
 
-.create_pin .row > *,
-.confirm_pin .row > *
-{
-    width: 100%;
-}
+    .biometric_btn .icon
+    {
+        display: block;
+
+        width: 28px;
+        height: 28px;
+        margin-right: 12px;
+    }
 
 
-.create_pin .row > * + *,
-.confirm_pin .row > * + *
-{
-    margin-left: 14px;
-}
+    .biometric_btn.disabled
+    {
+        pointer-events: none;
 
-
-.create_pin .input,
-.confirm_pin .input
-{
-    font-size: 20px;
-
-    text-align: center;
-}
-
-
-.confirm_pin .error .input
-{
-    border-color: #f00;
-}
-
-.confirm_pin .success .input
-{
-    border-color: #00aa63;
-}
-
-
-
-.biometric_btn
-{
-    font-size: 18px;
-    font-weight: 500;
-
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    margin: 12px auto 0;
-
-    transition: opacity .2s linear;
-}
-
-
-.biometric_btn .icon
-{
-    display: block;
-
-    width: 28px;
-    height: 28px;
-    margin-right: 12px;
-}
-
-
-.biometric_btn.disabled
-{
-    pointer-events: none;
-
-    opacity: .6;
-}
-
-
-
+        opacity: .6;
+    }
 </style>

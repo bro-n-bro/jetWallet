@@ -162,7 +162,7 @@
 <script setup>
     import { ref, onBeforeMount, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
-    import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils/'
+    import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils'
     import { addData } from '@/utils/db'
 
 
@@ -250,16 +250,6 @@
         }
 
         validateAllWordsResult.value[i] = result
-
-
-        // Set class
-        // if (result.every(value => value === true)) {
-        //     e.target.classList.remove('error')
-        //     e.target.classList.add('success')
-        // } else {
-        //     e.target.classList.remove('success')
-        //     e.target.classList.add('error')
-        // }
     }
 
 
@@ -322,8 +312,8 @@
             ['seed', wallet.value.seed]
         ])
 
-        // Go to confirm
-        router.push('/create_wallet_confirm')
+        // Redirect
+        router.push('/create_pin')
     }
 </script>
 
@@ -333,7 +323,6 @@
     {
         margin-top: 54px;
     }
-
 
 
     .exp

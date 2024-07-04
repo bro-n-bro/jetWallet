@@ -10,7 +10,6 @@
                 <div class="page_data">
                     <Loader v-if="loading" />
 
-                    <template v-else>
                     <router-link class="back_btn" to="/create_wallet">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                     </router-link>
@@ -48,19 +47,14 @@
                     </div>
 
                     <div class="btns">
-                        <router-link to="/create_pin" class="btn" :class="{ disabled: !isValidWordOne && !isValidWordTwo }">
+                        <button class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save">
                             <span>{{ $t('message.btn_next') }}</span>
-                        </router-link>
-
-                        <router-link to="/create_pin" class="btn">
-                            <span>{{ $t('message.btn_next') }}</span>
-                        </router-link>
+                        </button>
                     </div>
 
                     <div class="exp">
                         {{ $t('message.confirm_exp') }}
                     </div>
-                    </template>
                 </div>
             </div>
         </div>
@@ -70,6 +64,7 @@
 
 <script setup>
     import { ref, onBeforeMount } from 'vue'
+    import { useRouter } from 'vue-router'
     import { getData } from '@/utils/db'
 
 
@@ -77,7 +72,8 @@
     import Loader from '@/components/Loader.vue'
 
 
-    const loading = ref(true),
+    const router = useRouter(),
+        loading = ref(true),
         wordOneNumber = ref(0),
         wordTwoNumber = ref(0),
         wordOne = ref(''),
@@ -90,22 +86,27 @@
 
 
     onBeforeMount(async () => {
-        // Get secret from indexedDB
+        // Get secret from DB
         secret.value = await getData('wallet', 'secret')
 
-        let min = 1,
-            max = secret.value.split(' ').length
+        if (secret.value != 'undefined') {
+            let min = 1,
+                max = secret.value.split(' ').length
 
-        // Generate the first random number
-        wordOneNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
+            // Generate the first random number
+            wordOneNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
 
-        // Generate the second random number
-        do {
-            wordTwoNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
-        } while (wordOneNumber.value === wordTwoNumber.value)
+            // Generate the second random number
+            do {
+                wordTwoNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
+            } while (wordOneNumber.value === wordTwoNumber.value)
 
-        // Hide loader
-        loading.value = false
+            // Hide loader
+            loading.value = false
+        } else {
+            // Redirect
+            // router.push('/')
+        }
     })
 
 
@@ -126,6 +127,16 @@
         wordTwo.value === secret.value.split(' ')[wordTwoNumber.value - 1]
             ? isValidWordTwo.value = true
             : isValidWordTwo.value = false
+    }
+
+
+    // Save
+    async function save() {
+        // Show loader
+        loading.value = true
+
+        // Set router
+        router.push('/create_pin')
     }
 </script>
 

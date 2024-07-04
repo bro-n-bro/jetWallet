@@ -33,6 +33,10 @@ export default {
             'create_pin_wallet_name_placeholder': 'Name',
 
 
+            // Auth
+            'auth_title': 'Welcome!',
+
+
             // Mnemonic
             'mnemonic_tab1': '12 words',
             'mnemonic_tab2': '24 words',
@@ -51,7 +55,8 @@ export default {
             'btn_copy': 'Copy to clipboard',
             'btn_copied': 'Copied!',
             'btn_join': 'Join',
-            'btn_biometric': 'Turn on biometric security'
+            'btn_biometric': 'Turn on biometric security',
+            'btn_biometric2': 'Use biometric'
         }
     }
 }

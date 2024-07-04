@@ -147,7 +147,7 @@
         ])
 
         // Go to confirm
-        router.push('/create_wallet_confirm')
+        router.push('/confirm_wallet')
     }
 </script>
 
