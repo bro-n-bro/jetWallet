@@ -141,6 +141,7 @@
     import { hashDataWithKey, generateHMACKey } from '@/utils'
     import { addData } from '@/utils/db'
     import { useGlobalState } from '@/store'
+    import { useWebApp, useWebAppBiometricManager } from 'vue-tg'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -213,27 +214,23 @@
 
     // Get biometric
     async function getBiometric() {
-        console.log(Telegram.WebApp.BiometricManager)
+        let result = useWebApp()
+        let BiometricManager = useWebAppBiometricManager()
 
-        if (!Telegram.WebApp.BiometricManager.isInited) {
-            await Telegram.WebApp.BiometricManager.init()
+        result.ready()
 
-            alert(
-                Telegram.WebApp.BiometricManager.isInited + '/n' +
-                Telegram.WebApp.BiometricManager.isBiometricAvailable + '/n' +
-                Telegram.WebApp.BiometricManager.biometricType + '/n' +
-                Telegram.WebApp.BiometricManager.isAccessRequested + '/n' +
-                Telegram.WebApp.BiometricManager.isAccessGranted + '/n' +
-                Telegram.WebApp.BiometricManager.isBiometricTokenSaved
-            )
+        alert(BiometricManager.isBiometricAvailable.value)
 
-            let result = await Telegram.WebApp.BiometricManager.requestAccess()
-            alert(result)
+        // if (!Telegram.WebApp.BiometricManager.isInited) {
+        //     await Telegram.WebApp.BiometricManager.init()
 
-            let result2 = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
+        //     let result = await Telegram.WebApp.BiometricManager.requestAccess()
+        //     alert(result)
 
-            alert(result2)
-        }
+        //     let result2 = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
+
+        //     alert(result2)
+        // }
 
         // if (result) {
         //     console.log('Biometric authentication successful:', result);
