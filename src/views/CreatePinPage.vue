@@ -240,9 +240,7 @@
         result.ready()
 
         BiometricManager.initBiometric(async () => {
-            await BiometricManager.requestBiometricAccess({ reason: 'Нужно' }, () => {
-                alert('запросили')
-            })
+            await BiometricManager.requestBiometricAccess({ reason: 'Нужно' })
 
             alert(BiometricManager.biometricDeviceId.value)
             alert(BiometricManager.isBiometricAccessRequested.value)
