@@ -234,12 +234,15 @@
     // Get biometric
     async function getBiometric() {
         checkBiometricAvailability()
-        // let result = useWebApp()
-        // let BiometricManager = useWebAppBiometricManager()
+        let result = useWebApp()
+        let BiometricManager = useWebAppBiometricManager()
 
-        // result.ready()
+        result.ready()
+        await BiometricManager.initBiometric()
+        await BiometricManager.requestBiometricAccess()
+        await BiometricManager.authenticateBiometric()
 
-        // alert(BiometricManager.isBiometricAvailable.value)
+        alert(BiometricManager.biometricDeviceId.value)
 
         // if (!Telegram.WebApp.BiometricManager.isInited) {
         //     await Telegram.WebApp.BiometricManager.init()
