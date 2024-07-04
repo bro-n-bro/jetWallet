@@ -238,11 +238,13 @@
         let BiometricManager = useWebAppBiometricManager()
 
         result.ready()
-        await BiometricManager.requestBiometricAccess()
+        await BiometricManager.requestBiometricAccess({ reason: 'Нужно' }, () => {
+            alert('запросили')
+        })
 
         alert(BiometricManager.biometricDeviceId.value)
-        alert(BiometricManager.isBiometricAccessGranted.value)
         alert(BiometricManager.isBiometricAccessRequested.value)
+        alert(BiometricManager.isBiometricAccessGranted.value)
 
         // if (!Telegram.WebApp.BiometricManager.isInited) {
         //     await Telegram.WebApp.BiometricManager.init()
