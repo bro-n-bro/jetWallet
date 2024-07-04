@@ -212,14 +212,34 @@
     })
 
 
+    async function checkBiometricAvailability() {
+      if (window.PublicKeyCredential) {
+        try {
+          const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+          if (isAvailable) {
+            alert("Biometric authentication is available.");
+          } else {
+            alert("Biometric authentication is not available.");
+          }
+        } catch (error) {
+          console.error("Error checking biometric availability", error);
+          alert("Error checking biometric availability");
+        }
+      } else {
+        alert("Web Authentication API is not supported on this browser.");
+      }
+    }
+
+
     // Get biometric
     async function getBiometric() {
-        let result = useWebApp()
-        let BiometricManager = useWebAppBiometricManager()
+        checkBiometricAvailability()
+        // let result = useWebApp()
+        // let BiometricManager = useWebAppBiometricManager()
 
-        result.ready()
+        // result.ready()
 
-        alert(BiometricManager.isBiometricAvailable.value)
+        // alert(BiometricManager.isBiometricAvailable.value)
 
         // if (!Telegram.WebApp.BiometricManager.isInited) {
         //     await Telegram.WebApp.BiometricManager.init()
