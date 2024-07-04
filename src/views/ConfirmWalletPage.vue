@@ -50,6 +50,10 @@
                         <button class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save">
                             <span>{{ $t('message.btn_next') }}</span>
                         </button>
+
+                        <button class="btn" @click.prevent="save">
+                            <span>{{ $t('message.btn_next') }}</span>
+                        </button>
                     </div>
 
                     <div class="exp">
