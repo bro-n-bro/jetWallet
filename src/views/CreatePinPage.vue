@@ -240,11 +240,17 @@
         result.ready()
 
         BiometricManager.initBiometric(async () => {
-            await BiometricManager.requestBiometricAccess({ reason: 'Нужно' })
+            // await BiometricManager.requestBiometricAccess({ reason: 'Нужно' })
 
             alert(BiometricManager.biometricDeviceId.value)
             alert(BiometricManager.isBiometricAccessRequested.value)
             alert(BiometricManager.isBiometricAccessGranted.value)
+
+
+            await BiometricManager.authenticateBiometric({ reason: 'Нужно' }, (isAuthenticated, biometricToken) => {
+                alert(isAuthenticated)
+                alert(biometricToken)
+            })
         })
 
         // if (!Telegram.WebApp.BiometricManager.isInited) {
