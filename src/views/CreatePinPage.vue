@@ -219,12 +219,12 @@
             await Telegram.WebApp.BiometricManager.init()
 
             alert(
-                Telegram.WebApp.isInited + '/n' +
-                Telegram.WebApp.isBiometricAvailable + '/n' +
-                Telegram.WebApp.biometricType + '/n' +
-                Telegram.WebApp.isAccessRequested + '/n' +
-                Telegram.WebApp.isAccessGranted + '/n' +
-                Telegram.WebApp.isBiometricTokenSaved
+                Telegram.WebApp.BiometricManager.isInited + '/n' +
+                Telegram.WebApp.BiometricManager.isBiometricAvailable + '/n' +
+                Telegram.WebApp.BiometricManager.biometricType + '/n' +
+                Telegram.WebApp.BiometricManager.isAccessRequested + '/n' +
+                Telegram.WebApp.BiometricManager.isAccessGranted + '/n' +
+                Telegram.WebApp.BiometricManager.isBiometricTokenSaved
             )
 
             let result = await Telegram.WebApp.BiometricManager.requestAccess()
