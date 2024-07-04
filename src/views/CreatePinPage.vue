@@ -216,14 +216,23 @@
         console.log(Telegram.WebApp.BiometricManager)
 
         if (!Telegram.WebApp.BiometricManager.isInited) {
-            await Telegram.WebApp.BiometricManager.init(async () => {
-                let result = await Telegram.WebApp.BiometricManager.requestAccess()
-                alert(result)
+            await Telegram.WebApp.BiometricManager.init()
 
-                let result2 = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
+            alert(
+                Telegram.WebApp.isInited +
+                Telegram.WebApp.isBiometricAvailable +
+                Telegram.WebApp.biometricType +
+                Telegram.WebApp.isAccessRequested +
+                Telegram.WebApp.isAccessGranted +
+                Telegram.WebApp.isBiometricTokenSaved
+            )
 
-                alert(result2)
-            })
+            let result = await Telegram.WebApp.BiometricManager.requestAccess()
+            alert(result)
+
+            let result2 = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
+
+            alert(result2)
         }
 
         // if (result) {
