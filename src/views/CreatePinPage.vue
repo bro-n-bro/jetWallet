@@ -238,9 +238,9 @@
         let BiometricManager = useWebAppBiometricManager()
 
         result.ready()
-        await BiometricManager.initBiometric()
-        await BiometricManager.requestBiometricAccess()
-        await BiometricManager.authenticateBiometric()
+        // await BiometricManager.initBiometric()
+        // await BiometricManager.requestBiometricAccess()
+        // await BiometricManager.authenticateBiometric()
 
         alert(BiometricManager.biometricDeviceId.value)
         alert(BiometricManager.isBiometricAccessGranted.value)
