@@ -213,11 +213,16 @@
 
     // Get biometric
     async function getBiometric() {
+        console.log(Telegram.WebApp.BiometricManager)
+
         if (!Telegram.WebApp.BiometricManager.isInited) {
             await Telegram.WebApp.BiometricManager.init(async () => {
-                let result = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
-
+                let result = await Telegram.WebApp.BiometricManager.requestAccess()
                 alert(result)
+
+                let result2 = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
+
+                alert(result2)
             })
         }
 
