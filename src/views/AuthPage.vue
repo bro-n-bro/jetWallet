@@ -61,6 +61,8 @@
 
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
                     </button>
+
+                    <button @click.prevent="deleteAll">Удалить всё</button>
                     </template>
                 </div>
             </div>
@@ -73,7 +75,7 @@
     import { onBeforeMount, ref, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
-    import { getData } from '@/utils/db'
+    import { getData, clearData } from '@/utils/db'
     import { useGlobalState } from '@/store'
 
     // Components
@@ -140,6 +142,14 @@
                 event.target.closest('.row').querySelector(`.field:nth-child(${currentIndex}) input`).select()
             }
         })
+    }
+
+
+    async function deleteAll() {
+        await clearData('wallet')
+
+        // Redirect
+        router.push('/')
     }
 </script>
 

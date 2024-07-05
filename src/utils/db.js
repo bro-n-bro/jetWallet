@@ -49,3 +49,12 @@ export async function updateData(storeName, id, updatedData) {
 
     return db.put(storeName, { ...updatedData, id })
 }
+
+
+export async function clearData(storeName) {
+    const db = await dbPromise
+    const tx = db.transaction(storeName, 'readwrite')
+    const store = tx.objectStore(storeName)
+    await store.clear()
+    await tx.done
+}

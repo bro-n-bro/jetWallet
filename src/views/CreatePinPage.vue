@@ -5,8 +5,6 @@
                 {{ $t('message.create_pin_title') }}
             </div>
 
-            <pre>{{ isBiometricAvailable }}</pre>
-
             <div class="page_data_wrap">
                 <div class="page_data">
                     <Loader v-if="loading" />
@@ -113,14 +111,14 @@
                         </div>
                     </div>
 
-                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric" v-if="isBiometricAvailable">
+                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
 
                         <span>{{ $t('message.btn_biometric') }}</span>
                     </button>
 
                     <div class="btns">
-                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save">
+                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save()">
                             <span>{{ $t('message.btn_next') }}</span>
                         </button>
                     </div>
@@ -132,12 +130,11 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, computed, onMounted } from 'vue'
+    import { onBeforeMount, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey, generateHMACKey } from '@/utils'
     import { addData } from '@/utils/db'
     import { useGlobalState } from '@/store'
-    // import { useWebApp, useWebAppBiometricManager } from 'vue-tg'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -157,12 +154,6 @@
     onBeforeMount(() => {
         // Hide loader
         loading.value = false
-    })
-
-
-    onMounted(() => {
-        // Get info about biomentric
-        isBiometricAvailable.value = Telegram.WebApp.BiometricManager
     })
 
 
