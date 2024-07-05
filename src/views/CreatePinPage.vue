@@ -5,6 +5,8 @@
                 {{ $t('message.create_pin_title') }}
             </div>
 
+            <pre>{{ isBiometricAvailable }}</pre>
+
             <div class="page_data_wrap">
                 <div class="page_data">
                     <Loader v-if="loading" />
@@ -160,7 +162,7 @@
 
     onMounted(() => {
         // Get info about biomentric
-        isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
+        isBiometricAvailable.value = Telegram.WebApp.BiometricManager
     })
 
 
