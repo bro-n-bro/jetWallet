@@ -111,7 +111,7 @@
                         </div>
                     </div>
 
-                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric" v-if="isBiometricAvailable">
+                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
 
                         <span>{{ $t('message.btn_biometric') }}</span>
@@ -130,7 +130,7 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, computed, onMounted } from 'vue'
+    import { onBeforeMount, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey, generateHMACKey } from '@/utils'
     import { addData } from '@/utils/db'
@@ -200,13 +200,6 @@
     const isFormValid = computed(() => {
         return confirmPinCode.value[5].length != '' && isPinMatching.value && idValidWalletName.value
     })
-
-
-    // Get biometric
-    async function getBiometric() {
-        // Check init biometric
-        checkBiometricAccess()
-    }
 
 
     // Check biometric access

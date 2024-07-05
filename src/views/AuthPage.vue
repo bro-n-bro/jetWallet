@@ -56,13 +56,13 @@
                         <!-- <div class="warning">You have 3 attempts left</div> -->
                     </div>
 
-                    <button class="biometric_btn" @click.prevent="getBiometric">
+                    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable">
                         <span>{{ $t('message.btn_biometric2') }}</span>
 
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
                     </button>
 
-                    <button @click.prevent="deleteAll">Удалить всё</button>
+                    <button @click.prevent="deleteAll" style="padding: 10px;">Удалить всё</button>
                     </template>
                 </div>
             </div>
@@ -88,6 +88,7 @@
         pinDB = ref(''),
         hmacKey = ref(''),
         wrongPin = ref(false),
+        isBiometricAvailable = ref(false),
         { isAuthorized } = useGlobalState()
 
 
@@ -97,6 +98,9 @@
 
         // Get hmacKey from DB
         hmacKey.value = await getData('wallet', 'hmacKey')
+
+        // Is biometric available
+        isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
 
         // Hide loader
         loading.value = false
@@ -113,16 +117,9 @@
             let pinHash = await hashDataWithKey(pinCode.value.join(''), hmacKey.value)
 
             // Check the PIN
-            if (pinHash === pinDB.value) {
-                // Set authorized status
-                isAuthorized.value = true
-
-                // Redirect
-                router.push('/account')
-            } else {
-                // Set error
-                wrongPin.value = true
-            }
+            pinHash === pinDB.value
+                ? auth() // Auth
+                : wrongPin.value = true // Set error
         }
     })
 
@@ -142,6 +139,35 @@
                 event.target.closest('.row').querySelector(`.field:nth-child(${currentIndex}) input`).select()
             }
         })
+    }
+
+
+    // Check biometric access
+    function checkBiometricAccess() {
+        !Telegram.WebApp.isAccessGranted
+            ? Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, () => biometricAuthenticate())
+            : biometricAuthenticate()
+    }
+
+
+    // Biometric authenticate
+    function biometricAuthenticate() {
+        Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, res => {
+            if (res) {
+                // Auth
+                auth(res)
+            }
+        })
+    }
+
+
+    // Auth
+    function auth() {
+        // Set authorized status
+        isAuthorized.value = true
+
+        // Redirect
+        router.push('/account')
     }
 
 
