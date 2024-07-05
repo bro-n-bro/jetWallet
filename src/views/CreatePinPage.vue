@@ -5,6 +5,8 @@
                 {{ $t('message.create_pin_title') }}
             </div>
 
+            <pre>{{ isBiometricAvailable }}</pre>
+
             <div class="page_data_wrap">
                 <div class="page_data">
                     <Loader v-if="loading" />
@@ -130,7 +132,7 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, computed } from 'vue'
+    import { onBeforeMount, ref, computed, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey, generateHMACKey } from '@/utils'
     import { addData } from '@/utils/db'
@@ -154,6 +156,13 @@
     onBeforeMount(() => {
         // Hide loader
         loading.value = false
+    })
+
+
+    onMounted(() => {
+        isBiometricAvailable.value = Telegram.WebApp.BiometricManager
+
+        Telegram.WebApp.BiometricManager.init()
     })
 
 
@@ -202,9 +211,7 @@
     // Get biometric
     async function getBiometric() {
         // Check init biometric
-        !Telegram.WebApp.BiometricManager.isInited
-            ? Telegram.WebApp.BiometricManager.init(() => checkBiometricAccess())
-            : checkBiometricAccess()
+        checkBiometricAccess()
     }
 
 
