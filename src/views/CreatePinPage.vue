@@ -111,13 +111,7 @@
                         </div>
                     </div>
 
-                    <!-- <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric" v-if="isBiometricAvailable">
-                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
-
-                        <span>{{ $t('message.btn_biometric') }}</span>
-                    </button> -->
-
-                    <button class="biometric_btn" @click.prevent="getBiometric">
+                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric" v-if="isBiometricAvailable">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
 
                         <span>{{ $t('message.btn_biometric') }}</span>
@@ -164,9 +158,9 @@
     })
 
 
-    onMounted(async () => {
+    onMounted(() => {
         // Get info about biomentric
-        isBiometricAvailable.value = await Telegram.WebApp.BiometricManager.isBiometricAvailable
+        isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
     })
 
 
@@ -214,25 +208,6 @@
 
     // Get biometric
     async function getBiometric() {
-        // let result = useWebApp()
-        // let BiometricManager = useWebAppBiometricManager()
-
-        // result.ready()
-
-        // BiometricManager.initBiometric(async () => {
-        //     // await BiometricManager.requestBiometricAccess({ reason: 'Нужно' })
-
-        //     alert(BiometricManager.biometricDeviceId.value)
-        //     alert(BiometricManager.isBiometricAccessRequested.value)
-        //     alert(BiometricManager.isBiometricAccessGranted.value)
-
-
-        //     await BiometricManager.authenticateBiometric({ reason: 'Нужно' }, (isAuthenticated, biometricToken) => {
-        //         alert(isAuthenticated)
-        //         alert(biometricToken)
-        //     })
-        // })
-
         // Check init biometric
         !Telegram.WebApp.BiometricManager.isInited
             ? Telegram.WebApp.BiometricManager.init(() => checkBiometricAccess())
@@ -250,14 +225,17 @@
 
     // Biometric authenticate
     function biometricAuthenticate() {
-        Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, (status, token) => {
-            alert(status + '   ' + token)
+        Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, res => {
+            if (res) {
+                // Save data
+                save(res)
+            }
         })
     }
 
 
     // Save data
-    async function save() {
+    async function save(biometricStatus = false) {
         // Show loader
         loading.value = true
 
@@ -269,7 +247,8 @@
             ['hmacKey', hmacKey],
             ['pin', await hashDataWithKey(pinCode.value.join(''), hmacKey)],
             ['name', walletName.value],
-            ['isRegister', true]
+            ['isRegister', true],
+            ['isBiometric', biometricStatus]
         ])
 
         // Set authorized status
