@@ -5,8 +5,6 @@
                 {{ $t('message.create_pin_title') }}
             </div>
 
-            <pre>{{ isBiometricAvailable }}</pre>
-
             <div class="page_data_wrap">
                 <div class="page_data">
                     <Loader v-if="loading" />
@@ -113,7 +111,7 @@
                         </div>
                     </div>
 
-                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric">
+                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="getBiometric" v-if="isBiometricAvailable">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
 
                         <span>{{ $t('message.btn_biometric') }}</span>
@@ -153,13 +151,15 @@
         { isAuthorized } = useGlobalState()
 
 
-    onBeforeMount(async() => {
+    onBeforeMount(() => {
+        // Init biometric
+        Telegram.WebApp.BiometricManager.init()
+
+        // Is biometric available
+        isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
+
         // Hide loader
         loading.value = false
-
-        await Telegram.WebApp.BiometricManager.init()
-
-        isBiometricAvailable.value = Telegram.WebApp.BiometricManager
     })
 
 
