@@ -153,16 +153,13 @@
         { isAuthorized } = useGlobalState()
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async() => {
         // Hide loader
         loading.value = false
-    })
 
+        await Telegram.WebApp.BiometricManager.init()
 
-    onMounted(() => {
         isBiometricAvailable.value = Telegram.WebApp.BiometricManager
-
-        Telegram.WebApp.BiometricManager.init()
     })
 
 
@@ -217,7 +214,7 @@
 
     // Check biometric access
     function checkBiometricAccess() {
-        Telegram.WebApp.isAccessGranted
+        !Telegram.WebApp.isAccessGranted
             ? Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, () => biometricAuthenticate())
             : biometricAuthenticate()
     }
