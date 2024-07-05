@@ -154,15 +154,15 @@
         { isAuthorized } = useGlobalState()
 
 
-    onBeforeMount(async () => {
+    onBeforeMount(() => {
         // Hide loader
         loading.value = false
     })
 
 
-    onMounted(() => {
+    onMounted(async () => {
         // Get info about biomentric
-        isBiometricAvailable.value = Telegram.WebApp.BiometricManager
+        isBiometricAvailable.value = await Telegram.WebApp.BiometricManager
     })
 
 
