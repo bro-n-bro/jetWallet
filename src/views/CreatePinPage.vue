@@ -141,7 +141,7 @@
     import { hashDataWithKey, generateHMACKey } from '@/utils'
     import { addData } from '@/utils/db'
     import { useGlobalState } from '@/store'
-    import { useWebApp, useWebAppBiometricManager } from 'vue-tg'
+    // import { useWebApp, useWebAppBiometricManager } from 'vue-tg'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -212,64 +212,39 @@
     })
 
 
-    async function checkBiometricAvailability() {
-      if (window.PublicKeyCredential) {
-        try {
-          const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-          if (isAvailable) {
-            alert("Biometric authentication is available.");
-          } else {
-            alert("Biometric authentication is not available.");
-          }
-        } catch (error) {
-          console.error("Error checking biometric availability", error);
-          alert("Error checking biometric availability");
-        }
-      } else {
-        alert("Web Authentication API is not supported on this browser.");
-      }
-    }
-
-
     // Get biometric
     async function getBiometric() {
-        // checkBiometricAvailability()
-        let result = useWebApp()
-        let BiometricManager = useWebAppBiometricManager()
+        // let result = useWebApp()
+        // let BiometricManager = useWebAppBiometricManager()
 
-        result.ready()
+        // result.ready()
 
-        BiometricManager.initBiometric(async () => {
-            // await BiometricManager.requestBiometricAccess({ reason: 'Нужно' })
+        // BiometricManager.initBiometric(async () => {
+        //     // await BiometricManager.requestBiometricAccess({ reason: 'Нужно' })
 
-            alert(BiometricManager.biometricDeviceId.value)
-            alert(BiometricManager.isBiometricAccessRequested.value)
-            alert(BiometricManager.isBiometricAccessGranted.value)
+        //     alert(BiometricManager.biometricDeviceId.value)
+        //     alert(BiometricManager.isBiometricAccessRequested.value)
+        //     alert(BiometricManager.isBiometricAccessGranted.value)
 
 
-            await BiometricManager.authenticateBiometric({ reason: 'Нужно' }, (isAuthenticated, biometricToken) => {
-                alert(isAuthenticated)
-                alert(biometricToken)
+        //     await BiometricManager.authenticateBiometric({ reason: 'Нужно' }, (isAuthenticated, biometricToken) => {
+        //         alert(isAuthenticated)
+        //         alert(biometricToken)
+        //     })
+        // })
+
+        if (!Telegram.WebApp.BiometricManager.isInited) {
+            Telegram.WebApp.BiometricManager.init(async () => {
+                // Request access
+                Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, (param1, param2) => {
+                    alert(param1, param2)
+                })
             })
-        })
 
-        // if (!Telegram.WebApp.BiometricManager.isInited) {
-        //     await Telegram.WebApp.BiometricManager.init()
+            // let result2 = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
 
-        //     let result = await Telegram.WebApp.BiometricManager.requestAccess()
-        //     alert(result)
-
-        //     let result2 = await Telegram.WebApp.BiometricManager.authenticate({ reason: 'Можно свой текст написать!!!' })
-
-        //     alert(result2)
-        // }
-
-        // if (result) {
-        //     console.log('Biometric authentication successful:', result);
-        //     alert('Authentication successful!');
-        // } else {
-        //     alert('Authentication failed.');
-        // }
+            // alert(result2)
+        }
     }
 
 
