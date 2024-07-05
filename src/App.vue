@@ -28,6 +28,9 @@
 
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
+
+            // Init biometric
+            Telegram.WebApp.BiometricManager.init()
         }
     })
 </script>

@@ -152,9 +152,6 @@
 
 
     onBeforeMount(() => {
-        // Init biometric
-        Telegram.WebApp.BiometricManager.init()
-
         // Is biometric available
         isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
 
