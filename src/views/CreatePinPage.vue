@@ -234,22 +234,22 @@
         // })
 
         if (!Telegram.WebApp.BiometricManager.isInited) {
-            Telegram.WebApp.BiometricManager.init(async () => {
-                let access = Telegram.WebApp.isAccessGranted
-
+            // Init biometric
+            Telegram.WebApp.BiometricManager.init(() => {
                 // Check access
-                if (Telegram.WebApp.isAccessGranted) {
-                    // Request access
-                    access = await Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' })
-                }
-
-                if (access) {
-                    Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, (status, token) => {
-                        alert(status + '   ' + token)
-                    })
-                }
+                Telegram.WebApp.isAccessGranted
+                    ? Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, () => biometricAuthenticate())
+                    : biometricAuthenticate()
             })
         }
+    }
+
+
+    // Biometric authenticate
+    function biometricAuthenticate() {
+        Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, (status, token) => {
+            alert(status + '   ' + token)
+        })
     }
 
 
