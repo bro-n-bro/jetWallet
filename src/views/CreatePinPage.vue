@@ -234,10 +234,13 @@
         // })
 
         if (!Telegram.WebApp.BiometricManager.isInited) {
-            Telegram.WebApp.BiometricManager.init(async () => {
+            Telegram.WebApp.BiometricManager.init(() => {
+                alert(Telegram.WebApp.isAccessRequested)
+                alert(Telegram.WebApp.isAccessGranted)
+
                 // Request access
-                Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, (param1, param2) => {
-                    alert(param1, param2)
+                Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, res => {
+                    alert(res)
                 })
             })
 
