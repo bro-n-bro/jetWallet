@@ -160,9 +160,9 @@
     })
 
 
-    onMounted(async () => {
+    onMounted(() => {
         // Get info about biomentric
-        isBiometricAvailable.value = await Telegram.WebApp.BiometricManager
+        isBiometricAvailable.value = Telegram.WebApp.BiometricManager
     })
 
 
