@@ -233,15 +233,18 @@
         //     })
         // })
 
-        if (!Telegram.WebApp.BiometricManager.isInited) {
-            // Init biometric
-            Telegram.WebApp.BiometricManager.init(() => {
-                // Check access
-                Telegram.WebApp.isAccessGranted
-                    ? Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, () => biometricAuthenticate())
-                    : biometricAuthenticate()
-            })
-        }
+        // Check init biometric
+        !Telegram.WebApp.BiometricManager.isInited
+            ? Telegram.WebApp.BiometricManager.init(() => checkBiometricAccess())
+            : checkBiometricAccess()
+    }
+
+
+    // Check biometric access
+    function checkBiometricAccess() {
+        Telegram.WebApp.isAccessGranted
+            ? Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, () => biometricAuthenticate())
+            : biometricAuthenticate()
     }
 
 
