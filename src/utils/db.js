@@ -44,13 +44,6 @@ export async function deleteData(storeName, id) {
 }
 
 
-export async function updateData(storeName, id, updatedData) {
-    let db = await dbPromise
-
-    return db.put(storeName, { ...updatedData, id })
-}
-
-
 export async function clearData(storeName) {
     const db = await dbPromise
     const tx = db.transaction(storeName, 'readwrite')

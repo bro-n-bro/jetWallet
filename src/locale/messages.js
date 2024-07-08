@@ -35,6 +35,10 @@ export default {
 
             // Auth
             'auth_title': 'Welcome!',
+            'auth_error_warning': 'You have {count} attempts left',
+
+            'auth_error_title': 'Incorrect pin!',
+            'auth_error_desc': 'Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat',
 
 
             // Mnemonic
@@ -50,6 +54,7 @@ export default {
             // Buttons
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',
+            'btn_import_existing_wallet': 'Import an existing wallet',
             'btn_show': 'Show',
             'btn_next': 'Next',
             'btn_copy': 'Copy to clipboard',

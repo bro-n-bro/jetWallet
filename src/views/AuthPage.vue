@@ -53,7 +53,10 @@
                             </div>
                         </div>
 
-                        <!-- <div class="warning">You have 3 attempts left</div> -->
+
+                        <div class="warning" v-if="authErrorLimit < 3">
+                            {{ $t('message.auth_error_warning', { count: authErrorLimit }) }}
+                        </div>
                     </div>
 
                     <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable">
@@ -62,24 +65,28 @@
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
                     </button>
 
-                    <button @click.prevent="deleteAll" style="padding: 10px;">Удалить всё</button>
+                    <button @click.prevent="deleteAll" style="padding: 10px; margin-top: auto;">Удалить всё</button>
                     </template>
                 </div>
             </div>
         </div>
     </section>
+
+
+    <AuthErrorModal v-if="showErrorAuthModal" />
 </template>
 
 
 <script setup>
-    import { onBeforeMount, ref, watch } from 'vue'
+    import { onBeforeMount, ref, watch, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
-    import { getData, clearData } from '@/utils/db'
+    import { getData, addData, clearData } from '@/utils/db'
     import { useGlobalState } from '@/store'
 
     // Components
     import Loader from '@/components/Loader.vue'
+    import AuthErrorModal from '@/components/modal/AuthErrorModal.vue'
 
 
     const router = useRouter(),
@@ -88,8 +95,11 @@
         pinDB = ref(''),
         hmacKey = ref(''),
         wrongPin = ref(false),
+        authErrorLimit = ref(false),
+        isBiometric = ref(false),
         isBiometricAvailable = ref(false),
-        { isAuthorized } = useGlobalState()
+        { isAuthorized } = useGlobalState(),
+        showErrorAuthModal = ref(false)
 
 
     onBeforeMount(async () => {
@@ -99,11 +109,27 @@
         // Get hmacKey from DB
         hmacKey.value = await getData('wallet', 'hmacKey')
 
+        // Auth error limit
+        authErrorLimit.value = await getData('wallet', 'authErrorLimit')
+
         // Is biometric available
         isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
 
         // Hide loader
         loading.value = false
+    })
+
+
+    onMounted(async () => {
+        // Biometric status
+        if (isBiometricAvailable.value) {
+            isBiometric.value = await getData('wallet', 'isBiometric')
+
+            if (isBiometric.value) {
+                // Check biometric access
+                checkBiometricAccess()
+            }
+        }
     })
 
 
@@ -117,9 +143,24 @@
             let pinHash = await hashDataWithKey(pinCode.value.join(''), hmacKey.value)
 
             // Check the PIN
-            pinHash === pinDB.value
-                ? auth() // Auth
-                : wrongPin.value = true // Set error
+            if (pinHash === pinDB.value) {
+                // Auth
+                auth()
+            } else {
+                // Set error
+                wrongPin.value = true
+
+                let newLimit = authErrorLimit.value - 1
+
+                // Update limit
+                authErrorLimit.value = authErrorLimit.value - 1
+
+                newLimit
+                    // Сhange auth limit
+                    ? await addData('wallet', [['authErrorLimit', newLimit]])
+                    // Show error auth modal
+                    : showErrorAuthModal.value = true
+            }
         }
     })
 

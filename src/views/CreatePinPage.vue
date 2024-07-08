@@ -235,7 +235,8 @@
             ['pin', await hashDataWithKey(pinCode.value.join(''), hmacKey)],
             ['name', walletName.value],
             ['isRegister', true],
-            ['isBiometric', biometricStatus]
+            ['isBiometric', biometricStatus],
+            ['authErrorLimit', 3]
         ])
 
         // Set authorized status
