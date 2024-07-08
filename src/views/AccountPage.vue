@@ -1,11 +1,8 @@
 <template>
     <section class="page_container account_page">
         <div class="cont">
-            <Loader v-if="loading" />
-
-            <template v-else>
-            Это страница кошелька
-            </template>
+            <!-- Main section -->
+            <Main />
         </div>
     </section>
 </template>
@@ -16,7 +13,7 @@
 
 
     // Components
-    import Loader from '@/components/Loader.vue'
+    import Main from '@/components/account/Main.vue'
 
 
     const loading = ref(true)
@@ -27,3 +24,12 @@
         loading.value = false
     })
 </script>
+
+
+<style scoped>
+    .account_page
+    {
+        background: #170232;
+    }
+
+</style>
