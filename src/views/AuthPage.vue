@@ -203,7 +203,10 @@
 
 
     // Auth
-    function auth() {
+    async function auth() {
+        // Сhange auth limit
+        await addData('wallet', [['authErrorLimit', 3]])
+
         // Set authorized status
         isAuthorized.value = true
 
