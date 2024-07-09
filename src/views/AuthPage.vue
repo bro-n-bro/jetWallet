@@ -128,10 +128,7 @@
 
         // Hide loader
         loading.value = false
-    })
 
-
-    onMounted(async () => {
         // Biometric status
         if (isBiometricAvailable.value) {
             isBiometric.value = await getData('wallet', 'isBiometric')
@@ -141,12 +138,25 @@
                 checkBiometricAccess()
             }
         }
+    })
+
+
+    onMounted(async () => {
+        // Biometric status
+        // if (isBiometricAvailable.value) {
+        //     isBiometric.value = await getData('wallet', 'isBiometric')
+
+        //     if (isBiometric.value) {
+        //         // Check biometric access
+        //         checkBiometricAccess()
+        //     }
+        // }
 
 
         // Focus on first input
-        if (!isBiometricAvailable.value && !isBiometric.value && inputRef.value) {
-            inputRef.value.focus()
-        }
+        // if (!isBiometricAvailable.value && !isBiometric.value && inputRef.value) {
+        //     inputRef.value.focus()
+        // }
     })
 
 
@@ -396,7 +406,7 @@
 
 
 
-    .input:focus
+    /* .input:focus
     {
         color: #170232;
     }
@@ -404,7 +414,7 @@
     .input.active:focus
     {
         color: currentColor;
-    }
+    } */
 
 
 
