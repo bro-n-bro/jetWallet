@@ -111,7 +111,7 @@
                         </div>
                     </div>
 
-                    <button class="biometric_btn" :class="{ disabled: !isFormValid }" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable">
+                    <button class="biometric_btn" @click.prevent="toggleBiometric" v-if="isBiometricAvailable">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
 
                         <span>{{ $t('message.btn_biometric') }}</span>
@@ -147,6 +147,7 @@
         isTouchedWalletName = ref(false),
         pinCode = ref(['', '', '', '', '', '']),
         confirmPinCode = ref(['', '', '', '', '', '']),
+        isBiometricsEnabled = ref(false),
         isBiometricAvailable = ref(false),
         { isAuthorized } = useGlobalState()
 
@@ -202,6 +203,14 @@
     })
 
 
+    // Toggle biometric
+    function toggleBiometric() {
+        !isBiometricsEnabled.value
+            ? checkBiometricAccess()
+            : isBiometricsEnabled.value = false
+    }
+
+
     // Check biometric access
     function checkBiometricAccess() {
         !Telegram.WebApp.isAccessGranted
@@ -212,17 +221,17 @@
 
     // Biometric authenticate
     function biometricAuthenticate() {
-        Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, res => {
+        Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, async res => {
             if (res) {
-                // Save data
-                save(res)
+                // Set biometric status
+                isBiometricsEnabled.value = true
             }
         })
     }
 
 
     // Save data
-    async function save(biometricStatus = false) {
+    async function save() {
         // Show loader
         loading.value = true
 
@@ -235,8 +244,8 @@
             ['pin', await hashDataWithKey(pinCode.value.join(''), hmacKey)],
             ['name', walletName.value],
             ['isRegister', true],
-            ['isBiometric', biometricStatus],
-            ['authErrorLimit', 3]
+            ['isBiometric', isBiometricsEnabled.value],
+            ['authErrorLimit', 4]
         ])
 
         // Set authorized status
@@ -313,7 +322,7 @@
         flex-wrap: wrap;
         justify-content: center;
 
-        margin: 12px auto 0;
+        margin: 24px auto 0;
 
         transition: opacity .2s linear;
     }
@@ -335,4 +344,5 @@
 
         opacity: .6;
     }
+
 </style>

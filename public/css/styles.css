@@ -446,6 +446,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
     padding: 0 7px;
 
     transition: .2s linear;
+    transition-property: border-color, opacity;
 
     color: currentColor;
     border: 1px solid #1a0242;

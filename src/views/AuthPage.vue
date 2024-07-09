@@ -9,64 +9,74 @@
                 <div class="page_data">
                     <Loader v-if="loading" />
 
-                    <template v-else>
-                    <div class="pin">
+                    <div class="pin" :class="{ show: !loading }">
                         <div class="label">
                             {{ $t('message.create_pin_create_pin_label') }}
                         </div>
 
                         <div class="row" :class="{ error: wrongPin }">
                             <div class="field">
-                                <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric"
+                                <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric" ref="inputRef"
+                                    :class="{ active: pinCode[0].length }"
                                     @input="moveFocus($event, 1)"
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" inputmode="numeric" :disabled="!pinCode[0].length"
+                                    :class="{ active: pinCode[1].length }"
                                     @input="moveFocus($event, 2)"
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" inputmode="numeric" :disabled="!pinCode[1].length"
+                                    :class="{ active: pinCode[2].length }"
                                     @input="moveFocus($event, 3)"
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" inputmode="numeric" :disabled="!pinCode[2].length"
+                                    :class="{ active: pinCode[3].length }"
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[4]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
+                                    :class="{ active: pinCode[4].length }"
                                     @input="moveFocus($event, 5)"
                                     @keydown.backspace="moveBack($event, 4)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[5]" maxlength="1" inputmode="numeric" :disabled="!pinCode[4].length"
+                                    :class="{ active: pinCode[5].length }"
                                     @input="moveFocus($event, 6)"
                                     @keydown.backspace="moveBack($event, 5)">
                             </div>
                         </div>
 
 
-                        <div class="warning" v-if="authErrorLimit < 3">
+                        <div class="warning" v-if="authErrorLimit < 4">
                             {{ $t('message.auth_error_warning', { count: authErrorLimit }) }}
                         </div>
                     </div>
 
-                    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable">
+                    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && authErrorLimit == 4" :class="{ show: !loading }">
                         <span>{{ $t('message.btn_biometric2') }}</span>
 
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
                     </button>
 
-                    <button @click.prevent="deleteAll" style="padding: 10px; margin-top: auto;">Удалить всё</button>
-                    </template>
+                    <div class="btns" :class="{ show: !loading }">
+                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="authErrorLimit < 4">
+                            <span>{{ $t('message.btn_next') }}</span>
+                        </button>
+                    </div>
+
+                    <button @click.prevent="deleteAll" style="padding: 10px; margin-top: 10px;">Удалить всё</button>
                 </div>
             </div>
         </div>
@@ -78,7 +88,7 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, watch, onMounted } from 'vue'
+    import { onBeforeMount, ref, watch, onMounted, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
     import { getData, addData, clearData } from '@/utils/db'
@@ -99,7 +109,8 @@
         isBiometric = ref(false),
         isBiometricAvailable = ref(false),
         { isAuthorized } = useGlobalState(),
-        showErrorAuthModal = ref(false)
+        showErrorAuthModal = ref(false),
+        inputRef = ref(null)
 
 
     onBeforeMount(async () => {
@@ -130,37 +141,24 @@
                 checkBiometricAccess()
             }
         }
+
+
+        // Focus on first input
+        if (!isBiometricAvailable.value && !isBiometric.value && inputRef.value) {
+            inputRef.value.focus()
+        }
     })
 
 
-    watch(pinCode.value, async () => {
-        // Reset data
-        wrongPin.value = false
+    watch(pinCode.value, () => {
+        // Reset focus
+        if (pinCode.value[5].length) {
+            document.activeElement.blur()
+        }
 
         // Compare pins
-        if (pinCode.value[5].length) {
-            // Encrypt the PIN
-            let pinHash = await hashDataWithKey(pinCode.value.join(''), hmacKey.value)
-
-            // Check the PIN
-            if (pinHash === pinDB.value) {
-                // Auth
-                auth()
-            } else {
-                // Set error
-                wrongPin.value = true
-
-                let newLimit = authErrorLimit.value - 1
-
-                // Update limit
-                authErrorLimit.value = authErrorLimit.value - 1
-
-                newLimit
-                    // Сhange auth limit
-                    ? await addData('wallet', [['authErrorLimit', newLimit]])
-                    // Show error auth modal
-                    : showErrorAuthModal.value = true
-            }
+        if (pinCode.value[5].length && authErrorLimit.value === 4) {
+            login()
         }
     })
 
@@ -202,10 +200,60 @@
     }
 
 
+    // Validate form
+    const isFormValid = computed(() => pinCode.value[5].length != '')
+
+
+    // Login
+    async function login() {
+        // Compare pins
+        let compareResult = await comparePINCode()
+
+        compareResult
+            // Auth
+            ? auth()
+            // Set auth error
+            : await setAuthError()
+    }
+
+
+    // Compare pin code
+    async function comparePINCode() {
+        // Encrypt the PIN
+        let pinHash = await hashDataWithKey(pinCode.value.join(''), hmacKey.value)
+
+        return pinHash === pinDB.value
+    }
+
+
+    // Set auth error
+    async function setAuthError() {
+        // Set error
+        wrongPin.value = true
+
+        let newLimit = authErrorLimit.value - 1
+
+        // Update limit
+        authErrorLimit.value = newLimit
+
+        newLimit
+            // Сhange auth limit
+            ? await addData('wallet', [['authErrorLimit', newLimit]])
+            // Show error auth modal
+            : showErrorAuthModal.value = true
+
+        // Clear data
+        pinCode.value = ['', '', '', '', '', '']
+
+        // Reset data
+        wrongPin.value = false
+    }
+
+
     // Auth
     async function auth() {
         // Сhange auth limit
-        await addData('wallet', [['authErrorLimit', 3]])
+        await addData('wallet', [['authErrorLimit', 4]])
 
         // Set authorized status
         isAuthorized.value = true
@@ -225,113 +273,148 @@
 
 
 <style scoped>
-.pin
-{
-    position: relative;
+    .pin
+    {
+        position: relative;
 
-    margin-top: 8px;
-}
+        margin-top: 8px;
 
+        opacity: 0;
+    }
 
-.pin .label
-{
-    font-size: 14px;
-
-    margin-bottom: 2px;
-    padding: 0 10px;
-}
+    .pin.show
+    {
+        opacity: 1;
+    }
 
 
-.pin .row
-{
-    flex-wrap: nowrap;
-}
+    .pin .label
+    {
+        font-size: 14px;
+
+        margin-bottom: 2px;
+        padding: 0 10px;
+    }
 
 
-.pin .row > *
-{
-    width: 100%;
-}
+    .pin .row
+    {
+        flex-wrap: nowrap;
+    }
 
 
-.pin .row > * + *
-{
-    margin-left: 10px;
-}
+    .pin .row > *
+    {
+        width: 100%;
+    }
 
 
-.pin .input
-{
-    font-size: 20px;
-
-    text-align: center;
-}
+    .pin .row > * + *
+    {
+        margin-left: 10px;
+    }
 
 
-.pin .error .input
-{
-    border-color: #f00;
-}
+    .pin .input
+    {
+        font-size: 20px;
 
-.pin .success .input
-{
-    border-color: #00aa63;
-}
+        text-align: center;
+    }
 
 
-.pin .warning
-{
-    font-size: 12px;
+    .pin .error .input
+    {
+        border-color: #f00;
+    }
 
-    position: absolute;
-    top: 100%;
-    left: 0;
-
-    width: 100%;
-    margin-top: 4px;
-
-    text-align: center;
-
-    color: #ff4b4b;
-}
+    .pin .success .input
+    {
+        border-color: #00aa63;
+    }
 
 
+    .pin .warning
+    {
+        font-size: 12px;
 
-.biometric_btn
-{
-    font-size: 18px;
-    font-weight: 500;
+        position: absolute;
+        top: 100%;
+        left: 0;
 
-    display: block;
+        width: 100%;
+        margin-top: 4px;
 
-    margin: auto auto 25%;
+        text-align: center;
 
-    transition: opacity .2s linear;
-}
-
-.biometric_btn.top
-{
-    margin-top: 40px;
-}
-
-
-.biometric_btn .icon
-{
-    display: block;
-
-    width: 44px;
-    height: 44px;
-    margin: 0 auto;
-}
-
-
-.biometric_btn.disabled
-{
-    pointer-events: none;
-
-    opacity: .6;
-}
+        color: #ff4b4b;
+    }
 
 
 
+    .biometric_btn
+    {
+        font-size: 18px;
+        font-weight: 500;
+
+        display: block;
+
+        margin: auto auto 25%;
+
+        transition: opacity .2s linear;
+
+        opacity: 0;
+    }
+
+    .biometric_btn.show
+    {
+        opacity: 1;
+    }
+
+    .biometric_btn.top
+    {
+        margin-top: 40px;
+    }
+
+
+    .biometric_btn .icon
+    {
+        display: block;
+
+        width: 44px;
+        height: 44px;
+        margin: 0 auto;
+    }
+
+
+    .biometric_btn.disabled
+    {
+        pointer-events: none;
+
+        opacity: .6;
+    }
+
+
+
+    .input:focus
+    {
+        color: #170232;
+    }
+
+    .input.active:focus
+    {
+        color: currentColor;
+    }
+
+
+
+    .btns
+    {
+        opacity: 0;
+    }
+
+    .btns.show
+    {
+        opacity: 1;
+    }
 </style>
