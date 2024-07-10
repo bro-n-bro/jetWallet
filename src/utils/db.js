@@ -21,7 +21,20 @@ export async function getData(storeName, key) {
     let db = await dbPromise
 
     return db.get(storeName, key)
-  }
+}
+
+
+export async function getMultipleData(storeName, keys) {
+    const db = await dbPromise,
+        results = await Promise.all(keys.map(key => db.get(storeName, key)))
+
+    // Create an object that maps keys and values
+    let keyValueMap = {}
+
+    keys.forEach((key, index) => keyValueMap[key] = results[index])
+
+    return keyValueMap
+}
 
 
 export async function addData(storeName, data) {

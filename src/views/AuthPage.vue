@@ -59,22 +59,31 @@
                         </div>
 
 
-                        <div class="warning" v-if="authErrorLimit < 4">
-                            {{ $t('message.auth_error_warning', { count: authErrorLimit }) }}
+                        <div class="warning" v-if="userAuthErrorLimit < authErrorLimit">
+                            {{ $t('message.auth_error_warning', { count: userAuthErrorLimit }) }}
                         </div>
                     </div>
 
-                    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && authErrorLimit == 4" :class="{ show: !loading }">
+
+                    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == authErrorLimit" :class="{ show: !loading }">
                         <span>{{ $t('message.btn_biometric2') }}</span>
 
-                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
+                        <svg class="icon" v-if="biometrictype === 'face'">
+                            <use xlink:href="@/assets/sprite.svg#ic_biometric_face"></use>
+                        </svg>
+
+                        <svg class="icon" v-else>
+                            <use xlink:href="@/assets/sprite.svg#ic_biometric_finger"></use>
+                        </svg>
                     </button>
 
+
                     <div class="btns" :class="{ show: !loading }">
-                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="authErrorLimit < 4">
-                            <span>{{ $t('message.btn_next') }}</span>
+                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < authErrorLimit">
+                            <span>{{ $t('message.btn_login') }}</span>
                         </button>
                     </div>
+
 
                     <button @click.prevent="deleteAll" style="padding: 10px; margin-top: 10px;">Удалить всё</button>
                 </div>
@@ -88,10 +97,10 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, watch, onMounted, computed } from 'vue'
+    import { onBeforeMount, ref, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
-    import { getData, addData, clearData } from '@/utils/db'
+    import { getMultipleData, addData, clearData } from '@/utils/db'
     import { useGlobalState } from '@/store'
 
     // Components
@@ -105,58 +114,46 @@
         pinDB = ref(''),
         hmacKey = ref(''),
         wrongPin = ref(false),
-        authErrorLimit = ref(false),
+        userAuthErrorLimit = ref(false),
         isBiometric = ref(false),
         isBiometricAvailable = ref(false),
-        { isAuthorized } = useGlobalState(),
+        biometrictype = ref('finger'),
+        { isAuthorized, authErrorLimit } = useGlobalState(),
         showErrorAuthModal = ref(false),
         inputRef = ref(null)
 
 
     onBeforeMount(async () => {
-        // Get pin from DB
-        pinDB.value = await getData('wallet', 'pin')
+        // Get data from DB
+        let result = await getMultipleData('wallet', ['pin', 'hmacKey', 'authErrorLimit', 'isBiometric'])
 
-        // Get hmacKey from DB
-        hmacKey.value = await getData('wallet', 'hmacKey')
+        // Set pin from DB
+        pinDB.value = result.pin
 
-        // Auth error limit
-        authErrorLimit.value = await getData('wallet', 'authErrorLimit')
+        // Set hmacKey from DB
+        hmacKey.value = result.hmacKey
+
+        // Set user auth error limit
+        userAuthErrorLimit.value = result.authErrorLimit
+
+        // Set biometric status from DB
+        isBiometric.value = result.isBiometric
 
         // Is biometric available
         isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
 
+        // Biometric type
+        if (Telegram.WebApp.BiometricManager.biometricType != 'unknown') {
+            biometrictype.value = Telegram.WebApp.BiometricManager.biometricType
+        }
+
         // Hide loader
         loading.value = false
 
-        // Biometric status
-        if (isBiometricAvailable.value) {
-            isBiometric.value = await getData('wallet', 'isBiometric')
-
-            if (isBiometric.value) {
-                // Check biometric access
-                checkBiometricAccess()
-            }
+        if (isBiometricAvailable.value && isBiometric.value) {
+            // Check biometric access
+            checkBiometricAccess()
         }
-    })
-
-
-    onMounted(async () => {
-        // Biometric status
-        // if (isBiometricAvailable.value) {
-        //     isBiometric.value = await getData('wallet', 'isBiometric')
-
-        //     if (isBiometric.value) {
-        //         // Check biometric access
-        //         checkBiometricAccess()
-        //     }
-        // }
-
-
-        // Focus on first input
-        // if (!isBiometricAvailable.value && !isBiometric.value && inputRef.value) {
-        //     inputRef.value.focus()
-        // }
     })
 
 
@@ -167,7 +164,7 @@
         }
 
         // Compare pins
-        if (pinCode.value[5].length && authErrorLimit.value === 4) {
+        if (pinCode.value[5].length && userAuthErrorLimit.value === authErrorLimit) {
             login()
         }
     })
@@ -241,14 +238,14 @@
         // Set error
         wrongPin.value = true
 
-        let newLimit = authErrorLimit.value - 1
+        let newLimit = userAuthErrorLimit.value - 1
 
         // Update limit
-        authErrorLimit.value = newLimit
+        userAuthErrorLimit.value = newLimit
 
         newLimit
             // Сhange auth limit
-            ? await addData('wallet', [['authErrorLimit', newLimit]])
+            ? await addData('wallet', [['userAuthErrorLimit', newLimit]])
             // Show error auth modal
             : showErrorAuthModal.value = true
 
@@ -263,7 +260,7 @@
     // Auth
     async function auth() {
         // Сhange auth limit
-        await addData('wallet', [['authErrorLimit', 4]])
+        await addData('wallet', [['userAuthErrorLimit', authErrorLimit]])
 
         // Set authorized status
         isAuthorized.value = true
@@ -421,6 +418,7 @@
     .btns
     {
         opacity: 0;
+        margin-top: 42px;
     }
 
     .btns.show

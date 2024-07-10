@@ -18,8 +18,9 @@
 
             <div class="val">9,999,999.99</div>
 
-            <div class="address">
+            <div class="address" @click.prevent="copy('0x09fe...kjacsja')">
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy2"></use></svg>
+
                 <span>0x09fe...kjacsja</span>
             </div>
         </div>
@@ -56,7 +57,10 @@
 
 
 <script setup>
+    import { useClipboard } from '@vueuse/core'
 
+
+    const { copy } = useClipboard()
 </script>
 
 
@@ -207,7 +211,7 @@
     align-content: center;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-around;
 
     width: 100%;
     margin-top: 20px;

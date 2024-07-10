@@ -111,10 +111,24 @@
                         </div>
                     </div>
 
-                    <button class="biometric_btn" @click.prevent="toggleBiometric" v-if="isBiometricAvailable">
-                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_biometric"></use></svg>
+                    <button class="biometric_btn" @click.prevent="toggleBiometric" v-if="isBiometricAvailable" :class="{ enabled: isBiometricEnabled }">
+                        <svg class="icon" v-if="biometrictype === 'face'">
+                            <use xlink:href="@/assets/sprite.svg#ic_biometric_face"></use>
+                        </svg>
+
+                        <svg class="icon" v-else>
+                            <use xlink:href="@/assets/sprite.svg#ic_biometric_finger"></use>
+                        </svg>
 
                         <span>{{ $t('message.btn_biometric') }}</span>
+
+                        <div class="toggle_wrap">
+                            <div class="toggle">
+                                <div class="ball_wrap">
+                                    <div class="ball"><svg><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg></div>
+                                </div>
+                            </div>
+                        </div>
                     </button>
 
                     <div class="btns">
@@ -147,14 +161,20 @@
         isTouchedWalletName = ref(false),
         pinCode = ref(['', '', '', '', '', '']),
         confirmPinCode = ref(['', '', '', '', '', '']),
-        isBiometricsEnabled = ref(false),
+        isBiometricEnabled = ref(false),
         isBiometricAvailable = ref(false),
-        { isAuthorized } = useGlobalState()
+        biometrictype = ref('finger'),
+        { isAuthorized, authErrorLimit } = useGlobalState()
 
 
     onBeforeMount(() => {
         // Is biometric available
         isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
+
+        // Biometric type
+        if (Telegram.WebApp.BiometricManager.biometricType != 'unknown') {
+            biometrictype.value = Telegram.WebApp.BiometricManager.biometricType
+        }
 
         // Hide loader
         loading.value = false
@@ -205,9 +225,9 @@
 
     // Toggle biometric
     function toggleBiometric() {
-        !isBiometricsEnabled.value
+        !isBiometricEnabled.value
             ? checkBiometricAccess()
-            : isBiometricsEnabled.value = false
+            : isBiometricEnabled.value = false
     }
 
 
@@ -224,7 +244,7 @@
         Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, async res => {
             if (res) {
                 // Set biometric status
-                isBiometricsEnabled.value = true
+                isBiometricEnabled.value = true
             }
         })
     }
@@ -244,8 +264,8 @@
             ['pin', await hashDataWithKey(pinCode.value.join(''), hmacKey)],
             ['name', walletName.value],
             ['isRegister', true],
-            ['isBiometric', isBiometricsEnabled.value],
-            ['authErrorLimit', 4]
+            ['isBiometric', isBiometricEnabled.value],
+            ['authErrorLimit', authErrorLimit]
         ])
 
         // Set authorized status
@@ -313,7 +333,7 @@
 
     .biometric_btn
     {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 500;
 
         display: flex;
@@ -322,7 +342,7 @@
         flex-wrap: wrap;
         justify-content: center;
 
-        margin: 24px auto 0;
+        margin: 30px auto 0;
 
         transition: opacity .2s linear;
     }
@@ -332,17 +352,99 @@
     {
         display: block;
 
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         margin-right: 12px;
     }
 
 
-    .biometric_btn.disabled
+    .biometric_btn .toggle_wrap
     {
-        pointer-events: none;
+        margin-left: 10px;
+        padding: 1px;
 
-        opacity: .6;
+        border-radius: 19px;
+        background: linear-gradient(to bottom,  #45097d 0%,#14012f 100%);
     }
 
+
+    .biometric_btn .toggle
+    {
+        position: relative;
+
+        width: 46px;
+        height: 22px;
+
+        border-radius: 19px;
+        background: #170232;
+    }
+
+
+    .biometric_btn .ball_wrap
+    {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 2px;
+
+        width: 18px;
+        height: 18px;
+        margin: auto 0;
+        padding: 1px;
+
+        transition: left .2s linear;
+
+        border-radius: 50%;
+        background: linear-gradient(to bottom,  #8632e3 0%,#330c67 100%);
+    }
+
+
+    .biometric_btn .ball
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 16px;
+        height: 16px;
+
+        color: #fff;
+        border-radius: 50%;
+        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+    }
+
+
+    .biometric_btn .ball svg
+    {
+        display: block;
+
+        width: 10px;
+        height: 10px;
+
+        transition: opacity .2s linear;
+
+        opacity: 0;
+    }
+
+
+    .biometric_btn.enabled .ball_wrap
+    {
+        left: 26px;
+
+        background: linear-gradient(to bottom,  #68def9 0%,#02294c 100%);
+    }
+
+
+    .biometric_btn.enabled .ball
+    {
+        background: linear-gradient(to bottom,  #56a8e7 0%,#064894 100%);
+    }
+
+
+    .biometric_btn.enabled .ball svg
+    {
+        opacity: 1;
+    }
 </style>

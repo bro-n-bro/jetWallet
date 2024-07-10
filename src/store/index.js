@@ -5,8 +5,10 @@ import { createGlobalState } from '@vueuse/core'
 export const useGlobalState = createGlobalState(
     () => {
         // State
-        const isAuthorized = ref(false)
+        const isAuthorized = ref(false),
+            authErrorLimit = 4
 
-        return { isAuthorized }
+
+        return { isAuthorized, authErrorLimit }
     }
 )

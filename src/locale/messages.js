@@ -61,7 +61,8 @@ export default {
             'btn_copied': 'Copied!',
             'btn_join': 'Join',
             'btn_biometric': 'Turn on biometric security',
-            'btn_biometric2': 'Use biometric'
+            'btn_biometric2': 'Use biometric',
+            'btn_login': 'Log in',
         }
     }
 }
