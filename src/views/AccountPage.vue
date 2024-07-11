@@ -1,5 +1,8 @@
 <template>
     <section class="page_container account_page">
+        <Loader v-if="loading" />
+
+        <template v-else>
         <!-- Main section -->
         <Main />
 
@@ -68,22 +71,29 @@
                 </div>
             </div>
         </div>
+        </template>
     </section>
 </template>
 
 
 <script setup>
     import { ref, onBeforeMount } from 'vue'
+    import { useGlobalState } from '@/store'
 
 
     // Components
+    import Loader from '@/components/Loader.vue'
     import Main from '@/components/account/Main.vue'
 
 
-    const loading = ref(true)
+    const loading = ref(true),
+        { initApp } = useGlobalState()
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
+        // Init app
+        await initApp()
+
         // Hide loader
         loading.value = false
     })

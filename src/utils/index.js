@@ -1,4 +1,6 @@
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
+import { GasPrice, SigningStargateClient } from '@cosmjs/stargate'
+import { getData } from '@/utils/db'
 
 
 // Generate wallet
@@ -60,4 +62,19 @@ export const generateHMACKey = async () => {
     let exportedKey = await crypto.subtle.exportKey('jwk', key)
 
     return exportedKey
-  }
+}
+
+
+// Create singer
+export const createSinger = async ({ rpc_api, prefix }) => {
+    // Wallet
+    let wallet = await importWalletFromMnemonic(await getData('wallet', 'secret'), { prefix })
+
+    // Current address
+    let address = (await wallet.getAccounts())[0].address
+
+    // Stargate client
+    let signingClient = await SigningStargateClient.connectWithSigner(rpc_api, wallet)
+
+    return { address, signingClient }
+}

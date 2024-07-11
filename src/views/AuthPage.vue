@@ -260,7 +260,7 @@
     // Auth
     async function auth() {
         // Сhange auth limit
-        await addData('wallet', [['userAuthErrorLimit', authErrorLimit]])
+        await addData('wallet', [['authErrorLimit', authErrorLimit]])
 
         // Set authorized status
         isAuthorized.value = true

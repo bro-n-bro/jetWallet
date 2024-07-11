@@ -1,7 +1,7 @@
 <template>
     <section class="main_section">
         <!-- Network selection -->
-        <NetworkSelection />
+        <NetworkChooser />
 
 
         <!-- Scaner -->
@@ -58,6 +58,9 @@
 
 <script setup>
     import { useClipboard } from '@vueuse/core'
+
+    // Components
+    // import NetworkChooser from '@/components/account/NetworkChooser.vue'
 
 
     const { copy } = useClipboard()
@@ -211,7 +214,7 @@
     align-content: center;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
 
     width: 100%;
     margin-top: 20px;
