@@ -1,5 +1,5 @@
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
-import { GasPrice, SigningStargateClient } from '@cosmjs/stargate'
+import { SigningStargateClient } from '@cosmjs/stargate'
 import { getData } from '@/utils/db'
 
 
@@ -78,3 +78,33 @@ export const createSinger = async ({ rpc_api, prefix }) => {
 
     return { address, signingClient }
 }
+
+
+// Denom traces
+export const denomTraces = async (string, currentNetwork) => {
+    let result = {
+            path: null,
+            base_denom: string
+        },
+        hash = string.split('/')
+
+    if (hash[0] == 'ibc') {
+        try {
+            // Request
+            await fetch(`${currentNetwork.lcd_api}/ibc/apps/transfer/v1/denom_traces/${hash[1]}`)
+                .then(response => response.json())
+                .then(response => result = response.denom_trace)
+        } catch (error) {
+            console.error(error)
+        }
+    } else if (hash[0] == 'factory') {
+        result.ingnoreTraces = true
+        result.base_denom = hash[hash.length - 1]
+    }
+
+    return result
+}
+
+
+// Formating token amount
+export const formatTokenAmount = (amount, exponent) => amount / Math.pow(10, exponent)

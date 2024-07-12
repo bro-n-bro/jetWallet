@@ -51,6 +51,10 @@ export default {
             'import_wallet_exp': 'Enter your recovery phrase here to restore your wallet. Or click on any blank and paste the entire phrase.',
 
 
+            // Account page
+            'available_balance_title': 'Available Balance',
+
+
             // Buttons
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',

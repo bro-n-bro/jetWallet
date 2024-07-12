@@ -85,7 +85,7 @@
                     </div>
 
 
-                    <button @click.prevent="deleteAll" style="padding: 10px; margin-top: 10px;">Удалить всё</button>
+                    <button @click.prevent="deleteAll" style="margin: 20px auto 0; width: 70px;">Удалить всё</button>
                 </div>
             </div>
         </div>

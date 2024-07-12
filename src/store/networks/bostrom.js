@@ -5,7 +5,7 @@ const network = {
 
     denom: 'boot',
     token_name: 'BOOT',
-    chainId: 'bostrom',
+    chain_id: 'bostrom',
     prefix: 'bostrom',
     alias: 'bostrom',
     exponent: 0,

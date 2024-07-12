@@ -18,7 +18,9 @@
             </form>
 
             <div class="tokens">
-                <div class="count"><b>3</b> Available Balance</div>
+                <div class="count">
+                    <b>{{ balances.length }}</b> {{ $t('message.available_balance_title') }}
+                </div>
 
                 <div class="list">
                     <div class="token_wrap">
@@ -87,7 +89,7 @@
 
 
     const loading = ref(true),
-        { initApp } = useGlobalState()
+        { initApp, balances } = useGlobalState()
 
 
     onBeforeMount(async () => {

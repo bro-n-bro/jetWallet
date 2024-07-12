@@ -5,7 +5,7 @@ const network = {
 
     denom: 'uatom',
     token_name: 'ATOM',
-    chainId: 'cosmoshub-4',
+    chain_id: 'cosmoshub-4',
     prefix: 'cosmos',
     alias: 'cosmoshub',
     exponent: 6,
