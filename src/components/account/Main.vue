@@ -5,24 +5,22 @@
 
 
         <!-- Scaner -->
-        <button class="qr_code_btn">
-            <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_scaner"></use></svg>
-        </button>
+        <QRCode />
 
 
         <!-- Balance -->
         <div class="balance">
-            <button class="currency">USD</button>
+            <!-- Currency -->
+            <CurrentCurrency />
 
-            <div class="label">Current balance</div>
+            <div class="label">
+                {{ $t('message.current_balance_title') }}
+            </div>
 
             <div class="val">9,999,999.99</div>
 
-            <div class="address" @click.prevent="copy('0x09fe...kjacsja')">
-                <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy2"></use></svg>
-
-                <span>0x09fe...kjacsja</span>
-            </div>
+            <!-- Address -->
+            <CurrentAddress />
         </div>
 
 
@@ -33,7 +31,7 @@
                     <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
                 </div>
 
-                <div>Send</div>
+                <div>{{ $t('message.btn_send') }}</div>
             </router-link>
 
             <router-link to="/account" class="btn">
@@ -41,7 +39,7 @@
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                 </div>
 
-                <div>Receive</div>
+                <div>{{ $t('message.btn_receive') }}</div>
             </router-link>
 
             <router-link to="/account" class="btn">
@@ -49,7 +47,7 @@
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                 </div>
 
-                <div>Stake</div>
+                <div>{{ $t('message.btn_stake') }}</div>
             </router-link>
         </div>
     </section>
@@ -57,13 +55,11 @@
 
 
 <script setup>
-    import { useClipboard } from '@vueuse/core'
-
     // Components
     // import NetworkChooser from '@/components/account/NetworkChooser.vue'
-
-
-    const { copy } = useClipboard()
+    import QRCode from '@/components/account/QRCode.vue'
+    import CurrentCurrency from '@/components/account/main/Currency.vue'
+    import CurrentAddress from '@/components/account/main/Currency.vue'
 </script>
 
 
@@ -111,32 +107,6 @@
 
 
 
-.qr_code_btn
-{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    width: 28px;
-    height: 28px;
-    margin-left: auto;
-
-    background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
-}
-
-
-.qr_code_btn .icon
-{
-    display: block;
-
-    width: 14px;
-    height: 14px;
-}
-
-
-
 .balance
 {
     display: flex;
@@ -152,58 +122,12 @@
 }
 
 
-.balance .currency
-{
-    font-size: 12px;
-
-    position: absolute;
-    top: 2px;
-    right: 0;
-
-    padding: 0 4px;
-
-    white-space: nowrap;
-
-    border-radius: 5px;
-    background: #5b3895;
-}
-
-
 .balance .val
 {
     font-size: 38px;
     font-weight: 700;
 
     width: 100%;
-}
-
-
-.balance .address
-{
-    font-size: 12px;
-
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    padding: 2px;
-
-    cursor: pointer;
-
-    border-radius: 5px;
-    background: #5b3895;
-}
-
-
-.balance .address .icon
-{
-    display: block;
-
-    width: 14px;
-    height: 14px;
-    margin-right: 4px;
 }
 
 
@@ -256,6 +180,7 @@
     width: 22px;
     height: 22px;
 }
+
 
 
 

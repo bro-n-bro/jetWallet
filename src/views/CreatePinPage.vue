@@ -265,7 +265,8 @@
             ['name', walletName.value],
             ['isRegister', true],
             ['isBiometric', isBiometricEnabled.value],
-            ['authErrorLimit', authErrorLimit]
+            ['authErrorLimit', authErrorLimit],
+            ['currentCurrency', 'USD']
         ])
 
         // Set authorized status

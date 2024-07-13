@@ -35,6 +35,7 @@ export default {
 
             // Auth
             'auth_title': 'Welcome!',
+            'auth_enter_pin_label': 'Enter pin:',
             'auth_error_warning': 'You have {count} attempts left',
 
             'auth_error_title': 'Incorrect pin!',
@@ -52,6 +53,7 @@ export default {
 
 
             // Account page
+            'current_balance_title': 'Current balance',
             'available_balance_title': 'Available Balance',
 
 
@@ -67,6 +69,9 @@ export default {
             'btn_biometric': 'Turn on biometric security',
             'btn_biometric2': 'Use biometric',
             'btn_login': 'Log in',
+            'btn_send': 'Send',
+            'btn_receive': 'Receive',
+            'btn_stake': 'Stake',
         }
     }
 }

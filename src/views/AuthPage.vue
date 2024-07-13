@@ -11,7 +11,7 @@
 
                     <div class="pin" :class="{ show: !loading }">
                         <div class="label">
-                            {{ $t('message.create_pin_create_pin_label') }}
+                            {{ $t('message.auth_enter_pin_label') }}
                         </div>
 
                         <div class="row" :class="{ error: wrongPin }">

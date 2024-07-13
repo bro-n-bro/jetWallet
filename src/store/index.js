@@ -1,7 +1,8 @@
 import { ref } from 'vue'
 import { createGlobalState } from '@vueuse/core'
 import { createSinger, denomTraces, formatTokenAmount } from '@/utils'
-import { chains, assets, ibc } from 'chain-registry'
+import { chains, assets } from 'chain-registry'
+import { getData } from '@/utils/db'
 
 
 // Networks
@@ -19,6 +20,8 @@ export const useGlobalState = createGlobalState(
             balances = ref([]),
             stargateClient = ref({}),
             currentAddress = ref(''),
+            currentCurrency = ref(''),
+            currentCurrencySymbol = ref(''),
             networks = {
                 cosmoshub,
                 bostrom
@@ -48,10 +51,31 @@ export const useGlobalState = createGlobalState(
             ({ address: currentAddress.value, signingClient: stargateClient.value } = await createSinger(currentNetwork.value))
 
             // Get currencies price
-            await getCurrenciesPrice()
+            getCurrenciesPrice()
 
             // Get balances
             await getBalances()
+
+            // Get current currency from DB
+            currentCurrency.value = await getData('wallet', 'currentCurrency')
+
+            // Set current currency symbol
+            switch (currentCurrency.value) {
+                case 'BTC':
+                    // Set current currency symbol
+                    currentCurrencySymbol.value = 'BTC'
+                    break
+
+                case 'ETH':
+                    // Set current currency symbol
+                    currentCurrencySymbol.value = 'ETH'
+                    break
+
+                default:
+                    // Set current currency symbol
+                    currentCurrencySymbol.value = '$'
+                    break
+            }
         }
 
 
@@ -112,24 +136,24 @@ export const useGlobalState = createGlobalState(
                 // Get chain info
                 balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
 
-                // Get price
-                balance.price = getPriceByDenom(balance.token_info.symbol)
+                // // Get price
+                // balance.price = getPriceByDenom(balance.token_info.symbol)
 
-                // Set cost
-                formatableToken
-                    ? balance.cost = balance.amount * balance.price
-                    : balance.cost = formatTokenAmount(balance.amount, balance.exponent) * balance.price
+                // // Set cost
+                // formatableToken
+                //     ? balance.cost = balance.amount * balance.price
+                //     : balance.cost = formatTokenAmount(balance.amount, balance.exponent) * balance.price
             }
 
             // Clear balances
             balances.value = balances.value.filter(obj => obj.hasOwnProperty('exponent'))
 
-            // Sort by "cost"
-            balances.value.sort((a, b) => {
-                if (a.cost > b.cost) { return -1 }
-                if (a.cost < b.cost) { return 1 }
-                return 0
-            })
+            // // Sort by "cost"
+            // balances.value.sort((a, b) => {
+            //     if (a.cost > b.cost) { return -1 }
+            //     if (a.cost < b.cost) { return 1 }
+            //     return 0
+            // })
         }
 
 
@@ -149,6 +173,25 @@ export const useGlobalState = createGlobalState(
         }
 
 
+        // Calc token cost in current cucrrency
+        function calcTokenCost(denom, amount) {
+            let price = getPriceByDenom(denom),
+                cost = (price * amount)
+
+            // Rounding
+            switch (currentCurrency.value) {
+                case 'BTC':
+                    return cost > 0.0000000001 ? cost.toFixed(10) : '<0.0000000001'
+
+                case 'ETH':
+                    return cost > 0.0000001 ? cost.toFixed(7) : '<0.0000001'
+
+                default:
+                    return cost > 0.01 ? cost.toFixed(2) : '<0.01'
+            }
+        }
+
+
         return {
             isAuthorized,
             currentNetwork,
@@ -157,13 +200,16 @@ export const useGlobalState = createGlobalState(
             balances,
             stargateClient,
             currentAddress,
+            currentCurrency,
+            currentCurrencySymbol,
             networks,
             formatableTokens,
 
             initApp,
             getCurrenciesPrice,
             getBalances,
-            getPriceByDenom
+            getPriceByDenom,
+            calcTokenCost
         }
     }
 )
