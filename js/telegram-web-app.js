@@ -286,7 +286,7 @@
   var WebApp = {};
   var webAppInitData = '', webAppInitDataUnsafe = {};
   var themeParams = {}, colorScheme = 'light';
-  var webAppVersion = '7.2';
+  var webAppVersion = '7.7';
   var webAppPlatform = 'unknown';
 
   if (initParams.tgWebAppData && initParams.tgWebAppData.length) {
@@ -462,6 +462,16 @@
     }
     isClosingConfirmationEnabled = !!need_confirmation;
     WebView.postEvent('web_app_setup_closing_behavior', false, {need_confirmation: isClosingConfirmationEnabled});
+  }
+
+  var isVerticalSwipesEnabled = true;
+  function toggleVerticalSwipes(enable_swipes) {
+    if (!versionAtLeast('7.7')) {
+      console.warn('[Telegram.WebApp] Changing swipes behavior is not supported in version ' + webAppVersion);
+      return;
+    }
+    isVerticalSwipesEnabled = !!enable_swipes;
+    WebView.postEvent('web_app_setup_swipe_behavior', false, {allow_vertical_swipe: isVerticalSwipesEnabled});
   }
 
   var headerColorKey = 'bg_color', headerColor = null;
@@ -1422,6 +1432,7 @@
   }
   function onScanQrPopupClosed(eventType, eventData) {
     webAppScanQrPopupOpened = false;
+    receiveWebViewEvent('scanQrPopupClosed');
   }
 
   function onClipboardTextReceived(eventType, eventData) {
@@ -1589,6 +1600,11 @@
     get: function(){ return isClosingConfirmationEnabled; },
     enumerable: true
   });
+  Object.defineProperty(WebApp, 'isVerticalSwipesEnabled', {
+    set: function(val){ toggleVerticalSwipes(val); },
+    get: function(){ return isVerticalSwipesEnabled; },
+    enumerable: true
+  });
   Object.defineProperty(WebApp, 'headerColor', {
     set: function(val){ setHeaderColor(val); },
     get: function(){ return getHeaderColor(); },
@@ -1634,6 +1650,12 @@
   };
   WebApp.disableClosingConfirmation = function() {
     WebApp.isClosingConfirmationEnabled = false;
+  };
+  WebApp.enableVerticalSwipes = function() {
+    WebApp.isVerticalSwipesEnabled = true;
+  };
+  WebApp.disableVerticalSwipes = function() {
+    WebApp.isVerticalSwipesEnabled = false;
   };
   WebApp.isVersionAtLeast = function(ver) {
     return versionAtLeast(ver);
@@ -1700,14 +1722,14 @@
     var url = a.href;
     options = options || {};
     if (versionAtLeast('6.1')) {
-      var params = {url: url};
+      var req_params = {url: url};
       if (versionAtLeast('6.4') && options.try_instant_view) {
-        params.try_instant_view = true;
+        req_params.try_instant_view = true;
       }
       if (versionAtLeast('7.6') && options.try_browser) {
-        params.try_browser = options.try_browser;
+        req_params.try_browser = options.try_browser;
       }
-      WebView.postEvent('web_app_open_link', false, params);
+      WebView.postEvent('web_app_open_link', false, req_params);
     } else {
       window.open(url, '_blank');
     }
@@ -1958,8 +1980,13 @@
   WebApp.expand = function () {
     WebView.postEvent('web_app_expand');
   };
-  WebApp.close = function () {
-    WebView.postEvent('web_app_close');
+  WebApp.close = function (options) {
+    options = options || {};
+    var req_params = {};
+    if (versionAtLeast('7.6') && options.return_back) {
+      req_params.return_back = true;
+    }
+    WebView.postEvent('web_app_close', false, req_params);
   };
 
   window.Telegram.WebApp = WebApp;
