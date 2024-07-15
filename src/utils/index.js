@@ -1,6 +1,6 @@
+import { useGlobalStore } from '@/store'
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
 import { SigningStargateClient } from '@cosmjs/stargate'
-import { getData } from '@/utils/db'
 
 
 // Generate wallet
@@ -66,23 +66,26 @@ export const generateHMACKey = async () => {
 
 
 // Create singer
-export const createSinger = async ({ rpc_api, prefix }) => {
+export const createSinger = async () => {
+    let store = useGlobalStore()
+
     // Wallet
-    let wallet = await importWalletFromMnemonic(await getData('wallet', 'secret'), { prefix })
+    let wallet = await importWalletFromMnemonic(store.secret, store.networks[store.currentNetwork].prefix)
 
     // Current address
     let address = (await wallet.getAccounts())[0].address
 
     // Stargate client
-    let signingClient = await SigningStargateClient.connectWithSigner(rpc_api, wallet)
+    let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
 
     return { address, signingClient }
 }
 
 
 // Denom traces
-export const denomTraces = async (string, currentNetwork) => {
-    let result = {
+export const denomTraces = async (string) => {
+    let store = useGlobalStore(),
+        result = {
             path: null,
             base_denom: string
         },
@@ -91,7 +94,7 @@ export const denomTraces = async (string, currentNetwork) => {
     if (hash[0] == 'ibc') {
         try {
             // Request
-            await fetch(`${currentNetwork.lcd_api}/ibc/apps/transfer/v1/denom_traces/${hash[1]}`)
+            await fetch(`${store.networks[store.currentNetwork].lcd_api}/ibc/apps/transfer/v1/denom_traces/${hash[1]}`)
                 .then(response => response.json())
                 .then(response => result = response.denom_trace)
         } catch (error) {
@@ -108,3 +111,71 @@ export const denomTraces = async (string, currentNetwork) => {
 
 // Formating token amount
 export const formatTokenAmount = (amount, exponent) => amount / Math.pow(10, exponent)
+
+
+// Get price by denom
+export const getPriceByDenom = denom => {
+    let store = useGlobalStore(),
+        price = store.prices.find(el => el.symbol === denom)?.price || 0,
+        formatableToken = store.formatableTokens.find(el => el.token_name == denom),
+        formatPrice = formatableToken ? price * Math.pow(10, formatableToken.exponent) : price
+
+    return formatPrice
+}
+
+
+// Calc token cost in current cucrrency
+export const calcTokenCost = (denom, amount, exponent) => {
+    let formatAmount = formatTokenAmount(amount, exponent)
+
+    return currencyConversion(formatAmount, denom)
+}
+
+
+// Format token cost
+export const formatTokenCost = cost => {
+    let store = useGlobalStore()
+
+    // Rounding
+    switch (store.currentCurrency) {
+        case 'BTC':
+            return cost > 0.0000000001 ? cost.toFixed(10) : '<0.0000000001'
+
+        case 'ETH':
+            return cost > 0.0000001 ? cost.toFixed(7) : '<0.0000001'
+
+        default:
+            return cost > 0.01 ? cost.toFixed(2) : '<0.01'
+    }
+}
+
+
+// Currency conversion
+export const currencyConversion = (amount, denom) => {
+    let store = useGlobalStore(),
+        currentCurrencyPrice = store.prices.find(el => el.symbol == formatTokenName(store.currentCurrency)).price
+
+    return amount * (getPriceByDenom(denom) / currentCurrencyPrice)
+}
+
+
+// Formating token name
+export const formatTokenName = tokenName => {
+    let store = useGlobalStore(),
+        formatableToken = store.formatableTokens.find(el => el.token_name == tokenName),
+        formatTokenName = formatableToken ? formatableToken.format_token_name : tokenName
+
+    return formatTokenName
+}
+
+
+// Calc balances cost in current cucrrency
+export const calcBalancesCost = () => {
+    let store = useGlobalStore(),
+        totalPrice = 0
+
+    // Calc total cost
+    store.balances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+
+    return formatTokenCost(totalPrice)
+}

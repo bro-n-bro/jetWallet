@@ -14,6 +14,7 @@
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                     </router-link>
 
+
                     <div class="tabs_wrap">
                         <div class="tabs" :class="{ disabled: !agreed }">
                             <button class="btn" @click.prevent="count = 12" :class="{ active: count === 12 }">
@@ -101,16 +102,17 @@
 <script setup>
     import { onBeforeMount, ref, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
+    import { useGlobalStore } from '@/store'
     import { useClipboard } from '@vueuse/core'
     import { generateWallet } from '@/utils'
-    import { addData } from '@/utils/db'
 
 
     // Components
     import Loader from '@/components/Loader.vue'
 
 
-    const router = useRouter(),
+    const store = useGlobalStore(),
+        router = useRouter(),
         loading = ref(true),
         count = ref(12),
         wallet = ref(null),
@@ -141,10 +143,7 @@
         loading.value = true
 
         // Save in DB
-        await addData('wallet', [
-            ['secret', wallet.value.secret.data],
-            ['seed', wallet.value.seed]
-        ])
+        await store.setSecret(wallet.value.secret.data)
 
         // Go to confirm
         router.push('/confirm_wallet')

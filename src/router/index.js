@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getData } from '@/utils/db'
-import { useGlobalState } from '@/store'
+import { DBgetData } from '@/utils/db'
+import { useGlobalStore } from '@/store'
 
 import defaultLayout from '@/layouts/Default.vue'
 
@@ -88,8 +88,8 @@ const router = createRouter({
 
 
 router.beforeResolve(async (to, from, next) => {
-	let isRegister = await getData('wallet', 'isRegister'),
-		{ isAuthorized } = useGlobalState()
+	let store = useGlobalStore(),
+		isRegister = await DBgetData('wallet', 'isRegister')
 
 	// Check access
 	to.matched.some(record => {
@@ -111,14 +111,14 @@ router.beforeResolve(async (to, from, next) => {
 			}
 
 			// Not authorized
-			if(access.includes('not_authorized') && !isAuthorized.value) {
+			if(access.includes('not_authorized') && !store.isAuthorized) {
 				next({ name: 'Auth' })
 
 				return false
 			}
 
 			// Authorized
-			if(access.includes('authorized') && isAuthorized.value) {
+			if(access.includes('authorized') && store.isAuthorized) {
 				next({ name: 'Account' })
 
 				return false

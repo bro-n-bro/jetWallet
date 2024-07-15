@@ -1,18 +1,18 @@
 <template>
-    <div class="address" @click.prevent="copy(currentAddress)">
+    <div class="address" @click.prevent="copy(store.currentAddress)">
         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy2"></use></svg>
 
-        <span>{{ currentAddress.slice(0, 9) + '...' + currentAddress.slice(-6) }}</span>
+        <span>{{ store.currentAddress.slice(0, 9) + '...' + store.currentAddress.slice(-6) }}</span>
     </div>
 </template>
 
 
 <script setup>
     import { useClipboard } from '@vueuse/core'
-    import { useGlobalState } from '@/store'
+    import { useGlobalStore } from '@/store'
 
 
-    const { currentAddress } = useGlobalState(),
+    const store = useGlobalStore(),
         { copy } = useClipboard()
 </script>
 

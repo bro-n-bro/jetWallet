@@ -106,8 +106,10 @@
 <style scoped>
     .choose_network
     {
-        position: relative;
+        position: absolute;
         z-index: 9;
+        top: 11px;
+        left: 8px;
 
         width: 300px;
         max-width: 100%;

@@ -5,13 +5,16 @@
                 <img src="@/assets/logo.svg" alt="" loading="lazy">
             </div>
 
+
             <div class="page_data_wrap">
                 <div class="page_data">
                     <Loader v-if="loading" />
 
+
                     <div class="image">
                         <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
                     </div>
+
 
                     <div class="btns">
                         <button class="btn" @click="goTo('/create_wallet')">

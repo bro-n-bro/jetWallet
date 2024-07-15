@@ -69,20 +69,20 @@
 <script setup>
     import { ref, onBeforeMount } from 'vue'
     import { useRouter } from 'vue-router'
-    import { getData } from '@/utils/db'
+    import { useGlobalStore } from '@/store'
 
 
     // Components
     import Loader from '@/components/Loader.vue'
 
 
-    const router = useRouter(),
+    const store = useGlobalStore(),
+        router = useRouter(),
         loading = ref(true),
         wordOneNumber = ref(0),
         wordTwoNumber = ref(0),
         wordOne = ref(''),
         wordTwo = ref(''),
-        secret = ref(''),
         validWordOne = ref(false),
         validWordTwo = ref(false),
         isValidWordOne = ref(false),
@@ -91,11 +91,9 @@
 
     onBeforeMount(async () => {
         // Get secret from DB
-        secret.value = await getData('wallet', 'secret')
-
-        if (secret.value != 'undefined') {
+        if (store.secret != 'undefined') {
             let min = 1,
-                max = secret.value.split(' ').length
+                max = store.secret.split(' ').length
 
             // Generate the first random number
             wordOneNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
@@ -107,9 +105,6 @@
 
             // Hide loader
             loading.value = false
-        } else {
-            // Redirect
-            // router.push('/')
         }
     })
 
@@ -118,7 +113,7 @@
     function validateWordOne() {
         validWordOne.value = true
 
-        wordOne.value === secret.value.split(' ')[wordOneNumber.value - 1]
+        wordOne.value === store.secret.split(' ')[wordOneNumber.value - 1]
             ? isValidWordOne.value = true
             : isValidWordOne.value = false
     }
@@ -128,7 +123,7 @@
     function validateWordTwo() {
         validWordTwo.value = true
 
-        wordTwo.value === secret.value.split(' ')[wordTwoNumber.value - 1]
+        wordTwo.value === store.secret.split(' ')[wordTwoNumber.value - 1]
             ? isValidWordTwo.value = true
             : isValidWordTwo.value = false
     }

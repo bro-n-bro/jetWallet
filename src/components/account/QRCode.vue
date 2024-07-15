@@ -16,6 +16,11 @@
 <style scoped>
     .qr_code_btn
     {
+        position: absolute;
+        z-index: 9;
+        top: 17px;
+        right: 12px;
+
         display: flex;
         align-content: center;
         align-items: center;

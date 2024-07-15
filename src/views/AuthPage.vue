@@ -59,13 +59,13 @@
                         </div>
 
 
-                        <div class="warning" v-if="userAuthErrorLimit < authErrorLimit">
+                        <div class="warning" v-if="userAuthErrorLimit < store.authErrorLimit">
                             {{ $t('message.auth_error_warning', { count: userAuthErrorLimit }) }}
                         </div>
                     </div>
 
 
-                    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == authErrorLimit" :class="{ show: !loading }">
+                    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit" :class="{ show: !loading }">
                         <span>{{ $t('message.btn_biometric2') }}</span>
 
                         <svg class="icon" v-if="biometrictype === 'face'">
@@ -79,7 +79,7 @@
 
 
                     <div class="btns" :class="{ show: !loading }">
-                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < authErrorLimit">
+                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < store.authErrorLimit">
                             <span>{{ $t('message.btn_login') }}</span>
                         </button>
                     </div>
@@ -100,15 +100,15 @@
     import { onBeforeMount, ref, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
-    import { getMultipleData, addData, clearData } from '@/utils/db'
-    import { useGlobalState } from '@/store'
+    import { useGlobalStore } from '@/store'
 
     // Components
     import Loader from '@/components/Loader.vue'
     import AuthErrorModal from '@/components/modal/AuthErrorModal.vue'
 
 
-    const router = useRouter(),
+    const store = useGlobalStore(),
+        router = useRouter(),
         loading = ref(true),
         pinCode = ref(['', '', '', '', '', '']),
         pinDB = ref(''),
@@ -118,14 +118,13 @@
         isBiometric = ref(false),
         isBiometricAvailable = ref(false),
         biometrictype = ref('finger'),
-        { isAuthorized, authErrorLimit } = useGlobalState(),
         showErrorAuthModal = ref(false),
         inputRef = ref(null)
 
 
     onBeforeMount(async () => {
         // Get data from DB
-        let result = await getMultipleData('wallet', ['pin', 'hmacKey', 'authErrorLimit', 'isBiometric'])
+        let result = await store.getMultipleData(['pin', 'hmacKey', 'authErrorLimit', 'isBiometric'])
 
         // Set pin from DB
         pinDB.value = result.pin
@@ -164,7 +163,7 @@
         }
 
         // Compare pins
-        if (pinCode.value[5].length && userAuthErrorLimit.value === authErrorLimit) {
+        if (pinCode.value[5].length && userAuthErrorLimit.value === store.authErrorLimit) {
             login()
         }
     })
@@ -245,7 +244,7 @@
 
         newLimit
             // Сhange auth limit
-            ? await addData('wallet', [['userAuthErrorLimit', newLimit]])
+            ? store.updateUserAuthErrorLimit(newLimit)
             // Show error auth modal
             : showErrorAuthModal.value = true
 
@@ -260,10 +259,10 @@
     // Auth
     async function auth() {
         // Сhange auth limit
-        await addData('wallet', [['authErrorLimit', authErrorLimit]])
+        store.updateUserAuthErrorLimit(store.authErrorLimit)
 
         // Set authorized status
-        isAuthorized.value = true
+        store.isAuthorized = true
 
         // Redirect
         router.push('/account')
@@ -271,7 +270,7 @@
 
 
     async function deleteAll() {
-        await clearData('wallet')
+        store.clearAllData()
 
         // Redirect
         router.push('/')

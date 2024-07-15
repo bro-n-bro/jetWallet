@@ -1,8 +1,7 @@
-import { ref } from 'vue'
-import { createGlobalState } from '@vueuse/core'
-import { createSinger, denomTraces, formatTokenAmount } from '@/utils'
+import { defineStore } from 'pinia'
+import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, getPriceByDenom } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { getData } from '@/utils/db'
+import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
 
 
 // Networks
@@ -10,95 +9,118 @@ import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
 
 
-export const useGlobalState = createGlobalState(
-    () => {
-        // State
-        const isAuthorized = ref(false),
-            currentNetwork = ref(cosmoshub),
-            authErrorLimit = 4,
-            prices = ref([]),
-            balances = ref([]),
-            stargateClient = ref({}),
-            currentAddress = ref(''),
-            currentCurrency = ref(''),
-            currentCurrencySymbol = ref(''),
-            networks = {
-                cosmoshub,
-                bostrom
+export const useGlobalStore = defineStore('global', {
+    state: () => ({
+        isAuthorized: false,
+        authErrorLimit: 4,
+
+        currentNetwork: 'cosmoshub',
+        currentAddress: '',
+        currentCurrency: '',
+        currentCurrencySymbol: '',
+
+        prices: [],
+        balances: [],
+        signingClient: {},
+
+        secret: '',
+
+        networks: {
+            cosmoshub,
+            bostrom
+        },
+
+        formatableTokens: [
+            {
+                token_name: 'USD',
+                format_token_name: 'USDT',
+                exponent: 0
             },
-            formatableTokens = [
-                {
-                    token_name: 'BOOT',
-                    format_token_name: 'MBOOT',
-                    exponent: 6
-                },
-                {
-                    token_name: 'HYDROGEN',
-                    format_token_name: 'MHYDROGEN',
-                    exponent: 6
-                },
-                {
-                    token_name: 'TOCYB',
-                    format_token_name: 'MTOCYB',
-                    exponent: 6
-                }
-            ]
+            {
+                token_name: 'BTC',
+                format_token_name: 'WBTC',
+                exponent: 0
+            },
+            {
+                token_name: 'BOOT',
+                format_token_name: 'MBOOT',
+                exponent: 6
+            },
+            {
+                token_name: 'HYDROGEN',
+                format_token_name: 'MHYDROGEN',
+                exponent: 6
+            },
+            {
+                token_name: 'TOCYB',
+                format_token_name: 'MTOCYB',
+                exponent: 6
+            }
+        ]
+    }),
 
 
+    actions: {
         // Init APP
-        async function initApp() {
+        async initApp() {
+            // Get DB data
+            ({
+                secret: this.secret,
+                currentCurrency: this.currentCurrency
+            } = await this.getMultipleData(['secret', 'currentCurrency']))
+
             // Create singer
-            ({ address: currentAddress.value, signingClient: stargateClient.value } = await createSinger(currentNetwork.value))
+            let result = await createSinger()
+
+            this.currentAddress = result.address
+            this.signingClient = result.signingClient
 
             // Get currencies price
-            getCurrenciesPrice()
+            this.getCurrenciesPrice()
 
             // Get balances
-            await getBalances()
-
-            // Get current currency from DB
-            currentCurrency.value = await getData('wallet', 'currentCurrency')
+            await this.getBalances()
 
             // Set current currency symbol
-            switch (currentCurrency.value) {
+            switch (this.currentCurrency) {
                 case 'BTC':
                     // Set current currency symbol
-                    currentCurrencySymbol.value = 'BTC'
+                    this.currentCurrencySymbol = 'BTC'
                     break
 
                 case 'ETH':
                     // Set current currency symbol
-                    currentCurrencySymbol.value = 'ETH'
+                    this.currentCurrencySymbol = 'ETH'
                     break
 
                 default:
                     // Set current currency symbol
-                    currentCurrencySymbol.value = '$'
+                    this.currentCurrencySymbol = '$'
                     break
             }
-        }
+        },
 
 
         // Currencies price
-        async function getCurrenciesPrice() {
+        async getCurrenciesPrice() {
             try {
                 await fetch('https://rpc.bronbro.io/price_feed_api/tokens/')
                     .then(response => response.json())
-                    .then(data => prices.value = data)
+                    .then(data => this.prices = data)
             } catch (error) {
                 console.error(error)
             }
-        }
+        },
 
 
         // Get balances
-        async function getBalances() {
+        async getBalances() {
             // Request
-            balances.value = await stargateClient.value.getAllBalances(currentAddress.value)
+            this.balances = await this.signingClient.getAllBalances(this.currentAddress)
 
-            for (let balance of balances.value) {
+            for (let balance of this.balances) {
                 // Denom traces
-                let { base_denom } = await denomTraces(balance.denom, currentNetwork.value)
+                let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
                 // Get (token info/chain name) from assets
                 for (let asset of assets) {
@@ -126,7 +148,7 @@ export const useGlobalState = createGlobalState(
                 }
 
                 // Format denom exponent
-                let formatableToken = formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
+                let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
 
                 // Set exponent for denom
                 formatableToken
@@ -137,79 +159,116 @@ export const useGlobalState = createGlobalState(
                 balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
 
                 // // Get price
-                // balance.price = getPriceByDenom(balance.token_info.symbol)
+                balance.price = getPriceByDenom(balance.token_info.symbol)
 
                 // // Set cost
                 // formatableToken
                 //     ? balance.cost = balance.amount * balance.price
-                //     : balance.cost = formatTokenAmount(balance.amount, balance.exponent) * balance.price
+                //     : balance.cost = this.formatTokenAmount(balance.amount, balance.exponent) * balance.price
             }
 
             // Clear balances
-            balances.value = balances.value.filter(obj => obj.hasOwnProperty('exponent'))
+            this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
 
             // // Sort by "cost"
-            // balances.value.sort((a, b) => {
+            // this.balances.sort((a, b) => {
             //     if (a.cost > b.cost) { return -1 }
             //     if (a.cost < b.cost) { return 1 }
             //     return 0
             // })
-        }
+        },
 
 
-        // Get price by denom
-        function getPriceByDenom(denom) {
-            let price = 0
+        // Set secret
+        async setSecret(secret) {
+            // Save in store
+            this.secret = secret
 
-            if (denom) {
-                let item = prices.value.find(el => el.symbol === denom)
-
-                if (item) {
-                    price = item.price
-                }
-            }
-
-            return price
-        }
+            // Save in DB
+            await DBaddData('wallet', [
+                ['secret', secret]
+            ])
+        },
 
 
-        // Calc token cost in current cucrrency
-        function calcTokenCost(denom, amount) {
-            let price = getPriceByDenom(denom),
-                cost = (price * amount)
+        // Create wallet
+        async createWallet({ pinCode, walletName, isBiometricEnabled }) {
+            // Generate HMAC key
+            let hmacKey = await generateHMACKey()
 
-            // Rounding
-            switch (currentCurrency.value) {
+            // Save in DB
+            await DBaddData('wallet', [
+                ['hmacKey', hmacKey],
+                ['pin', await hashDataWithKey(pinCode.join(''), hmacKey)],
+                ['name', walletName],
+                ['isRegister', true],
+                ['isBiometric', isBiometricEnabled],
+                ['authErrorLimit', this.authErrorLimit],
+                ['currentCurrency', 'USD']
+            ])
+
+            // Set authorized status
+            this.isAuthorized = true
+        },
+
+
+        // Get data from DB
+        async getMultipleData(requestingData) {
+            return await DBgetMultipleData('wallet', requestingData)
+        },
+
+
+        // Update auth error limit
+        async updateUserAuthErrorLimit(limit) {
+            await DBaddData('wallet', [['authErrorLimit', limit]])
+        },
+
+
+        // Update current currency
+        async updateCurrentCurrency() {
+            switch (this.currentCurrency) {
                 case 'BTC':
-                    return cost > 0.0000000001 ? cost.toFixed(10) : '<0.0000000001'
+                    // Set current currency
+                    this.currentCurrency = 'ETH'
+
+                    // Set current currency symbol
+                    this.currentCurrencySymbol = 'ETH'
+
+                    // Update in DB
+                    DBaddData('wallet', [['currentCurrency', 'ETH']])
+
+                    break;
 
                 case 'ETH':
-                    return cost > 0.0000001 ? cost.toFixed(7) : '<0.0000001'
+                    // Set current currency
+                    this.currentCurrency = 'USD'
+
+                    // Set current currency symbol
+                    this.currentCurrencySymbol = '$'
+
+                    // Update in DB
+                    DBaddData('wallet', [['currentCurrency', 'USD']])
+
+                    break;
 
                 default:
-                    return cost > 0.01 ? cost.toFixed(2) : '<0.01'
+                    // Set current currency
+                    this.currentCurrency = 'BTC'
+
+                    // Set current currency symbol
+                    this.currentCurrencySymbol = 'BTC'
+
+                    // Update in DB
+                    DBaddData('wallet', [['currentCurrency', 'BTC']])
+
+                    break;
             }
-        }
+        },
 
 
-        return {
-            isAuthorized,
-            currentNetwork,
-            authErrorLimit,
-            prices,
-            balances,
-            stargateClient,
-            currentAddress,
-            currentCurrency,
-            currentCurrencySymbol,
-            networks,
-            formatableTokens,
-
-            initApp,
-            getCurrenciesPrice,
-            getBalances,
-            getPriceByDenom,
-            calcTokenCost
+        // Clear BD
+        async clearAllData() {
+            await DBclearData('wallet')
         }
     }
-)
+})

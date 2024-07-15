@@ -5,6 +5,7 @@
                 {{ $t('message.import_wallet_title') }}
             </div>
 
+
             <div class="page_data_wrap">
                 <div class="page_data">
                     <Loader v-if="loading" />
@@ -13,6 +14,7 @@
                     <router-link class="back_btn" to="/">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                     </router-link>
+
 
                     <div class="tabs_wrap">
                         <div class="tabs">
@@ -29,6 +31,7 @@
                             </button>
                         </div>
                     </div>
+
 
                     <div class="mnemonic" v-if="activeTab != 3">
                         <div class="row">
@@ -162,15 +165,16 @@
 <script setup>
     import { ref, onBeforeMount, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
+    import { useGlobalStore } from '@/store'
     import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils'
-    import { addData } from '@/utils/db'
 
 
     // Components
     import Loader from '@/components/Loader.vue'
 
 
-    const router = useRouter(),
+    const store = useGlobalStore(),
+        router = useRouter(),
         loading = ref(true),
         activeTab = ref(1),
         wallet = ref(null),
@@ -307,10 +311,7 @@
             : wallet.value = await importWalletFromPrivateKey(privateKey.value)
 
         // Save in DB
-        await addData('wallet', [
-            ['secret', wallet.value.secret.data],
-            ['seed', wallet.value.seed]
-        ])
+        await store.setSecret(wallet.value.secret.data)
 
         // Redirect
         router.push('/create_pin')

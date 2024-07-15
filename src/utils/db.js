@@ -10,21 +10,21 @@ const dbPromise = openDB('bro_db', 1, {
 })
 
 
-export async function getAllData(storeName) {
+export async function DBgetAllData(storeName) {
     let db = await dbPromise
 
     return db.getAll(storeName)
 }
 
 
-export async function getData(storeName, key) {
+export async function DBgetData(storeName, key) {
     let db = await dbPromise
 
     return db.get(storeName, key)
 }
 
 
-export async function getMultipleData(storeName, keys) {
+export async function DBgetMultipleData(storeName, keys) {
     const db = await dbPromise,
         results = await Promise.all(keys.map(key => db.get(storeName, key)))
 
@@ -37,7 +37,7 @@ export async function getMultipleData(storeName, keys) {
 }
 
 
-export async function addData(storeName, data) {
+export async function DBaddData(storeName, data) {
     let db = await dbPromise,
         tx = db.transaction(storeName, 'readwrite'),
         store = tx.objectStore(storeName)
@@ -50,14 +50,14 @@ export async function addData(storeName, data) {
 }
 
 
-export async function deleteData(storeName, id) {
+export async function DBdeleteData(storeName, id) {
     let db = await dbPromise
 
     return db.delete(storeName, id)
 }
 
 
-export async function clearData(storeName) {
+export async function DBclearData(storeName) {
     const db = await dbPromise
     const tx = db.transaction(storeName, 'readwrite')
     const store = tx.objectStore(storeName)

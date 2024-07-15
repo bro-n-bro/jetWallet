@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
@@ -16,7 +17,12 @@ const emitter = mitt()
 const app = createApp(App)
 
 
+// Pinia
+const pinia = createPinia()
+
+
 // Vue use
+app.use(pinia)
 app.use(router)
 app.use(i18n)
 

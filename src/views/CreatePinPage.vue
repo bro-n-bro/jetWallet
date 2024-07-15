@@ -146,15 +146,14 @@
 <script setup>
     import { onBeforeMount, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
-    import { hashDataWithKey, generateHMACKey } from '@/utils'
-    import { addData } from '@/utils/db'
-    import { useGlobalState } from '@/store'
+    import { useGlobalStore } from '@/store'
 
     // Components
     import Loader from '@/components/Loader.vue'
 
 
-    const router = useRouter(),
+    const store = useGlobalStore(),
+        router = useRouter(),
         loading = ref(true),
         walletName = ref(''),
         idValidWalletName = ref(false),
@@ -163,8 +162,7 @@
         confirmPinCode = ref(['', '', '', '', '', '']),
         isBiometricEnabled = ref(false),
         isBiometricAvailable = ref(false),
-        biometrictype = ref('finger'),
-        { isAuthorized, authErrorLimit } = useGlobalState()
+        biometrictype = ref('finger')
 
 
     onBeforeMount(() => {
@@ -255,22 +253,12 @@
         // Show loader
         loading.value = true
 
-        // Generate HMAC key
-        let hmacKey = await generateHMACKey()
-
         // Save in DB
-        await addData('wallet', [
-            ['hmacKey', hmacKey],
-            ['pin', await hashDataWithKey(pinCode.value.join(''), hmacKey)],
-            ['name', walletName.value],
-            ['isRegister', true],
-            ['isBiometric', isBiometricEnabled.value],
-            ['authErrorLimit', authErrorLimit],
-            ['currentCurrency', 'USD']
-        ])
-
-        // Set authorized status
-        isAuthorized.value = true
+        await store.createWallet({
+            pinCode: pinCode.value,
+            walletName: walletName.value,
+            isBiometricEnabled: isBiometricEnabled.value
+        })
 
         // Redirect
         router.push('/wallet_created')
