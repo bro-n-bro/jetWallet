@@ -2,6 +2,7 @@ import { useGlobalStore } from '@/store'
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
 import { fromHex } from '@cosmjs/encoding'
 import { SigningStargateClient } from '@cosmjs/stargate'
+import { chains } from 'chain-registry'
 
 
 // Generate wallet
@@ -11,14 +12,14 @@ export const generateWallet = async count => {
 
 
 // Import wallet from mnemonic
-export const importWalletFromMnemonic = async mnemonic => {
-    return await DirectSecp256k1HdWallet.fromMnemonic(mnemonic)
+export const importWalletFromMnemonic = async (mnemonic, prefix = null) => {
+    return await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, { prefix })
 }
 
 
 // Import wallet from private key
-export const importWalletFromPrivateKey = async privateKey => {
-    return await DirectSecp256k1Wallet.fromKey(fromHex(privateKey))
+export const importWalletFromPrivateKey = async (privateKey, prefix = null) => {
+    return await DirectSecp256k1Wallet.fromKey(fromHex(privateKey), prefix)
 }
 
 
@@ -185,4 +186,21 @@ export const calcBalancesCost = () => {
     store.balances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
 
     return formatTokenCost(totalPrice)
+}
+
+
+
+// Get metwork logo
+export const getNetworkLogo = chainId => {
+    let logos = null
+
+    if (chainId) {
+        let chain = chains.find(el => el.chain_id === chainId)
+
+        if (chain) {
+            logos = chain.images[chain.images.length - 1].svg || chain.images[chain.images.length - 1].png
+        }
+    }
+
+    return logos
 }

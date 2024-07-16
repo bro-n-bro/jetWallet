@@ -14,7 +14,7 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
         authErrorLimit: 4,
 
-        currentNetwork: 'cosmoshub',
+        currentNetwork: '',
         currentAddress: '',
         currentCurrency: '',
         currentCurrencySymbol: '',
@@ -68,8 +68,9 @@ export const useGlobalStore = defineStore('global', {
             ({
                 secret: this.secret,
                 privateKey: this.privateKey,
-                currentCurrency: this.currentCurrency
-            } = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency']))
+                currentCurrency: this.currentCurrency,
+                currentNetwork: this.currentNetwork
+            } = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork']))
 
             // Create singer
             let result = await createSinger()
@@ -78,7 +79,7 @@ export const useGlobalStore = defineStore('global', {
             this.signingClient = result.signingClient
 
             // Get currencies price
-            this.getCurrenciesPrice()
+            await this.getCurrenciesPrice()
 
             // Get balances
             await this.getBalances()
@@ -160,7 +161,7 @@ export const useGlobalStore = defineStore('global', {
                 // Get chain info
                 balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
 
-                // // Get price
+                // Get price
                 balance.price = getPriceByDenom(balance.token_info.symbol)
             }
 
@@ -193,6 +194,18 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Set current network
+        async setCurrentNetwork(chain) {
+            // Save in store
+            this.currentNetwork = chain
+
+            // Save in DB
+            await DBaddData('wallet', [
+                ['currentNetwork', chain]
+            ])
+        },
+
+
         // Create wallet
         async createWallet({ pinCode, walletName, isBiometricEnabled }) {
             // Generate HMAC key
@@ -206,6 +219,7 @@ export const useGlobalStore = defineStore('global', {
                 ['isRegister', true],
                 ['isBiometric', isBiometricEnabled],
                 ['authErrorLimit', this.authErrorLimit],
+                ['currentNetwork', 'cosmoshub'],
                 ['currentCurrency', 'USD']
             ])
 

@@ -120,7 +120,7 @@
         position: absolute;
         z-index: 2;
         top: 0;
-        right: 10px;
+        right: 6px;
         bottom: 0;
 
         display: flex;

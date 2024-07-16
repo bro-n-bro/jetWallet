@@ -25,13 +25,13 @@
 
 
 <script setup>
-    import { ref, onBeforeMount } from 'vue'
+    import { ref, onBeforeMount, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
 
 
     // Components
     import Loader from '@/components/Loader.vue'
-    // import NetworkChooser from '@/components/account/NetworkChooser.vue'
+    import NetworkChooser from '@/components/account/NetworkChooser.vue'
     import QRCode from '@/components/account/QRCode.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
     import MainSection from '@/components/account/Main.vue'
@@ -44,6 +44,18 @@
 
     onBeforeMount(async () => {
         // Init app
+        await store.initApp()
+
+        // Hide loader
+        loading.value = false
+    })
+
+
+    watch(computed(() => store.currentNetwork), async () => {
+        // Show loader
+        loading.value = true
+
+        // Reinit APP
         await store.initApp()
 
         // Hide loader
