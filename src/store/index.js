@@ -23,7 +23,8 @@ export const useGlobalStore = defineStore('global', {
         balances: [],
         signingClient: {},
 
-        secret: '',
+        secret: null,
+        privateKey: null,
 
         networks: {
             cosmoshub,
@@ -66,8 +67,9 @@ export const useGlobalStore = defineStore('global', {
             // Get DB data
             ({
                 secret: this.secret,
+                privateKey: this.privateKey,
                 currentCurrency: this.currentCurrency
-            } = await this.getMultipleData(['secret', 'currentCurrency']))
+            } = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency']))
 
             // Create singer
             let result = await createSinger()
@@ -160,22 +162,10 @@ export const useGlobalStore = defineStore('global', {
 
                 // // Get price
                 balance.price = getPriceByDenom(balance.token_info.symbol)
-
-                // // Set cost
-                // formatableToken
-                //     ? balance.cost = balance.amount * balance.price
-                //     : balance.cost = this.formatTokenAmount(balance.amount, balance.exponent) * balance.price
             }
 
             // Clear balances
             this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
-
-            // // Sort by "cost"
-            // this.balances.sort((a, b) => {
-            //     if (a.cost > b.cost) { return -1 }
-            //     if (a.cost < b.cost) { return 1 }
-            //     return 0
-            // })
         },
 
 
@@ -187,6 +177,18 @@ export const useGlobalStore = defineStore('global', {
             // Save in DB
             await DBaddData('wallet', [
                 ['secret', secret]
+            ])
+        },
+
+
+        // Set private key
+        async setPrivateKey(privateKey) {
+            // Save in store
+            this.privateKey = privateKey
+
+            // Save in DB
+            await DBaddData('wallet', [
+                ['privateKey', privateKey]
             ])
         },
 

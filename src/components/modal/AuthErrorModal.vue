@@ -2,6 +2,9 @@
     <section class="modal">
         <div class="modal_content">
             <div class="data">
+                <Loader v-if="loading" />
+
+                <template v-else>
                 <router-link to="/" class="close_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </router-link>
@@ -19,6 +22,7 @@
                         <span>{{ $t('message.btn_import_existing_wallet') }}</span>
                     </router-link>
                 </div>
+                </template>
             </div>
         </div>
 
@@ -29,18 +33,19 @@
 
 <script setup>
     import { onBeforeMount, ref } from 'vue'
-    import { clearData } from '@/utils/db'
+    import { useGlobalStore } from '@/store'
 
     // Components
     import Loader from '@/components/Loader.vue'
 
 
-    const loading = ref(true)
+    const store = useGlobalStore(),
+        loading = ref(true)
 
 
     onBeforeMount(async () => {
         // Clear data
-        await clearData('wallet')
+        await store.clearAllData()
 
         // Hide loader
         loading.value = false

@@ -98,9 +98,9 @@
 
 <script setup>
     import { onBeforeMount, ref, watch, computed } from 'vue'
+    import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
-    import { useGlobalStore } from '@/store'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -270,7 +270,8 @@
 
 
     async function deleteAll() {
-        store.clearAllData()
+        // Clear data
+        await store.clearAllData()
 
         // Redirect
         router.push('/')

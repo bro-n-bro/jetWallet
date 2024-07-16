@@ -267,18 +267,19 @@
 
 
 <style scoped>
-    .pin
-    {
-        margin-top: 8px;
-    }
-
-
-    .pin .label
+    .label
     {
         font-size: 14px;
 
         margin-bottom: 2px;
         padding: 0 10px;
+    }
+
+
+
+    .pin
+    {
+        margin-top: 8px;
     }
 
 

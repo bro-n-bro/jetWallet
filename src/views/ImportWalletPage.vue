@@ -185,7 +185,7 @@
         isTouchedPrivateKey = ref(false)
 
 
-    onBeforeMount(async () => {
+    onBeforeMount(() => {
         // Hide loader
         loading.value = false
     })
@@ -306,12 +306,19 @@
     // Save data
     async function save() {
         // Import wallet
-        activeTab != 3
-            ? wallet.value = await importWalletFromMnemonic(secret.value.join(' '))
-            : wallet.value = await importWalletFromPrivateKey(privateKey.value)
+        if (activeTab.value != 3) {
+            // Import
+            wallet.value = await importWalletFromMnemonic(secret.value.join(' '))
 
-        // Save in DB
-        await store.setSecret(wallet.value.secret.data)
+            // Save in DB
+            await store.setSecret(wallet.value.secret.data)
+        } else {
+            // Import
+            wallet.value = await importWalletFromPrivateKey(privateKey.value)
+
+            // Save in DB
+            await store.setPrivateKey(privateKey.value)
+        }
 
         // Redirect
         router.push('/create_pin')

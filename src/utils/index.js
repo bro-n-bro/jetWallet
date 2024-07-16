@@ -1,5 +1,6 @@
 import { useGlobalStore } from '@/store'
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
+import { fromHex } from '@cosmjs/encoding'
 import { SigningStargateClient } from '@cosmjs/stargate'
 
 
@@ -17,7 +18,7 @@ export const importWalletFromMnemonic = async mnemonic => {
 
 // Import wallet from private key
 export const importWalletFromPrivateKey = async privateKey => {
-    return await DirectSecp256k1Wallet.fromKey(Buffer.from(privateKey, 'hex'))
+    return await DirectSecp256k1Wallet.fromKey(fromHex(privateKey))
 }
 
 
@@ -70,7 +71,13 @@ export const createSinger = async () => {
     let store = useGlobalStore()
 
     // Wallet
-    let wallet = await importWalletFromMnemonic(store.secret, store.networks[store.currentNetwork].prefix)
+    if (store.secret) {
+        var wallet = await importWalletFromMnemonic(store.secret, store.networks[store.currentNetwork].prefix)
+    }
+
+    if (store.privateKey) {
+        var wallet = await importWalletFromPrivateKey(store.privateKey, store.networks[store.currentNetwork].prefix)
+    }
 
     // Current address
     let address = (await wallet.getAccounts())[0].address
