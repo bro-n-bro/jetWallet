@@ -57,6 +57,11 @@ export default {
             'available_balance_title': 'Available Balance',
 
 
+            // Search
+            'search_placeholder': 'Search...',
+            'search_empty': 'Token not found...',
+
+
             // Buttons
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',

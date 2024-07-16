@@ -1,25 +1,18 @@
 <template>
     <div class="cont">
-        <form action="" class="search">
-            <div class="field">
-                <input type="text" name="" value="" class="input" placeholder="Search...">
-            </div>
-
-            <button type="submit" class="submit_btn">
-                <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_search"></use></svg>
-            </button>
-        </form>
+        <!-- Search -->
+        <Search />
 
 
         <div class="tokens">
-            <div class="count">
+            <div class="count" v-if="searchResult.length === store.balances.length">
                 <b>{{ store.balances.length }}</b> {{ $t('message.available_balance_title') }}
             </div>
 
             <!-- <pre>{{ store.balances }}</pre> -->
 
-            <div class="list">
-                <div class="token_wrap" v-for="(balance, index) in store.balances" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
+            <div class="list" v-if="searchResult.length">
+                <div class="token_wrap" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
                     <div class="token">
                         <div class="logo">
                             <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
@@ -41,230 +34,183 @@
                     </div>
                 </div>
             </div>
+
+            <div class="empty" v-else>
+                {{ $t('message.search_empty') }}
+            </div>
         </div>
     </div>
 </template>
 
 
 <script setup>
+    import { inject, onBeforeMount, ref } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenAmount, formatTokenCost, calcTokenCost } from '@/utils'
 
+    // Components
+    import Search from '@/components/Search.vue'
 
-    const store = useGlobalStore()
+
+    const store = useGlobalStore(),
+        emitter = inject('emitter'),
+        searchResult = ref(null)
+
+
+    onBeforeMount(() => {
+        // Default search result
+        searchResult.value = store.balances
+    })
+
+
+    // Event "search"
+    emitter.on('search', ({ query }) => {
+        // Clear search result
+        searchResult.value = []
+
+        // Set new result
+        for (let key in store.balances) {
+            if (store.balances[key].token_info.symbol.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
+                searchResult.value.push(store.balances[key])
+            }
+        }
+    })
 </script>
 
 
 <style scoped>
-.search
-{
-    position: relative;
+    .empty
+    {
+        font-size: 20px;
+        font-weight: 500;
 
-    margin-top: 10px;
-}
+        padding: 10px;
 
+        text-align: center;
 
-.search ::-webkit-input-placeholder
-{
-    color: rgba(255,255,255,.6);
-}
-
-.search :-moz-placeholder
-{
-    color: rgba(255,255,255,.6);
-}
-
-.search ::-moz-placeholder
-{
-    opacity: 1;
-    color: rgba(255,255,255,.6);
-}
-
-.search :-ms-input-placeholder
-{
-    color: rgba(255,255,255,.6);
-}
-
-
-.search .field
-{
-    padding: 1px;
-
-    border-radius: 23px;
-    background: linear-gradient(to bottom,  #5c32cc 0%,#210750 100%);
-}
-
-
-.search .input
-{
-    font-family: var(--font_family);
-    font-size: 16px;
-    font-weight: 500;
-
-    display: block;
-
-    width: 100%;
-    height: 28px;
-    padding: 0 50px 0 15px;
-
-    color: #fff;
-    border: none;
-    border-radius: 23px;
-    background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
-}
-
-
-.search .submit_btn
-{
-    position: absolute;
-    z-index: 3;
-    top: 0;
-    right: 16px;
-    bottom: 0;
-
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    width: 24px;
-    height: 24px;
-    margin: auto 0;
-
-    opacity: .6;
-}
-
-
-.search .submit_btn .icon
-{
-    display: block;
-
-    width: 16px;
-    height: 16px;
-}
+        opacity: .7;
+    }
 
 
 
-.tokens
-{
-    margin-top: 12px;
-}
+    .tokens
+    {
+        margin-top: 12px;
+    }
 
 
-.tokens .count
-{
-    font-size: 14px;
+    .tokens .count
+    {
+        font-size: 14px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
 
-    padding: 2px 10px;
+        padding: 2px 10px;
 
-    color: rgba(255,255,255,.6);
+        color: rgba(255,255,255,.6);
 
-    gap: 4px;
-}
-
-
-.tokens .count b
-{
-    color: #fff;
-}
+        gap: 4px;
+    }
 
 
-.tokens .list
-{
-    display: flex;
-    flex-direction: column;
-}
+    .tokens .count b
+    {
+        color: #fff;
+    }
 
 
-.tokens .list > *
-{
-    margin-top: 8px;
-}
+    .tokens .list
+    {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .tokens .list > *
+    {
+        margin-top: 8px;
+    }
 
 
 
-.tokens .token_wrap
-{
-    padding: 1px;
+    .tokens .token_wrap
+    {
+        padding: 1px;
 
-    border-radius: 12px;
-    background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
-}
-
-
-.tokens .token
-{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-
-    padding-right: 9px;
-
-    border-radius: 11px;
-    background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
-}
+        border-radius: 12px;
+        background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
+    }
 
 
-.tokens .token .logo
-{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
+    .tokens .token
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
 
-    width: 55px;
-    height: 55px;
-    margin-right: 8px;
-    padding: 8px;
+        padding-right: 9px;
 
-    border-radius: 11px;
-}
+        border-radius: 11px;
+        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+    }
 
 
-.tokens .token .logo img
-{
-    display: block;
+    .tokens .token .logo
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
 
-    max-width: 100%;
-    max-height: 100%;
-}
+        width: 55px;
+        height: 55px;
+        margin-right: 8px;
+        padding: 8px;
 
-
-.tokens .token .denom
-{
-    font-size: 16px;
-    font-weight: 500;
-
-    text-transform: uppercase;
-}
-
-
-.tokens .token .amount
-{
-    font-size: 18px;
-    font-weight: 500;
-
-    margin-left: auto;
-
-    text-align: right;
-    white-space: nowrap;
-}
+        border-radius: 11px;
+    }
 
 
-.tokens .token .amount .cost
-{
-    font-size: 16px;
-    font-weight: 400;
+    .tokens .token .logo img
+    {
+        display: block;
 
-    color: #836b9e;
-}
+        max-width: 100%;
+        max-height: 100%;
+    }
 
+
+    .tokens .token .denom
+    {
+        font-size: 16px;
+        font-weight: 500;
+
+        text-transform: uppercase;
+    }
+
+
+    .tokens .token .amount
+    {
+        font-size: 18px;
+        font-weight: 500;
+
+        margin-left: auto;
+
+        text-align: right;
+        white-space: nowrap;
+    }
+
+
+    .tokens .token .amount .cost
+    {
+        font-size: 16px;
+        font-weight: 400;
+
+        color: #836b9e;
+    }
 </style>

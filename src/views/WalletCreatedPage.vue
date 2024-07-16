@@ -26,7 +26,6 @@
 <script setup>
     import { ref, onBeforeMount } from 'vue'
 
-
     // Components
     import Loader from '@/components/Loader.vue'
 
