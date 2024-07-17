@@ -41,21 +41,6 @@ export const useGlobalStore = defineStore('global', {
                 token_name: 'BTC',
                 format_token_name: 'WBTC',
                 exponent: 0
-            },
-            {
-                token_name: 'BOOT',
-                format_token_name: 'MBOOT',
-                exponent: 6
-            },
-            {
-                token_name: 'HYDROGEN',
-                format_token_name: 'MHYDROGEN',
-                exponent: 6
-            },
-            {
-                token_name: 'TOCYB',
-                format_token_name: 'MTOCYB',
-                exponent: 6
             }
         ]
     }),

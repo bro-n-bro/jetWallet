@@ -3,7 +3,7 @@
         <div class="field">
             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_search"></use></svg>
 
-            <input type="text" v-model="query" class="input" :placeholder="$t('message.search_placeholder')" @input="setEvent">
+            <input type="text" v-model="query" class="input" :placeholder="$t('message.search_placeholder')" @focus="setFocusEvent" @blur="setBlurEvent" @input="setEnterEvent">
 
             <button class="clear_btn" v-if="query.length" @click.prevent="clearField">
                 <svg><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
@@ -21,8 +21,20 @@
         query = ref('')
 
 
-    // Set event
-    function setEvent() {
+    // Set focus event
+    function setFocusEvent() {
+        setTimeout(() => emitter.emit('search_focus'), 100)
+    }
+
+
+    // Set blur event
+    function setBlurEvent() {
+        setTimeout(() => emitter.emit('search_blur'), 100)
+    }
+
+
+    // Set enter event
+    function setEnterEvent() {
         emitter.emit('search', { query: query.value })
     }
 
@@ -44,6 +56,21 @@
         position: relative;
 
         margin-top: 10px;
+    }
+
+
+    .searching .search
+    {
+        position: fixed;
+        z-index: 10;
+        top: 0;
+        left: 16px;
+
+        width: calc(100% - 32px);
+        margin: 0;
+        padding: 10px 0;
+
+        background: #170232;
     }
 
 

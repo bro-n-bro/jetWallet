@@ -76,6 +76,7 @@
         flex-wrap: wrap;
         justify-content: space-between;
 
+        min-width: 148px;
         padding: 6px 10px;
 
         text-align: left;
@@ -102,6 +103,12 @@
 
         width: 100%;
         height: 100%;
+    }
+
+
+    .choose_network .btn .name
+    {
+        width: calc(100% - 60px);
     }
 
 

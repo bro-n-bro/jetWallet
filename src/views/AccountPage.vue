@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container account_page">
+    <section class="page_container account_page" :class="{ searching: searchingClass }">
         <Loader v-if="loading" />
 
         <template v-else>
@@ -25,7 +25,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, watch, computed } from 'vue'
+    import { ref, onBeforeMount, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
 
 
@@ -39,7 +39,9 @@
 
 
     const store = useGlobalStore(),
-        loading = ref(true)
+        emitter = inject('emitter'),
+        loading = ref(true),
+        searchingClass = ref('')
 
 
     onBeforeMount(async () => {
@@ -60,6 +62,18 @@
 
         // Hide loader
         loading.value = false
+    })
+
+
+    // Event "search_focus"
+    emitter.on('search_focus', () => {
+        searchingClass.value = true
+    })
+
+
+    // Event "search_focus"
+    emitter.on('search_blur', () => {
+        searchingClass.value = false
     })
 </script>
 

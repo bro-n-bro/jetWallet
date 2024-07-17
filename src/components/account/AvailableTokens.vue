@@ -1,45 +1,47 @@
 <template>
-    <div class="cont">
-        <!-- Search -->
-        <Search />
+    <section class="available_tokens">
+        <div class="cont">
+            <!-- Search -->
+            <Search />
 
 
-        <div class="tokens">
-            <div class="count" v-if="searchResult.length === store.balances.length">
-                <b>{{ store.balances.length }}</b> {{ $t('message.available_balance_title') }}
-            </div>
+            <div class="tokens">
+                <div class="count" v-if="searchResult.length === store.balances.length">
+                    <b>{{ store.balances.length }}</b> {{ $t('message.available_balance_title') }}
+                </div>
 
-            <!-- <pre>{{ store.balances }}</pre> -->
+                <!-- <pre>{{ store.balances }}</pre> -->
 
-            <div class="list" v-if="searchResult.length">
-                <div class="token_wrap" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
-                    <div class="token">
-                        <div class="logo">
-                            <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
-                        </div>
-
-                        <div class="denom">
-                            {{ balance.token_info.symbol }}
-                        </div>
-
-                        <div class="amount">
-                            <div class="val">
-                                {{ formatTokenAmount(balance.amount, balance.exponent) }}
+                <div class="list" v-if="searchResult.length">
+                    <div class="token_wrap" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
+                        <div class="token">
+                            <div class="logo">
+                                <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
                             </div>
 
-                            <div class="cost">
-                                {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                            <div class="denom">
+                                {{ balance.token_info.symbol }}
+                            </div>
+
+                            <div class="amount">
+                                <div class="val">
+                                    {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 20 }) }}
+                                </div>
+
+                                <div class="cost">
+                                    {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="empty" v-else>
-                {{ $t('message.search_empty') }}
+                <div class="empty" v-else>
+                    {{ $t('message.search_empty') }}
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 </template>
 
 
@@ -79,6 +81,29 @@
 
 
 <style scoped>
+    .searching .available_tokens
+    {
+        position: fixed;
+        z-index: 90;
+        top: 0;
+        left: 0;
+
+        overflow: auto;
+
+        width: 100%;
+        height: 100%;
+        min-height: -moz-available;
+        min-height: -webkit-fill-available;
+        min-height:         fill-available;
+        padding-top: 60px;
+        padding-bottom: 16px;
+
+        background: #170232;
+
+        overscroll-behavior-y: contain;
+    }
+
+
     .empty
     {
         font-size: 20px;
@@ -96,6 +121,12 @@
     .tokens
     {
         margin-top: 12px;
+    }
+
+
+    .searching .tokens
+    {
+        margin: 0;
     }
 
 
