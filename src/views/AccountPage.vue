@@ -31,10 +31,10 @@
             </swiper-container>
         </section>
 
+        <pre>{{ params }}</pre>
+
         <!-- Available tokens -->
         <AvailableTokens />
-
-        <pre>{{ params }}</pre>
         </template>
     </section>
 </template>
