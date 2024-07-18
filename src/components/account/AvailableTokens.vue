@@ -88,14 +88,6 @@
 
         flex: 1 0 auto;
 
-        transition: 0s linear .2s;
-    }
-
-
-    .searching .available_tokens
-    {
-        transition: none;
-
         background: #170232;
     }
 
