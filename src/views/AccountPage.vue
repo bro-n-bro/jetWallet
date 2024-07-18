@@ -57,7 +57,6 @@
         emitter = inject('emitter'),
         loading = ref(true),
         searchingClass = ref(''),
-        params = ref([]),
         swiperInjectStyles = [
             `
             .swiper-horizontal > .swiper-pagination-bullets,
@@ -91,14 +90,6 @@
     onBeforeMount(async () => {
         // Init app
         await store.initApp()
-
-        params.value.push(Telegram.WebApp.viewportHeight)
-        params.value.push(Telegram.WebApp.viewportStableHeight)
-
-        Telegram.WebApp.onEvent('viewportChanged', () => {
-            params.value.push(Telegram.WebApp.viewportHeight)
-            params.value.push(Telegram.WebApp.viewportStableHeight)
-        })
 
         // Hide loader
         loading.value = false

@@ -92,6 +92,17 @@
     }
 
 
+    .searching .available_tokens
+    {
+        overflow: auto;
+        flex: none;
+
+        height: var(--tg-viewport-height);
+
+        overscroll-behavior-y: contain;
+    }
+
+
     .empty
     {
         font-size: 20px;
