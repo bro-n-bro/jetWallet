@@ -81,26 +81,22 @@
 
 
 <style scoped>
+    .available_tokens
+    {
+        position: relative;
+        z-index: 9;
+
+        flex: 1 0 auto;
+
+        transition: 0s linear .2s;
+    }
+
+
     .searching .available_tokens
     {
-        position: fixed;
-        z-index: 90;
-        top: 0;
-        left: 0;
-
-        overflow: auto;
-
-        width: 100%;
-        height: 100%;
-        min-height: -moz-available;
-        min-height: -webkit-fill-available;
-        min-height:         fill-available;
-        padding-top: 60px;
-        padding-bottom: 16px;
+        transition: none;
 
         background: #170232;
-
-        overscroll-behavior-y: contain;
     }
 
 
@@ -116,12 +112,6 @@
         opacity: .7;
     }
 
-
-
-    .tokens
-    {
-        margin-top: 12px;
-    }
 
 
     .searching .tokens

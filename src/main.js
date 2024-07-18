@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import i18n from './locale'
 import mitt from 'mitt'
+import { register } from 'swiper/element/bundle'
 
 import { vFocus } from './directives/v-focus'
 
@@ -34,6 +35,10 @@ app.provide('emitter', emitter)
 
 // Directives
 app.directive('focus', vFocus)
+
+
+// Swiper - register
+register()
 
 
 // Mount

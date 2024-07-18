@@ -55,20 +55,20 @@
     {
         position: relative;
 
-        margin-top: 10px;
+        padding: 12px 0;
     }
 
 
     .searching .search
     {
-        position: fixed;
-        z-index: 10;
+        position: sticky;
+        z-index: 5;
         top: 0;
-        left: 16px;
+        right: 0;
+        left: 0;
 
-        width: calc(100% - 32px);
-        margin: 0;
-        padding: 10px 0;
+        width: 100%;
+        margin: 0 auto;
 
         background: #170232;
     }

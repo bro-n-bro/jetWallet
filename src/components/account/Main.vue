@@ -54,79 +54,83 @@
 
 
 <style scoped>
-    .main_section
-    {
-        position: relative;
-        z-index: 3;
-    }
+.main_section
+{
+    position: relative;
+    z-index: 3;
+
+    height: 265px;
+    padding: 75px 22px 25px;
+}
 
 
-    .balance
-    {
-        display: flex;
-        align-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: center;
+.balance
+{
+    display: flex;
+    align-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
 
-        text-align: center;
-    }
-
-
-    .balance .val
-    {
-        font-size: 38px;
-        font-weight: 700;
-
-        width: 100%;
-    }
+    text-align: center;
+}
 
 
+.balance .val
+{
+    font-size: 38px;
+    font-weight: 700;
 
-    .actions
-    {
-        display: flex;
-        align-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-top: 20px;
-    }
+    width: 100%;
+}
 
 
-    .actions .btn
-    {
-        font-size: 12px;
 
-        text-align: center;
-        text-decoration: none;
+.actions
+{
+    display: flex;
+    align-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
 
-        color: currentColor;
-    }
-
-
-    .actions .btn .icon
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 44px;
-        height: 44px;
-        margin: 0 auto 4px;
-
-        background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
-    }
+    margin-top: 20px;
+}
 
 
-    .actions .btn .icon svg
-    {
-        display: block;
+.actions .btn
+{
+    font-size: 12px;
 
-        width: 22px;
-        height: 22px;
-    }
+    text-align: center;
+    text-decoration: none;
+
+    color: currentColor;
+}
+
+
+.actions .btn .icon
+{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 4px;
+
+    background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
+}
+
+
+.actions .btn .icon svg
+{
+    display: block;
+
+    width: 22px;
+    height: 22px;
+}
+
 </style>
