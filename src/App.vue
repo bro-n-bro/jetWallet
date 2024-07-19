@@ -29,14 +29,14 @@
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
 
-            // Disable vertical swipes
-            Telegram.WebApp.enableVerticalSwipes()
-
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
+
+            // Disable vertical swipes
+            Telegram.WebApp.disableVerticalSwipes()
         }
     })
 </script>
