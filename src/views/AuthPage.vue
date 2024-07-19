@@ -418,7 +418,7 @@
     .btns
     {
         opacity: 0;
-        margin-top: 42px;
+        margin-top: auto;
     }
 
     .btns.show
