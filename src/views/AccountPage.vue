@@ -1,11 +1,8 @@
 <template>
     <section class="page_container account_page" :class="{ searching: searchingClass }">
-        <Loader v-if="loading" />
-
-        <template v-else>
-        <section class="top_block">
+        <section class="top_block" v-parallax>
             <!-- Network selection -->
-            <NetworkChooser />
+            <NetworkChooser v-if="store.isInitialized" />
 
             <!-- Scaner -->
             <QRCode />
@@ -31,11 +28,9 @@
             </swiper-container>
         </section>
 
-        <pre>{{ params }}</pre>
 
         <!-- Available tokens -->
         <AvailableTokens />
-        </template>
     </section>
 </template>
 
@@ -45,7 +40,6 @@
     import { useGlobalStore } from '@/store'
 
     // Components
-    import Loader from '@/components/Loader.vue'
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
     import QRCode from '@/components/account/QRCode.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
@@ -55,7 +49,6 @@
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
-        loading = ref(true),
         searchingClass = ref(''),
         swiperInjectStyles = [
             `
@@ -90,21 +83,15 @@
     onBeforeMount(async () => {
         // Init app
         await store.initApp()
-
-        // Hide loader
-        loading.value = false
     })
 
 
     watch(computed(() => store.currentNetwork), async () => {
-        // Show loader
-        loading.value = true
+        // Init status
+        store.isInitialized = false
 
         // Reinit APP
         await store.initApp()
-
-        // Hide loader
-        loading.value = false
     })
 
 

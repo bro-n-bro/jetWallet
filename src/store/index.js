@@ -11,6 +11,7 @@ import bostrom from '@/store/networks/bostrom'
 
 export const useGlobalStore = defineStore('global', {
     state: () => ({
+        isInitialized: false,
         isAuthorized: false,
         authErrorLimit: 4,
 
@@ -58,10 +59,10 @@ export const useGlobalStore = defineStore('global', {
             } = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork']))
 
             // Create singer
-            let result = await createSinger()
+            let signer = await createSinger()
 
-            this.currentAddress = result.address
-            this.signingClient = result.signingClient
+            this.currentAddress = signer.address
+            this.signingClient = signer.signingClient
 
             // Get currencies price
             await this.getCurrenciesPrice()
@@ -86,6 +87,9 @@ export const useGlobalStore = defineStore('global', {
                     this.currentCurrencySymbol = '$'
                     break
             }
+
+            // Init status
+            this.isInitialized = true
         },
 
 

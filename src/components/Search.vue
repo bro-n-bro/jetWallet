@@ -53,24 +53,12 @@
 <style scoped>
     .search
     {
-        position: relative;
-
-        padding: 12px 0;
-    }
-
-
-    .searching .search
-    {
         position: sticky;
         z-index: 5;
+
         top: 0;
-        right: 0;
-        left: 0;
-
-        width: 100%;
-        margin: 0 auto;
-
         background: #170232;
+        padding: 12px 0;
     }
 
 

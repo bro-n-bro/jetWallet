@@ -4,8 +4,9 @@
             <!-- Search -->
             <Search />
 
+            <Loader v-if="!store.isInitialized" />
 
-            <div class="tokens">
+            <div class="tokens" v-else>
                 <div class="count" v-if="searchResult.length === store.balances.length">
                     <b>{{ store.balances.length }}</b> {{ $t('message.available_balance_title') }}
                 </div>
@@ -25,7 +26,7 @@
 
                             <div class="amount">
                                 <div class="val">
-                                    {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 20 }) }}
+                                    {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 18 }) }}
                                 </div>
 
                                 <div class="cost">
@@ -46,11 +47,12 @@
 
 
 <script setup>
-    import { inject, onBeforeMount, ref } from 'vue'
+    import { inject, watch, ref, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenAmount, formatTokenCost, calcTokenCost } from '@/utils'
 
     // Components
+    import Loader from '@/components/Loader.vue'
     import Search from '@/components/Search.vue'
 
 
@@ -59,7 +61,7 @@
         searchResult = ref(null)
 
 
-    onBeforeMount(() => {
+    watch(computed(() => store.isInitialized), () => {
         // Default search result
         searchResult.value = store.balances
     })
@@ -81,6 +83,17 @@
 
 
 <style scoped>
+    .loader_wrap
+    {
+        position: relative;
+
+        height: auto;
+        padding: 20px;
+
+        background: none;
+    }
+
+
     .available_tokens
     {
         position: relative;

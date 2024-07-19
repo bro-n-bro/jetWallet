@@ -8,6 +8,7 @@ import mitt from 'mitt'
 import { register } from 'swiper/element/bundle'
 
 import { vFocus } from './directives/v-focus'
+import { vParallax } from './directives/v-parallax'
 
 
 // Events
@@ -35,6 +36,7 @@ app.provide('emitter', emitter)
 
 // Directives
 app.directive('focus', vFocus)
+app.directive('parallax', vParallax)
 
 
 // Swiper - register

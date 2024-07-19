@@ -1,7 +1,9 @@
 <template>
     <div class="main_section">
+        <Loader v-if="!store.isInitialized" />
+
         <!-- Balance -->
-        <div class="balance">
+        <div class="balance" v-else>
             <div class="label">
                 {{ $t('message.current_balance_title') }}
             </div>
@@ -47,90 +49,104 @@
 
 <script setup>
     import { calcBalancesCost } from '@/utils'
+    import { useGlobalStore } from '@/store'
 
     // Components
+    import Loader from '@/components/Loader.vue'
     import CurrentAddress from '@/components/account/main/Address.vue'
+
+
+    const store = useGlobalStore()
 </script>
 
 
 <style scoped>
-.main_section
-{
-    position: relative;
-    z-index: 3;
+    .main_section
+    {
+        position: relative;
+        z-index: 3;
 
-    height: 265px;
-    padding: 75px 22px 25px;
-}
-
-
-.balance
-{
-    display: flex;
-    align-content: flex-start;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    text-align: center;
-}
+        height: 265px;
+        padding: 75px 22px 25px;
+    }
 
 
-.balance .val
-{
-    font-size: 38px;
-    font-weight: 700;
+    .loader_wrap
+    {
+        position: relative;
 
-    width: 100%;
-}
+        height: 82px;
 
-
-
-.actions
-{
-    display: flex;
-    align-content: flex-start;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    justify-content: space-between;
-
-    margin-top: 20px;
-}
+        background: none;
+    }
 
 
-.actions .btn
-{
-    font-size: 12px;
+    .balance
+    {
+        display: flex;
+        align-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: center;
 
-    text-align: center;
-    text-decoration: none;
-
-    color: currentColor;
-}
-
-
-.actions .btn .icon
-{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    width: 44px;
-    height: 44px;
-    margin: 0 auto 4px;
-
-    background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
-}
+        text-align: center;
+    }
 
 
-.actions .btn .icon svg
-{
-    display: block;
+    .balance .val
+    {
+        font-size: 38px;
+        font-weight: 700;
 
-    width: 22px;
-    height: 22px;
-}
+        width: 100%;
+    }
 
+
+
+    .actions
+    {
+        display: flex;
+        align-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        margin-top: 20px;
+    }
+
+
+    .actions .btn
+    {
+        font-size: 12px;
+
+        text-align: center;
+        text-decoration: none;
+
+        color: currentColor;
+    }
+
+
+    .actions .btn .icon
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 44px;
+        height: 44px;
+        margin: 0 auto 4px;
+
+        background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
+    }
+
+
+    .actions .btn .icon svg
+    {
+        display: block;
+
+        width: 22px;
+        height: 22px;
+    }
 </style>
