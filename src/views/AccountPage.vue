@@ -87,11 +87,13 @@
 
 
     watch(computed(() => store.currentNetwork), async () => {
-        // Init status
-        store.isInitialized = false
+        if (store.isInitialized) {
+            // Init status
+            store.isInitialized = false
 
-        // Reinit APP
-        await store.initApp()
+            // Reinit APP
+            await store.initApp()
+        }
     })
 
 

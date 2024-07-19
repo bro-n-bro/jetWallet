@@ -26,6 +26,12 @@
             // Initialize the mini-application
             await Telegram.WebApp.ready()
 
+            // Set header color
+            Telegram.WebApp.setHeaderColor('#5b3895')
+
+            // Disable vertical swipes
+            Telegram.WebApp.disableVerticalSwipes()
+
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
 
