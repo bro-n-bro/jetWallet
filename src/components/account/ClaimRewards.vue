@@ -101,8 +101,7 @@
             const od = new Odometer({
                 el: document.querySelector('.odometer'),
                 value: rewardsCost.value,
-                format: '( ddddd).ddddddddddddddd',
-                duration: 500
+                format: '( ddddd).ddddddddddddddd'
             })
 
             // Render
