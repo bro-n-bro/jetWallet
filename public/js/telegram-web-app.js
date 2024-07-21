@@ -286,7 +286,7 @@
   var WebApp = {};
   var webAppInitData = '', webAppInitDataUnsafe = {};
   var themeParams = {}, colorScheme = 'light';
-  var webAppVersion = '8.0';
+  var webAppVersion = '7.7';
   var webAppPlatform = 'unknown';
 
   if (initParams.tgWebAppData && initParams.tgWebAppData.length) {
@@ -464,14 +464,14 @@
     WebView.postEvent('web_app_setup_closing_behavior', false, {need_confirmation: isClosingConfirmationEnabled});
   }
 
-  var isVerticalSwipesEnabled = true;
+  var isVerticalSwipesEnabled = false;
   function toggleVerticalSwipes(enable_swipes) {
     if (!versionAtLeast('7.7')) {
       console.warn('[Telegram.WebApp] Changing swipes behavior is not supported in version ' + webAppVersion);
       return;
     }
     isVerticalSwipesEnabled = !!enable_swipes;
-    WebView.postEvent('web_app_setup_swipe_behavior', false, {allow_vertical_swipe: false});
+    WebView.postEvent('web_app_setup_swipe_behavior', false, {allow_vertical_swipe: isVerticalSwipesEnabled});
   }
 
   var headerColorKey = 'bg_color', headerColor = null;
