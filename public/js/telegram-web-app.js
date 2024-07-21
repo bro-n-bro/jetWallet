@@ -470,7 +470,7 @@
       console.warn('[Telegram.WebApp] Changing swipes behavior is not supported in version ' + webAppVersion);
       return;
     }
-    isVerticalSwipesEnabled = !!enable_swipes;
+    isVerticalSwipesEnabled = enable_swipes;
     WebView.postEvent('web_app_setup_swipe_behavior', false, {allow_vertical_swipe: isVerticalSwipesEnabled});
   }
 
