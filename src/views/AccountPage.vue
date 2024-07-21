@@ -18,25 +18,27 @@
             }">
                 <!-- Main section -->
                 <swiper-slide>
-                    <AvailableSection v-if="swiperActiveIndex == 0" />
+                    <!-- <AvailableSection v-if="swiperActiveIndex == 0" /> -->
+                    <AvailableSection />
                 </swiper-slide>
 
                 <!-- Stacked section -->
                 <swiper-slide>
-                    <StackedSection v-if="swiperActiveIndex == 1" />
+                    <!-- <StackedSection v-if="swiperActiveIndex == 1" /> -->
+                    <StackedSection />
                 </swiper-slide>
             </swiper-container>
         </section>
 
 
         <!-- Available tokens -->
-        <AvailableTokens v-if="swiperActiveIndex == 0" />
+        <AvailableTokens v-show="swiperActiveIndex == 0" />
 
         <!-- Claim rewards -->
-        <ClaimRewards v-if="swiperActiveIndex == 1" />
+        <ClaimRewards v-show="swiperActiveIndex == 1" />
 
         <!-- Stacked tokens -->
-        <StakedTokens v-if="swiperActiveIndex == 1" />
+        <StakedTokens v-show="swiperActiveIndex == 1" />
     </section>
 </template>
 
@@ -99,6 +101,9 @@
 
         // Get balances
         await store.getBalances()
+
+        // Get stake balances
+        await store.getstakedBalances()
     })
 
 
@@ -110,16 +115,57 @@
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
 
-            // Get balances
-            if (swiperActiveIndex.value == 0) {
-                await store.getBalances()
-            }
+            // // Get balances
+            // if (swiperActiveIndex.value == 0) {
+            //     await store.getBalances()
+            // }
 
-            // Get stake balances
-            if (swiperActiveIndex.value == 1) {
-                await store.getstakedBalances()
-            }
+            // // Get stake balances
+            // if (swiperActiveIndex.value == 1) {
+            //     await store.getstakedBalances()
+            // }
         })
+
+
+        // Disable overscroll
+        let startY,
+            isPulling = false,
+            threshold = 100
+
+        window.addEventListener('touchstart', e => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY
+                isPulling = true
+            }
+        }, { passive: false })
+
+        window.addEventListener('touchmove', e => {
+            if (!isPulling) return
+
+            let currentY = e.touches[0].pageY,
+                distance = currentY - startY
+
+            if (distance > 0) {
+                if (distance > threshold) {
+                    console.log('Пользователь тянет страницу вниз для обновления')
+                    // Здесь можно показать индикатор загрузки
+
+                    e.preventDefault()
+                    e.stopPropagation()
+                }
+            }
+        }, { passive: false })
+
+        window.addEventListener('touchend', () => {
+            if (isPulling) {
+                isPulling = false
+
+                if (window.scrollY === 0) {
+                    console.log('Начать обновление данных')
+                    // Здесь можно скрыть индикатор загрузки и начать обновление данных
+                }
+            }
+        }, { passive: false })
     })
 
 
@@ -138,14 +184,20 @@
             await store.initApp()
 
             // Get balances
-            if (swiperActiveIndex.value == 0) {
-                await store.getBalances()
-            }
+            await store.getBalances()
 
             // Get stake balances
-            if (swiperActiveIndex.value == 1) {
-                await store.getstakedBalances()
-            }
+            await store.getstakedBalances()
+
+            // // Get balances
+            // if (swiperActiveIndex.value == 0) {
+            //     await store.getBalances()
+            // }
+
+            // // Get stake balances
+            // if (swiperActiveIndex.value == 1) {
+            //     await store.getstakedBalances()
+            // }
         }
     })
 

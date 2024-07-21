@@ -69,6 +69,14 @@
 
     onBeforeMount(async () => {
         // Get rewards
+        if (store.isInitialized) {
+            await store.getRewards()
+        }
+    })
+
+
+    watch(computed(() => store.isInitialized), async () => {
+        // Get rewards
         await store.getRewards()
     })
 
