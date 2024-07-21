@@ -26,6 +26,9 @@
             // Initialize the mini-application
             await Telegram.WebApp.ready()
 
+            // Disable vertical swipes
+            Telegram.WebApp.disableVerticalSwipes()
+
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
 
@@ -34,9 +37,6 @@
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
-
-            // Disable vertical swipes
-            Telegram.WebApp.disableVerticalSwipes()
         }
     })
 </script>

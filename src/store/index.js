@@ -90,6 +90,9 @@ export const useGlobalStore = defineStore('global', {
             // Get currencies price
             await this.getCurrenciesPrice()
 
+            // Get APR for current network
+            await this.getCurrentNetworkAPR()
+
             // Init status
             this.isInitialized = true
         },
@@ -103,6 +106,25 @@ export const useGlobalStore = defineStore('global', {
                     .then(data => this.prices = data)
             } catch (error) {
                 console.error(error)
+            }
+        },
+
+
+        // Get APR for current network
+        async getCurrentNetworkAPR() {
+            try {
+                await fetch('https://rpc.bronbro.io/networks/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.infos.find(chain => {
+                            if (chain.denom == (this.networks[this.currentNetwork].token_name).toLowerCase()) {
+                                // Set network APR
+                                this.networks[this.currentNetwork].APR = chain.apr * 100
+                            }
+                        })
+                    })
+            } catch (err) {
+                console.log(err)
             }
         },
 

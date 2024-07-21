@@ -185,19 +185,19 @@ export const calcBalancesCost = () => {
     // Calc total cost
     store.balances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
 
-    return formatTokenCost(totalPrice)
+    return parseFloat(formatTokenCost(totalPrice))
 }
 
 
 // Calc stake balances cost in current cucrrency
-export const calcstakedBalancesCost = () => {
+export const calcStakedBalancesCost = () => {
     let store = useGlobalStore(),
         totalPrice = 0
 
     // Calc total cost
     store.stakedBalances.forEach(el => totalPrice += calcTokenCost(el.balance.token_info.symbol, el.balance.amount, el.balance.exponent))
 
-    return formatTokenCost(totalPrice)
+    return parseFloat(formatTokenCost(totalPrice))
 }
 
 
@@ -209,7 +209,7 @@ export const calcRewardsBalancesCost = () => {
     // Calc total cost
     store.rewardsBalances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
 
-    return formatTokenCost(totalPrice)
+    return parseFloat(formatTokenCost(totalPrice))
 }
 
 

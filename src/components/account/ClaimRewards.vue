@@ -14,7 +14,7 @@
                         </div>
 
                         <div class="cost">
-                            ~ <span class="odometer">{{ calcRewardsBalancesCost() }}</span> {{ store.currentCurrencySymbol }}
+                            ~ <span class="odometer">{{ rewardsCost }}</span> {{ store.currentCurrencySymbol }}
                         </div>
                     </div>
 
@@ -56,7 +56,7 @@
 <script setup>
     import { ref, onBeforeMount, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenCost, calcTokenCost, calcRewardsBalancesCost } from '@/utils'
+    import { formatTokenCost, calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -64,7 +64,9 @@
 
     const store = useGlobalStore(),
         showDropdown = ref(false),
-        rewardsCost = ref(0)
+        rewardsCost = ref(0),
+        secondProfit = ref(0),
+        stakedBalancesCost = ref(0)
 
 
     onBeforeMount(async () => {
@@ -81,21 +83,36 @@
     })
 
 
+    watch(computed(() => store.isStakedBalancesGot), () => {
+        // Get Staked balances cost
+        stakedBalancesCost.value = calcStakedBalancesCost()
+
+        // Set second percent
+        secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
+    })
+
+
     watch(computed(() => store.isRewardsGot), () => {
-        // setTimeout(() => {
-        //     rewardsCost.value = calcRewardsBalancesCost()
+        setTimeout(() => {
+            // Set rewards cost
+            rewardsCost.value = calcRewardsBalancesCost()
 
-        //     const od = new Odometer({
-        //         el: document.querySelector('.odometer'),
-        //         value: calcRewardsBalancesCost(),
-        //         format: '( ddd).dd',
-        //         duration: 1000,
-        //     })
+            // Init Odometer
+            const od = new Odometer({
+                el: document.querySelector('.odometer'),
+                value: rewardsCost.value,
+                format: '( ddddd).ddddddddddddddd',
+                duration: 500
+            })
 
-        //     od.render()
+            // Render
+            od.render()
 
-        //     setTimeout(() => { od.update(10) }, 1000)
-        // }, 100)
+            setInterval(() => {
+                // Set temp value
+                rewardsCost.value += secondProfit.value * 3
+            }, 3000)
+        })
     })
 </script>
 

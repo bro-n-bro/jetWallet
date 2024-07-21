@@ -127,45 +127,45 @@
         })
 
 
-        // Disable overscroll
-        let startY,
-            isPulling = false,
-            threshold = 100
+        // // Disable overscroll
+        // let startY,
+        //     isPulling = false,
+        //     threshold = 100
 
-        window.addEventListener('touchstart', e => {
-            if (window.scrollY === 0) {
-                startY = e.touches[0].pageY
-                isPulling = true
-            }
-        }, { passive: false })
+        // window.addEventListener('touchstart', e => {
+        //     if (window.scrollY === 0) {
+        //         startY = e.touches[0].pageY
+        //         isPulling = true
+        //     }
+        // }, { passive: false })
 
-        window.addEventListener('touchmove', e => {
-            if (!isPulling) return
+        // window.addEventListener('touchmove', e => {
+        //     if (!isPulling) return
 
-            let currentY = e.touches[0].pageY,
-                distance = currentY - startY
+        //     let currentY = e.touches[0].pageY,
+        //         distance = currentY - startY
 
-            if (distance > 0) {
-                if (distance > threshold) {
-                    console.log('Пользователь тянет страницу вниз для обновления')
-                    // Здесь можно показать индикатор загрузки
+        //     if (distance > 0) {
+        //         if (distance > threshold) {
+        //             console.log('Пользователь тянет страницу вниз для обновления')
+        //             // Здесь можно показать индикатор загрузки
 
-                    e.preventDefault()
-                    e.stopPropagation()
-                }
-            }
-        }, { passive: false })
+        //             e.preventDefault()
+        //             e.stopPropagation()
+        //         }
+        //     }
+        // }, { passive: false })
 
-        window.addEventListener('touchend', () => {
-            if (isPulling) {
-                isPulling = false
+        // window.addEventListener('touchend', () => {
+        //     if (isPulling) {
+        //         isPulling = false
 
-                if (window.scrollY === 0) {
-                    console.log('Начать обновление данных')
-                    // Здесь можно скрыть индикатор загрузки и начать обновление данных
-                }
-            }
-        }, { passive: false })
+        //         if (window.scrollY === 0) {
+        //             console.log('Начать обновление данных')
+        //             // Здесь можно скрыть индикатор загрузки и начать обновление данных
+        //         }
+        //     }
+        // }, { passive: false })
     })
 
 
