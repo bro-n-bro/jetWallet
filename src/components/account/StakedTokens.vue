@@ -1,35 +1,47 @@
 <template>
-    <section class="available_tokens">
+    <section class="stake_tokens">
         <div class="cont">
             <!-- Search -->
             <Search />
 
-            <Loader v-if="!store.isBalancesGot" />
+            <!-- <pre>{{ store.stakedBalances }}</pre> -->
+
+            <Loader v-if="!store.isStakedBalancesGot" />
 
             <div class="tokens" v-else>
-                <div class="count" v-if="searchResult.length === store.balances.length">
-                    <b>{{ store.balances.length }}</b> {{ $t('message.available_tokens_title') }}
+                <div class="count" v-if="searchResult.length === store.stakedBalances.length">
+                    <b>{{ store.stakedBalances.length }}</b> {{ $t('message.staked_tokens_title') }}
                 </div>
 
                 <div class="list" v-if="searchResult.length">
-                    <div class="item" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
+                    <div class="item" v-for="(item, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(item.balance.token_info.symbol, item.balance.amount, item.balance.exponent) * -1000000)};`">
+                        <div class="validator">
+                            <div class="logo">
+                                <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${item.validator_info.operator_address}.png`" alt="" loading="lazy">
+                            </div>
+
+                            <div class="moniker">
+                                {{ item.validator_info.description.moniker }}
+                            </div>
+                        </div>
+
                         <div class="token_wrap">
                             <div class="token">
                                 <div class="logo">
-                                    <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
+                                    <img :src="item.balance.token_info.logo_URIs.svg" :alt="item.balance.token_info.name" loading="lazy">
                                 </div>
 
                                 <div class="denom">
-                                    {{ balance.token_info.symbol }}
+                                    {{ item.balance.token_info.symbol }}
                                 </div>
 
                                 <div class="amount">
                                     <div class="val">
-                                        {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 18 }) }}
+                                        {{ formatTokenAmount(item.balance.amount, item.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 18 }) }}
                                     </div>
 
                                     <div class="cost">
-                                        {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                                        {{ formatTokenCost(calcTokenCost(item.balance.token_info.symbol, item.balance.amount, item.balance.exponent)) }} {{ store.currentCurrencySymbol }}
                                     </div>
                                 </div>
                             </div>
@@ -61,9 +73,9 @@
         searchResult = ref([])
 
 
-    watch(computed(() => store.isBalancesGot), () => {
+    watch(computed(() => store.isStakedBalancesGot), () => {
         // Default search result
-        searchResult.value = store.balances
+        searchResult.value = store.stakedBalances
     })
 
 
@@ -73,9 +85,9 @@
         searchResult.value = []
 
         // Set new result
-        for (let key in store.balances) {
-            if (store.balances[key].token_info.symbol.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
-                searchResult.value.push(store.balances[key])
+        for (let key in store.stakedBalances) {
+            if (store.stakedBalances[key].token_info.symbol.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
+                searchResult.value.push(store.stakedBalances[key])
             }
         }
     })
@@ -94,7 +106,7 @@
     }
 
 
-    .available_tokens
+    .stake_tokens
     {
         position: relative;
         z-index: 9;
@@ -105,7 +117,7 @@
     }
 
 
-    .searching .available_tokens
+    .searching .stake_tokens
     {
         overflow: auto;
         flex: none;
@@ -168,6 +180,48 @@
     .tokens .list > *
     {
         margin-top: 8px;
+    }
+
+
+
+    .tokens .validator
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+
+    .tokens .validator .logo
+    {
+        width: 20px;
+        height: 20px;
+
+        border-radius: 50%;
+        background: rgba(255,255,255,.15);
+    }
+
+
+    .tokens .validator .logo img
+    {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50%;
+    }
+
+
+    .tokens .validator .moniker
+    {
+        align-self: center;
+
+        width: calc(100% - 28px);
     }
 
 

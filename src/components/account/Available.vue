@@ -1,6 +1,6 @@
 <template>
-    <div class="main_section">
-        <Loader v-if="!store.isInitialized" />
+    <div class="available_section">
+        <Loader v-if="!store.isBalancesGot" />
 
         <!-- Balance -->
         <div class="balance" v-else>
@@ -13,7 +13,7 @@
             </div>
 
             <!-- Address -->
-            <CurrentAddress />
+            <Address />
         </div>
 
 
@@ -35,33 +35,35 @@
                 <div>{{ $t('message.btn_receive') }}</div>
             </router-link>
 
-            <router-link to="/account" class="btn">
+            <button class="btn" @click.prevent="emitter.emit('swiper_slideTo', { index: 1 })">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                 </div>
 
                 <div>{{ $t('message.btn_stake') }}</div>
-            </router-link>
+            </button>
         </div>
     </div>
 </template>
 
 
 <script setup>
+    import { inject } from 'vue'
     import { calcBalancesCost } from '@/utils'
     import { useGlobalStore } from '@/store'
 
     // Components
     import Loader from '@/components/Loader.vue'
-    import CurrentAddress from '@/components/account/main/Address.vue'
+    import Address from '@/components/account/Address.vue'
 
 
-    const store = useGlobalStore()
+    const store = useGlobalStore(),
+        emitter = inject('emitter')
 </script>
 
 
 <style scoped>
-    .main_section
+    .available_section
     {
         position: relative;
         z-index: 3;
@@ -78,75 +80,5 @@
         height: 82px;
 
         background: none;
-    }
-
-
-    .balance
-    {
-        display: flex;
-        align-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        text-align: center;
-    }
-
-
-    .balance .val
-    {
-        font-size: 38px;
-        font-weight: 700;
-
-        width: 100%;
-    }
-
-
-
-    .actions
-    {
-        display: flex;
-        align-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-top: 20px;
-    }
-
-
-    .actions .btn
-    {
-        font-size: 12px;
-
-        text-align: center;
-        text-decoration: none;
-
-        color: currentColor;
-    }
-
-
-    .actions .btn .icon
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 44px;
-        height: 44px;
-        margin: 0 auto 4px;
-
-        background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
-    }
-
-
-    .actions .btn .icon svg
-    {
-        display: block;
-
-        width: 22px;
-        height: 22px;
     }
 </style>

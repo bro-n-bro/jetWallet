@@ -54,7 +54,14 @@ export default {
 
             // Account page
             'current_balance_title': 'Current balance',
-            'available_balance_title': 'Available Balance',
+            'stacked_balance_title': 'Total Staked',
+
+            'available_tokens_title': 'Available Balance',
+            'staked_tokens_title': 'Staked Balance',
+
+
+            // Claim rewards
+            'claim_rewards_title': 'Claimable Staking Reward',
 
 
             // Search
@@ -77,6 +84,9 @@ export default {
             'btn_send': 'Send',
             'btn_receive': 'Receive',
             'btn_stake': 'Stake',
+            'btn_unstake': 'Unstake',
+            'btn_restake': 'Restake',
+            'btn_claim': 'Claim'
         }
     }
 }

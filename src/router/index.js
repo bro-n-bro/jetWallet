@@ -98,39 +98,37 @@ router.beforeResolve(async (to, from, next) => {
 		if(access.length) {
 			// Not register
 			if(access.includes('not_register') && !isRegister) {
-				console.log('111')
 				next({ name: 'MainPage' })
 
 				return false
 			}
 
 			// Register
-			if(access.includes('register') && isRegister) {
-				console.log('222')
+			else if(access.includes('register') && isRegister) {
 				next({ name: 'Auth' })
 
 				return false
 			}
 
 			// Not authorized
-			if(access.includes('not_authorized') && !store.isAuthorized) {
-				console.log('333')
+			else if(access.includes('not_authorized') && !store.isAuthorized) {
 				next({ name: 'Auth' })
 
 				return false
 			}
 
 			// Authorized
-			if(access.includes('authorized') && store.isAuthorized) {
-				console.log('444')
+			else if(access.includes('authorized') && store.isAuthorized) {
 				next({ name: 'Account' })
 
 				return false
 			}
+
+			else {
+				next()
+			}
 		}
 	})
-
-	next()
 })
 
 

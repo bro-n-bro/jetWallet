@@ -94,6 +94,7 @@
         margin-right: 12px;
 
         border-radius: 50%;
+        background: rgba(0,0,0,.3);
     }
 
 
@@ -191,6 +192,7 @@
         margin-right: 12px;
 
         border-radius: 50%;
+        background: rgba(0,0,0,.3);
     }
 
 

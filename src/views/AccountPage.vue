@@ -11,45 +11,58 @@
             <CurrentCurrency />
 
             <!-- Swiper -->
-            <swiper-container :injectStyles="swiperInjectStyles" :pagination="{
+            <swiper-container :injectStyles="swiperInjectStyles" speed="500" :pagination="{
 				type: 'bullets',
 				clickable: true,
 				bulletActiveClass: 'active'
             }">
                 <!-- Main section -->
                 <swiper-slide>
-                    <MainSection />
+                    <AvailableSection v-if="swiperActiveIndex == 0" />
                 </swiper-slide>
 
-                <!-- Main section -->
+                <!-- Stacked section -->
                 <swiper-slide>
-                    <MainSection />
+                    <StackedSection v-if="swiperActiveIndex == 1" />
                 </swiper-slide>
             </swiper-container>
         </section>
 
 
         <!-- Available tokens -->
-        <AvailableTokens />
+        <AvailableTokens v-if="swiperActiveIndex == 0" />
+
+        <!-- Claim rewards -->
+        <ClaimRewards v-if="swiperActiveIndex == 1" />
+
+        <!-- Stacked tokens -->
+        <StakedTokens v-if="swiperActiveIndex == 1" />
     </section>
 </template>
 
 
 <script setup>
-    import { ref, onBeforeMount, watch, computed, inject } from 'vue'
+    import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
 
     // Components
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
     import QRCode from '@/components/account/QRCode.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
-    import MainSection from '@/components/account/Main.vue'
+
+    import AvailableSection from '@/components/account/Available.vue'
+    import StackedSection from '@/components/account/Stacked.vue'
+
     import AvailableTokens from '@/components/account/AvailableTokens.vue'
+    import ClaimRewards from '@/components/account/ClaimRewards.vue'
+    import StakedTokens from '@/components/account/StakedTokens.vue'
 
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         searchingClass = ref(''),
+        swiperEl = ref(null),
+        swiperActiveIndex = ref(0),
         swiperInjectStyles = [
             `
             .swiper-horizontal > .swiper-pagination-bullets,
@@ -83,6 +96,30 @@
     onBeforeMount(async () => {
         // Init app
         await store.initApp()
+
+        // Get balances
+        await store.getBalances()
+    })
+
+
+    onMounted(() => {
+        // Get swiper instance
+        swiperEl.value = document.querySelector('swiper-container')
+
+        swiperEl.value.addEventListener('swiperslidechangetransitionstart', async e => {
+            // Set active slide
+            swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
+
+            // Get balances
+            if (swiperActiveIndex.value == 0) {
+                await store.getBalances()
+            }
+
+            // Get stake balances
+            if (swiperActiveIndex.value == 1) {
+                await store.getstakedBalances()
+            }
+        })
     })
 
 
@@ -91,9 +128,32 @@
             // Init status
             store.isInitialized = false
 
+            // Balances status
+            store.isBalancesGot = false
+
+            // Stake balances status
+            store.isStakedBalancesGot = false
+
             // Reinit APP
             await store.initApp()
+
+            // Get balances
+            if (swiperActiveIndex.value == 0) {
+                await store.getBalances()
+            }
+
+            // Get stake balances
+            if (swiperActiveIndex.value == 1) {
+                await store.getstakedBalances()
+            }
         }
+    })
+
+
+    // Event "swiper_slideTo"
+    emitter.on('swiper_slideTo', ({ index }) => {
+        // Swiper move slides
+        swiperEl.value.swiper.slideTo(index, 500)
     })
 
 
@@ -110,65 +170,135 @@
 </script>
 
 
-<style scoped>
-.account_page
-{
-    display: flex;
-    flex-direction: column;
+<style>
+    .account_page
+    {
+        display: flex;
+        flex-direction: column;
 
-    padding-top: 265px;
+        padding-top: 265px;
 
-    transition: padding-top .2s linear;
+        transition: padding-top .2s linear;
 
-    background: #170232;
-}
-
-
-.account_page.searching
-{
-    padding-top: 0;
-}
+        background: #170232;
+    }
 
 
-
-.top_block
-{
-    position: fixed;
-    z-index: 3;
-    top: 0;
-    left: 0;
-
-    width: 100%;
-
-    transition: opacity .2s linear;
-
-    border-radius: 0 0 15px 15px;
-}
+    .account_page.searching
+    {
+        padding-top: 0;
+    }
 
 
-.searching .top_block
-{
-    pointer-events: none;
 
-    opacity: 0;
-}
+    .top_block
+    {
+        position: fixed;
+        z-index: 3;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+
+        transition: opacity .2s linear;
+
+        border-radius: 0 0 15px 15px;
+    }
 
 
-.top_block:before
-{
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
+    .searching .top_block
+    {
+        pointer-events: none;
 
-    width: 100%;
-    height: 100%;
+        opacity: 0;
+    }
 
-    content: '';
-    pointer-events: none;
 
-    opacity: .8;
-    border-radius: inherit;
-    background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
-}
+    .top_block:before
+    {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        content: '';
+        pointer-events: none;
+
+        opacity: .8;
+        border-radius: inherit;
+        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+    }
+
+
+    .top_block .balance
+    {
+        display: flex;
+        align-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        text-align: center;
+    }
+
+
+    .top_block .balance .val
+    {
+        font-size: 38px;
+        font-weight: 700;
+
+        width: 100%;
+    }
+
+
+
+    .top_block .actions
+    {
+        display: flex;
+        align-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        margin-top: 20px;
+    }
+
+
+    .top_block .actions .btn
+    {
+        font-size: 12px;
+
+        text-align: center;
+        text-decoration: none;
+
+        color: currentColor;
+    }
+
+
+    .top_block .actions .btn .icon
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 44px;
+        height: 44px;
+        margin: 0 auto 4px;
+
+        background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
+    }
+
+
+    .top_block .actions .btn .icon svg
+    {
+        display: block;
+
+        width: 22px;
+        height: 22px;
+    }
 </style>

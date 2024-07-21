@@ -12,6 +12,9 @@ import bostrom from '@/store/networks/bostrom'
 export const useGlobalStore = defineStore('global', {
     state: () => ({
         isInitialized: false,
+        isBalancesGot: false,
+        isStakedBalancesGot: false,
+        isRewardsGot: false,
         isAuthorized: false,
         authErrorLimit: 4,
 
@@ -22,6 +25,8 @@ export const useGlobalStore = defineStore('global', {
 
         prices: [],
         balances: [],
+        stakedBalances: [],
+        rewardsBalances: [],
         signingClient: {},
 
         secret: null,
@@ -64,12 +69,6 @@ export const useGlobalStore = defineStore('global', {
             this.currentAddress = signer.address
             this.signingClient = signer.signingClient
 
-            // Get currencies price
-            await this.getCurrenciesPrice()
-
-            // Get balances
-            await this.getBalances()
-
             // Set current currency symbol
             switch (this.currentCurrency) {
                 case 'BTC':
@@ -87,6 +86,9 @@ export const useGlobalStore = defineStore('global', {
                     this.currentCurrencySymbol = '$'
                     break
             }
+
+            // Get currencies price
+            await this.getCurrenciesPrice()
 
             // Init status
             this.isInitialized = true
@@ -107,55 +109,150 @@ export const useGlobalStore = defineStore('global', {
 
         // Get balances
         async getBalances() {
+            // Balances status
+            this.isBalancesGot = false
+
             // Request
             this.balances = await this.signingClient.getAllBalances(this.currentAddress)
 
+            // Get balance info
             for (let balance of this.balances) {
-                // Denom traces
-                let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
-
-                // Get (token info/chain name) from assets
-                for (let asset of assets) {
-                    // Exceptions
-                    switch (base_denom) {
-                        case 'uusdc':
-                            var currentAsset = assets.find(el => el.chain_name === 'noble')
-                            break;
-
-                        default:
-                            var currentAsset = asset
-                            break;
-                    }
-
-                    // Token info
-                    let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
-
-                    if (tokenInfo) {
-                        // Set data
-                        balance.token_info = tokenInfo
-                        balance.chain_name = currentAsset.chain_name
-
-                        break
-                    }
-                }
-
-                // Format denom exponent
-                let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
-
-                // Set exponent for denom
-                formatableToken
-                    ? balance.exponent = formatableToken.exponent
-                    : balance.exponent = balance.token_info.denom_units[1]?.exponent || 0
-
-                // Get chain info
-                balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
-
-                // Get price
-                balance.price = getPriceByDenom(balance.token_info.symbol)
+                await this.getBalanceInfo(balance)
             }
 
             // Clear balances
             this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+
+            // Balances status
+            this.isBalancesGot = true
+        },
+
+
+        // Get stake balances
+        async getstakedBalances() {
+            // Balances status
+            this.isStakedBalancesGot = false
+
+            // Request
+            try {
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
+                    .then(response => response.json())
+                    .then(async data => {
+                        if (data.delegation_responses) {
+                            // Set data
+                            this.stakedBalances = data.delegation_responses
+
+                            for (let item of this.stakedBalances) {
+                                // Get balance info
+                                await this.getBalanceInfo(item.balance)
+
+                                // Get validator info
+                                await this.getValidatorInfo(item)
+                            }
+                        }
+                    })
+
+                // Clear balances
+                this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
+
+                // Stake balances status
+                this.isStakedBalancesGot = true
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
+        // Get rewards
+        async getRewards() {
+            // Rewards status
+            this.isRewardsGot = false
+
+            // Request
+            try {
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/distribution/v1beta1/delegators/${this.currentAddress}/rewards`)
+                    .then(response => response.json())
+                    .then(async data => {
+                        if (data.total.length) {
+                            // Set data
+                            this.rewardsBalances = data.total
+
+                            for (let balance of this.rewardsBalances) {
+                                // Get balance info
+                                await this.getBalanceInfo(balance)
+                            }
+                        }
+                    })
+
+                // Clear rewards
+                this.rewardsBalances = this.rewardsBalances.filter(balance => balance.hasOwnProperty('exponent'))
+
+                // Rewards status
+                this.isRewardsGot = true
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
+        // Get balance info
+        async getBalanceInfo(balance) {
+            // Denom traces
+            let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
+
+            // Get (token info/chain name) from assets
+            for (let asset of assets) {
+                // Exceptions
+                switch (base_denom) {
+                    case 'uusdc':
+                        var currentAsset = assets.find(el => el.chain_name === 'noble')
+                        break;
+
+                    default:
+                        var currentAsset = asset
+                        break;
+                }
+
+                // Token info
+                let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
+
+                if (tokenInfo) {
+                    // Set data
+                    balance.token_info = tokenInfo
+                    balance.chain_name = currentAsset.chain_name
+
+                    break
+                }
+            }
+
+            // Format denom exponent
+            let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
+
+            // Set exponent for denom
+            formatableToken
+                ? balance.exponent = formatableToken.exponent
+                : balance.exponent = balance.token_info.denom_units[1]?.exponent || 0
+
+            // Get chain info
+            balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
+
+            // Get price
+            balance.price = getPriceByDenom(balance.token_info.symbol)
+        },
+
+
+        // Get validator info
+        async getValidatorInfo(item) {
+            try {
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators/${item.delegation.validator_address}`)
+                    .then(res => res.json())
+                    .then(response => {
+                        // Set data
+                        item.validator_info = response.validator
+                    })
+            } catch (error) {
+                console.error(error)
+            }
         },
 
 

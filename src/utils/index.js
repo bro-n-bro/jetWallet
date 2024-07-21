@@ -189,6 +189,30 @@ export const calcBalancesCost = () => {
 }
 
 
+// Calc stake balances cost in current cucrrency
+export const calcstakedBalancesCost = () => {
+    let store = useGlobalStore(),
+        totalPrice = 0
+
+    // Calc total cost
+    store.stakedBalances.forEach(el => totalPrice += calcTokenCost(el.balance.token_info.symbol, el.balance.amount, el.balance.exponent))
+
+    return formatTokenCost(totalPrice)
+}
+
+
+// Calc rewards balances cost in current cucrrency
+export const calcRewardsBalancesCost = () => {
+    let store = useGlobalStore(),
+        totalPrice = 0
+
+    // Calc total cost
+    store.rewardsBalances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+
+    return formatTokenCost(totalPrice)
+}
+
+
 
 // Get metwork logo
 export const getNetworkLogo = chainId => {
