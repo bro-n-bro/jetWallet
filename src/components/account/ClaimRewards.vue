@@ -14,7 +14,7 @@
                         </div>
 
                         <div class="cost">
-                            <span class="odometer">{{ formatTokenCost(calcRewardsBalancesCost()) }}</span> {{ store.currentCurrencySymbol }}
+                            ~ <div class="odometer" v-odometer="rewardsCost"></div> {{ store.currentCurrencySymbol }}
                         </div>
                     </div>
 
@@ -66,6 +66,9 @@
 
     const store = useGlobalStore(),
         showDropdown = ref(false),
+        rewardsCost = ref(0),
+        secondProfit = ref(0),
+        stakedBalancesCost = ref(0),
         filteredRewardsBalances = ref(store.rewardsBalances.filter(balance => balance.chain_info.chain_id == store.networks[store.currentNetwork].chain_id))
 
 
@@ -81,191 +84,225 @@
         // Get rewards
         await store.getRewards()
     })
+
+
+    watch(computed(() => store.isStakedBalancesGot), () => {
+        // Get Staked balances cost
+        stakedBalancesCost.value = calcStakedBalancesCost()
+
+        // Set second percent
+        secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
+
+        console.log(secondProfit.value)
+    })
+
+
+    watch(computed(() => store.isRewardsGot), () => {
+        // Set rewards cost
+        rewardsCost.value = calcRewardsBalancesCost()
+
+        // Update rewards cost
+        setInterval(() => rewardsCost.value += secondProfit.value * 3, 3000)
+    })
 </script>
 
 
 <style scoped>
-    .claim_rewards
-    {
-        position: relative;
-        z-index: 9;
+.claim_rewards
+{
+    position: relative;
+    z-index: 9;
 
-        padding-top: 12px;
+    padding-top: 12px;
 
-        background: #170232;
-    }
-
-
-    .data_wrap
-    {
-        padding: 1px;
-
-        border-radius: 12px;
-        background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
-    }
+    background: #170232;
+}
 
 
-    .data
-    {
-        position: relative;
+.data_wrap
+{
+    padding: 1px;
 
-        display: flex;
-        align-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        padding: 5px 9px;
-
-        border-radius: 11px;
-        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
-    }
+    border-radius: 12px;
+    background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
+}
 
 
+.data
+{
+    position: relative;
 
-    .loader_wrap
-    {
-        position: relative;
+    display: flex;
+    align-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
 
-        height: 63.23px;
+    padding: 5px 9px;
 
-        background: none;
-    }
+    border-radius: 11px;
+    background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+}
 
 
 
-    .title
-    {
-        font-size: 14px;
-        font-weight: 500;
+.loader_wrap
+{
+    position: relative;
 
-        color: #b78ce6;
-    }
+    height: 63.23px;
 
-
-
-    .cost
-    {
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 20px;
-
-        white-space: nowrap;
-    }
+    background: none;
+}
 
 
 
-    .btn
-    {
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 100%;
+.title
+{
+    font-size: 14px;
+    font-weight: 500;
 
-        width: 71px;
-        height: 34px;
-        margin-left: auto;
-
-        border-radius: 8px;
-        background: #5b3895;
-    }
+    color: #b78ce6;
+}
 
 
 
-    .spoler_btn
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
+.cost
+{
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
 
-        width: 100%;
-        height: 22px;
-    }
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
 
-
-    .spoler_btn .icon
-    {
-        display: block;
-
-        width: 10px;
-        height: 11px;
-
-        transition: .2s linear;
-    }
+    white-space: nowrap;
+}
 
 
-    .spoler_btn.active .icon
-    {
-        transform: rotate(180deg);
-    }
+.cost .odometer
+{
+    margin: 0 4px;
+}
 
 
 
-    .list
-    {
-        display: flex;
-        flex-direction: column;
-    }
+.btn
+{
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 100%;
+
+    width: 71px;
+    height: 34px;
+    margin-left: auto;
+
+    border-radius: 8px;
+    background: #5b3895;
+}
 
 
 
-    .token
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
+.spoler_btn
+{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 
-        width: 100%;
-    }
-
-
-    .token .logo
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 55px;
-        height: 55px;
-        margin-right: 8px;
-        padding: 8px;
-
-        border-radius: 11px;
-    }
+    width: 100%;
+    height: 22px;
+}
 
 
-    .token .logo img
-    {
-        display: block;
+.spoler_btn .icon
+{
+    display: block;
 
-        max-width: 100%;
-        max-height: 100%;
-    }
+    width: 10px;
+    height: 11px;
 
-
-    .token .logo + *
-    {
-        width: calc(100% - 63px);
-    }
+    transition: .2s linear;
+}
 
 
-    .token .denom
-    {
-        font-size: 16px;
-        font-weight: 500;
-
-        text-transform: uppercase;
-    }
+.spoler_btn.active .icon
+{
+    transform: rotate(180deg);
+}
 
 
-    .token .price
-    {
-        font-size: 16px;
-        font-weight: 500;
-    }
+
+.list
+{
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.token
+{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    width: 100%;
+}
+
+
+.token .logo
+{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    width: 55px;
+    height: 55px;
+    margin-right: 8px;
+    padding: 8px;
+
+    border-radius: 11px;
+}
+
+
+.token .logo img
+{
+    display: block;
+
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+.token .logo + *
+{
+    width: calc(100% - 63px);
+}
+
+
+.token .denom
+{
+    font-size: 16px;
+    font-weight: 500;
+
+    text-transform: uppercase;
+}
+
+
+.token .price
+{
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
 </style>

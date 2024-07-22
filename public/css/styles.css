@@ -769,6 +769,44 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 
 
+/*--------------
+    Odometer
+--------------*/
+.odometer
+{
+    display: flex;
+    overflow: hidden;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+
+.odometer .digit
+{
+    position: relative;
+}
+
+
+.odometer .digit span
+{
+    display: block;
+
+    transition: .5s linear;
+    text-align: center;
+}
+
+
+.odometer .digit .new
+{
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+}
+
+
+
 /*-----------
     Modal
 -----------*/

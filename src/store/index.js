@@ -119,7 +119,7 @@ export const useGlobalStore = defineStore('global', {
                         data.infos.find(chain => {
                             if (chain.denom == (this.networks[this.currentNetwork].token_name).toLowerCase()) {
                                 // Set network APR
-                                this.networks[this.currentNetwork].APR = chain.apr * 100
+                                this.networks[this.currentNetwork].APR = chain.apr
                             }
                         })
                     })

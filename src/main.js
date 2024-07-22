@@ -9,6 +9,7 @@ import { register } from 'swiper/element/bundle'
 
 import { vFocus } from './directives/v-focus'
 import { vParallax } from './directives/v-parallax'
+import { vOdometer } from './directives/v-odometer'
 
 
 // Events
@@ -37,6 +38,7 @@ app.provide('emitter', emitter)
 // Directives
 app.directive('focus', vFocus)
 app.directive('parallax', vParallax)
+app.directive('odometer', vOdometer)
 
 
 // Swiper - register
