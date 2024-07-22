@@ -881,35 +881,3 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
     margin-top: 32px;
 }
-
-
-
-.odometer.odometer-auto-theme, .odometer.odometer-theme-default
-{
-    font-family: var(--font_family) !important;
-    font-size: 16px !important;
-    line-height: 20px !important;
-
-    position: relative !important;
-    top: 1px !important;
-
-    margin-right: 2px !important;
-    margin-left: 2px !important;
-}
-
-
-.odometer-inside
-{
-    display: flex !important;
-    align-content: center !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    justify-content: flex-start !important;
-}
-
-
-.odometer.odometer-auto-theme .odometer-digit .odometer-digit-inner,
-.odometer.odometer-theme-default .odometer-digit .odometer-digit-inner
-{
-    overflow: visible !important;
-}
