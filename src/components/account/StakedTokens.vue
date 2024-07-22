@@ -193,6 +193,7 @@
         justify-content: space-between;
         font-size: 15px;
         margin-bottom: 6px;
+        padding: 0 10px;
     }
 
 

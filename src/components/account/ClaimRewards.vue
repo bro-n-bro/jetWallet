@@ -28,18 +28,20 @@
 
                     <div class="dropdown" v-show="showDropdown">
                         <div class="list">
-                            <div class="token" v-for="(balance, index) in store.rewardsBalances" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
-                                <div class="logo">
-                                    <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
-                                </div>
-
-                                <div>
-                                    <div class="denom">
-                                        {{ balance.token_info.symbol }}
+                            <div class="token_wrap" v-for="(balance, index) in filteredRewardsBalances" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
+                                <div class="token">
+                                    <div class="logo">
+                                        <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
                                     </div>
 
-                                    <div class="cost">
-                                        {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                                    <div>
+                                        <div class="denom">
+                                            {{ balance.token_info.symbol }}
+                                        </div>
+
+                                        <div class="cost">
+                                            {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -63,7 +65,8 @@
 
 
     const store = useGlobalStore(),
-        showDropdown = ref(false)
+        showDropdown = ref(false),
+        filteredRewardsBalances = ref(store.rewardsBalances.filter(balance => balance.chain_info.chain_id == store.networks[store.currentNetwork].chain_id))
 
 
     onBeforeMount(async () => {
