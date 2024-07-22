@@ -137,13 +137,15 @@ export const useGlobalStore = defineStore('global', {
             // Request
             this.balances = await this.signingClient.getAllBalances(this.currentAddress)
 
-            // Get balance info
-            for (let balance of this.balances) {
-                await this.getBalanceInfo(balance)
-            }
+            if (this.balances.length) {
+                // Get balance info
+                for (let balance of this.balances) {
+                    await this.getBalanceInfo(balance)
+                }
 
-            // Clear balances
-            this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+                // Clear balances
+                this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+            }
 
             // Balances status
             this.isBalancesGot = true
@@ -171,11 +173,11 @@ export const useGlobalStore = defineStore('global', {
                                 // Get validator info
                                 await this.getValidatorInfo(item)
                             }
+
+                            // Clear balances
+                            this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
                         }
                     })
-
-                // Clear balances
-                this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
 
                 // Stake balances status
                 this.isStakedBalancesGot = true
@@ -203,11 +205,11 @@ export const useGlobalStore = defineStore('global', {
                                 // Get balance info
                                 await this.getBalanceInfo(balance)
                             }
+
+                            // Clear rewards
+                            this.rewardsBalances = this.rewardsBalances.filter(balance => balance.hasOwnProperty('exponent'))
                         }
                     })
-
-                // Clear rewards
-                this.rewardsBalances = this.rewardsBalances.filter(balance => balance.hasOwnProperty('exponent'))
 
                 // Rewards status
                 this.isRewardsGot = true

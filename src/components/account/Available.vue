@@ -9,7 +9,7 @@
             </div>
 
             <div class="val">
-                {{ calcBalancesCost() }}
+                {{ formatTokenCost(calcBalancesCost()) }}
             </div>
 
             <!-- Address -->
@@ -49,7 +49,7 @@
 
 <script setup>
     import { inject } from 'vue'
-    import { calcBalancesCost } from '@/utils'
+    import { formatTokenCost, calcBalancesCost } from '@/utils'
     import { useGlobalStore } from '@/store'
 
     // Components

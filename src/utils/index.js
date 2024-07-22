@@ -183,9 +183,11 @@ export const calcBalancesCost = () => {
         totalPrice = 0
 
     // Calc total cost
-    store.balances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+    if (store.balances.length) {
+        store.balances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+    }
 
-    return parseFloat(formatTokenCost(totalPrice))
+    return parseFloat(totalPrice)
 }
 
 
@@ -195,9 +197,11 @@ export const calcStakedBalancesCost = () => {
         totalPrice = 0
 
     // Calc total cost
-    store.stakedBalances.forEach(el => totalPrice += calcTokenCost(el.balance.token_info.symbol, el.balance.amount, el.balance.exponent))
+    if (store.stakedBalances.length) {
+        store.stakedBalances.forEach(el => totalPrice += calcTokenCost(el.balance.token_info.symbol, el.balance.amount, el.balance.exponent))
+    }
 
-    return parseFloat(formatTokenCost(totalPrice))
+    return parseFloat(totalPrice)
 }
 
 
@@ -207,9 +211,11 @@ export const calcRewardsBalancesCost = () => {
         totalPrice = 0
 
     // Calc total cost
-    store.rewardsBalances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+    if (store.rewardsBalances.length) {
+        store.rewardsBalances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+    }
 
-    return parseFloat(formatTokenCost(totalPrice))
+    return parseFloat(totalPrice)
 }
 
 

@@ -9,7 +9,7 @@
             </div>
 
             <div class="val">
-                {{ calcStakedBalancesCost() }}
+                {{ formatTokenCost(calcStakedBalancesCost()) }}
             </div>
 
             <!-- Address -->
@@ -48,7 +48,7 @@
 
 
 <script setup>
-    import { calcStakedBalancesCost } from '@/utils'
+    import { formatTokenCost, calcStakedBalancesCost } from '@/utils'
     import { useGlobalStore } from '@/store'
 
     // Components
