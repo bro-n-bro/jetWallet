@@ -123,10 +123,12 @@ router.beforeResolve(async (to, from, next) => {
 
 				return false
 			}
+
+			else {
+				next()
+			}
 		}
 	})
-
-	next()
 })
 
 
