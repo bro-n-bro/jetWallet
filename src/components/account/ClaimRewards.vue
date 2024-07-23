@@ -18,11 +18,11 @@
                         </div>
                     </div>
 
-                    <button class="btn">
+                    <button class="btn" :disabled="!rewardsCost">
                         {{ $t('message.btn_claim') }}
                     </button>
 
-                    <button class="spoler_btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
+                    <button class="spoler_btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }" v-if="rewardsCost">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver"></use></svg>
                     </button>
 
@@ -68,12 +68,21 @@
         showDropdown = ref(false),
         rewardsCost = ref(0),
         secondProfit = ref(0),
-        stakedBalancesCost = ref(0)
+        stakedBalancesCost = ref(0),
+        intervalID = ref(null)
 
 
     watch(computed(() => store.isInitialized), async () => {
+        // Rewards status
+        store.isRewardsGot = false
+
+        // Clear interval
+        clearInterval(intervalID.value)
+
         // Get rewards
-        await store.getRewards()
+        if (store.isInitialized) {
+            await store.getRewards()
+        }
     })
 
 
@@ -82,9 +91,9 @@
         stakedBalancesCost.value = calcStakedBalancesCost()
 
         // Set second percent
-        secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
-
-        console.log(secondProfit.value)
+        if (stakedBalancesCost.value) {
+            secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
+        }
     })
 
 
@@ -93,7 +102,9 @@
         rewardsCost.value = calcRewardsBalancesCost()
 
         // Update rewards cost
-        setInterval(() => rewardsCost.value += secondProfit.value * 3, 3000)
+        if (rewardsCost.value) {
+            intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 3, 3000)
+        }
     })
 </script>
 
@@ -199,6 +210,14 @@
 
         border-radius: 8px;
         background: #5b3895;
+    }
+
+
+    .btn:disabled
+    {
+        pointer-events: none;
+
+        opacity: .5;
     }
 
 

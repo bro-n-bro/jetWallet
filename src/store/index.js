@@ -211,6 +211,9 @@ export const useGlobalStore = defineStore('global', {
 
                             // Filter rewards
                             this.rewardsBalances = this.rewardsBalances.filter(balance => balance.chain_info.chain_id == this.networks[this.currentNetwork].chain_id)
+                        } else {
+                            // Clear data
+                            this.rewardsBalances = []
                         }
                     })
 
