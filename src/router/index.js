@@ -127,6 +127,8 @@ router.beforeResolve(async (to, from, next) => {
 			else {
 				next()
 			}
+		} else {
+			next()
 		}
 	})
 })
