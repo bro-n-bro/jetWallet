@@ -208,6 +208,9 @@ export const useGlobalStore = defineStore('global', {
 
                             // Clear rewards
                             this.rewardsBalances = this.rewardsBalances.filter(balance => balance.hasOwnProperty('exponent'))
+
+                            // Filter rewards
+                            this.rewardsBalances = this.rewardsBalances.filter(balance => balance.chain_info.chain_id == this.networks[this.currentNetwork].chain_id)
                         }
                     })
 

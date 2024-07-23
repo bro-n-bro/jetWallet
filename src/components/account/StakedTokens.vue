@@ -86,7 +86,7 @@
 
         // Set new result
         for (let key in store.stakedBalances) {
-            if (store.stakedBalances[key].token_info.symbol.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
+            if (store.stakedBalances[key].validator_info.description.moniker.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
                 searchResult.value.push(store.stakedBalances[key])
             }
         }

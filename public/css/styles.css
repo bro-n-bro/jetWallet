@@ -780,6 +780,8 @@ input[type='password']::-webkit-credentials-auto-fill-button
     align-items: center;
     flex-wrap: wrap;
     justify-content: flex-start;
+
+    font-feature-settings: 'tnum';
 }
 
 
@@ -803,6 +805,25 @@ input[type='password']::-webkit-credentials-auto-fill-button
     position: absolute;
     bottom: 100%;
     left: 0;
+}
+
+
+.odometer .digit.animate .old,
+.odometer .digit.animate .new
+{
+    animation-name: odometerMoveDown;
+    animation-timing-function: linear;
+
+    animation-fill-mode: forwards;
+}
+
+
+@keyframes odometerMoveDown
+{
+    to
+    {
+        transform: translateY(100%);
+    }
 }
 
 
