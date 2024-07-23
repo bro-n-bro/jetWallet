@@ -820,7 +820,26 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 @keyframes odometerMoveDown
 {
-    to
+    0%
+    {
+        transform: translateY(0%);
+    }
+
+    100%
+    {
+        transform: translateY(100%);
+    }
+}
+
+
+@-webkit-keyframes odometerMoveDown
+{
+    0%
+    {
+        transform: translateY(0%);
+    }
+
+    100%
     {
         transform: translateY(100%);
     }
