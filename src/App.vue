@@ -32,12 +32,6 @@
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
 
-            // Show bottom panel
-            Telegram.WebApp.MainButton.setParams({
-                is_active: true,
-                is_visible: true
-            })
-
             // Show progress
             Telegram.WebApp.MainButton.showProgress(true)
 
