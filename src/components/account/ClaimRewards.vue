@@ -18,7 +18,7 @@
                         </div>
                     </div>
 
-                    <button class="btn" :disabled="!rewardsCost">
+                    <button class="btn" :disabled="!rewardsCost" @click.prevent="claim">
                         {{ $t('message.btn_claim') }}
                     </button>
 
@@ -40,7 +40,9 @@
                                         </div>
 
                                         <div class="cost">
-                                            ~ {{ calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 10 }) }} {{ store.currentCurrencySymbol }}
+                                            ~ <div class="odometer" v-odometer="rewardsCost"></div> {{ store.currentCurrencySymbol }}
+
+                                            <!-- ~ {{ calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 10 }) }} {{ store.currentCurrencySymbol }} -->
                                         </div>
                                     </div>
                                 </div>
@@ -58,7 +60,7 @@
 <script setup>
     import { ref, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenCost, calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost } from '@/utils'
+    import { formatTokenCost, calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost, sendTx } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -106,6 +108,42 @@
             intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 3, 3000)
         }
     })
+
+
+    // Claim all tokens
+    async function claim() {
+        try {
+            // Message
+            let msgAny = []
+
+            // Set messeges
+            store.stakedBalances.forEach(balance => {
+                msgAny.push({
+                    typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+                    value: {
+                        delegatorAddress: store.currentAddress,
+                        validatorAddress: balance.validator_info.operator_address
+                    }
+                })
+            })
+
+            // Send Tx
+            let result = await sendTx(msgAny)
+
+            if (result.code === 0) {
+                alert('Success')
+
+                // Update stacked balances
+                store.updateStackecBalancles()
+            } else {
+                alert('Error')
+            }
+        } catch (error) {
+            console.log(error)
+
+            alert('Error')
+        }
+    }
 </script>
 
 

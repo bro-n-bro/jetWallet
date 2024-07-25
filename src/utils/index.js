@@ -1,7 +1,8 @@
 import { useGlobalStore } from '@/store'
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
 import { fromHex } from '@cosmjs/encoding'
-import { SigningStargateClient } from '@cosmjs/stargate'
+import { SigningStargateClient, GasPrice } from '@cosmjs/stargate'
+import { Decimal } from '@cosmjs/math'
 import { chains } from 'chain-registry'
 
 
@@ -69,22 +70,31 @@ export const generateHMACKey = async () => {
 
 // Create singer
 export const createSinger = async () => {
-    let store = useGlobalStore()
+    let store = useGlobalStore(),
+        wallet = null
 
     // Wallet
     if (store.secret) {
-        var wallet = await importWalletFromMnemonic(store.secret, store.networks[store.currentNetwork].prefix)
+        wallet = await importWalletFromMnemonic(store.secret, store.networks[store.currentNetwork].prefix)
     }
 
     if (store.privateKey) {
-        var wallet = await importWalletFromPrivateKey(store.privateKey, store.networks[store.currentNetwork].prefix)
+        wallet = await importWalletFromPrivateKey(store.privateKey, store.networks[store.currentNetwork].prefix)
     }
 
     // Current address
     let address = (await wallet.getAccounts())[0].address
 
+    // Get chain info
+    let chain = chains.find(el => el.chain_id === store.networks[store.currentNetwork].chain_id)
+
+    // Gas price
+    let gasPrice = new GasPrice(Decimal.fromUserInput(chain.fees.fee_tokens[0].average_gas_price.toString() || '0', 3), store.networks[store.currentNetwork].denom)
+
     // Stargate client
-    let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
+    let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet, {
+        gasPrice
+    })
 
     return { address, signingClient }
 }
@@ -191,7 +201,7 @@ export const calcBalancesCost = () => {
 }
 
 
-// Calc stake balances cost in current cucrrency
+// Calc Staked balances cost in current cucrrency
 export const calcStakedBalancesCost = () => {
     let store = useGlobalStore(),
         totalPrice = 0
@@ -219,7 +229,6 @@ export const calcRewardsBalancesCost = () => {
 }
 
 
-
 // Get metwork logo
 export const getNetworkLogo = chainId => {
     let logos = null
@@ -233,4 +242,34 @@ export const getNetworkLogo = chainId => {
     }
 
     return logos
+}
+
+
+// Send Tx
+export const sendTx = async (msg) => {
+    let store = useGlobalStore()
+
+    // // RPC endpoint
+    // let rpcEndpoint = store.networks[store.currentNetwork].rpc_api
+
+    // // Fee currencies
+    // let chainInfos = await store.signingClient.getChainInfosWithoutEndpoints(),
+    //     chainInfo = chainInfos.find(item => item.chainId === store.networks[store.currentNetwork].chainId),
+    //     feeCurrencies = chainInfo.feeCurrencies[0]
+
+    // // Gas price
+    // let gasPrice = new GasPrice(Decimal.fromUserInput(feeCurrencies.gasPriceStep?.average.toString() || '0', 3), feeCurrencies?.coinMinimalDenom)
+
+    // // Client
+    // let client = await store.signingClient.connectWithSigner(rpcEndpoint, store.Keplr.offlineSinger, {
+    //     gasPrice
+    // })
+
+    // MENO
+    let memo = 'cosmos_wallet'
+
+    // Sign transaction
+    let result = await store.signingClient.signAndBroadcast(store.currentAddress, msg, 'auto', memo)
+
+    return result
 }

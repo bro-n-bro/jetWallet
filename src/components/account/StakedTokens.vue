@@ -2,7 +2,7 @@
     <section class="stake_tokens">
         <div class="cont">
             <!-- Search -->
-            <Search />
+            <Search :sliderIndex="2" />
 
             <!-- <pre>{{ store.stakedBalances }}</pre> -->
 
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="empty" v-else>
-                    {{ $t('message.search_empty') }}
+                    {{ $t('message.search_empty_validator') }}
                 </div>
             </div>
         </div>
@@ -80,14 +80,16 @@
 
 
     // Event "search"
-    emitter.on('search', ({ query }) => {
-        // Clear search result
-        searchResult.value = []
+    emitter.on('search', ({ query, sliderIndex }) => {
+        if (sliderIndex === 2) {
+            // Clear search result
+            searchResult.value = []
 
-        // Set new result
-        for (let key in store.stakedBalances) {
-            if (store.stakedBalances[key].validator_info.description.moniker.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
-                searchResult.value.push(store.stakedBalances[key])
+            // Set new result
+            for (let key in store.stakedBalances) {
+                if (store.stakedBalances[key].validator_info.description.moniker.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
+                    searchResult.value.push(store.stakedBalances[key])
+                }
             }
         }
     })

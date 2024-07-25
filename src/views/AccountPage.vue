@@ -102,8 +102,8 @@
         // Get balances
         await store.getBalances()
 
-        // Get stake balances
-        await store.getstakedBalances()
+        // Get Staked balances
+        await store.getStakedBalances()
     })
 
 
@@ -120,9 +120,9 @@
             //     await store.getBalances()
             // }
 
-            // // Get stake balances
+            // // Get Staked balances
             // if (swiperActiveIndex.value == 1) {
-            //     await store.getstakedBalances()
+            //     await store.getStakedBalances()
             // }
         })
 
@@ -177,7 +177,7 @@
             // Balances status
             store.isBalancesGot = false
 
-            // Stake balances status
+            // Staked balances status
             store.isStakedBalancesGot = false
 
             // Reinit APP
@@ -186,17 +186,17 @@
             // Get balances
             await store.getBalances()
 
-            // Get stake balances
-            await store.getstakedBalances()
+            // Get Staked balances
+            await store.getStakedBalances()
 
             // // Get balances
             // if (swiperActiveIndex.value == 0) {
             //     await store.getBalances()
             // }
 
-            // // Get stake balances
+            // // Get Staked balances
             // if (swiperActiveIndex.value == 1) {
-            //     await store.getstakedBalances()
+            //     await store.getStakedBalances()
             // }
         }
     })

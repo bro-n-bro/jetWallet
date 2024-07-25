@@ -16,6 +16,7 @@ export const useGlobalStore = defineStore('global', {
         isStakedBalancesGot: false,
         isRewardsGot: false,
         isAuthorized: false,
+
         authErrorLimit: 4,
 
         currentNetwork: '',
@@ -152,8 +153,8 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Get stake balances
-        async getstakedBalances() {
+        // Get staked balances
+        async getStakedBalances() {
             // Balances status
             this.isStakedBalancesGot = false
 
@@ -179,7 +180,7 @@ export const useGlobalStore = defineStore('global', {
                         }
                     })
 
-                // Stake balances status
+                // Staked balances status
                 this.isStakedBalancesGot = true
             } catch (error) {
                 console.error(error)
@@ -395,6 +396,22 @@ export const useGlobalStore = defineStore('global', {
 
                     break;
             }
+        },
+
+
+        // Update stacked balances
+        async updateStackecBalancles() {
+            // Rewards status
+            this.isRewardsGot = false
+
+            // Staked balances status
+            this.isStakedBalancesGot = false
+
+            // Get rewards
+            await this.getRewards()
+
+            // Get staked balances
+            await this.getStakedBalances()
         },
 
 

@@ -2,7 +2,7 @@
     <section class="available_tokens">
         <div class="cont">
             <!-- Search -->
-            <Search />
+            <Search :sliderIndex="1" />
 
             <Loader v-if="!store.isBalancesGot" />
 
@@ -68,14 +68,16 @@
 
 
     // Event "search"
-    emitter.on('search', ({ query }) => {
-        // Clear search result
-        searchResult.value = []
+    emitter.on('search', ({ query, sliderIndex }) => {
+        if (sliderIndex === 1) {
+            // Clear search result
+            searchResult.value = []
 
-        // Set new result
-        for (let key in store.balances) {
-            if (store.balances[key].token_info.symbol.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
-                searchResult.value.push(store.balances[key])
+            // Set new result
+            for (let key in store.balances) {
+                if (store.balances[key].token_info.symbol.toLocaleLowerCase().includes(query.toLocaleLowerCase())) {
+                    searchResult.value.push(store.balances[key])
+                }
             }
         }
     })
