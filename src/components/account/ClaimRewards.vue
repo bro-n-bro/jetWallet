@@ -18,8 +18,10 @@
                         </div>
                     </div>
 
-                    <button class="btn" :disabled="!rewardsCost" @click.prevent="claim">
-                        {{ $t('message.btn_claim') }}
+                    <button class="btn" :disabled="!rewardsCost" @click.prevent="claim" :class="{ process: isProcess }">
+                        <Loader v-if="isProcess" />
+
+                        <span v-else>{{ $t('message.btn_claim') }}</span>
                     </button>
 
                     <button class="spoler_btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }" v-if="rewardsCost">
@@ -71,16 +73,11 @@
         rewardsCost = ref(0),
         secondProfit = ref(0),
         stakedBalancesCost = ref(0),
-        intervalID = ref(null)
+        intervalID = ref(null),
+        isProcess = ref(false)
 
 
     watch(computed(() => store.isInitialized), async () => {
-        // Rewards status
-        store.isRewardsGot = false
-
-        // Clear interval
-        clearInterval(intervalID.value)
-
         // Get rewards
         if (store.isInitialized) {
             await store.getRewards()
@@ -89,29 +86,39 @@
 
 
     watch(computed(() => store.isStakedBalancesGot), () => {
-        // Get Staked balances cost
-        stakedBalancesCost.value = calcStakedBalancesCost()
+        if (store.isStakedBalancesGot) {
+            // Get Staked balances cost
+            stakedBalancesCost.value = calcStakedBalancesCost()
 
-        // Set second percent
-        if (stakedBalancesCost.value) {
-            secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
+            // Set second percent
+            if (stakedBalancesCost.value) {
+                secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
+            }
         }
     })
 
 
     watch(computed(() => store.isRewardsGot), () => {
-        // Set rewards cost
-        rewardsCost.value = calcRewardsBalancesCost()
+        // Clear interval
+        clearInterval(intervalID.value)
 
-        // Update rewards cost
-        if (rewardsCost.value) {
-            intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 3, 3000)
+        if (store.isRewardsGot) {
+            // Set rewards cost
+            rewardsCost.value = calcRewardsBalancesCost()
+
+            // Update rewards cost
+            if (rewardsCost.value) {
+                intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 1.5, 3000)
+            }
         }
     })
 
 
     // Claim all tokens
     async function claim() {
+        // Set process status
+        isProcess.value = true
+
         try {
             // Message
             let msgAny = []
@@ -133,8 +140,14 @@
             if (result.code === 0) {
                 alert('Success')
 
-                // Update stacked balances
-                store.updateStackecBalancles()
+                // Update staked balances
+                store.getStakedBalances()
+
+                // Update rewards
+                await store.getRewards()
+
+                // Set process status
+                isProcess.value = true
             } else {
                 alert('Error')
             }
@@ -242,6 +255,8 @@
         font-weight: 700;
         line-height: 100%;
 
+        position: relative;
+
         width: 71px;
         height: 34px;
         margin-left: auto;
@@ -256,6 +271,24 @@
         pointer-events: none;
 
         opacity: .5;
+    }
+
+
+    .btn .loader_wrap
+    {
+        position: absolute;
+
+        height: 100%;
+
+        transform: scale(.6);
+
+        background: none;
+    }
+
+
+    .btn.process span
+    {
+        display: none;
     }
 
 

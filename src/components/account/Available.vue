@@ -8,7 +8,7 @@
                 {{ $t('message.current_balance_title') }}
             </div>
 
-            <div class="val">
+            <div class="val" @click.prevent="updateBalances">
                 {{ formatTokenCost(calcBalancesCost()) }}
             </div>
 
@@ -59,6 +59,13 @@
 
     const store = useGlobalStore(),
         emitter = inject('emitter')
+
+
+    // Update balances
+    function updateBalances() {
+        // Get balances
+        store.getBalances()
+    }
 </script>
 
 

@@ -399,22 +399,6 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Update stacked balances
-        async updateStackecBalancles() {
-            // Rewards status
-            this.isRewardsGot = false
-
-            // Staked balances status
-            this.isStakedBalancesGot = false
-
-            // Get rewards
-            await this.getRewards()
-
-            // Get staked balances
-            await this.getStakedBalances()
-        },
-
-
         // Clear BD
         async clearAllData() {
             await DBclearData('wallet')

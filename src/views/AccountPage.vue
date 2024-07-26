@@ -303,6 +303,8 @@
         font-weight: 700;
 
         width: 100%;
+
+        cursor: pointer;
     }
 
 

@@ -8,7 +8,7 @@
                 {{ $t('message.current_balance_title') }}
             </div>
 
-            <div class="val">
+            <div class="val" @click.prevent="updateBalances">
                 {{ formatTokenCost(calcStakedBalancesCost()) }}
             </div>
 
@@ -57,6 +57,16 @@
 
 
     const store = useGlobalStore()
+
+
+    // Update balances
+    function updateBalances() {
+        // Get staked balances
+        store.getStakedBalances()
+
+        // Get rewards
+        store.getRewards()
+    }
 </script>
 
 
