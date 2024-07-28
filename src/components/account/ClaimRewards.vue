@@ -70,7 +70,7 @@
 
     const store = useGlobalStore(),
         showDropdown = ref(false),
-        rewardsCost = ref(0),
+        rewardsCost = ref(null),
         secondProfit = ref(0),
         stakedBalancesCost = ref(0),
         intervalID = ref(null),
@@ -106,9 +106,14 @@
             // Set rewards cost
             rewardsCost.value = calcRewardsBalancesCost()
 
+            // Update rewards with timeout
+            if (!rewardsCost.value) {
+                setTimeout(async () => await store.getRewards(), 3000)
+            }
+
             // Update rewards cost
-            if (rewardsCost.value) {
-                intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 1.5, 3000)
+            if (rewardsCost.value !== null) {
+                intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 2.5, 3000)
             }
         }
     })
@@ -140,21 +145,24 @@
             if (result.code === 0) {
                 alert('Success')
 
-                // Update staked balances
-                store.getStakedBalances()
-
                 // Update rewards
                 await store.getRewards()
 
                 // Set process status
-                isProcess.value = true
+                isProcess.value = false
             } else {
                 alert('Error')
+
+                // Set process status
+                isProcess.value = false
             }
         } catch (error) {
             console.log(error)
 
             alert('Error')
+
+            // Set process status
+            isProcess.value = false
         }
     }
 </script>
@@ -283,6 +291,12 @@
         transform: scale(.6);
 
         background: none;
+    }
+
+
+    .btn.process
+    {
+        pointer-events: none;
     }
 
 

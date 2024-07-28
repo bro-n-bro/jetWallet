@@ -124,7 +124,9 @@
         overflow: auto;
         flex: none;
 
-        height: var(--tg-viewport-height);
+        height: var(--tg-viewport-stable-height);
+        margin-bottom: -14px;
+        padding-bottom: 14px;
 
         overscroll-behavior-y: contain;
     }
@@ -188,12 +190,14 @@
 
     .tokens .validator
     {
+        font-size: 15px;
+
         display: flex;
         align-content: center;
         align-items: center;
         flex-wrap: wrap;
         justify-content: space-between;
-        font-size: 15px;
+
         margin-bottom: 6px;
         padding: 0 10px;
     }

@@ -94,6 +94,9 @@ export const useGlobalStore = defineStore('global', {
             // Get APR for current network
             await this.getCurrentNetworkAPR()
 
+            // Connect to websocket
+            this.connectWebsocket()
+
             // Init status
             this.isInitialized = true
         },
@@ -395,6 +398,46 @@ export const useGlobalStore = defineStore('global', {
                     DBaddData('wallet', [['currentCurrency', 'BTC']])
 
                     break;
+            }
+        },
+
+
+        // Connect to websocket
+        connectWebsocket() {
+            // Connect
+            this.networks[this.currentNetwork].websocket = new WebSocket(this.networks[this.currentNetwork].websocket_url)
+
+            // Listening events
+            this.networks[this.currentNetwork].websocket.onopen = () => {
+                // Event Tx with sender
+                this.networks[this.currentNetwork].websocket.send(JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'subscribe',
+                    id: '1',
+                    params: {
+                        query: `tm.event='Tx' AND transfer.sender='${this.currentAddress}'`
+                    }
+                }))
+
+                // Event Tx with recipient
+                this.networks[this.currentNetwork].websocket.send(JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'subscribe',
+                    id: '1',
+                    params: {
+                        query: `tm.event='Tx' AND transfer.recipient='${this.currentAddress}'`
+                    }
+                }))
+            }
+
+
+            // WSS message event
+            this.networks[this.currentNetwork].websocket.onmessage = msg => {
+                // If the result object is not empty
+                if (Object.keys((JSON.parse(msg.data)).result).length) {
+                    // Update balances
+                    this.getBalances()
+                }
             }
         },
 

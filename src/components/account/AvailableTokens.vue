@@ -112,7 +112,9 @@
         overflow: auto;
         flex: none;
 
-        height: var(--tg-viewport-height);
+        height: var(--tg-viewport-stable-height);
+        margin-bottom: -14px;
+        padding-bottom: 14px;
 
         overscroll-behavior-y: contain;
     }

@@ -157,13 +157,13 @@ export const formatTokenCost = cost => {
     // Rounding
     switch (store.currentCurrency) {
         case 'BTC':
-            return cost > 0.0000000001 ? cost.toFixed(10) : '<0.0000000001'
+            return cost > 0.0000000001 || cost == 0 ? cost.toFixed(10) : '<0.0000000001'
 
         case 'ETH':
-            return cost > 0.0000001 ? cost.toFixed(7) : '<0.0000001'
+            return cost > 0.0000001 || cost == 0 ? cost.toFixed(7) : '<0.0000001'
 
         default:
-            return cost > 0.01 ? cost.toFixed(2) : '<0.01'
+            return cost > 0.01 || cost == 0 ? cost.toFixed(2) : '<0.01'
     }
 }
 
