@@ -129,7 +129,7 @@ input[type=number]
 
 html
 {
-    height: var(--tg-viewport-height);
+    height: var(--tg-viewport-stable-height);
 }
 
 
@@ -137,7 +137,7 @@ body
 {
     font: var(--font_size) var(--font_family);
 
-    height: var(--tg-viewport-height);
+    height: var(--tg-viewport-stable-height);
 
     color: var(--text_color);
 }
