@@ -411,14 +411,14 @@ export const useGlobalStore = defineStore('global', {
             // Listening events
             this.networks[this.currentNetwork].websocket.onopen = () => {
                 // Event Tx with sender
-                this.networks[this.currentNetwork].websocket.send(JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'subscribe',
-                    id: '1',
-                    params: {
-                        query: `tm.event='Tx' AND transfer.sender='${this.currentAddress}'`
-                    }
-                }))
+                // this.networks[this.currentNetwork].websocket.send(JSON.stringify({
+                //     jsonrpc: '2.0',
+                //     method: 'subscribe',
+                //     id: '1',
+                //     params: {
+                //         query: `tm.event='Tx' AND transfer.sender='${this.currentAddress}'`
+                //     }
+                // }))
 
                 // Event Tx with recipient
                 this.networks[this.currentNetwork].websocket.send(JSON.stringify({
