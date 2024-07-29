@@ -107,7 +107,7 @@
             rewardsCost.value = calcRewardsBalancesCost()
 
             // Update rewards with timeout
-            if (!rewardsCost.value) {
+            if (!rewardsCost.value && stakedBalancesCost.value) {
                 setTimeout(async () => await store.getRewards(), 3000)
             }
 
