@@ -18,6 +18,7 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
 
         authErrorLimit: 4,
+        memo: 'cosmos_wallet',
 
         currentNetwork: '',
         currentAddress: '',

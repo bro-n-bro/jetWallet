@@ -37,7 +37,7 @@
 
                                 <div class="amount">
                                     <div class="val">
-                                        {{ formatTokenAmount(item.balance.amount, item.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 18 }) }}
+                                        {{ formatTokenAmount(item.balance.amount, item.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 12 }) }}
                                     </div>
 
                                     <div class="cost">

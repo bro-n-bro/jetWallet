@@ -246,30 +246,8 @@ export const getNetworkLogo = chainId => {
 
 
 // Send Tx
-export const sendTx = async (msg) => {
+export const sendTx = async msg => {
     let store = useGlobalStore()
 
-    // // RPC endpoint
-    // let rpcEndpoint = store.networks[store.currentNetwork].rpc_api
-
-    // // Fee currencies
-    // let chainInfos = await store.signingClient.getChainInfosWithoutEndpoints(),
-    //     chainInfo = chainInfos.find(item => item.chainId === store.networks[store.currentNetwork].chainId),
-    //     feeCurrencies = chainInfo.feeCurrencies[0]
-
-    // // Gas price
-    // let gasPrice = new GasPrice(Decimal.fromUserInput(feeCurrencies.gasPriceStep?.average.toString() || '0', 3), feeCurrencies?.coinMinimalDenom)
-
-    // // Client
-    // let client = await store.signingClient.connectWithSigner(rpcEndpoint, store.Keplr.offlineSinger, {
-    //     gasPrice
-    // })
-
-    // MENO
-    let memo = 'cosmos_wallet'
-
-    // Sign transaction
-    let result = await store.signingClient.signAndBroadcast(store.currentAddress, msg, 'auto', memo)
-
-    return result
+    return await store.signingClient.signAndBroadcast(store.currentAddress, msg, 'auto', store.memo)
 }
