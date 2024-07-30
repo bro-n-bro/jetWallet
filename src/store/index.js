@@ -7,6 +7,7 @@ import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
+import localbostrom from '@/store/networks/localbostrom'
 
 
 export const useGlobalStore = defineStore('global', {
@@ -36,7 +37,8 @@ export const useGlobalStore = defineStore('global', {
 
         networks: {
             cosmoshub,
-            bostrom
+            bostrom,
+            localbostrom
         },
 
         formatableTokens: [
