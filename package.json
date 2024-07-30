@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "@cosmjs/stargate": "^0.32.4",
+        "@kyvg/vue3-notification": "^3.2.1",
         "@vueuse/core": "^10.11.0",
         "chain-registry": "^1.63.26",
         "core-js": "^3.8.3",

@@ -1,5 +1,5 @@
 <template>
-    <div class="address" @click.prevent="copy(store.currentAddress)">
+    <div class="address" @click.prevent="copyHandler">
         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy2"></use></svg>
 
         <span>{{ store.currentAddress.slice(0, 9) + '...' + store.currentAddress.slice(-6) }}</span>
@@ -8,12 +8,37 @@
 
 
 <script setup>
+    import { inject } from 'vue'
     import { useClipboard } from '@vueuse/core'
     import { useGlobalStore } from '@/store'
+    import { useNotification } from '@kyvg/vue3-notification'
 
 
     const store = useGlobalStore(),
+        i18n = inject('i18n'),
+        notification = useNotification(),
         { copy } = useClipboard()
+
+
+    // Copy handler
+    function copyHandler() {
+        // Copy
+        copy(store.currentAddress)
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
+
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 750,
+            title: i18n.global.t('message.notification_copied_title'),
+            type: 'copied'
+        })
+    }
 </script>
 
 

@@ -70,6 +70,10 @@ export default {
             'search_empty_validator': 'Valodator not found...',
 
 
+            // Notifications
+            'notification_copied_title': 'Copied to dashboard',
+
+
             // Buttons
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',

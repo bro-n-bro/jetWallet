@@ -362,6 +362,117 @@ button
 
 
 
+/*------------------
+    Notification
+------------------*/
+.vue-notification-group
+{
+    width: 100%;
+    padding: 11px;
+
+    pointer-events: none;
+}
+
+.vue-notification-wrapper + .vue-notification-wrapper
+{
+    margin-top: 8px;
+}
+
+
+.notification
+{
+    position: relative;
+
+    display: flex;
+    align-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    width: 189px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px 15px;
+
+    pointer-events: auto;
+
+    border-radius: 10px;
+    background: #068cc5;
+}
+
+
+.notification .icon
+{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    color: #ddf0ff;
+}
+
+
+.notification .icon.green
+{
+    color: #1bc562;
+}
+
+
+.notification .icon.red
+{
+    color: #eb5757;
+}
+
+
+.notification .icon svg
+{
+    display: block;
+
+    width: 18px;
+    height: 18px;
+}
+
+
+.notification .title
+{
+    font-size: 14px;
+    font-weight: 500;
+
+    align-self: center;
+
+    width: calc(100% - 28px);
+
+    color: #ddf0ff;
+}
+
+.notification .title:empty
+{
+    display: none;
+}
+
+
+.notification .text
+{
+    font-size: 12px;
+    line-height: 150%;
+
+    width: 100%;
+    margin-top: 4px;
+
+    opacity: .4;
+}
+
+.notification .text:empty
+{
+    display: none;
+}
+
+
+
 /*---------------
     Page data
 ---------------*/
