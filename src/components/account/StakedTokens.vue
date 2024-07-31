@@ -15,29 +15,35 @@
 
                 <div class="list" v-if="searchResult.length">
                     <div class="item" v-for="(item, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(item.balance.token_info.symbol, item.balance.amount, item.balance.exponent) * -1000000)};`">
-                        <div class="validator">
-                            <div class="logo">
-                                <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${item.validator_info.operator_address}.png`" alt="" loading="lazy">
-                            </div>
-
-                            <div class="moniker">
-                                {{ item.validator_info.description.moniker }}
-                            </div>
-                        </div>
-
                         <div class="token_wrap">
                             <div class="token">
                                 <div class="logo">
                                     <img :src="item.balance.token_info.logo_URIs.svg" :alt="item.balance.token_info.name" loading="lazy">
                                 </div>
 
-                                <div class="denom">
-                                    {{ item.balance.token_info.symbol }}
+                                <div>
+                                    <div class="denom">
+                                        {{ item.balance.token_info.symbol }}
+                                    </div>
+
+                                    <div class="validator">
+                                        <div class="label">
+                                            {{ $t('message.staked_tokens_validator_label') }}
+                                        </div>
+
+                                        <div class="moniker">
+                                            {{ item.validator_info.description.moniker }}
+                                        </div>
+
+                                        <div class="logo">
+                                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${item.validator_info.operator_address}.png`" alt="" loading="lazy">
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="amount">
                                     <div class="val">
-                                        {{ formatTokenAmount(item.balance.amount, item.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 12 }) }}
+                                        {{ formatTokenAmount(item.balance.amount, item.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
                                     </div>
 
                                     <div class="cost">
@@ -188,51 +194,6 @@
 
 
 
-    .tokens .validator
-    {
-        font-size: 15px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-bottom: 6px;
-        padding: 0 10px;
-    }
-
-
-    .tokens .validator .logo
-    {
-        width: 20px;
-        height: 20px;
-
-        border-radius: 50%;
-        background: rgba(255,255,255,.15);
-    }
-
-
-    .tokens .validator .logo img
-    {
-        display: block;
-
-        width: 100%;
-        height: 100%;
-
-        border-radius: 50%;
-    }
-
-
-    .tokens .validator .moniker
-    {
-        align-self: center;
-
-        width: calc(100% - 28px);
-    }
-
-
-
     .tokens .token_wrap
     {
         padding: 1px;
@@ -248,9 +209,9 @@
         align-content: center;
         align-items: center;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: space-between;
 
-        padding-right: 9px;
+        padding: 7px;
 
         border-radius: 11px;
         background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
@@ -265,12 +226,11 @@
         flex-wrap: wrap;
         justify-content: center;
 
-        width: 55px;
-        height: 55px;
+        width: 28px;
+        height: 28px;
         margin-right: 8px;
-        padding: 8px;
 
-        border-radius: 11px;
+        border-radius: 50%;
     }
 
 
@@ -278,8 +238,16 @@
     {
         display: block;
 
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50%;
+    }
+
+
+    .tokens .token .logo > *
+    {
+        width: calc(100% - 192px);
     }
 
 
@@ -289,6 +257,59 @@
         font-weight: 500;
 
         text-transform: uppercase;
+    }
+
+
+    .tokens .token .validator
+    {
+        font-size: 14px;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+
+        color: rgba(183, 140, 230, .80);
+    }
+
+
+    .tokens .token .validator .label
+    {
+        margin-right: 2px;
+    }
+
+
+    .tokens .token .validator .logo
+    {
+        width: 18px;
+        min-width: 18px;
+        height: 18px;
+        margin-left: 4px;
+
+        border-radius: 50%;
+    }
+
+
+    .tokens .token .validator .logo img
+    {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50%;
+    }
+
+
+    .tokens .token .validator .moniker
+    {
+        overflow: hidden;
+
+        max-width: 100%;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
 

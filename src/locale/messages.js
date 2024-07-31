@@ -59,6 +59,8 @@ export default {
             'available_tokens_title': 'Available Balance',
             'staked_tokens_title': 'Staked Balance',
 
+            'staked_tokens_validator_label': 'By:',
+
 
             // Claim rewards
             'claim_rewards_title': 'Claimable Staking Reward',

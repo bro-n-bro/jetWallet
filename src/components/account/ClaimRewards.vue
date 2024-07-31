@@ -18,10 +18,8 @@
                         </div>
                     </div>
 
-                    <button class="btn" :disabled="!rewardsCost" @click.prevent="claim" :class="{ process: isProcess }">
-                        <Loader v-if="isProcess" />
-
-                        <span v-else>{{ $t('message.btn_claim') }}</span>
+                    <button class="btn" :disabled="!rewardsCost">
+                        <span>{{ $t('message.btn_claim') }}</span>
                     </button>
 
                     <button class="spoler_btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }" v-if="rewardsCost">
@@ -261,16 +259,29 @@
     {
         font-size: 16px;
         font-weight: 700;
-        line-height: 100%;
 
         position: relative;
 
         width: 71px;
         height: 34px;
-        margin-left: auto;
+        margin: 2px 0 2px auto;
+        padding: 1px;
 
         border-radius: 8px;
-        background: #5b3895;
+        background: linear-gradient(to bottom,  #67c3f8 0%,#2474ca 100%);
+    }
+
+
+    .btn span
+    {
+        line-height: 30px;
+
+        display: block;
+
+        height: 32px;
+
+        border-radius: 7px;
+        background: linear-gradient(to bottom,  #66baf8 0%,#2e89eb 100%);
     }
 
 
@@ -279,30 +290,13 @@
         pointer-events: none;
 
         opacity: .5;
+        background: #5b3895;
     }
 
 
-    .btn .loader_wrap
+    .btn:disabled span
     {
-        position: absolute;
-
-        height: 100%;
-
-        transform: scale(.6);
-
         background: none;
-    }
-
-
-    .btn.process
-    {
-        pointer-events: none;
-    }
-
-
-    .btn.process span
-    {
-        display: none;
     }
 
 
