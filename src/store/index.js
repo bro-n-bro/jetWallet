@@ -35,6 +35,13 @@ export const useGlobalStore = defineStore('global', {
         secret: null,
         privateKey: null,
 
+
+        TxFee: {
+            currentDenom: '',
+            currentSymbol: '',
+            currentAmount: ''
+        },
+
         networks: {
             cosmoshub,
             bostrom,
@@ -442,6 +449,23 @@ export const useGlobalStore = defineStore('global', {
                     this.getBalances()
                 }
             }
+        },
+
+
+        // Set current amount
+        TxFeeSetCurrentAmount(chainId) {
+            // Get chain info
+            let chain = chains.find(el => el.chain_id === chainId)
+
+            // Set data
+            this.TxFee.currentAmount = chain.fees.fee_tokens[0].average_gas_price
+        },
+
+
+        // Set current denom
+        TxFeeSetCurrentDenom(denom, symbol) {
+            this.TxFee.currentDenom = denom
+            this.TxFee.currentSymbol = symbol
         },
 
 

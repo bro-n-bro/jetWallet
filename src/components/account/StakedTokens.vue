@@ -65,7 +65,7 @@
 
 
 <script setup>
-    import { inject, watch, ref, computed } from 'vue'
+    import { inject, watch, ref, computed, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenAmount, formatTokenCost, calcTokenCost } from '@/utils'
 
@@ -77,6 +77,14 @@
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         searchResult = ref([])
+
+
+    onBeforeMount(() => {
+        if (store.isStakedBalancesGot) {
+            // Default search result
+            searchResult.value = store.stakedBalances
+        }
+    })
 
 
     watch(computed(() => store.isStakedBalancesGot), () => {

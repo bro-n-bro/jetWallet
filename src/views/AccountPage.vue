@@ -96,14 +96,16 @@
 
 
     onBeforeMount(async () => {
-        // Init app
-        await store.initApp()
+        if (!store.isInitialized) {
+            // Init app
+            await store.initApp()
 
-        // Get balances
-        await store.getBalances()
+            // Get balances
+            store.getBalances()
 
-        // Get Staked balances
-        await store.getStakedBalances()
+            // Get Staked balances
+            store.getStakedBalances()
+        }
     })
 
 
@@ -184,10 +186,10 @@
             await store.initApp()
 
             // Get balances
-            await store.getBalances()
+            store.getBalances()
 
             // Get Staked balances
-            await store.getStakedBalances()
+            store.getStakedBalances()
 
             // // Get balances
             // if (swiperActiveIndex.value == 0) {

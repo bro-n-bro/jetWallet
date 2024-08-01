@@ -18,9 +18,9 @@
                         </div>
                     </div>
 
-                    <button class="btn" :disabled="!rewardsCost">
+                    <router-link to="/account/claim_confirm" class="btn" :disabled="!rewardsCost">
                         <span>{{ $t('message.btn_claim') }}</span>
-                    </button>
+                    </router-link>
 
                     <button class="spoler_btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }" v-if="rewardsCost">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver"></use></svg>
@@ -58,9 +58,9 @@
 
 
 <script setup>
-    import { ref, watch, computed } from 'vue'
+    import { ref, watch, computed, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenCost, calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost, sendTx } from '@/utils'
+    import { calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost, sendTx } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -73,6 +73,14 @@
         stakedBalancesCost = ref(0),
         intervalID = ref(null),
         isProcess = ref(false)
+
+
+    onBeforeMount(() => {
+        if (store.isRewardsGot) {
+            // Set rewards cost
+            rewardsCost.value = calcRewardsBalancesCost()
+        }
+    })
 
 
     watch(computed(() => store.isInitialized), async () => {
@@ -215,9 +223,16 @@
     {
         position: relative;
 
-        height: 63.23px;
+        height: 60px;
 
         background: none;
+    }
+
+
+    .loader_wrap > *
+    {
+        width: 24px;
+        height: 24px;
     }
 
 
@@ -267,6 +282,10 @@
         margin: 2px 0 2px auto;
         padding: 1px;
 
+        text-align: center;
+        text-decoration: none;
+
+        color: currentColor;
         border-radius: 8px;
         background: linear-gradient(to bottom,  #67c3f8 0%,#2474ca 100%);
     }

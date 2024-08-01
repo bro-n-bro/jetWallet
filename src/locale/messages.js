@@ -63,7 +63,23 @@ export default {
 
 
             // Claim rewards
-            'claim_rewards_title': 'Claimable Staking Reward',
+            'claim_rewards_page_title': 'Claimable Staking Reward',
+
+            'claim_rewards_title': 'Claim Rewards',
+            'claim_rewards_desc': 'Claim staking reward',
+
+
+            // Claim confirm
+            'calim_confirm_title': 'Confirm transction',
+
+
+            // Tx fee
+            'tx_fee_label': 'Tx Fee:',
+
+
+            // Transaction info
+            'details_label': 'Details:',
+            'memo_label': 'Memo:',
 
 
             // Search
@@ -93,7 +109,9 @@ export default {
             'btn_stake': 'Stake',
             'btn_unstake': 'Unstake',
             'btn_restake': 'Restake',
-            'btn_claim': 'Claim'
+            'btn_claim': 'Claim',
+            'btn_approve': 'Approve',
+            'btn_json': 'View JSON'
         }
     }
 }

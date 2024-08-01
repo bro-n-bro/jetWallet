@@ -78,6 +78,15 @@ const routes = [
 			accessDenied: ['not_register', 'authorized']
 		}
 	},
+	{
+		path: '/account/claim_confirm',
+		name: 'ClaimConfirm',
+		component: () => import('../views/ClaimConfirmPage.vue'),
+		meta: {
+			layout: defaultLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
 ]
 
 

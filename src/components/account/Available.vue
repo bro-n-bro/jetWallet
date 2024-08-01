@@ -1,14 +1,14 @@
 <template>
     <div class="available_section">
-        <Loader v-if="!store.isBalancesGot" />
-
         <!-- Balance -->
-        <div class="balance" v-else>
+        <div class="balance">
             <div class="label">
                 {{ $t('message.current_balance_title') }}
             </div>
 
-            <div class="val" @click.prevent="updateBalances">
+            <Loader v-if="!store.isBalancesGot" />
+
+            <div v-else class="val" @click.prevent="updateBalances">
                 {{ formatTokenCost(calcBalancesCost()) }}
             </div>
 
@@ -84,8 +84,15 @@
     {
         position: relative;
 
-        height: 82px;
+        height: 48px;
 
         background: none;
+    }
+
+
+    .loader_wrap > *
+    {
+        width: 20px;
+        height: 20px;
     }
 </style>

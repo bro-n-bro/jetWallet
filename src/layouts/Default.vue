@@ -1,9 +1,11 @@
 <template>
     <div class="main">
         <router-view v-slot="{ Component }">
-            <transition name="fade">
+            <!-- <transition name="fade">
                 <component :is="Component" />
-            </transition>
+            </transition> -->
+
+            <component :is="Component" />
         </router-view>
     </div>
 </template>
