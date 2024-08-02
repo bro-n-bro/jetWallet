@@ -3,16 +3,22 @@
         <button class="btn">
             {{ $t('message.tx_fee_label') }} {{ store.TxFee.currentAmount }} {{ store.TxFee.currentSymbol }}
         </button>
+
+        <div class="not_enough" v-if="!store.TxFee.isEnough">
+            Not enough balance
+        </div>
     </div>
 </template>
 
 
 <script setup>
-    import { onBeforeMount } from 'vue'
+    import { onBeforeMount, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { formatTokenAmount } from '@/utils'
 
 
-    const store = useGlobalStore()
+    const store = useGlobalStore(),
+        balance = store.balances.find(balance => balance.denom == store.networks[store.currentNetwork].denom)
 
 
     onBeforeMount(() => {
@@ -21,6 +27,15 @@
 
         // Set current denom
         store.TxFeeSetCurrentDenom(store.networks[store.currentNetwork].denom, store.networks[store.currentNetwork].token_name)
+
+        // Set enough status
+        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentAmount
+    })
+
+
+    watch(computed(() => store.isBalancesGot), () => {
+        // Set enough status
+        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentAmount
     })
 </script>
 
@@ -42,5 +57,11 @@
         text-decoration: underline;
 
         text-decoration-thickness: 1px;
+    }
+
+
+    .not_enough{
+        margin-top: 8px;
+        color: orange;
     }
 </style>

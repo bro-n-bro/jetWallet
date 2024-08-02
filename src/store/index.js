@@ -39,7 +39,8 @@ export const useGlobalStore = defineStore('global', {
         TxFee: {
             currentDenom: '',
             currentSymbol: '',
-            currentAmount: ''
+            currentAmount: '',
+            isEnough: false
         },
 
         networks: {

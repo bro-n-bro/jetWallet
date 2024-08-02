@@ -60,7 +60,7 @@
 <script setup>
     import { ref, watch, computed, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost, sendTx } from '@/utils'
+    import { calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -71,8 +71,7 @@
         rewardsCost = ref(null),
         secondProfit = ref(0),
         stakedBalancesCost = ref(0),
-        intervalID = ref(null),
-        isProcess = ref(false)
+        intervalID = ref(null)
 
 
     onBeforeMount(() => {
@@ -123,54 +122,6 @@
             }
         }
     })
-
-
-    // Claim all tokens
-    async function claim() {
-        // Set process status
-        isProcess.value = true
-
-        try {
-            // Message
-            let msgAny = []
-
-            // Set messeges
-            store.stakedBalances.forEach(balance => {
-                msgAny.push({
-                    typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-                    value: {
-                        delegatorAddress: store.currentAddress,
-                        validatorAddress: balance.validator_info.operator_address
-                    }
-                })
-            })
-
-            // Send Tx
-            let result = await sendTx(msgAny)
-
-            if (result.code === 0) {
-                alert('Success')
-
-                // Update rewards
-                await store.getRewards()
-
-                // Set process status
-                isProcess.value = false
-            } else {
-                alert('Error')
-
-                // Set process status
-                isProcess.value = false
-            }
-        } catch (error) {
-            console.log(error)
-
-            alert('Error')
-
-            // Set process status
-            isProcess.value = false
-        }
-    }
 </script>
 
 
