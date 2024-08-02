@@ -40,7 +40,6 @@
         flex: 1 0 auto;
         flex-direction: column;
 
-        margin-top: 29px;
-        padding: 0 15px;
+        margin-top: 28px;
     }
 </style>
