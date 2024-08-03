@@ -1,12 +1,8 @@
 <template>
     <div class="tx_fee">
-        <button class="btn">
+        <button class="btn" :class="{ red: !store.TxFee.isEnough }">
             {{ $t('message.tx_fee_label') }} {{ store.TxFee.currentAmount }} {{ store.TxFee.currentSymbol }}
         </button>
-
-        <div class="not_enough" v-if="!store.TxFee.isEnough">
-            Not enough balance
-        </div>
     </div>
 </template>
 
@@ -43,9 +39,10 @@
 <style scoped>
     .tx_fee
     {
-        text-align: center;
         margin-top: auto;
         padding: 12px;
+
+        text-align: center;
     }
 
 
@@ -60,8 +57,8 @@
     }
 
 
-    .not_enough{
-        margin-top: 8px;
-        color: orange;
+    .tx_fee .btn.red
+    {
+        color: #f33;
     }
 </style>

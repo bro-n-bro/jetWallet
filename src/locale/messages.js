@@ -64,9 +64,8 @@ export default {
 
             // Claim rewards
             'claim_rewards_page_title': 'Claimable Staking Reward',
-
             'claim_rewards_title': 'Claim Rewards',
-            'claim_rewards_desc': 'Claim staking reward',
+            'claim_rewards_not_enought': 'You don’t have enough {denom} to pay Fee',
 
 
             // Claim confirm
@@ -96,6 +95,8 @@ export default {
             'notification_copied_title': 'Copied to dashboard',
             'notification_tx_success_title': 'Tx success',
             'notification_tx_error_title': 'Tx error',
+
+            'notification_explorer_link': 'Explorer',
 
 
             // Buttons

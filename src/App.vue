@@ -4,16 +4,16 @@
 
     <notifications position="top center" group="default">
         <template #body="props">
-            <div class="notification">
+            <div class="notification" :class="{ success: props.item.type == 'success', error: props.item.type == 'error' }">
                 <div class="icon" v-if="props.item.type == 'copied'">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_copied"></use></svg>
                 </div>
 
-                <div class="icon green" v-if="props.item.type == 'success'">
+                <div class="icon" v-if="props.item.type == 'success'">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_success"></use></svg>
                 </div>
 
-                <div class="icon red" v-if="props.item.type == 'error'">
+                <div class="icon" v-if="props.item.type == 'error'">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_error"></use></svg>
                 </div>
 
@@ -25,8 +25,7 @@
 
                 <div class="explorer" v-if="props.item.data.tx_hash">
                     <a :href="`https://www.mintscan.io/${store.networks.global[store.currentNetwork].mintscanPrefix}/txs/${props.item.data.tx_hash}`" target="_blank" rel="noopener nofollow">
-                        <span>{{ $t('message.notification_explorer_link') }}</span>
-                        <svg><use xlink:href="@/assets/sprite.svg#ic_link_arrow"></use></svg>
+                        {{ $t('message.notification_explorer_link') }}
                     </a>
                 </div>
             </div>

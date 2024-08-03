@@ -8,6 +8,7 @@ const network = {
     token_name: 'ATOM',
     chain_id: 'cosmoshub-4',
     prefix: 'cosmos',
+    mintscanPrefix: 'cosmos',
     alias: 'cosmoshub',
     exponent: 6,
 }

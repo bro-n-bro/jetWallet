@@ -8,6 +8,7 @@ const network = {
     token_name: 'BOOT',
     chain_id: 'bostrom',
     prefix: 'bostrom',
+    mintscanPrefix: null,
     alias: 'bostrom',
     exponent: 0,
 }

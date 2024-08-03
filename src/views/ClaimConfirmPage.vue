@@ -18,9 +18,9 @@
                 <div class="label">
                     {{ $t('message.details_label') }}
 
-                    <button class="json_btn">
+                    <!-- <button class="json_btn">
                         <span>{{ $t('message.btn_json') }}</span>
-                    </button>
+                    </button> -->
                 </div>
 
                 <div class="info_wrap">
@@ -29,16 +29,14 @@
                             <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
                         </div>
 
-                        <div>
-                            <div class="title">
-                                {{ $t('message.claim_rewards_title') }}
-                            </div>
-
-                            <div class="desc">
-                                {{ $t('message.claim_rewards_desc') }}
-                            </div>
+                        <div class="title">
+                            {{ $t('message.claim_rewards_title') }}
                         </div>
                     </div>
+                </div>
+
+                <div class="not_enought" v-if="!store.TxFee.isEnough">
+                    {{ $t('message.claim_rewards_not_enought', { denom: store.TxFee.currentSymbol }) }}
                 </div>
             </div>
 
@@ -323,27 +321,24 @@
     }
 
 
-    .info .logo + *
-    {
-        width: calc(100% - 46px);
-    }
-
-
     .info .title
     {
         font-size: 16px;
         font-weight: 500;
+
+        width: calc(100% - 46px);
     }
 
 
-    .info .desc
+    .not_enought
     {
-        font-size: 12px;
-        font-weight: 200;
+        padding: 5px 10px;
 
-        margin-top: 2px;
+        text-decoration: underline;
 
-        color: rgba(255, 255, 255, .80);
+        color: #ffe352;
+
+        text-decoration-thickness: 1px;
     }
 
 
@@ -365,7 +360,7 @@
 
     .btns
     {
-        padding: 0;
         margin-top: 0;
+        padding: 0;
     }
 </style>
