@@ -401,6 +401,17 @@ button
 }
 
 
+.notification.success
+{
+    background: #06c50e;
+}
+
+.notification.error
+{
+    background: #c50606;
+}
+
+
 .notification .icon
 {
     display: flex;
@@ -416,15 +427,14 @@ button
 }
 
 
-.notification .icon.green
+.notification.success .icon
 {
-    color: #1bc562;
+    color: #ddffe4;
 }
 
-
-.notification .icon.red
+.notification.error .icon
 {
-    color: #eb5757;
+    color: #fdd;
 }
 
 
