@@ -1,19 +1,27 @@
 <template>
     <div class="tx_fee">
-        <button class="btn" :class="{ red: !store.TxFee.isEnough }">
+        <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
             {{ $t('message.tx_fee_label') }} {{ store.TxFee.currentAmount }} {{ store.TxFee.currentSymbol }}
         </button>
     </div>
+
+    <!-- Tx fee modal -->
+    <TxFeeModal v-if="showTxFeeModal" />
 </template>
 
 
 <script setup>
-    import { onBeforeMount, watch, computed } from 'vue'
+    import { onBeforeMount, watch, computed, inject, ref } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenAmount } from '@/utils'
 
+    // Components
+    import TxFeeModal from '@/components/modal/TxFeeModal.vue'
+
 
     const store = useGlobalStore(),
+        emitter = inject('emitter'),
+        showTxFeeModal = ref(false),
         balance = store.balances.find(balance => balance.denom == store.networks[store.currentNetwork].denom)
 
 
@@ -32,6 +40,13 @@
     watch(computed(() => store.isBalancesGot), () => {
         // Set enough status
         store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentAmount
+    })
+
+
+    // Event "close_tx_fee_modal"
+    emitter.on('close_tx_fee_modal', () => {
+        // Hide TxFee modal
+        showTxFeeModal.value = false
     })
 </script>
 

@@ -76,6 +76,10 @@ export default {
             'tx_fee_label': 'Tx Fee:',
 
 
+            // Tx fee modal
+            'tx_fee_modal_title': 'Fee Options',
+
+
             // Transaction info
             'details_label': 'Details:',
             'memo_label': 'Memo:',
@@ -119,6 +123,7 @@ export default {
             'btn_claim': 'Claim',
             'btn_approve': 'Approve',
             'btn_json': 'View JSON',
+            'btn_close': 'Close',
 
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",

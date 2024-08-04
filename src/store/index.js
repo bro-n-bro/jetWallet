@@ -40,6 +40,7 @@ export const useGlobalStore = defineStore('global', {
             currentDenom: '',
             currentSymbol: '',
             currentAmount: '',
+            gasAdjustment: 1.3,
             isEnough: false
         },
 
