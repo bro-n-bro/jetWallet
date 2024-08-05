@@ -11,6 +11,7 @@ const network = {
     mintscanPrefix: 'cosmos',
     alias: 'cosmoshub',
     exponent: 6,
+    gas_adjustment: 1.6
 }
 
 export default network

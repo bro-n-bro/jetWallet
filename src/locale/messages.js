@@ -79,6 +79,17 @@ export default {
             // Tx fee modal
             'tx_fee_modal_title': 'Fee Options',
 
+            'tx_fee_fee_tier_label': 'Fee tier',
+            'tx_fee_fee_token_label': 'Fee Token:',
+            'tx_fee_gas_adjustment_label': 'Gas Adjustment:',
+
+            'tx_fee_remember_label': 'Remember my choise',
+            'tx_fee_auto_label': 'Auto',
+
+            'tx_fee_low_label': 'Low',
+            'tx_fee_average_label': 'Average',
+            'tx_fee_high_label': 'High',
+
 
             // Transaction info
             'details_label': 'Details:',

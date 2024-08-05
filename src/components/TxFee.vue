@@ -1,7 +1,7 @@
 <template>
     <div class="tx_fee">
         <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
-            {{ $t('message.tx_fee_label') }} {{ store.TxFee.currentAmount }} {{ store.TxFee.currentSymbol }}
+            {{ $t('message.tx_fee_label') }} {{ store.TxFee.currentPriceAmount }} {{ store.TxFee.currentSymbol }}
         </button>
     </div>
 
@@ -26,20 +26,20 @@
 
 
     onBeforeMount(() => {
-        // Set current amount
-        store.TxFeeSetCurrentAmount(store.networks[store.currentNetwork].chain_id)
-
         // Set current denom
         store.TxFeeSetCurrentDenom(store.networks[store.currentNetwork].denom, store.networks[store.currentNetwork].token_name)
 
+        // Get gas prices
+        store.TxFeeGetGasPrices(store.networks[store.currentNetwork].chain_id)
+
         // Set enough status
-        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentAmount
+        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentPriceAmount
     })
 
 
     watch(computed(() => store.isBalancesGot), () => {
         // Set enough status
-        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentAmount
+        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentPriceAmount
     })
 
 

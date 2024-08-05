@@ -39,8 +39,14 @@ export const useGlobalStore = defineStore('global', {
         TxFee: {
             currentDenom: '',
             currentSymbol: '',
-            currentAmount: '',
-            gasAdjustment: 1.3,
+            currentPrice: 'Average',
+            currentPriceAmount: 0,
+            priceLow: 0,
+            priceAverage: 0,
+            priceHigh: 0,
+            exponent: 0,
+            remember: false,
+            gasAdjustmentAuto: true,
             isEnough: false
         },
 
@@ -73,8 +79,9 @@ export const useGlobalStore = defineStore('global', {
                 secret: this.secret,
                 privateKey: this.privateKey,
                 currentCurrency: this.currentCurrency,
-                currentNetwork: this.currentNetwork
-            } = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork']))
+                currentNetwork: this.currentNetwork,
+                TxFeeCurrentPrice: this.TxFee.currentPrice
+            } = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentPrice']))
 
             // Create singer
             let signer = await createSinger()
@@ -352,7 +359,8 @@ export const useGlobalStore = defineStore('global', {
                 ['isBiometric', isBiometricEnabled],
                 ['authErrorLimit', this.authErrorLimit],
                 ['currentNetwork', 'cosmoshub'],
-                ['currentCurrency', 'USD']
+                ['currentCurrency', 'USD'],
+                ['TxFeeCurrentPrice', 'Average']
             ])
 
             // Set authorized status
@@ -454,13 +462,33 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Set current amount
-        TxFeeSetCurrentAmount(chainId) {
+        // Get gas prices
+        TxFeeGetGasPrices(chainId) {
             // Get chain info
             let chain = chains.find(el => el.chain_id === chainId)
 
-            // Set data
-            this.TxFee.currentAmount = chain.fees.fee_tokens[0].average_gas_price
+            // Set exponent
+            this.TxFee.exponent = 0
+
+            // Set prices
+            this.TxFee.priceLow = chain.fees.fee_tokens[0].low_gas_price
+            this.TxFee.priceAverage = chain.fees.fee_tokens[0].average_gas_price
+            this.TxFee.priceHigh = chain.fees.fee_tokens[0].high_gas_price
+
+            // Set current price amount
+            switch (this.TxFee.currentPrice) {
+                case 'Low':
+                    this.TxFee.currentPriceAmount = this.TxFee.priceLow
+                    break
+
+                case 'Average':
+                    this.TxFee.currentPriceAmount = this.TxFee.priceAverage
+                    break
+
+                case 'High':
+                    this.TxFee.currentPriceAmount = this.TxFee.priceHigh
+                    break
+            }
         },
 
 

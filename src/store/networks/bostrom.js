@@ -11,6 +11,7 @@ const network = {
     mintscanPrefix: null,
     alias: 'bostrom',
     exponent: 0,
+    gas_adjustment: 1.3
 }
 
 export default network
