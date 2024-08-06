@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container careate_pin_page">
+    <section class="page_container auth_page">
         <div class="cont">
             <div class="page_title">
                 {{ $t('message.auth_title') }}

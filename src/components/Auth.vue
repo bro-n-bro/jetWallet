@@ -55,7 +55,7 @@
     </div>
 
 
-    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit" :class="{ show: !loading }">
+    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit">
         <span>{{ $t('message.btn_biometric2') }}</span>
 
         <svg class="icon" v-if="biometrictype === 'face'">
@@ -68,7 +68,7 @@
     </button>
 
 
-    <div class="btns" :class="{ show: !loading }">
+    <div class="btns">
         <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < store.authErrorLimit">
             <span>{{ $t('message.btn_login') }}</span>
         </button>

@@ -1,7 +1,7 @@
 <template>
     <div class="tx_fee">
         <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
-            {{ $t('message.tx_fee_label') }} {{ store.TxFee.currentPriceAmount }} {{ store.TxFee.currentSymbol }}
+            {{ $t('message.tx_fee_label') }} {{ currentPrice }} {{ store.TxFee.balance.token_info.symbol }}
         </button>
     </div>
 
@@ -11,9 +11,9 @@
 
 
 <script setup>
-    import { onBeforeMount, watch, computed, inject, ref } from 'vue'
+    import { inject, ref, onBeforeMount, computed } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenAmount } from '@/utils'
+    import { formatTokenAmount, simulateTx } from '@/utils'
 
     // Components
     import TxFeeModal from '@/components/modal/TxFeeModal.vue'
@@ -22,24 +22,42 @@
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         showTxFeeModal = ref(false),
-        balance = store.balances.find(balance => balance.denom == store.networks[store.currentNetwork].denom)
+        msgAny = ref([]),
+        currentPrice = computed(() => formatTokenAmount(store.TxFee.currentPrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }))
 
 
-    onBeforeMount(() => {
-        // Set current denom
-        store.TxFeeSetCurrentDenom(store.networks[store.currentNetwork].denom, store.networks[store.currentNetwork].token_name)
+    onBeforeMount(async () => {
+        // Set current balance
+        store.TxFeeGetCurrentBalance(store.networks[store.currentNetwork].denom)
 
-        // Get gas prices
-        store.TxFeeGetGasPrices(store.networks[store.currentNetwork].chain_id)
+        // Get minimum gas price
+        store.TxFeeGetMinGasPrice()
 
-        // Set enough status
-        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentPriceAmount
-    })
+        // Set gas adjustment
+        store.TxFeeGetGasAdjustment()
 
+        // Set messeges
+        store.stakedBalances.forEach(balance => {
+            msgAny.value.push({
+                typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+                value: {
+                    delegatorAddress: store.currentAddress,
+                    validatorAddress: balance.validator_info.operator_address
+                }
+            })
+        })
 
-    watch(computed(() => store.isBalancesGot), () => {
-        // Set enough status
-        store.TxFee.isEnough = formatTokenAmount(balance.amount, balance.exponent) > store.TxFee.currentPriceAmount
+        // Send Tx
+        store.TxFee.simulatedFee = await simulateTx(msgAny.value)
+
+        // Set gas prices
+        store.TxFeeSetGasPrices()
+
+        // Set current gas price
+        store.TxFeeSetCurrentGasPrice()
+
+        // Enough status
+        store.TxFeeIsEnough()
     })
 
 

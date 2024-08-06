@@ -15,7 +15,7 @@
                     <div class="label">
                         <span>{{ $t('message.tx_fee_fee_tier_label') }}</span>
 
-                        <button class="toggle_btn" :class="{ enabled: store.TxFee.remember }" @click.prevent="store.TxFee.remember = !store.TxFee.remember">
+                        <button class="toggle_btn" :class="{ enabled: store.TxFee.isRemember }" @click.prevent="store.TxFee.isRemember = !store.TxFee.isRemember">
                             <span>{{ $t('message.tx_fee_remember_label') }}</span>
 
                             <div class="toggle_wrap">
@@ -30,51 +30,57 @@
 
                     <div class="vals_wrap">
                         <div class="vals">
-                            <button class="btn" :class="{ active: store.TxFee.currentPrice === 'Low' }" @click.prevent="store.TxFee.currentPrice = 'Low'">
+                            <button class="btn" :class="{ active: store.TxFee.currentLevel === 'low' }" @click.prevent="store.TxFeeSetCurrentGasLevel('low')">
                                 <div class="name">
                                     {{ $t('message.tx_fee_low_label') }}
                                 </div>
 
-                                <div class="cost"><$0.01</div>
+                                <div class="cost">
+                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.lowPrice, store.TxFee.balance.exponent)) }}{{ store.currentCurrencySymbol }}
+                                </div>
 
                                 <div class="amount">
-                                    {{ store.TxFee.priceLow }}
+                                    {{ formatTokenAmount(store.TxFee.lowPrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
                                 </div>
 
                                 <div class="denom">
-                                    {{ store.TxFee.currentSymbol }}
+                                    {{ store.TxFee.balance.token_info.symbol }}
                                 </div>
                             </button>
 
-                            <button class="btn" :class="{ active: store.TxFee.currentPrice === 'Average' }" @click.prevent="store.TxFee.currentPrice = 'Average'">
+                            <button class="btn" :class="{ active: store.TxFee.currentLevel === 'average' }" @click.prevent="store.TxFeeSetCurrentGasLevel('average')">
                                 <div class="name">
                                     {{ $t('message.tx_fee_average_label') }}
                                 </div>
 
-                                <div class="cost"><$0.01</div>
+                                <div class="cost">
+                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.averagePrice, store.TxFee.balance.exponent)) }}{{ store.currentCurrencySymbol }}
+                                </div>
 
                                 <div class="amount">
-                                    {{ store.TxFee.priceAverage }}
+                                    {{ formatTokenAmount(store.TxFee.averagePrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
                                 </div>
 
                                 <div class="denom">
-                                    {{ store.TxFee.currentSymbol }}
+                                    {{ store.TxFee.balance.token_info.symbol }}
                                 </div>
                             </button>
 
-                            <button class="btn" :class="{ active: store.TxFee.currentPrice === 'High' }" @click.prevent="store.TxFee.currentPrice = 'High'">
+                            <button class="btn" :class="{ active: store.TxFee.currentLevel === 'high' }" @click.prevent="store.TxFeeSetCurrentGasLevel('high')">
                                 <div class="name">
                                     {{ $t('message.tx_fee_high_label') }}
                                 </div>
 
-                                <div class="cost"><$0.01</div>
+                                <div class="cost">
+                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.highPrice, store.TxFee.balance.exponent)) }}{{ store.currentCurrencySymbol }}
+                                </div>
 
                                 <div class="amount">
-                                    {{ store.TxFee.priceHigh }}
+                                    {{ formatTokenAmount(store.TxFee.highPrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
                                 </div>
 
                                 <div class="denom">
-                                    {{ store.TxFee.currentSymbol }}
+                                    {{ store.TxFee.balance.token_info.symbol }}
                                 </div>
                             </button>
                         </div>
@@ -88,9 +94,9 @@
                     </div>
 
                     <div class="field">
-                        <input type="text" class="input big" :value="store.TxFee.currentSymbol" readonly>
+                        <input type="text" class="input big" :value="store.TxFee.balance.token_info.symbol" readonly>
 
-                        <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg>
+                        <!-- <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg> -->
                     </div>
                 </div>
 
@@ -99,7 +105,7 @@
                     <div class="label">
                         <span>{{ $t('message.tx_fee_gas_adjustment_label') }}</span>
 
-                        <button class="toggle_btn" :class="{ enabled: store.TxFee.gasAdjustmentAuto }" @click.prevent="store.TxFee.gasAdjustmentAuto = !store.TxFee.gasAdjustmentAuto">
+                        <button class="toggle_btn" :class="{ enabled: store.TxFee.isGasAdjustmentAuto }" @click.prevent="store.TxFee.isGasAdjustmentAuto = !store.TxFee.isGasAdjustmentAuto">
                             <span>{{ $t('message.tx_fee_auto_label') }}</span>
 
                             <div class="toggle_wrap">
@@ -113,7 +119,7 @@
                     </div>
 
                     <div class="field">
-                        <input type="number" class="input big" v-model="gasAdjustment" :disabled="store.TxFee.gasAdjustmentAuto">
+                        <input type="number" class="input big" v-model="store.TxFee.gasAdjustment" :disabled="store.TxFee.isGasAdjustmentAuto">
                     </div>
                 </div>
 
@@ -132,13 +138,13 @@
 
 
 <script setup>
-    import { inject, ref, computed } from 'vue'
+    import { inject } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { calcTokenCost, formatTokenCost, formatTokenAmount } from '@/utils'
 
 
     const store = useGlobalStore(),
-        emitter = inject('emitter'),
-        gasAdjustment = computed(() => store.TxFee.gasAdjustmentAuto ? store.networks[store.currentNetwork].gas_adjustment : ref(''))
+        emitter = inject('emitter')
 </script>
 
 

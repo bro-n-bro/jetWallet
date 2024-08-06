@@ -1,7 +1,7 @@
 import { useGlobalStore } from '@/store'
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
 import { fromHex } from '@cosmjs/encoding'
-import { SigningStargateClient, GasPrice } from '@cosmjs/stargate'
+import { SigningStargateClient, GasPrice, calculateFee } from '@cosmjs/stargate'
 import { Decimal } from '@cosmjs/math'
 import { chains } from 'chain-registry'
 
@@ -88,13 +88,16 @@ export const createSinger = async () => {
     // Get chain info
     let chain = chains.find(el => el.chain_id === store.networks[store.currentNetwork].chain_id)
 
-    // Gas price
-    let gasPrice = new GasPrice(Decimal.fromUserInput(chain.fees.fee_tokens[0].average_gas_price.toString() || '0', 3), store.networks[store.currentNetwork].denom)
+    // // Gas price
+    // let gasPrice = new GasPrice(Decimal.fromUserInput(chain.fees.fee_tokens[0].average_gas_price.toString() || '0', 3), store.networks[store.currentNetwork].denom)
+
+    // // Stargate client
+    // let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet, {
+    //     gasPrice
+    // })
 
     // Stargate client
-    let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet, {
-        gasPrice
-    })
+    let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
 
     return { address, signingClient }
 }
@@ -245,9 +248,35 @@ export const getNetworkLogo = chainId => {
 }
 
 
-// Send Tx
-export const sendTx = async msg => {
+// Simulate Tx
+export const simulateTx = async (msg, memo = '') => {
     let store = useGlobalStore()
 
-    return await store.signingClient.signAndBroadcast(store.currentAddress, msg, 'auto', store.memo)
+    // Simulate gas
+    let gasUsed = await store.signingClient.simulate(store.currentAddress, msg, memo)
+
+    // Fee
+    let fee = calculateFee(Math.round(gasUsed * store.TxFee.gasAdjustment), new GasPrice(Decimal.fromUserInput(store.TxFee.minPrice.toString() || '0', 3), store.TxFee.balance.denom))
+
+    return fee
+}
+
+
+// Send Tx
+export const sendTx = async (msg, memo) => {
+    let store = useGlobalStore()
+
+    // Fee
+    let fee = {
+        amount: [{
+            denom: store.TxFee.balance.denom,
+            amount: store.TxFee.currentPrice.toString()
+        }],
+        gas: store.TxFee.simulatedFee.gas.toString()
+    }
+
+    // Sign and broadcast
+    let result = await store.signingClient.signAndBroadcast(store.currentAddress, msg, fee, memo)
+
+    return result
 }

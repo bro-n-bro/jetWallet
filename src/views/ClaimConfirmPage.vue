@@ -1,7 +1,5 @@
 <template>
     <section class="page_container claim_confirm">
-        <Loader v-if="isProcess" />
-
         <div class="cont">
             <div class="head">
                 <router-link to="/account" class="back_btn">
@@ -53,7 +51,7 @@
 
 
             <!-- Tx fee -->
-            <TxFee />
+            <TxFee v-if="store.isBalancesGot" />
 
 
             <div class="btns">
@@ -78,7 +76,6 @@
     import { getNetworkLogo, sendTx } from '@/utils'
 
     // Components
-    import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
     import SignTx from '@/components/modal/SignTx.vue'
 
@@ -89,7 +86,6 @@
         i18n = inject('i18n'),
         notification = useNotification(),
         memo = ref(''),
-        isProcess = ref(false),
         showSignTxModal = ref(false)
 
 
@@ -102,9 +98,6 @@
 
     // Claim tokens
     async function claim() {
-        // Set process status
-        isProcess.value = true
-
         try {
             // Message
             let msgAny = []
@@ -121,7 +114,7 @@
             })
 
             // Send Tx
-            let result = await sendTx(msgAny)
+            let result = await sendTx(msgAny, memo.value)
 
             if (result.code === 0) {
                 // Update rewards
@@ -148,18 +141,12 @@
 
                 // Show error
                 showError(result)
-
-                // Set process status
-                isProcess.value = false
             }
         } catch (error) {
             console.log(error)
 
             // Show error
             showError(error)
-
-            // Set process status
-            isProcess.value = false
         }
     }
 
@@ -211,6 +198,7 @@
     .claim_confirm
     {
         background: #170232;
+        padding-top: 8px;
     }
 
 
@@ -247,6 +235,7 @@
     .memo
     {
         margin-top: 12px;
+        margin-bottom: auto;
     }
 
 

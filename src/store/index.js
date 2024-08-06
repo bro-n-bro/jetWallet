@@ -19,7 +19,6 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
 
         authErrorLimit: 4,
-        memo: 'cosmos_wallet',
 
         currentNetwork: '',
         currentAddress: '',
@@ -37,16 +36,14 @@ export const useGlobalStore = defineStore('global', {
 
 
         TxFee: {
-            currentDenom: '',
-            currentSymbol: '',
-            currentPrice: 'Average',
-            currentPriceAmount: 0,
-            priceLow: 0,
-            priceAverage: 0,
-            priceHigh: 0,
-            exponent: 0,
-            remember: false,
-            gasAdjustmentAuto: true,
+            balance: {},
+            currentLevel: '',
+            currentPrice: 0,
+            minPrice: 0,
+            gasAdjustment: 0,
+            simulatedFee: {},
+            isRemember: false,
+            isGasAdjustmentAuto: true,
             isEnough: false
         },
 
@@ -75,13 +72,15 @@ export const useGlobalStore = defineStore('global', {
         // Init APP
         async initApp() {
             // Get DB data
-            ({
-                secret: this.secret,
-                privateKey: this.privateKey,
-                currentCurrency: this.currentCurrency,
-                currentNetwork: this.currentNetwork,
-                TxFeeCurrentPrice: this.TxFee.currentPrice
-            } = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentPrice']))
+            let DBData = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
+
+            // Set data from DB
+            this.secret = DBData.secret
+            this.privateKey = DBData.privateKey
+            this.currentCurrency = DBData.currentCurrency
+            this.currentNetwork = DBData.currentNetwork
+            this.TxFee.currentLevel = DBData.TxFeeCurrentLevel || 'average'
+            this.TxFee.isRemember = DBData.TxFeeIsRemember || false
 
             // Create singer
             let signer = await createSinger()
@@ -359,8 +358,7 @@ export const useGlobalStore = defineStore('global', {
                 ['isBiometric', isBiometricEnabled],
                 ['authErrorLimit', this.authErrorLimit],
                 ['currentNetwork', 'cosmoshub'],
-                ['currentCurrency', 'USD'],
-                ['TxFeeCurrentPrice', 'Average']
+                ['currentCurrency', 'USD']
             ])
 
             // Set authorized status
@@ -462,40 +460,62 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Get gas prices
-        TxFeeGetGasPrices(chainId) {
-            // Get chain info
-            let chain = chains.find(el => el.chain_id === chainId)
-
-            // Set exponent
-            this.TxFee.exponent = 0
-
-            // Set prices
-            this.TxFee.priceLow = chain.fees.fee_tokens[0].low_gas_price
-            this.TxFee.priceAverage = chain.fees.fee_tokens[0].average_gas_price
-            this.TxFee.priceHigh = chain.fees.fee_tokens[0].high_gas_price
-
-            // Set current price amount
-            switch (this.TxFee.currentPrice) {
-                case 'Low':
-                    this.TxFee.currentPriceAmount = this.TxFee.priceLow
-                    break
-
-                case 'Average':
-                    this.TxFee.currentPriceAmount = this.TxFee.priceAverage
-                    break
-
-                case 'High':
-                    this.TxFee.currentPriceAmount = this.TxFee.priceHigh
-                    break
-            }
+        // Set current balance
+        TxFeeGetCurrentBalance(baseDenom) {
+            // Set data
+            this.TxFee.balance = this.balances.find(balance => balance.denom === baseDenom)
         },
 
 
-        // Set current denom
-        TxFeeSetCurrentDenom(denom, symbol) {
-            this.TxFee.currentDenom = denom
-            this.TxFee.currentSymbol = symbol
+        // Set current gas price
+        TxFeeSetCurrentGasPrice() {
+            // Set data
+            this.TxFee.currentPrice = this.TxFee[`${this.TxFee.currentLevel}Price`]
+        },
+
+
+        // Get minimum gas price
+        TxFeeGetMinGasPrice() {
+            // Get chain info
+            let chain = chains.find(el => el.chain_id === this.TxFee.balance.chain_info.chain_id)
+
+            // Set data
+            this.TxFee.minPrice = chain.fees.fee_tokens[0].fixed_min_gas_price
+        },
+
+
+        // Set current gas level
+        TxFeeSetCurrentGasLevel(level) {
+            // Set data
+            this.TxFee.currentLevel = level
+
+            // Update current gas price
+            this.TxFeeSetCurrentGasPrice()
+        },
+
+
+        // Set gas prices
+        TxFeeSetGasPrices() {
+            // Set data
+            this.TxFee.lowPrice = parseFloat(this.TxFee.simulatedFee.amount[0].amount)
+            this.TxFee.averagePrice = parseFloat(this.TxFee.simulatedFee.amount[0].amount) * 1.16
+            this.TxFee.highPrice = parseFloat(this.TxFee.simulatedFee.amount[0].amount) * 1.32
+        },
+
+
+        // Set gas adjustment
+        TxFeeGetGasAdjustment() {
+            // Set data
+            this.TxFee.gasAdjustment = this.networks[this.TxFee.balance.chain_name].gas_adjustment
+        },
+
+
+        // Enough status
+        TxFeeIsEnough() {
+            // Set status
+            if (this.isBalancesGot) {
+                this.TxFee.isEnough = this.TxFee.balance.amount > parseFloat(this.TxFee.simulatedFee.amount[0].amount)
+            }
         },
 
 
