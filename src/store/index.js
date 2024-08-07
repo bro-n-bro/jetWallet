@@ -38,9 +38,7 @@ export const useGlobalStore = defineStore('global', {
         TxFee: {
             balance: {},
             currentLevel: '',
-            currentPrice: 0,
-            minPrice: 0,
-            gasAdjustment: 0,
+            userGasAmount: 0,
             simulatedFee: {},
             isRemember: false,
             isGasAdjustmentAuto: true,
@@ -467,46 +465,15 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Set current gas price
-        TxFeeSetCurrentGasPrice() {
-            // Set data
-            this.TxFee.currentPrice = this.TxFee[`${this.TxFee.currentLevel}Price`]
-        },
-
-
         // Get minimum gas price
-        TxFeeGetMinGasPrice() {
+        TxFeeSetGasPrices() {
             // Get chain info
             let chain = chains.find(el => el.chain_id === this.TxFee.balance.chain_info.chain_id)
 
             // Set data
-            this.TxFee.minPrice = chain.fees.fee_tokens[0].fixed_min_gas_price
-        },
-
-
-        // Set current gas level
-        TxFeeSetCurrentGasLevel(level) {
-            // Set data
-            this.TxFee.currentLevel = level
-
-            // Update current gas price
-            this.TxFeeSetCurrentGasPrice()
-        },
-
-
-        // Set gas prices
-        TxFeeSetGasPrices() {
-            // Set data
-            this.TxFee.lowPrice = parseFloat(this.TxFee.simulatedFee.amount[0].amount)
-            this.TxFee.averagePrice = parseFloat(this.TxFee.simulatedFee.amount[0].amount) * 1.16
-            this.TxFee.highPrice = parseFloat(this.TxFee.simulatedFee.amount[0].amount) * 1.32
-        },
-
-
-        // Set gas adjustment
-        TxFeeGetGasAdjustment() {
-            // Set data
-            this.TxFee.gasAdjustment = this.networks[this.TxFee.balance.chain_name].gas_adjustment
+            this.TxFee.lowPrice = chain.fees.fee_tokens[0].fixed_min_gas_price
+            this.TxFee.averagePrice = chain.fees.fee_tokens[0].fixed_min_gas_price * 1.15
+            this.TxFee.highPrice = chain.fees.fee_tokens[0].fixed_min_gas_price * 1.30
         },
 
 
@@ -514,7 +481,7 @@ export const useGlobalStore = defineStore('global', {
         TxFeeIsEnough() {
             // Set status
             if (this.isBalancesGot) {
-                this.TxFee.isEnough = this.TxFee.balance.amount > parseFloat(this.TxFee.simulatedFee.amount[0].amount)
+                this.TxFee.isEnough = this.TxFee.balance.amount > this.TxFee.userGasAmount * this.TxFee[`${this.TxFee.currentLevel}Price`]
             }
         },
 

@@ -23,18 +23,15 @@
         emitter = inject('emitter'),
         showTxFeeModal = ref(false),
         msgAny = ref([]),
-        currentPrice = computed(() => formatTokenAmount(store.TxFee.currentPrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }))
+        currentPrice = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }))
 
 
     onBeforeMount(async () => {
         // Set current balance
         store.TxFeeGetCurrentBalance(store.networks[store.currentNetwork].denom)
 
-        // Get minimum gas price
-        store.TxFeeGetMinGasPrice()
-
-        // Set gas adjustment
-        store.TxFeeGetGasAdjustment()
+        // Set gas prices
+        store.TxFeeSetGasPrices()
 
         // Set messeges
         store.stakedBalances.forEach(balance => {
@@ -47,14 +44,9 @@
             })
         })
 
-        // Send Tx
+        // Simulate Tx
         store.TxFee.simulatedFee = await simulateTx(msgAny.value)
-
-        // Set gas prices
-        store.TxFeeSetGasPrices()
-
-        // Set current gas price
-        store.TxFeeSetCurrentGasPrice()
+        store.TxFee.userGasAmount = store.TxFee.simulatedFee.gas
 
         // Enough status
         store.TxFeeIsEnough()

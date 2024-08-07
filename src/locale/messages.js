@@ -82,6 +82,7 @@ export default {
             'tx_fee_fee_tier_label': 'Fee tier',
             'tx_fee_fee_token_label': 'Fee Token:',
             'tx_fee_gas_adjustment_label': 'Gas Adjustment:',
+            'tx_fee_gas_amount_label': 'Gas amount',
 
             'tx_fee_remember_label': 'Remember my choise',
             'tx_fee_auto_label': 'Auto',

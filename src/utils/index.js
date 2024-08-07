@@ -256,7 +256,7 @@ export const simulateTx = async (msg, memo = '') => {
     let gasUsed = await store.signingClient.simulate(store.currentAddress, msg, memo)
 
     // Fee
-    let fee = calculateFee(Math.round(gasUsed * store.TxFee.gasAdjustment), new GasPrice(Decimal.fromUserInput(store.TxFee.minPrice.toString() || '0', 3), store.TxFee.balance.denom))
+    let fee = calculateFee(Math.round(gasUsed * store.networks[store.TxFee.balance.chain_name].gas_adjustment), new GasPrice(Decimal.fromUserInput(store.TxFee.lowPrice.toString() || '0', 3), store.TxFee.balance.denom))
 
     return fee
 }
@@ -270,9 +270,9 @@ export const sendTx = async (msg, memo) => {
     let fee = {
         amount: [{
             denom: store.TxFee.balance.denom,
-            amount: store.TxFee.currentPrice.toString()
+            amount: store.TxFee[`${store.TxFee.currentLevel}Price`].toString()
         }],
-        gas: store.TxFee.simulatedFee.gas.toString()
+        gas: store.TxFee.userGasAmount.toString()
     }
 
     // Sign and broadcast
