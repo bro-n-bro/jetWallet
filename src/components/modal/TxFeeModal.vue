@@ -124,7 +124,7 @@
                     </div>
 
                     <div class="field" v-else>
-                        <input type="text" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10">
+                        <input type="text" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10" @input="validateUserGasAmount($event)">
                     </div>
                 </div>
 
@@ -154,8 +154,24 @@
 
     watch(computed(() => store.TxFee.isGasAdjustmentAuto), () => {
         // Default gas amount
-        store.TxFee.userGasAmount = store.TxFee.simulatedFee.gas
+        store.TxFee.userGasAmount = store.TxFee.gasAmount
     })
+
+
+    watch(computed(() => store.TxFee.userGasAmount), () => {
+        // Enough status
+        store.TxFeeIsEnough()
+    })
+
+
+    // Validate user gas amount
+    function validateUserGasAmount(e) {
+        // Empty or zero
+        if (e.target.value <= 0) {
+            // Set simulated gas amount
+            store.TxFee.userGasAmount = store.TxFee.gasAmount
+        }
+    }
 </script>
 
 

@@ -1,7 +1,7 @@
 <template>
     <div class="tx_fee">
         <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
-            {{ $t('message.tx_fee_label') }} {{ currentPrice }} {{ store.TxFee.balance.token_info.symbol }}
+            {{ $t('message.tx_fee_label') }} {{ cost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }} {{ store.TxFee.balance.token_info.symbol }}
         </button>
     </div>
 
@@ -19,11 +19,11 @@
     import TxFeeModal from '@/components/modal/TxFeeModal.vue'
 
 
-    const store = useGlobalStore(),
+    const props = defineProps(['msgAny']),
+        store = useGlobalStore(),
         emitter = inject('emitter'),
         showTxFeeModal = ref(false),
-        msgAny = ref([]),
-        currentPrice = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }))
+        cost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent))
 
 
     onBeforeMount(async () => {
@@ -33,20 +33,8 @@
         // Set gas prices
         store.TxFeeSetGasPrices()
 
-        // Set messeges
-        store.stakedBalances.forEach(balance => {
-            msgAny.value.push({
-                typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-                value: {
-                    delegatorAddress: store.currentAddress,
-                    validatorAddress: balance.validator_info.operator_address
-                }
-            })
-        })
-
         // Simulate Tx
-        store.TxFee.simulatedFee = await simulateTx(msgAny.value)
-        store.TxFee.userGasAmount = store.TxFee.simulatedFee.gas
+        await simulateTx(props.msgAny)
 
         // Enough status
         store.TxFeeIsEnough()

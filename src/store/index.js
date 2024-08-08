@@ -24,6 +24,7 @@ export const useGlobalStore = defineStore('global', {
         currentAddress: '',
         currentCurrency: '',
         currentCurrencySymbol: '',
+        currentTxHash: null,
 
         prices: [],
         balances: [],
@@ -39,7 +40,7 @@ export const useGlobalStore = defineStore('global', {
             balance: {},
             currentLevel: '',
             userGasAmount: 0,
-            simulatedFee: {},
+            gasAmount: 0,
             isRemember: false,
             isGasAdjustmentAuto: true,
             isEnough: false
@@ -376,6 +377,15 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Update TxFee info
+        async updateTxFeeInfo() {
+            await DBaddData('wallet', [
+                ['TxFeeCurrentLevel', this.TxFee.currentLevel],
+                ['TxFeeIsRemember', this.TxFee.isRemember]
+            ])
+        },
+
+
         // Update current currency
         async updateCurrentCurrency() {
             switch (this.currentCurrency) {
@@ -471,9 +481,9 @@ export const useGlobalStore = defineStore('global', {
             let chain = chains.find(el => el.chain_id === this.TxFee.balance.chain_info.chain_id)
 
             // Set data
-            this.TxFee.lowPrice = chain.fees.fee_tokens[0].fixed_min_gas_price
-            this.TxFee.averagePrice = chain.fees.fee_tokens[0].fixed_min_gas_price * 1.15
-            this.TxFee.highPrice = chain.fees.fee_tokens[0].fixed_min_gas_price * 1.30
+            this.TxFee.lowPrice = chain.fees.fee_tokens[0].low_gas_price
+            this.TxFee.averagePrice = chain.fees.fee_tokens[0].low_gas_price * 1.15
+            this.TxFee.highPrice = chain.fees.fee_tokens[0].low_gas_price * 1.30
         },
 
 
@@ -483,6 +493,20 @@ export const useGlobalStore = defineStore('global', {
             if (this.isBalancesGot) {
                 this.TxFee.isEnough = this.TxFee.balance.amount > this.TxFee.userGasAmount * this.TxFee[`${this.TxFee.currentLevel}Price`]
             }
+        },
+
+
+        // Set current tx info
+        async getCurrentTxInfo() {
+            // Event Tx with hash
+            // this.networks[this.currentNetwork].websocket.send(JSON.stringify({
+            //     jsonrpc: '2.0',
+            //     method: 'subscribe',
+            //     id: '1',
+            //     params: {
+            //         query: `tm.event='Tx' AND tx.hash='${this.currentTxHash}'`
+            //     }
+            // }))
         },
 
 

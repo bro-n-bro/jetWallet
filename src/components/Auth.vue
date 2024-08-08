@@ -306,7 +306,7 @@
 
         display: block;
 
-        margin: auto auto 25%;
+        margin: auto;
     }
 
 

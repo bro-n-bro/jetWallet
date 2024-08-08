@@ -51,7 +51,7 @@
 
 
             <!-- Tx fee -->
-            <TxFee v-if="store.isBalancesGot" />
+            <TxFee v-if="store.isBalancesGot" :msgAny />
 
 
             <div class="btns">
@@ -69,11 +69,11 @@
 
 
 <script setup>
-    import { ref, inject, onUnmounted } from 'vue'
+    import { ref, inject, onUnmounted, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
-    import { getNetworkLogo, sendTx } from '@/utils'
+    import { getNetworkLogo, signTx, sendTx } from '@/utils'
 
     // Components
     import TxFee from '@/components/TxFee.vue'
@@ -86,7 +86,22 @@
         i18n = inject('i18n'),
         notification = useNotification(),
         memo = ref(''),
-        showSignTxModal = ref(false)
+        showSignTxModal = ref(false),
+        msgAny = ref([])
+
+
+    onBeforeMount(() => {
+        // Set messeges
+        store.stakedBalances.forEach(balance => {
+            msgAny.value.push({
+                typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+                value: {
+                    delegatorAddress: store.currentAddress,
+                    validatorAddress: balance.validator_info.operator_address
+                }
+            })
+        })
+    })
 
 
     onUnmounted(() => {
@@ -99,49 +114,43 @@
     // Claim tokens
     async function claim() {
         try {
-            // Message
-            let msgAny = []
+            // Update TxFee info
+            if (store.TxFee.isRemember) {
+                await store.updateTxFeeInfo()
+            }
 
-            // Set messeges
-            store.stakedBalances.forEach(balance => {
-                msgAny.push({
-                    typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-                    value: {
-                        delegatorAddress: store.currentAddress,
-                        validatorAddress: balance.validator_info.operator_address
-                    }
-                })
-            })
+            // Sign Tx
+            let txBytes = await signTx(msgAny.value, memo.value)
 
             // Send Tx
-            let result = await sendTx(msgAny, memo.value)
+            await sendTx(txBytes)
 
-            if (result.code === 0) {
-                // Update rewards
-                await store.getRewards()
+            // if (txResult.code === 0) {
+            //     // Update rewards
+            //     await store.getRewards()
 
-                // Show notification
-                notification.notify({
-                    group: 'default',
-                    clean: true
-                })
+            //     // Show notification
+            //     notification.notify({
+            //         group: 'default',
+            //         clean: true
+            //     })
 
-                notification.notify({
-                    group: 'default',
-                    speed: 200,
-                    duration: 2000,
-                    title: i18n.global.t('message.notification_tx_success_title'),
-                    type: 'success'
-                })
+            //     notification.notify({
+            //         group: 'default',
+            //         speed: 200,
+            //         duration: 2000,
+            //         title: i18n.global.t('message.notification_tx_success_title'),
+            //         type: 'success'
+            //     })
 
-                // Redirect
-                router.push('/account')
-            } else {
-                console.log(result)
+            //     // Redirect
+            //     router.push('/account')
+            // } else {
+            //     console.log(txResult)
 
-                // Show error
-                showError(result)
-            }
+            //     // Show error
+            //     showError(txResult)
+            // }
         } catch (error) {
             console.log(error)
 
