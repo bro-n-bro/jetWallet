@@ -481,9 +481,9 @@ export const useGlobalStore = defineStore('global', {
             let chain = chains.find(el => el.chain_id === this.TxFee.balance.chain_info.chain_id)
 
             // Set data
-            this.TxFee.lowPrice = chain.fees.fee_tokens[0].low_gas_price
-            this.TxFee.averagePrice = chain.fees.fee_tokens[0].low_gas_price * 1.15
-            this.TxFee.highPrice = chain.fees.fee_tokens[0].low_gas_price * 1.30
+            this.TxFee.lowPrice = chain.fees.fee_tokens[0].fixed_min_gas_price * 1.1
+            this.TxFee.averagePrice = this.TxFee.lowPrice * 1.15
+            this.TxFee.highPrice = this.TxFee.lowPrice * 1.30
         },
 
 
