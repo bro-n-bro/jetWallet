@@ -368,14 +368,8 @@ button
 .vue-notification-group
 {
     width: 100%;
-    padding: 11px;
 
     pointer-events: none;
-}
-
-.vue-notification-wrapper + .vue-notification-wrapper
-{
-    margin-top: 8px;
 }
 
 
@@ -389,25 +383,55 @@ button
     flex-wrap: wrap;
     justify-content: space-between;
 
-    width: 189px;
-    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
     padding: 10px 15px;
 
+    transition: .3s linear;
     pointer-events: auto;
 
-    border-radius: 10px;
+    color: #ddf0ff;
+    border-radius: 0 0 10px 10px;
     background: #068cc5;
 }
 
 
+.notification:before
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: none;
+
+    width: 20px;
+    height: 100%;
+
+    content: '';
+    transform: translateX(-100%);
+    pointer-events: none;
+
+    background: linear-gradient(to right,  rgba(255,255,255,0) 0%,rgba(255,255,255,.9) 100%);
+}
+
+
+.notification.pending
+{
+    height: 53px;
+
+    color: #fffbd4;
+    background: #e5aa14;
+}
+
 .notification.success
 {
+    color: #ddffe4;
     background: #06c50e;
 }
 
 .notification.error
 {
+    color: #fdd;
     background: #c50606;
 }
 
@@ -423,18 +447,7 @@ button
     width: 18px;
     height: 18px;
 
-    color: #ddf0ff;
-}
-
-
-.notification.success .icon
-{
-    color: #ddffe4;
-}
-
-.notification.error .icon
-{
-    color: #fdd;
+    transition: .3s linear;
 }
 
 
@@ -447,38 +460,103 @@ button
 }
 
 
-.notification .title
+.notification .icon + *
 {
-    font-size: 14px;
-    font-weight: 500;
-
     align-self: center;
 
     width: calc(100% - 28px);
 
-    color: #ddf0ff;
+    transition: .3s linear;
+    transform-origin: top left;
 }
 
-.notification .title:empty
+
+.notification .icon .loader
 {
-    display: none;
+    width: 18px;
+    height: 18px;
+
+    animation: spin 1s linear infinite;
+
+    border-top: 2px solid currentColor;
+    border-right: 2px solid transparent;
+    border-left: 2px solid currentColor;
+    border-radius: 50%;
 }
 
 
-.notification .text
+.notification .title
+{
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+.notification .explorer
 {
     font-size: 12px;
-    line-height: 150%;
-
-    width: 100%;
-    margin-top: 4px;
-
-    opacity: .4;
+    font-weight: 500;
 }
 
-.notification .text:empty
+
+.notification .explorer a
 {
-    display: none;
+    color: currentColor;
+
+    text-decoration-thickness: 1px;
+}
+
+
+.notification.small
+{
+    overflow: hidden;
+
+    height: 5px;
+    padding: 0;
+
+    border-radius: 0;
+}
+
+
+.notification.small:before
+{
+    display: block;
+
+    animation: flashing 1.5s linear .3s infinite;
+}
+
+
+.notification.small > *
+{
+    transform: scale(0);
+
+    opacity: 0;
+}
+
+
+@keyframes spin
+{
+    0%
+    {
+        transform: rotate(0deg);
+    }
+    100%
+    {
+        transform: rotate(360deg);
+    }
+}
+
+
+@keyframes flashing
+{
+    0%
+    {
+        left: 0;
+    }
+    100%
+    {
+        left: 100%;
+    }
 }
 
 
