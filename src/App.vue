@@ -2,11 +2,15 @@
     <component :is="layout" />
 
 
-    <notifications position="top center" group="default">
+    <notifications position="top left" group="default" width="100%">
         <template #body="props">
-            <div class="notification" :class="{ success: props.item.type == 'success', error: props.item.type == 'error' }">
+            <div class="notification" :class="{ pending: props.item.type == 'pending', success: props.item.type == 'success', error: props.item.type == 'error' }">
                 <div class="icon" v-if="props.item.type == 'copied'">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_copied"></use></svg>
+                </div>
+
+                <div class="icon" v-if="props.item.type == 'pending'">
+                    <div class="loader"></div>
                 </div>
 
                 <div class="icon" v-if="props.item.type == 'success'">
@@ -17,16 +21,16 @@
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_error"></use></svg>
                 </div>
 
-                <div class="title">
-                    {{ props.item.title }}
-                </div>
+                <div>
+                    <div class="title">
+                        {{ props.item.title }}
+                    </div>
 
-                <div class="text" v-html="props.item.text" v-if="props.item.text"></div>
-
-                <div class="explorer" v-if="props.item.data.tx_hash">
-                    <a :href="`https://www.mintscan.io/${store.networks.global[store.currentNetwork].mintscanPrefix}/txs/${props.item.data.tx_hash}`" target="_blank" rel="noopener nofollow">
-                        {{ $t('message.notification_explorer_link') }}
-                    </a>
+                    <div class="explorer" v-if="props.item.data.tx_hash">
+                        <a :href="`https://www.mintscan.io/${store.networks[store.currentNetwork].mintscanPrefix}/txs/${props.item.data.tx_hash}`" target="_blank" rel="noopener nofollow">
+                            {{ $t('message.notification_explorer_link') }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </template>
@@ -36,11 +40,13 @@
 
 <script setup>
     import { onBeforeMount, inject, computed, onMounted } from 'vue'
+    import { useGlobalStore } from '@/store'
     import { useRoute } from 'vue-router'
     import { useTitle } from '@vueuse/core'
 
 
-    const i18n = inject('i18n'),
+    const store = useGlobalStore(),
+        i18n = inject('i18n'),
         route = useRoute(),
         title = useTitle(),
         layout = computed(() => route.meta.layout || 'default-layout')

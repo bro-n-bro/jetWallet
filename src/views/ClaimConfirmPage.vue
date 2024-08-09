@@ -1,5 +1,7 @@
 <template>
     <section class="page_container claim_confirm">
+        <Loader v-if="isProcess" />
+
         <div class="cont">
             <div class="head">
                 <router-link to="/account" class="back_btn">
@@ -29,6 +31,18 @@
 
                         <div class="title">
                             {{ $t('message.claim_rewards_title') }}
+                        </div>
+
+                        <div class="amount">
+                            <div class="val">
+                                ~ {{ formatTokenAmount(store.rewardsBalances[0].amount, store.rewardsBalances[0].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+
+                                {{ store.rewardsBalances[0].token_info.symbol }}
+                            </div>
+
+                            <div class="cost">
+                                ~ {{ formatTokenCost(calcRewardsBalancesCost('USD'), 'USD') }}$
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -73,9 +87,10 @@
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
-    import { getNetworkLogo, signTx, sendTx } from '@/utils'
+    import { getNetworkLogo, signTx, sendTx, calcRewardsBalancesCost, formatTokenCost, formatTokenAmount } from '@/utils'
 
     // Components
+    import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
     import SignTx from '@/components/modal/SignTx.vue'
 
@@ -87,7 +102,8 @@
         notification = useNotification(),
         memo = ref(''),
         showSignTxModal = ref(false),
-        msgAny = ref([])
+        msgAny = ref([]),
+        isProcess = ref(false)
 
 
     onBeforeMount(() => {
@@ -113,6 +129,9 @@
 
     // Claim tokens
     async function claim() {
+        // Set process status
+        isProcess.value = true
+
         try {
             // Update TxFee info
             if (store.TxFee.isRemember) {
@@ -123,34 +142,27 @@
             let txBytes = await signTx(msgAny.value, memo.value)
 
             // Send Tx
-            await sendTx(txBytes)
+            // sendTx(txBytes)
 
-            // if (txResult.code === 0) {
-            //     // Update rewards
-            //     await store.getRewards()
+            // Show notification
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
 
-            //     // Show notification
-            //     notification.notify({
-            //         group: 'default',
-            //         clean: true
-            //     })
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: -100,
+                title: i18n.global.t('message.notification_tx_pending_title'),
+                type: 'pending',
+                data: {
+                    tx_hash: store.networks[store.currentNetwork].currentTxHash
+                }
+            })
 
-            //     notification.notify({
-            //         group: 'default',
-            //         speed: 200,
-            //         duration: 2000,
-            //         title: i18n.global.t('message.notification_tx_success_title'),
-            //         type: 'success'
-            //     })
-
-            //     // Redirect
-            //     router.push('/account')
-            // } else {
-            //     console.log(txResult)
-
-            //     // Show error
-            //     showError(txResult)
-            // }
+            // Redirect
+            router.push('/account')
         } catch (error) {
             console.log(error)
 
@@ -206,8 +218,9 @@
 <style scoped>
     .claim_confirm
     {
-        background: #170232;
         padding-top: 8px;
+
+        background: #170232;
     }
 
 
@@ -303,6 +316,7 @@
 
         width: 38px;
         height: 38px;
+        margin-right: 8px;
 
         border-radius: 50%;
     }
@@ -323,8 +337,27 @@
     {
         font-size: 16px;
         font-weight: 500;
+    }
 
-        width: calc(100% - 46px);
+
+    .info .amount
+    {
+        font-size: 18px;
+        font-weight: 500;
+
+        margin-left: auto;
+
+        text-align: right;
+        white-space: nowrap;
+    }
+
+
+    .info .amount .cost
+    {
+        font-size: 16px;
+        font-weight: 400;
+
+        color: #836b9e;
     }
 
 

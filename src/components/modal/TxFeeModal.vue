@@ -36,7 +36,7 @@
                                 </div>
 
                                 <div class="cost">
-                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.lowPrice, store.TxFee.balance.exponent)) }}{{ store.currentCurrencySymbol }}
+                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.lowPrice, store.TxFee.balance.exponent, 'USD'), 'USD') }}$
                                 </div>
 
                                 <div class="amount">
@@ -54,7 +54,7 @@
                                 </div>
 
                                 <div class="cost">
-                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.averagePrice, store.TxFee.balance.exponent)) }}{{ store.currentCurrencySymbol }}
+                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.averagePrice, store.TxFee.balance.exponent, 'USD'), 'USD') }}$
                                 </div>
 
                                 <div class="amount">
@@ -72,7 +72,7 @@
                                 </div>
 
                                 <div class="cost">
-                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.highPrice, store.TxFee.balance.exponent)) }}{{ store.currentCurrencySymbol }}
+                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.highPrice, store.TxFee.balance.exponent, 'USD'), 'USD') }}$
                                 </div>
 
                                 <div class="amount">

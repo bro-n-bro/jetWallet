@@ -9,6 +9,7 @@ const network = {
     chain_id: 'cosmoshub-4',
     prefix: 'cosmos',
     mintscanPrefix: 'cosmos',
+    currentTxHash: null,
     alias: 'cosmoshub',
     exponent: 6,
     gas_adjustment: 1.6

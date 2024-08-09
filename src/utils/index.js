@@ -136,19 +136,20 @@ export const getPriceByDenom = denom => {
 
 
 // Calc token cost in current cucrrency
-export const calcTokenCost = (denom, amount, exponent) => {
+export const calcTokenCost = (denom, amount, exponent, currency = null) => {
     let formatAmount = formatTokenAmount(amount, exponent)
 
-    return currencyConversion(formatAmount, denom)
+    return currencyConversion(formatAmount, denom, currency)
 }
 
 
 // Format token cost
-export const formatTokenCost = cost => {
-    let store = useGlobalStore()
+export const formatTokenCost = (cost, currency = null) => {
+    let store = useGlobalStore(),
+    currentCurrency = currency || store.currentCurrency
 
     // Rounding
-    switch (store.currentCurrency) {
+    switch (currentCurrency) {
         case 'BTC':
             return cost > 0.0000000001 || cost == 0 ? cost.toLocaleString('ru-RU', { maximumFractionDigits: 10 }) : '<0.0000000001'
 
@@ -162,9 +163,13 @@ export const formatTokenCost = cost => {
 
 
 // Currency conversion
-export const currencyConversion = (amount, denom) => {
+export const currencyConversion = (amount, denom, currency) => {
     let store = useGlobalStore(),
-        currentCurrencyPrice = store.prices.find(el => el.symbol == formatTokenName(store.currentCurrency)).price
+        currentCurrencyPrice = 0
+
+    currency
+        ? currentCurrencyPrice = store.prices.find(el => el.symbol == formatTokenName(currency)).price
+        : currentCurrencyPrice = store.prices.find(el => el.symbol == formatTokenName(store.currentCurrency)).price
 
     return amount * (getPriceByDenom(denom) / currentCurrencyPrice)
 }
@@ -181,13 +186,13 @@ export const formatTokenName = tokenName => {
 
 
 // Calc balances cost in current cucrrency
-export const calcBalancesCost = () => {
+export const calcBalancesCost = (currency = null) => {
     let store = useGlobalStore(),
         totalPrice = 0
 
     // Calc total cost
     if (store.balances.length) {
-        store.balances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+        store.balances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent, currency))
     }
 
     return parseFloat(totalPrice)
@@ -195,13 +200,13 @@ export const calcBalancesCost = () => {
 
 
 // Calc Staked balances cost in current cucrrency
-export const calcStakedBalancesCost = () => {
+export const calcStakedBalancesCost = (currency = null) => {
     let store = useGlobalStore(),
         totalPrice = 0
 
     // Calc total cost
     if (store.stakedBalances.length) {
-        store.stakedBalances.forEach(el => totalPrice += calcTokenCost(el.balance.token_info.symbol, el.balance.amount, el.balance.exponent))
+        store.stakedBalances.forEach(el => totalPrice += calcTokenCost(el.balance.token_info.symbol, el.balance.amount, el.balance.exponent, currency))
     }
 
     return parseFloat(totalPrice)
@@ -209,13 +214,13 @@ export const calcStakedBalancesCost = () => {
 
 
 // Calc rewards balances cost in current cucrrency
-export const calcRewardsBalancesCost = () => {
+export const calcRewardsBalancesCost = (currency = null) => {
     let store = useGlobalStore(),
         totalPrice = 0
 
     // Calc total cost
     if (store.rewardsBalances.length) {
-        store.rewardsBalances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent))
+        store.rewardsBalances.forEach(balance => totalPrice += calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent, currency))
     }
 
     return parseFloat(totalPrice)
@@ -276,10 +281,10 @@ export const signTx = async (msg, memo) => {
     let txHash = sha256(txBytes)
 
     // Convert hash bytes to hex string
-    store.currentTxHash = Buffer.from(txHash).toString('hex')
+    store.networks[store.currentNetwork].currentTxHash = Buffer.from(txHash).toString('hex')
 
-    // Set current tx info
-    // await store.getCurrentTxInfo()
+    // Set listener current tx
+    store.setListenerCurrentTx()
 
     return txBytes
 }

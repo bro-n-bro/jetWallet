@@ -1,7 +1,15 @@
 <template>
     <div class="tx_fee">
         <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
-            {{ $t('message.tx_fee_label') }} {{ cost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }} {{ store.TxFee.balance.token_info.symbol }}
+            {{ $t('message.tx_fee_label') }}
+
+            {{ cost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+
+            {{ store.TxFee.balance.token_info.symbol }}
+
+            <div class="cost">
+                (~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent, 'USD'), 'USD') }}$)
+            </div>
         </button>
     </div>
 
@@ -13,7 +21,7 @@
 <script setup>
     import { inject, ref, onBeforeMount, computed } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenAmount, simulateTx } from '@/utils'
+    import { formatTokenAmount, simulateTx, calcTokenCost, formatTokenCost } from '@/utils'
 
     // Components
     import TxFeeModal from '@/components/modal/TxFeeModal.vue'
@@ -64,6 +72,15 @@
         font-size: 18px;
         font-weight: 500;
 
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 100%;
+
+        white-space: nowrap;
         text-decoration: underline;
 
         text-decoration-thickness: 1px;
@@ -73,5 +90,14 @@
     .tx_fee .btn.red
     {
         color: #f33;
+    }
+
+
+    .tx_fee .cost
+    {
+        margin-left: 6px;
+
+        opacity: .6;
+        color: #fff;
     }
 </style>

@@ -9,6 +9,7 @@ const network = {
     chain_id: 'bostrom',
     prefix: 'bostrom',
     alias: 'localbostrom',
+    currentTxHash: null,
     exponent: 0,
 }
 

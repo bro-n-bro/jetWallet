@@ -108,7 +108,8 @@ export default {
 
 
             // Notifications
-            'notification_copied_title': 'Copied to dashboard',
+            'notification_copied_title': 'Copied to clipboard',
+            'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Tx success',
             'notification_tx_error_title': 'Tx error',
 

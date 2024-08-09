@@ -24,7 +24,6 @@ export const useGlobalStore = defineStore('global', {
         currentAddress: '',
         currentCurrency: '',
         currentCurrencySymbol: '',
-        currentTxHash: null,
 
         prices: [],
         balances: [],
@@ -496,17 +495,17 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Set current tx info
-        async getCurrentTxInfo() {
+        // Set listener current tx
+        setListenerCurrentTx() {
             // Event Tx with hash
-            // this.networks[this.currentNetwork].websocket.send(JSON.stringify({
-            //     jsonrpc: '2.0',
-            //     method: 'subscribe',
-            //     id: '1',
-            //     params: {
-            //         query: `tm.event='Tx' AND tx.hash='${this.currentTxHash}'`
-            //     }
-            // }))
+            this.networks[this.currentNetwork].websocket.send(JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'subscribe',
+                id: '1',
+                params: {
+                    query: `tm.event='Tx' AND tx.hash='${this.networks[this.currentNetwork].currentTxHash}'`
+                }
+            }))
         },
 
 

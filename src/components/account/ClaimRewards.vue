@@ -3,8 +3,6 @@
         <div class="cont">
             <div class="data_wrap">
                 <div class="data">
-                    <!-- <pre>{{ store.rewardsBalances }}</pre> -->
-
                     <Loader v-if="!store.isRewardsGot" />
 
                     <template v-else>
@@ -14,7 +12,7 @@
                         </div>
 
                         <div class="cost">
-                            ~ <div class="odometer" v-odometer="rewardsCost"></div> {{ store.currentCurrencySymbol }}
+                            ~ <div class="odometer" v-odometer="rewardsCost"></div> $
                         </div>
                     </div>
 
@@ -40,9 +38,7 @@
                                         </div>
 
                                         <div class="cost">
-                                            ~ <div class="odometer" v-odometer="rewardsCost"></div> {{ store.currentCurrencySymbol }}
-
-                                            <!-- ~ {{ calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 10 }) }} {{ store.currentCurrencySymbol }} -->
+                                            ~ <div class="odometer" v-odometer="rewardsCost"></div> $
                                         </div>
                                     </div>
                                 </div>
@@ -77,7 +73,7 @@
     onBeforeMount(() => {
         if (store.isRewardsGot) {
             // Set rewards cost
-            rewardsCost.value = calcRewardsBalancesCost()
+            rewardsCost.value = calcRewardsBalancesCost('USD')
         }
     })
 
@@ -93,7 +89,7 @@
     watch(computed(() => store.isStakedBalancesGot), () => {
         if (store.isStakedBalancesGot) {
             // Get Staked balances cost
-            stakedBalancesCost.value = calcStakedBalancesCost()
+            stakedBalancesCost.value = calcStakedBalancesCost('USD')
 
             // Set second percent
             if (stakedBalancesCost.value) {
@@ -109,7 +105,7 @@
 
         if (store.isRewardsGot) {
             // Set rewards cost
-            rewardsCost.value = calcRewardsBalancesCost()
+            rewardsCost.value = calcRewardsBalancesCost('USD')
 
             // Update rewards with timeout
             if (!rewardsCost.value && stakedBalancesCost.value) {

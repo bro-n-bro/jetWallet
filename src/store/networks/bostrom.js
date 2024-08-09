@@ -9,6 +9,7 @@ const network = {
     chain_id: 'bostrom',
     prefix: 'bostrom',
     mintscanPrefix: null,
+    currentTxHash: null,
     alias: 'bostrom',
     exponent: 0,
     gas_adjustment: 1.3
