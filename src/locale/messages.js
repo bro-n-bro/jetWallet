@@ -100,6 +100,9 @@ export default {
             // Sign transaction fee
             'sign_tx_title': 'Sign transaction',
 
+            'sign_tx_error_title': 'Incorrect pin!',
+            'sign_tx_error_desc': 'Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat',
+
 
             // Search
             'search_placeholder': 'Search...',
@@ -137,6 +140,8 @@ export default {
             'btn_approve': 'Approve',
             'btn_json': 'View JSON',
             'btn_close': 'Close',
+            'btn_sign': 'Sign',
+            'btn_understood': 'Understood',
 
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",

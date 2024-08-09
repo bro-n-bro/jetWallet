@@ -16,7 +16,7 @@
                         </div>
                     </div>
 
-                    <router-link to="/account/claim_confirm" class="btn" :disabled="!rewardsCost">
+                    <router-link to="/account/claim_confirm" class="btn" :class="{ disabled: !rewardsCost }">
                         <span>{{ $t('message.btn_claim') }}</span>
                     </router-link>
 
@@ -251,7 +251,7 @@
     }
 
 
-    .btn:disabled
+    .btn.disabled
     {
         pointer-events: none;
 
@@ -260,7 +260,7 @@
     }
 
 
-    .btn:disabled span
+    .btn.disabled span
     {
         background: none;
     }

@@ -1,5 +1,5 @@
 <template>
-    <section class="modal">
+    <section class="modal" v-if="!showErrorSignTxModal">
         <div class="modal_content">
             <div class="data">
                 <button class="close_btn" @click.prevent="emitter.emit('close_sign_tx_modal')">
@@ -19,17 +19,27 @@
 
         <div class="overlay" @click.prevent="emitter.emit('close_sign_tx_modal')"></div>
     </section>
+
+
+    <!-- Sign tx error modal -->
+    <SignTxErrorModal v-if="showErrorSignTxModal" />
 </template>
 
 
 <script setup>
-    import { inject } from 'vue'
+    import { ref, inject } from 'vue'
 
     // Components
     import Auth from '@/components/Auth.vue'
+    import SignTxErrorModal from '@/components/modal/SignTxErrorModal.vue'
 
 
-    const emitter = inject('emitter')
+    const emitter = inject('emitter'),
+        showErrorSignTxModal = ref(false)
+
+
+    // Event "show_error_sign_tx_modal"
+    emitter.on('show_error_sign_tx_modal', () => showErrorSignTxModal.value = true)
 </script>
 
 

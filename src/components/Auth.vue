@@ -70,7 +70,8 @@
 
     <div class="btns">
         <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < store.authErrorLimit">
-            <span>{{ $t('message.btn_login') }}</span>
+            <span v-if="store.isAuthorized">{{ $t('message.btn_sign') }}</span>
+            <span v-else>{{ $t('message.btn_login') }}</span>
         </button>
     </div>
 </template>
@@ -88,7 +89,7 @@
         pinDB = ref(''),
         hmacKey = ref(''),
         wrongPin = ref(false),
-        userAuthErrorLimit = ref(false),
+        userAuthErrorLimit = ref(store.authErrorLimit),
         isBiometric = ref(false),
         isBiometricAvailable = ref(false),
         biometricType = ref('finger')
@@ -138,8 +139,8 @@
     })
 
 
-        // Move focus
-        function moveFocus(event, nextIndex) {
+    // Move focus
+    function moveFocus(event, nextIndex) {
         if (event.target.value.length >= 1 && nextIndex < 6) {
             event.target.closest('.row').querySelector(`.field:nth-child(${nextIndex + 1}) input`).focus()
         }
@@ -180,11 +181,16 @@
         // Compare pins
         let compareResult = await comparePINCode()
 
-        compareResult
+        if (compareResult) {
+            // Update limit
+            userAuthErrorLimit.value = store.authErrorLimit
+
             // Set event auth
-            ? emitter.emit('auth')
+            emitter.emit('auth')
+        } else {
             // Set auth error
-            : await setAuthError()
+            await setAuthError()
+        }
     }
 
 
@@ -207,11 +213,18 @@
         // Update limit
         userAuthErrorLimit.value = newLimit
 
-        newLimit
-            // Сhange auth limit
-            ? store.updateUserAuthErrorLimit(newLimit)
-            // Set event show_error_auth_modal
-            : emitter.emit('show_error_auth_modal')
+        if (!store.isAuthorized) {
+            newLimit
+                // Сhange auth limit
+                ? store.updateUserAuthErrorLimit(newLimit)
+                // Set event show_error_auth_modal
+                : emitter.emit('show_error_auth_modal')
+        } else {
+            if (!newLimit) {
+                // Set event show_error_sign_tx_modal
+                emitter.emit('show_error_sign_tx_modal')
+            }
+        }
 
         // Clear data
         pinCode.value = ['', '', '', '', '', '']

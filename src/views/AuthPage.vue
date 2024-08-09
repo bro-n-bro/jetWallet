@@ -17,6 +17,7 @@
     </section>
 
 
+    <!-- Auth error modal -->
     <AuthErrorModal v-if="showErrorAuthModal" />
 </template>
 
@@ -58,9 +59,7 @@
 
 
     // Event "show_error_auth_modal"
-    emitter.on('show_error_auth_modal', () => {
-        showErrorAuthModal.value = true
-    })
+    emitter.on('show_error_auth_modal', () => showErrorAuthModal.value = true)
 
 
     async function deleteAll() {
