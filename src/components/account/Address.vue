@@ -28,11 +28,6 @@
         // Show notification
         notification.notify({
             group: 'default',
-            clean: true
-        })
-
-        notification.notify({
-            group: 'default',
             speed: 200,
             duration: 750,
             title: i18n.global.t('message.notification_copied_title'),

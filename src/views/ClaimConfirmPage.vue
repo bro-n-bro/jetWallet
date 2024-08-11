@@ -141,15 +141,7 @@
             // Sign Tx
             let txBytes = await signTx(msgAny.value, memo.value)
 
-            // Send Tx
-            // sendTx(txBytes)
-
             // Show notification
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
-
             notification.notify({
                 group: 'default',
                 speed: 200,
@@ -160,6 +152,9 @@
                     tx_hash: store.networks[store.currentNetwork].currentTxHash
                 }
             })
+
+            // Send Tx
+            sendTx(txBytes)
 
             // Redirect
             router.push('/account')
@@ -183,11 +178,6 @@
             : errorText = i18n.global.t('message.notification_tx_error_rejected')
 
         // Show notification
-        notification.notify({
-            group: 'default',
-            clean: true
-        })
-
         notification.notify({
             group: 'default',
             title: i18n.global.t('message.notification_tx_error_title'),

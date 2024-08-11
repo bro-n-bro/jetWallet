@@ -12,7 +12,8 @@ const network = {
     currentTxHash: null,
     alias: 'cosmoshub',
     exponent: 6,
-    gas_adjustment: 1.6
+    gas_adjustment: 1.6,
+    websocket: null
 }
 
 export default network

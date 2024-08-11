@@ -2,12 +2,16 @@ import { defineStore } from 'pinia'
 import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, getPriceByDenom } from '@/utils'
 import { chains, assets } from 'chain-registry'
 import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
+import { useNotification } from '@kyvg/vue3-notification'
 
 
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
 import localbostrom from '@/store/networks/localbostrom'
+
+
+const notification = useNotification()
 
 
 export const useGlobalStore = defineStore('global', {
@@ -33,7 +37,7 @@ export const useGlobalStore = defineStore('global', {
 
         secret: null,
         privateKey: null,
-
+        notificationsPendingDelay: 2000,
 
         TxFee: {
             balance: {},
@@ -457,11 +461,57 @@ export const useGlobalStore = defineStore('global', {
 
 
             // WSS message event
-            this.networks[this.currentNetwork].websocket.onmessage = msg => {
+            this.networks[this.currentNetwork].websocket.onmessage = async msg => {
+                let parsedMsg = JSON.parse(msg.data)
+
                 // If the result object is not empty
-                if (Object.keys((JSON.parse(msg.data)).result).length) {
-                    // Update balances
-                    this.getBalances()
+                if (Object.keys(parsedMsg.result).length) {
+                    // User recipient
+                    if (parsedMsg.id == '1') {
+                        // Update balances
+                        this.getBalances()
+                    }
+
+                    // Transaction
+                    if (parsedMsg.id == '2') {
+                        // Check Tx result
+                        let txResult = await this.checkTxResult(this.networks[this.currentNetwork].currentTxHash)
+
+                        // Clean notifications
+                        notification.notify({
+                            group: 'default',
+                            clean: true
+                        })
+
+                        if (txResult.tx_response.code == '0') {
+                            // Show notification
+                            notification.notify({
+                                group: 'default',
+                                speed: 200,
+                                duration: 4000,
+                                title: 'Tx success',
+                                type: 'success',
+                                data: {
+                                    tx_hash: this.networks[this.currentNetwork].currentTxHash
+                                }
+                            })
+                        } else {
+                            console.log(txResult)
+
+                            // Show notification
+                            notification.notify({
+                                group: 'default',
+                                speed: 200,
+                                duration: 6000,
+                                title: 'Tx error',
+                                text: '',
+                                type: 'error'
+                            })
+                        }
+
+                        // Clear tx hash
+                        this.networks[this.currentNetwork].currentTxHash = null
+                    }
                 }
             }
         },
@@ -480,7 +530,7 @@ export const useGlobalStore = defineStore('global', {
             let chain = chains.find(el => el.chain_id === this.TxFee.balance.chain_info.chain_id)
 
             // Set data
-            this.TxFee.lowPrice = chain.fees.fee_tokens[0].fixed_min_gas_price * 1.1
+            this.TxFee.lowPrice = chain.fees.fee_tokens[0].fixed_min_gas_price ? chain.fees.fee_tokens[0].fixed_min_gas_price * 1.1 : chain.fees.fee_tokens[0].low_gas_price
             this.TxFee.averagePrice = this.TxFee.lowPrice * 1.15
             this.TxFee.highPrice = this.TxFee.lowPrice * 1.30
         },
@@ -501,11 +551,21 @@ export const useGlobalStore = defineStore('global', {
             this.networks[this.currentNetwork].websocket.send(JSON.stringify({
                 jsonrpc: '2.0',
                 method: 'subscribe',
-                id: '1',
+                id: '2',
                 params: {
-                    query: `tm.event='Tx' AND tx.hash='${this.networks[this.currentNetwork].currentTxHash}'`
+                    query: `tm.event='Tx' AND tx.hash='${(this.networks[this.currentNetwork].currentTxHash).toUpperCase()}'`
                 }
             }))
+        },
+
+
+        // Check Tx result
+        async checkTxResult(txHash) {
+            try {
+                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
+            } catch (error) {
+                console.error(error)
+            }
         },
 
 

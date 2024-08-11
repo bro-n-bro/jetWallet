@@ -1,4 +1,7 @@
 <template>
+    <!-- Update balances loader -->
+    <Loader class="update_balances_loader" :style="`transform: translateY(${overScrollOffset}px)`" />
+
     <section class="page_container account_page" :class="{ searching: searchingClass }">
         <section class="top_block" v-parallax>
             <!-- Network selection -->
@@ -46,8 +49,11 @@
 <script setup>
     import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useNotification } from '@kyvg/vue3-notification'
 
     // Components
+    import Loader from '@/components/Loader.vue'
+
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
     import QRCode from '@/components/account/QRCode.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
@@ -62,7 +68,10 @@
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
+        i18n = inject('i18n'),
+        notification = useNotification(),
         searchingClass = ref(''),
+        overScrollOffset = ref(0),
         swiperEl = ref(null),
         swiperActiveIndex = ref(0),
         swiperInjectStyles = [
@@ -116,55 +125,112 @@
         swiperEl.value.addEventListener('swiperslidechangetransitionstart', async e => {
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
-
-            // // Get balances
-            // if (swiperActiveIndex.value == 0) {
-            //     await store.getBalances()
-            // }
-
-            // // Get Staked balances
-            // if (swiperActiveIndex.value == 1) {
-            //     await store.getStakedBalances()
-            // }
         })
 
 
-        // // Disable overscroll
-        // let startY,
-        //     isPulling = false,
-        //     threshold = 100
+        // Disable overscroll
+        let startY,
+            isPulling = false,
+            threshold = 144,
+            distance = 0,
+            smoothedDistance = 0,
+            smoothingFactor = 0.5,
+            animationFrameId = null
 
-        // window.addEventListener('touchstart', e => {
-        //     if (window.scrollY === 0) {
-        //         startY = e.touches[0].pageY
-        //         isPulling = true
-        //     }
-        // }, { passive: false })
 
-        // window.addEventListener('touchmove', e => {
-        //     if (!isPulling) return
+        window.addEventListener('touchstart', e => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY
+                isPulling = true
+                distance = 0
+                smoothedDistance = 0
 
-        //     let currentY = e.touches[0].pageY,
-        //         distance = currentY - startY
+                if (animationFrameId !== null) {
+                    cancelAnimationFrame(animationFrameId)
+                }
 
-        //     if (distance > 0) {
-        //         if (distance > threshold) {
-        //             console.log('Пользователь тянет страницу вниз для обновления')
-        //             // Здесь можно показать индикатор загрузки
+                animationFrameId = requestAnimationFrame(updateDistance)
+            }
+        }, { passive: false })
 
-        //             e.preventDefault()
-        //             e.stopPropagation()
-        //         }
-        //     }
-        // }, { passive: false })
 
-        // window.addEventListener('touchend', () => {
+        window.addEventListener('touchmove', e => {
+            if (!isPulling) return
+
+            let currentY = e.touches[0].pageY,
+                distance = currentY - startY
+
+            if (distance > 0) {
+                smoothedDistance += (distance - smoothedDistance) * smoothingFactor
+
+                if (distance >= threshold) {
+                    e.preventDefault()
+                    e.stopPropagation()
+
+                    if (animationFrameId !== null) {
+                        cancelAnimationFrame(animationFrameId);
+                    }
+
+                    // Overscroll offset
+                    overScrollOffset.value = 0
+
+                    // Get balances
+                    if (store.isBalancesGot) {
+                        store.getBalances()
+                    }
+
+                    // Get Staked balances
+                    if (store.isStakedBalancesGot) {
+                        store.getStakedBalances()
+                    }
+
+                    // Get rewards
+                    if (store.isRewardsGot) {
+                        store.getRewards()
+                    }
+                } else {
+                    // Overscroll offset
+                    overScrollOffset.value = distance
+                }
+            }
+        }, { passive: false })
+
+
+        window.addEventListener('touchend', () => {
+            if (isPulling) {
+                isPulling = false;
+
+                if (distance < threshold) {
+                    // Overscroll offset
+                    overScrollOffset.value = 0
+                }
+            }
+        })
+
+
+        function updateDistance() {
+            if (isPulling) {
+                animationFrameId = requestAnimationFrame(updateDistance);
+            }
+        }
+
+
+        // window.addEventListener('touchend', e => {
         //     if (isPulling) {
         //         isPulling = false
 
-        //         if (window.scrollY === 0) {
-        //             console.log('Начать обновление данных')
-        //             // Здесь можно скрыть индикатор загрузки и начать обновление данных
+        //         if (window.scrollY === 0 && distance >= threshold) {
+        //             // Overscroll offset
+        //             overScrollOffset.value = 0
+
+        //             // Get balances
+        //             store.getBalances()
+
+        //             // Get Staked balances
+        //             store.getStakedBalances()
+
+        //             // Get rewards
+        //             store.getRewards()
         //         }
         //     }
         // }, { passive: false })
@@ -173,6 +239,12 @@
 
     watch(computed(() => store.currentNetwork), async () => {
         if (store.isInitialized) {
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
             // Init status
             store.isInitialized = false
 
@@ -191,15 +263,20 @@
             // Get Staked balances
             store.getStakedBalances()
 
-            // // Get balances
-            // if (swiperActiveIndex.value == 0) {
-            //     await store.getBalances()
-            // }
-
-            // // Get Staked balances
-            // if (swiperActiveIndex.value == 1) {
-            //     await store.getStakedBalances()
-            // }
+            // Notification current tx
+            if (store.networks[store.currentNetwork].currentTxHash) {
+                // Show notification
+                notification.notify({
+                    group: 'default',
+                    speed: 200,
+                    duration: -100,
+                    title: i18n.global.t('message.notification_tx_pending_title'),
+                    type: 'pending',
+                    data: {
+                        tx_hash: store.networks[store.currentNetwork].currentTxHash
+                    }
+                })
+            }
         }
     })
 
@@ -225,6 +302,19 @@
 
 
 <style>
+    .update_balances_loader
+    {
+        top: auto;
+        bottom: 100%;
+
+        height: 32px;
+        margin-bottom: 12px;
+        padding: 0;
+
+        background: none;
+    }
+
+
     .account_page
     {
         display: flex;

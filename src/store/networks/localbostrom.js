@@ -11,6 +11,7 @@ const network = {
     alias: 'localbostrom',
     currentTxHash: null,
     exponent: 0,
+    websocket: null
 }
 
 export default network

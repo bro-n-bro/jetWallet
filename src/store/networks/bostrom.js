@@ -12,7 +12,8 @@ const network = {
     currentTxHash: null,
     alias: 'bostrom',
     exponent: 0,
-    gas_adjustment: 1.3
+    gas_adjustment: 1.3,
+    websocket: null
 }
 
 export default network
