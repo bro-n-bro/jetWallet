@@ -160,7 +160,7 @@
 
                 if (account) {
                     account.classList.add('updating')
-                    setTimeout(() => account.classList.remove('updating'), 1500)
+                    setTimeout(() => account.classList.remove('updating'), 300)
                 }
 
                 // Update all balances
@@ -257,7 +257,7 @@
 
         padding-top: 265px;
 
-        transition: .2s linear;
+        transition: padding .2s linear, transform .1s linear;
 
         background: #170232;
     }
