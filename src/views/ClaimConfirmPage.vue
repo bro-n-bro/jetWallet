@@ -87,7 +87,7 @@
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
-    import { getNetworkLogo, signTx, sendTx, calcRewardsBalancesCost, formatTokenCost, formatTokenAmount } from '@/utils'
+    import { getNetworkLogo, signTx, sendTx, calcRewardsBalancesCost, formatTokenCost, formatTokenAmount, getExplorerLink } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -149,7 +149,7 @@
                 title: i18n.global.t('message.notification_tx_pending_title'),
                 type: 'pending',
                 data: {
-                    tx_hash: store.networks[store.currentNetwork].currentTxHash
+                    explorer_link: getExplorerLink(store.currentNetwork)
                 }
             })
 
@@ -180,7 +180,9 @@
         // Show notification
         notification.notify({
             group: 'default',
-            title: i18n.global.t('message.notification_tx_error_title'),
+            speed: 200,
+            duration: 6000,
+            title: 'Tx error',
             text: errorText,
             type: 'error'
         })

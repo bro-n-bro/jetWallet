@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
-import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, getPriceByDenom } from '@/utils'
+import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, getPriceByDenom, getExplorerLink } from '@/utils'
 import { chains, assets } from 'chain-registry'
 import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
+import i18n from '@/locale'
 
 
 // Networks
@@ -11,6 +12,15 @@ import bostrom from '@/store/networks/bostrom'
 import localbostrom from '@/store/networks/localbostrom'
 
 
+// Networks additional options
+const networksAdditionalOptions = {
+    signingClient: {},
+    websocket: null,
+    currentTxHash: null
+}
+
+
+// Notifications
 const notification = useNotification()
 
 
@@ -33,7 +43,6 @@ export const useGlobalStore = defineStore('global', {
         balances: [],
         stakedBalances: [],
         rewardsBalances: [],
-        signingClient: {},
 
         secret: null,
         privateKey: null,
@@ -50,9 +59,9 @@ export const useGlobalStore = defineStore('global', {
         },
 
         networks: {
-            cosmoshub,
-            bostrom,
-            localbostrom
+            cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
+            bostrom: Object.assign(bostrom, networksAdditionalOptions),
+            localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
         },
 
         formatableTokens: [
@@ -88,7 +97,7 @@ export const useGlobalStore = defineStore('global', {
             let signer = await createSinger()
 
             this.currentAddress = signer.address
-            this.signingClient = signer.signingClient
+            this.networks[this.currentNetwork].signingClient = signer.signingClient
 
             // Set current currency symbol
             switch (this.currentCurrency) {
@@ -159,7 +168,7 @@ export const useGlobalStore = defineStore('global', {
             this.isBalancesGot = false
 
             // Request
-            this.balances = await this.signingClient.getAllBalances(this.currentAddress)
+            this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
 
             if (this.balances.length) {
                 // Get balance info
@@ -462,12 +471,13 @@ export const useGlobalStore = defineStore('global', {
 
             // WSS message event
             this.networks[this.currentNetwork].websocket.onmessage = async msg => {
-                let parsedMsg = JSON.parse(msg.data)
+                let parsedMsg = JSON.parse(msg.data),
+                    txNetwork = (Object.values(this.networks).find(network => network.websocket_origin == msg.origin)).alias
 
                 // If the result object is not empty
                 if (Object.keys(parsedMsg.result).length) {
                     // User recipient
-                    if (parsedMsg.id == '1') {
+                    if (parsedMsg.id == '1' && this.currentNetwork == txNetwork) {
                         // Update balances
                         this.getBalances()
                     }
@@ -475,7 +485,7 @@ export const useGlobalStore = defineStore('global', {
                     // Transaction
                     if (parsedMsg.id == '2') {
                         // Check Tx result
-                        let txResult = await this.checkTxResult(this.networks[this.currentNetwork].currentTxHash)
+                        let txResult = await this.checkTxResult(txNetwork, this.networks[txNetwork].currentTxHash)
 
                         // Clean notifications
                         notification.notify({
@@ -492,11 +502,17 @@ export const useGlobalStore = defineStore('global', {
                                 title: 'Tx success',
                                 type: 'success',
                                 data: {
-                                    tx_hash: this.networks[this.currentNetwork].currentTxHash
+                                    explorer_link: getExplorerLink(txNetwork)
                                 }
                             })
                         } else {
-                            console.log(txResult)
+                            // Get error code
+                            let errorText = ''
+
+                            // Get error title
+                            txResult.tx_response.code
+                                ? errorText = i18n.global.t(`message.notification_tx_error_${txResult.tx_response.code}`)
+                                : errorText = i18n.global.t('message.notification_tx_error_rejected')
 
                             // Show notification
                             notification.notify({
@@ -504,13 +520,13 @@ export const useGlobalStore = defineStore('global', {
                                 speed: 200,
                                 duration: 6000,
                                 title: 'Tx error',
-                                text: '',
+                                text: errorText,
                                 type: 'error'
                             })
                         }
 
                         // Clear tx hash
-                        this.networks[this.currentNetwork].currentTxHash = null
+                        this.networks[txNetwork].currentTxHash = null
                     }
                 }
             }
@@ -560,11 +576,30 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Check Tx result
-        async checkTxResult(txHash) {
+        async checkTxResult(network, txHash) {
             try {
-                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
+                return await fetch(`${this.networks[network].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
             } catch (error) {
                 console.error(error)
+            }
+        },
+
+
+        // Update all balances
+        updateAllBalances() {
+            // Get balances
+            if (this.isBalancesGot) {
+                this.getBalances()
+            }
+
+            // Get Staked balances
+            if (this.isStakedBalancesGot) {
+                this.getStakedBalances()
+            }
+
+            // Get rewards
+            if (this.isRewardsGot) {
+                this.getRewards()
             }
         },
 

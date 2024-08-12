@@ -248,7 +248,7 @@ export const simulateTx = async (msg, memo = '') => {
     let store = useGlobalStore()
 
     // Simulate gas
-    let gasUsed = await store.signingClient.simulate(store.currentAddress, msg, memo)
+    let gasUsed = await store.networks[store.currentNetwork].signingClient.simulate(store.currentAddress, msg, memo)
 
     // Set gas amount
     store.TxFee.gasAmount = parseInt(gasUsed * store.networks[store.TxFee.balance.chain_name].gas_adjustment)
@@ -272,7 +272,7 @@ export const signTx = async (msg, memo) => {
     }
 
     // Sign
-    let txRaw = await store.signingClient.sign(store.currentAddress, msg, fee, memo)
+    let txRaw = await store.networks[store.currentNetwork].signingClient.sign(store.currentAddress, msg, fee, memo)
 
     // Encode TxRaw
     let txBytes = TxRaw.encode(txRaw).finish()
@@ -295,5 +295,13 @@ export const sendTx = async txBytes => {
     let store = useGlobalStore()
 
     // Broadcast
-    await store.signingClient.broadcastTx(txBytes, store.signingClient.broadcastTimeoutMs, store.signingClient.broadcastPollIntervalMs)
+    await store.networks[store.currentNetwork].signingClient.broadcastTx(txBytes, store.networks[store.currentNetwork].signingClient.broadcastTimeoutMs, store.networks[store.currentNetwork].signingClient.broadcastPollIntervalMs)
+}
+
+
+// Get explorer link
+export const getExplorerLink = (network) => {
+    let store = useGlobalStore()
+
+    return (store.networks[network].explorer_link).replace('{tx_hash}', store.networks[network].currentTxHash)
 }

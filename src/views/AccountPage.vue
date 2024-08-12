@@ -1,6 +1,6 @@
 <template>
     <!-- Update balances loader -->
-    <Loader class="update_balances_loader" :style="`transform: translateY(${overScrollOffset}px)`" />
+    <Loader class="update_balances_loader" />
 
     <section class="page_container account_page" :class="{ searching: searchingClass }">
         <section class="top_block" v-parallax>
@@ -71,7 +71,6 @@
         i18n = inject('i18n'),
         notification = useNotification(),
         searchingClass = ref(''),
-        overScrollOffset = ref(0),
         swiperEl = ref(null),
         swiperActiveIndex = ref(0),
         swiperInjectStyles = [
@@ -131,109 +130,48 @@
         // Disable overscroll
         let startY,
             isPulling = false,
-            threshold = 144,
-            distance = 0,
-            smoothedDistance = 0,
-            smoothingFactor = 0.5,
-            animationFrameId = null
+            threshold = 50,
+            hasUpdated = false
 
 
         window.addEventListener('touchstart', e => {
             if (window.scrollY === 0) {
                 startY = e.touches[0].pageY
                 isPulling = true
-                distance = 0
-                smoothedDistance = 0
-
-                if (animationFrameId !== null) {
-                    cancelAnimationFrame(animationFrameId)
-                }
-
-                animationFrameId = requestAnimationFrame(updateDistance)
+                hasUpdated = false
             }
         }, { passive: false })
 
 
         window.addEventListener('touchmove', e => {
-            if (!isPulling) return
+            if (!isPulling || hasUpdated) return
 
             let currentY = e.touches[0].pageY,
                 distance = currentY - startY
 
-            if (distance > 0) {
-                smoothedDistance += (distance - smoothedDistance) * smoothingFactor
+            if (distance > 0 && distance >= threshold) {
+                e.preventDefault()
+                e.stopPropagation()
 
-                if (distance >= threshold) {
-                    e.preventDefault()
-                    e.stopPropagation()
+                hasUpdated = true
 
-                    if (animationFrameId !== null) {
-                        cancelAnimationFrame(animationFrameId);
-                    }
+                // Top loader
+                let account = document.querySelector('.account_page')
 
-                    // Overscroll offset
-                    overScrollOffset.value = 0
-
-                    // Get balances
-                    if (store.isBalancesGot) {
-                        store.getBalances()
-                    }
-
-                    // Get Staked balances
-                    if (store.isStakedBalancesGot) {
-                        store.getStakedBalances()
-                    }
-
-                    // Get rewards
-                    if (store.isRewardsGot) {
-                        store.getRewards()
-                    }
-                } else {
-                    // Overscroll offset
-                    overScrollOffset.value = distance
+                if (account) {
+                    account.classList.add('updating')
+                    setTimeout(() => account.classList.remove('updating'), 1500)
                 }
+
+                // Update all balances
+                store.updateAllBalances()
             }
         }, { passive: false })
 
 
         window.addEventListener('touchend', () => {
-            if (isPulling) {
-                isPulling = false;
-
-                if (distance < threshold) {
-                    // Overscroll offset
-                    overScrollOffset.value = 0
-                }
-            }
+            isPulling = false
         })
-
-
-        function updateDistance() {
-            if (isPulling) {
-                animationFrameId = requestAnimationFrame(updateDistance);
-            }
-        }
-
-
-        // window.addEventListener('touchend', e => {
-        //     if (isPulling) {
-        //         isPulling = false
-
-        //         if (window.scrollY === 0 && distance >= threshold) {
-        //             // Overscroll offset
-        //             overScrollOffset.value = 0
-
-        //             // Get balances
-        //             store.getBalances()
-
-        //             // Get Staked balances
-        //             store.getStakedBalances()
-
-        //             // Get rewards
-        //             store.getRewards()
-        //         }
-        //     }
-        // }, { passive: false })
     })
 
 
@@ -257,12 +195,6 @@
             // Reinit APP
             await store.initApp()
 
-            // Get balances
-            store.getBalances()
-
-            // Get Staked balances
-            store.getStakedBalances()
-
             // Notification current tx
             if (store.networks[store.currentNetwork].currentTxHash) {
                 // Show notification
@@ -273,10 +205,16 @@
                     title: i18n.global.t('message.notification_tx_pending_title'),
                     type: 'pending',
                     data: {
-                        tx_hash: store.networks[store.currentNetwork].currentTxHash
+                        explorer_link: getExplorerLink(store.currentNetwork)
                     }
                 })
             }
+
+            // Get balances
+            store.getBalances()
+
+            // Get Staked balances
+            store.getStakedBalances()
         }
     })
 
@@ -304,27 +242,30 @@
 <style>
     .update_balances_loader
     {
-        top: auto;
-        bottom: 100%;
-
-        height: 32px;
-        margin-bottom: 12px;
+        height: 64px;
         padding: 0;
-
-        background: none;
     }
 
 
     .account_page
     {
+        position: relative;
+        z-index: 9;
+
         display: flex;
         flex-direction: column;
 
         padding-top: 265px;
 
-        transition: padding-top .2s linear;
+        transition: .2s linear;
 
         background: #170232;
+    }
+
+
+    .account_page.updating
+    {
+        transform: translateY(64px);
     }
 
 

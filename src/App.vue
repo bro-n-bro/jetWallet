@@ -30,8 +30,8 @@
                         {{ props.item.text }}
                     </div>
 
-                    <div class="explorer" v-if="props.item.data.tx_hash">
-                        <a :href="`https://www.mintscan.io/${store.networks[store.currentNetwork].mintscanPrefix}/txs/${props.item.data.tx_hash}`" target="_blank" rel="noopener nofollow">
+                    <div class="explorer" v-if="props.item.data.explorer_link">
+                        <a :href="props.item.data.explorer_link" target="_blank" rel="noopener nofollow">
                             {{ $t('message.notification_explorer_link') }}
                         </a>
                     </div>
