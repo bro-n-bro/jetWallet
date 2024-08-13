@@ -766,6 +766,34 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 
 
+/*-------------
+    MAX btn
+-------------*/
+.max_btn
+{
+    font-size: 16px;
+    font-weight: 500;
+
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    right: 0;
+
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    width: 68px;
+    height: 100%;
+
+    text-align: center;
+    text-transform: uppercase;
+}
+
+
+
 /*--------------
     Mnemonic
 --------------*/
