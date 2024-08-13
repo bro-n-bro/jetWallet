@@ -244,13 +244,13 @@
         top: 0;
         left: 0;
 
-        margin-left: 6px;
+        margin-left: -12px;
     }
 
 
     .page_title
     {
-        width: calc(100% - 64px);
+        width: calc(100% - 48px);
         margin-left: auto;
         padding: 0;
     }

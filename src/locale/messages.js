@@ -72,6 +72,19 @@ export default {
             'calim_confirm_title': 'Confirm transction',
 
 
+            // Stake
+            'stake_page_title': 'Stake',
+
+            'stake_current_staked_label': 'Token:',
+            'stake_validator_label': 'Select validator:',
+            'stake_amount_label': 'Amount:',
+            'stake_unbonding_period_label': 'Unbonding Period:',
+            'stake_available_label': 'Available',
+            'stake_staked_label': 'Total Staked',
+
+            'stake_validator_placeholder': 'Choose your validator',
+
+
             // Tx fee
             'tx_fee_label': 'Tx Fee:',
 
@@ -143,6 +156,7 @@ export default {
             'btn_sign': 'Sign',
             'btn_understood': 'Understood',
             'btn_waiting_tx': 'Waiting tx',
+            'btn_MAX': 'MAX',
 
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",

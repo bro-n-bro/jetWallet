@@ -87,6 +87,15 @@ const routes = [
 			accessDenied: ['not_authorized']
 		}
 	},
+	{
+		path: '/account/stake',
+		name: 'Stake',
+		component: () => import('../views/Stake.vue'),
+		meta: {
+			layout: defaultLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
 ]
 
 
