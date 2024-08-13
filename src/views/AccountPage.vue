@@ -1,6 +1,6 @@
 <template>
     <!-- Update balances loader -->
-    <Loader class="update_balances_loader" />
+    <div class="update_balances_loader"></div>
 
     <section class="page_container account_page" :class="{ searching: searchingClass }">
         <section class="top_block" v-parallax>
@@ -14,7 +14,7 @@
             <CurrentCurrency />
 
             <!-- Swiper -->
-            <swiper-container :injectStyles="swiperInjectStyles" speed="500" :pagination="{
+            <swiper-container :initial-slide="swiperActiveIndex" :injectStyles="swiperInjectStyles" speed="500" :pagination="{
 				type: 'bullets',
 				clickable: true,
 				bulletActiveClass: 'active'
@@ -49,11 +49,10 @@
 <script setup>
     import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useUrlSearchParams } from '@vueuse/core'
     import { useNotification } from '@kyvg/vue3-notification'
 
     // Components
-    import Loader from '@/components/Loader.vue'
-
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
     import QRCode from '@/components/account/QRCode.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
@@ -67,12 +66,12 @@
 
 
     const store = useGlobalStore(),
+        params = useUrlSearchParams('history'),
         emitter = inject('emitter'),
-        i18n = inject('i18n'),
         notification = useNotification(),
         searchingClass = ref(''),
         swiperEl = ref(null),
-        swiperActiveIndex = ref(0),
+        swiperActiveIndex = ref(params.activeSlide || 0),
         swiperInjectStyles = [
             `
             .swiper-horizontal > .swiper-pagination-bullets,
@@ -144,6 +143,13 @@
 
 
         window.addEventListener('touchmove', e => {
+            if (isPulling && store.networks[store.currentNetwork].currentTxHash) {
+                // Event "show_pending_notification"
+                emitter.emit('show_pending_notification')
+
+                return
+            }
+
             if (!isPulling || hasUpdated) return
 
             let currentY = e.touches[0].pageY,
@@ -153,6 +159,7 @@
                 e.preventDefault()
                 e.stopPropagation()
 
+                // Updating flag
                 hasUpdated = true
 
                 // Top loader
@@ -160,7 +167,7 @@
 
                 if (account) {
                     account.classList.add('updating')
-                    setTimeout(() => account.classList.remove('updating'), 300)
+                    setTimeout(() => account.classList.remove('updating'), 500)
                 }
 
                 // Update all balances
@@ -169,9 +176,7 @@
         }, { passive: false })
 
 
-        window.addEventListener('touchend', () => {
-            isPulling = false
-        })
+        window.addEventListener('touchend', () => isPulling = false)
     })
 
 
@@ -192,29 +197,20 @@
             // Staked balances status
             store.isStakedBalancesGot = false
 
+            // Rewards status
+            store.isRewardsGot = false
+
             // Reinit APP
             await store.initApp()
-
-            // Notification current tx
-            if (store.networks[store.currentNetwork].currentTxHash) {
-                // Show notification
-                notification.notify({
-                    group: 'default',
-                    speed: 200,
-                    duration: -100,
-                    title: i18n.global.t('message.notification_tx_pending_title'),
-                    type: 'pending',
-                    data: {
-                        explorer_link: getExplorerLink(store.currentNetwork)
-                    }
-                })
-            }
 
             // Get balances
             store.getBalances()
 
             // Get Staked balances
             store.getStakedBalances()
+
+            // Get rewards
+            store.getRewards()
         }
     })
 
@@ -242,8 +238,21 @@
 <style>
     .update_balances_loader
     {
-        height: 64px;
-        padding: 0;
+        position: absolute;
+        top: 18px;
+        right: 0;
+        left: 0;
+
+        width: 18px;
+        height: 18px;
+        margin: 0 auto;
+
+        animation: spin 1s linear infinite;
+
+        border-top: 2px solid currentColor;
+        border-right: 2px solid transparent;
+        border-left: 2px solid currentColor;
+        border-radius: 50%;
     }
 
 
@@ -257,7 +266,7 @@
 
         padding-top: 265px;
 
-        transition: padding .2s linear, transform .1s linear;
+        transition: .2s linear;
 
         background: #170232;
     }
@@ -265,7 +274,7 @@
 
     .account_page.updating
     {
-        transform: translateY(64px);
+        transform: translateY(54px);
     }
 
 

@@ -54,7 +54,7 @@
 
 
 <script setup>
-    import { ref, watch, computed, onBeforeMount } from 'vue'
+    import { ref, watch, computed, onBeforeMount, onMounted, onBeforeUnmount } from 'vue'
     import { useGlobalStore } from '@/store'
     import { calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost } from '@/utils'
 
@@ -78,23 +78,35 @@
     })
 
 
-    watch(computed(() => store.isInitialized), async () => {
-        // Get rewards
+    onMounted(() => {
+        if (store.isInitialized && store.isStakedBalancesGot && store.isRewardsGot) {
+            // Calc second profit
+            calcSecondProfit()
+
+            // Update rewards
+            store.getRewards()
+        }
+    })
+
+
+    onBeforeUnmount(() => {
+        // Clear interval
+        clearInterval(intervalID.value)
+    })
+
+
+    watch(computed(() => store.isInitialized), () => {
         if (store.isInitialized) {
-            await store.getRewards()
+            // Get rewards
+            store.getRewards()
         }
     })
 
 
     watch(computed(() => store.isStakedBalancesGot), () => {
         if (store.isStakedBalancesGot) {
-            // Get Staked balances cost
-            stakedBalancesCost.value = calcStakedBalancesCost('USD')
-
-            // Set second percent
-            if (stakedBalancesCost.value) {
-                secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
-            }
+            // Calc second profit
+            calcSecondProfit()
         }
     })
 
@@ -104,20 +116,39 @@
         clearInterval(intervalID.value)
 
         if (store.isRewardsGot) {
-            // Set rewards cost
-            rewardsCost.value = calcRewardsBalancesCost('USD')
-
-            // Update rewards with timeout
-            if (!rewardsCost.value && stakedBalancesCost.value) {
-                setTimeout(async () => await store.getRewards(), 3000)
-            }
-
             // Update rewards cost
-            if (rewardsCost.value !== null) {
-                intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 2.5, 3000)
-            }
+            updateRewardsCost()
         }
     })
+
+
+    // Calc second profit
+    function calcSecondProfit() {
+        // Get Staked balances cost
+        stakedBalancesCost.value = calcStakedBalancesCost('USD')
+
+        // Set second percent
+        if (stakedBalancesCost.value) {
+            secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
+        }
+    }
+
+
+    // Update rewards cost
+    function updateRewardsCost() {
+        // Set rewards cost
+        rewardsCost.value = calcRewardsBalancesCost('USD')
+
+        // Update rewards with timeout
+        if (!rewardsCost.value && stakedBalancesCost.value) {
+            setTimeout(async () => await store.getRewards(), 3000)
+        }
+
+        // Update rewards cost
+        if (rewardsCost.value != null) {
+            intervalID.value = setInterval(() => rewardsCost.value += secondProfit.value * 2.5, 3000)
+        }
+    }
 </script>
 
 

@@ -3,7 +3,6 @@ const network = {
     lcd_api: 'https://lcd.bostrom.bronbro.io',
     rpc_api: 'https://rpc.bostrom.bronbro.io',
     websocket_url: 'wss://rpc.bostrom.bronbro.io:443/websocket',
-    websocket_origin: 'wss://rpc.bostrom.bronbro.io',
 
     denom: 'boot',
     token_name: 'BOOT',

@@ -1,6 +1,6 @@
 <template>
     <div class="search">
-        <button class="back_btn">
+        <button class="back_btn" @click.prevent="setBlurEvent">
             <span><svg><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg></span>
         </button>
 
@@ -106,7 +106,6 @@
         padding: 1px;
 
         transition: .2s linear;
-        pointer-events: none;
 
         opacity: 0;
         border-radius: 50%;

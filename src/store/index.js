@@ -442,6 +442,17 @@ export const useGlobalStore = defineStore('global', {
 
         // Connect to websocket
         connectWebsocket() {
+            // Close previous connections
+            Object.values(this.networks).forEach(network => {
+                if (network.websocket) {
+                    // Remove onmessage listener
+                    network.websocket.onmessage = null
+
+                    // Close connection
+                    network.websocket.close()
+                }
+            })
+
             // Connect
             this.networks[this.currentNetwork].websocket = new WebSocket(this.networks[this.currentNetwork].websocket_url)
 
@@ -471,21 +482,20 @@ export const useGlobalStore = defineStore('global', {
 
             // WSS message event
             this.networks[this.currentNetwork].websocket.onmessage = async msg => {
-                let parsedMsg = JSON.parse(msg.data),
-                    txNetwork = (Object.values(this.networks).find(network => network.websocket_origin == msg.origin)).alias
+                let parsedMsg = JSON.parse(msg.data)
 
                 // If the result object is not empty
                 if (Object.keys(parsedMsg.result).length) {
                     // User recipient
-                    if (parsedMsg.id == '1' && this.currentNetwork == txNetwork) {
-                        // Update balances
-                        this.getBalances()
+                    if (parsedMsg.id == '1') {
+                        // Update all balances
+                        store.updateAllBalances()
                     }
 
                     // Transaction
                     if (parsedMsg.id == '2') {
                         // Check Tx result
-                        let txResult = await this.checkTxResult(txNetwork, this.networks[txNetwork].currentTxHash)
+                        let txResult = await this.checkTxResult(this.networks[this.currentNetwork].currentTxHash)
 
                         // Clean notifications
                         notification.notify({
@@ -499,10 +509,10 @@ export const useGlobalStore = defineStore('global', {
                                 group: 'default',
                                 speed: 200,
                                 duration: 4000,
-                                title: 'Tx success',
+                                title: i18n.global.t('message.notification_tx_success_title'),
                                 type: 'success',
                                 data: {
-                                    explorer_link: getExplorerLink(txNetwork)
+                                    explorer_link: getExplorerLink(this.currentNetwork)
                                 }
                             })
                         } else {
@@ -519,14 +529,14 @@ export const useGlobalStore = defineStore('global', {
                                 group: 'default',
                                 speed: 200,
                                 duration: 6000,
-                                title: 'Tx error',
+                                title: i18n.global.t('message.notification_tx_error_title'),
                                 text: errorText,
                                 type: 'error'
                             })
                         }
 
                         // Clear tx hash
-                        this.networks[txNetwork].currentTxHash = null
+                        this.networks[this.currentNetwork].currentTxHash = null
                     }
                 }
             }
@@ -576,9 +586,9 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Check Tx result
-        async checkTxResult(network, txHash) {
+        async checkTxResult(txHash) {
             try {
-                return await fetch(`${this.networks[network].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
+                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
             } catch (error) {
                 console.error(error)
             }

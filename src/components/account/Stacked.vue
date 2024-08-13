@@ -3,7 +3,7 @@
         <!-- Balance -->
         <div class="balance">
             <div class="label">
-                {{ $t('message.current_balance_title') }}
+                {{ $t('message.stacked_balance_title') }}
             </div>
 
             <Loader v-if="!store.isStakedBalancesGot" />

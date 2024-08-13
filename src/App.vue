@@ -23,11 +23,7 @@
 
                 <div>
                     <div class="title">
-                        {{ props.item.title }}
-                    </div>
-
-                    <div class="desc" v-if="props.item.text">
-                        {{ props.item.text }}
+                        {{ props.item.title }} {{ props.item.text }}
                     </div>
 
                     <div class="explorer" v-if="props.item.data.explorer_link">
@@ -52,6 +48,7 @@
     const store = useGlobalStore(),
         i18n = inject('i18n'),
         route = useRoute(),
+        emitter = inject('emitter'),
         title = useTitle(),
         layout = computed(() => route.meta.layout || 'default-layout'),
         notificationTimeout = ref(null)
@@ -90,14 +87,37 @@
     function notificationsOnStart(params) {
         // Pending type
         if (params.type === 'pending') {
-            notificationTimeout.value = setTimeout(() => document.querySelector('.notification.pending').classList.add('small'), store.notificationsPendingDelay)
+            notificationTimeout.value = setTimeout(() => {
+                // Show pending notification
+                document.querySelector('.notification.pending').classList.add('small')
+
+                // Clear timeout
+                notificationTimeout.value = null
+            }, store.notificationsPendingDelay)
         }
     }
 
 
     // Notifications destroy event
     function notificationsOnDestroy() {
-        // Pending type
+        // Clear timeout
         notificationTimeout.value = null
     }
+
+
+    // Event "show_pending_notification"
+    emitter.on('show_pending_notification', () => {
+        if (!notificationTimeout.value) {
+            // Show pending notification
+            document.querySelector('.notification.pending').classList.remove('small')
+
+            // Hide pending notification
+            notificationTimeout.value = setTimeout(() => {
+                document.querySelector('.notification.pending').classList.add('small')
+
+                // Clear timeout
+                notificationTimeout.value = null
+            }, store.notificationsPendingDelay)
+        }
+    })
 </script>

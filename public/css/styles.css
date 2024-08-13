@@ -951,6 +951,12 @@ input[type='password']::-webkit-credentials-auto-fill-button
 }
 
 
+.btns .btn.waiting_btn
+{
+    opacity: .3;
+}
+
+
 .btns .btn span
 {
     display: block;

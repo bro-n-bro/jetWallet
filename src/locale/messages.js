@@ -113,8 +113,8 @@ export default {
             // Notifications
             'notification_copied_title': 'Copied to clipboard',
             'notification_tx_pending_title': 'Transaction is pending',
-            'notification_tx_success_title': 'Tx success',
-            'notification_tx_error_title': 'Tx error',
+            'notification_tx_success_title': 'Success',
+            'notification_tx_error_title': 'Error:',
 
             'notification_explorer_link': 'Explorer',
 
@@ -142,6 +142,7 @@ export default {
             'btn_close': 'Close',
             'btn_sign': 'Sign',
             'btn_understood': 'Understood',
+            'btn_waiting_tx': 'Waiting tx',
 
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",

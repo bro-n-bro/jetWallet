@@ -19,13 +19,13 @@
 
         <!-- Action -->
         <div class="actions">
-            <router-link to="/account" class="btn">
+            <button class="btn" @click.prevent="emitter.emit('search_focus')">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
                 </div>
 
                 <div>{{ $t('message.btn_send') }}</div>
-            </router-link>
+            </button>
 
             <router-link to="/account" class="btn">
                 <div class="icon">

@@ -3,7 +3,6 @@ const network = {
     lcd_api: 'https://lcd.uni-3.cybernode.ai',
     rpc_api: 'https://rpc.uni-3.cybernode.ai',
     websocket_url: 'wss://rpc.uni-3.cybernode.ai:443/websocket',
-    websocket_origin: 'wss://rpc.uni-3.cybernode.ai',
 
     denom: 'boot',
     token_name: 'BOOT',

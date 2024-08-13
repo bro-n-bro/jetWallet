@@ -3,7 +3,6 @@ const network = {
     lcd_api: 'https://lcd.cosmoshub-4.bronbro.io',
     rpc_api: 'https://rpc.cosmoshub-4.bronbro.io',
     websocket_url: 'wss://rpc.cosmoshub-4.bronbro.io:443/websocket',
-    websocket_origin: 'wss://rpc.cosmoshub-4.bronbro.io',
 
     denom: 'uatom',
     token_name: 'ATOM',

@@ -4,7 +4,7 @@
 
         <div class="cont">
             <div class="head">
-                <router-link to="/account" class="back_btn">
+                <router-link to="/account?activeSlide=1" class="back_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
@@ -69,8 +69,12 @@
 
 
             <div class="btns">
-                <button class="btn" @click.prevent="showSignTxModal = true" :class="{ disabled: !store.TxFee.isEnough }">
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_approve') }}</span>
+                </button>
+
+                <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
+                    <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
             </div>
         </div>
@@ -140,6 +144,12 @@
 
             // Sign Tx
             let txBytes = await signTx(msgAny.value, memo.value)
+
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
 
             // Show notification
             notification.notify({
