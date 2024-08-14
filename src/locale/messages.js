@@ -76,11 +76,14 @@ export default {
             'stake_page_title': 'Stake',
 
             'stake_current_staked_label': 'Token:',
+            'stake_APR_label': 'APR',
             'stake_validator_label': 'Select validator:',
             'stake_amount_label': 'Amount:',
             'stake_unbonding_period_label': 'Unbonding Period:',
             'stake_available_label': 'Available',
             'stake_staked_label': 'Total Staked',
+
+            'stake_unbonding_time_unit': 'days',
 
             'stake_validator_placeholder': 'Choose your validator',
 

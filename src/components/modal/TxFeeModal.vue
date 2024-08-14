@@ -124,7 +124,7 @@
                     </div>
 
                     <div class="field" v-else>
-                        <input type="text" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10" @input="validateUserGasAmount($event)">
+                        <input type="number" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10" @input="validateUserGasAmount($event)">
                     </div>
                 </div>
 

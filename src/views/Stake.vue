@@ -20,12 +20,12 @@
                 <div class="data_wrap">
                     <div class="data">
                         <div class="apr">
-                            <span>APR<br> 14.43%</span>
+                            <span>{{ $t('message.stake_APR_label') }}<br> {{ (store.networks[store.currentNetwork].APR * 100).toFixed(2) }}%</span>
                         </div>
 
                         <div class="token">
                             <div class="logo">
-                                <!-- <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy"> -->
+                                <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
                             </div>
 
                             <div>
@@ -34,7 +34,11 @@
                                 </div>
 
                                 <div class="unbonding_period">
-                                    {{ $t('message.stake_unbonding_period_label') }} 14 days
+                                    {{ $t('message.stake_unbonding_period_label') }}
+
+                                    {{ store.networks[store.currentNetwork].unbondingTime }}
+
+                                    {{ $t('message.stake_unbonding_time_unit') }}
                                 </div>
                             </div>
                         </div>
@@ -46,11 +50,15 @@
                                 </div>
 
                                 <div class="amount">
-                                    0.00001 {{ store.networks[store.currentNetwork].token_name }}
+                                    {{ formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+
+                                    {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
                                 <div class="cost">
-                                    $0.01
+                                    {{ store.currentCurrencySymbol }}
+
+                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) }}
                                 </div>
                             </div>
 
@@ -60,11 +68,13 @@
                                 </div>
 
                                 <div class="amount">
-                                    0.00001 {{ store.networks[store.currentNetwork].token_name }}
+                                    {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+
+                                    {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
                                 <div class="cost">
-                                    $-
+                                    {{ store.currentCurrencySymbol }}{{ formatTokenCost(calcStakedBalancesCost()) }}
                                 </div>
                             </div>
                         </div>
@@ -94,13 +104,17 @@
                 <div class="label">
                     {{ $t('message.stake_amount_label') }}
 
-                    <div class="cost">0 $</div>
+                    <div class="cost">
+                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
+
+                        {{ store.currentCurrencySymbol }}
+                    </div>
                 </div>
 
                 <div class="field">
-                    <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00">
+                    <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00" @input="validateAmount($event)">
 
-                    <button type="button" class="max_btn">
+                    <button type="button" class="max_btn" @click.prevent="setMaxAmount">
                         {{ $t('message.btn_MAX') }}
                     </button>
                 </div>
@@ -132,6 +146,7 @@
 <script setup>
     import { ref, inject, onUnmounted, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcStakeAvailabelAmount, calcStakedAmount, formatTokenAmount } from '@/utils'
 
     // Components
     import TxFee from '@/components/TxFee.vue'
@@ -145,7 +160,10 @@
         amount = ref('')
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
+        // Get network unbonding period
+        await store.getNetworkUnbondingTime()
+
         // Set messeges
         // store.stakedBalances.forEach(balance => {
         //     msgAny.value.push({
@@ -164,6 +182,28 @@
         emitter.off('auth')
         emitter.off('close_sign_tx_modal')
     })
+
+
+    // Set MAX amount
+    function setMaxAmount() {
+        amount.value = formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)
+    }
+
+
+    // Validate amount
+    function validateAmount(e) {
+        // Zero
+        if (e.target.value.length && e.target.value <= 0) {
+            // Set zero
+            amount.value = 0
+        }
+
+        // More than available balance
+        if (e.target.value > formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) {
+            // Set MAX amount
+            setMaxAmount()
+        }
+    }
 
 
     // Event "auth"
@@ -268,7 +308,7 @@
         top: 7px;
         right: 7px;
 
-        padding: 0 4px;
+        padding: 0 6px;
 
         text-align: center;
 
@@ -312,7 +352,6 @@
         height: 38px;
 
         border-radius: 50%;
-        background: #ddd;
     }
 
 

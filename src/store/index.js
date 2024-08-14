@@ -16,7 +16,8 @@ import localbostrom from '@/store/networks/localbostrom'
 const networksAdditionalOptions = {
     signingClient: {},
     websocket: null,
-    currentTxHash: null
+    currentTxHash: null,
+    unbondingTime: 0
 }
 
 
@@ -610,6 +611,21 @@ export const useGlobalStore = defineStore('global', {
             // Get rewards
             if (this.isRewardsGot) {
                 this.getRewards()
+            }
+        },
+
+
+        // Get network unbonding period
+        async getNetworkUnbondingTime() {
+            try {
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/params`)
+                    .then(res => res.json())
+                    .then(response => {
+                        // Set data
+                        this.networks[this.currentNetwork].unbondingTime = parseInt(response.params.unbonding_time) / 86400
+                    })
+            } catch (error) {
+                console.error(error)
             }
         },
 

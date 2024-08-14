@@ -367,6 +367,7 @@
     {
         font-size: 12px;
 
+        transition: opacity .2s linear;
         text-align: center;
         text-decoration: none;
 
@@ -396,5 +397,13 @@
 
         width: 22px;
         height: 22px;
+    }
+
+
+    .top_block .actions .btn.disabled
+    {
+        pointer-events: none;
+
+        opacity: .4;
     }
 </style>

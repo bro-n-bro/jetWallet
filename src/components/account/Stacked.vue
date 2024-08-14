@@ -19,7 +19,7 @@
 
         <!-- Action -->
         <div class="actions">
-            <router-link to="/account/stake" class="btn">
+            <router-link to="/account/stake" class="btn" :class="{ disabled: !store.isBalancesGot && !store.isStakedBalancesGot }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
                 </div>
@@ -27,7 +27,7 @@
                 <div>{{ $t('message.btn_stake') }}</div>
             </router-link>
 
-            <router-link to="/account" class="btn">
+            <router-link to="/account" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                 </div>
@@ -35,7 +35,7 @@
                 <div>{{ $t('message.btn_unstake') }}</div>
             </router-link>
 
-            <router-link to="/account" class="btn">
+            <router-link to="/account" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                 </div>
