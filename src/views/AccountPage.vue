@@ -47,7 +47,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
+    import { ref, onBeforeMount, onMounted, watch, computed, inject, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useUrlSearchParams } from '@vueuse/core'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -99,7 +99,11 @@
                 width: 20px;
             }
             `
-        ]
+        ],
+        startY = ref(0),
+        isPulling = ref(false),
+        threshold = 50,
+        hasUpdated = ref(false)
 
 
     onBeforeMount(async () => {
@@ -125,58 +129,17 @@
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
 
-
-        // Disable overscroll
-        let startY,
-            isPulling = false,
-            threshold = 50,
-            hasUpdated = false
-
-
-        window.addEventListener('touchstart', e => {
-            if (window.scrollY === 0) {
-                startY = e.touches[0].pageY
-                isPulling = true
-                hasUpdated = false
-            }
-        }, { passive: false })
+        // Overscroll
+        window.addEventListener('touchstart', handleTouchStart, { passive: false })
+        window.addEventListener('touchmove', handleTouchMove, { passive: false })
+        window.addEventListener('touchend', handleTouchEnd, { passive: false })
+    })
 
 
-        window.addEventListener('touchmove', e => {
-            if (isPulling && store.networks[store.currentNetwork].currentTxHash) {
-                // Event "show_pending_notification"
-                emitter.emit('show_pending_notification')
-
-                return
-            }
-
-            if (!isPulling || hasUpdated) return
-
-            let currentY = e.touches[0].pageY,
-                distance = currentY - startY
-
-            if (distance > 0 && distance >= threshold) {
-                e.preventDefault()
-                e.stopPropagation()
-
-                // Updating flag
-                hasUpdated = true
-
-                // Top loader
-                let account = document.querySelector('.account_page')
-
-                if (account) {
-                    account.classList.add('updating')
-                    setTimeout(() => account.classList.remove('updating'), 500)
-                }
-
-                // Update all balances
-                store.updateAllBalances()
-            }
-        }, { passive: false })
-
-
-        window.addEventListener('touchend', () => isPulling = false)
+    onUnmounted(() => {
+        window.removeEventListener('touchstart', handleTouchStart, { passive: false })
+        window.removeEventListener('touchmove', handleTouchMove, { passive: false })
+        window.removeEventListener('touchend', handleTouchEnd, { passive: false })
     })
 
 
@@ -213,6 +176,57 @@
             store.getRewards()
         }
     })
+
+
+    // Handle touch start
+    function handleTouchStart(e) {
+        if (window.scrollY === 0) {
+            startY.value = e.touches[0].pageY
+            isPulling.value = true
+            hasUpdated.value = false
+        }
+    }
+
+
+    // Handle touch move
+    function handleTouchMove(e) {
+        if (isPulling.value && store.networks[store.currentNetwork].currentTxHash) {
+            // Event "show_pending_notification"
+            emitter.emit('show_pending_notification')
+
+            return
+        }
+
+        if (!isPulling.value || hasUpdated.value) return
+
+        let currentY = e.touches[0].pageY,
+            distance = currentY - startY.value
+
+        if (distance > 0 && distance >= threshold) {
+            e.preventDefault()
+            e.stopPropagation()
+
+            // Updating flag
+            hasUpdated.value = true
+
+            // Top loader
+            let account = document.querySelector('.account_page')
+
+            if (account) {
+                account.classList.add('updating')
+                setTimeout(() => account.classList.remove('updating'), 500)
+            }
+
+            // Update all balances
+            store.updateAllBalances()
+        }
+    }
+
+
+    // Handle touch end
+    function handleTouchEnd(e) {
+        isPulling.value = false
+    }
 
 
     // Event "swiper_slideTo"

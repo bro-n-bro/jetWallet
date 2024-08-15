@@ -88,7 +88,7 @@
                     {{ $t('message.stake_validator_label') }}
                 </div>
 
-                <div class="info_wrap">
+                <div class="info_wrap" @click.prevent="showValidatorsModal = true">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -138,6 +138,10 @@
     </section>
 
 
+    <!-- ValidatorsModal -->
+    <ValidatorsModal v-if="showValidatorsModal"/>
+
+
     <!-- Sign transaction -->
     <SignTx v-if="showSignTxModal"/>
 </template>
@@ -151,10 +155,12 @@
     // Components
     import TxFee from '@/components/TxFee.vue'
     import SignTx from '@/components/modal/SignTx.vue'
+    import ValidatorsModal from '@/components/modal/ValidatorsModal.vue'
 
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
+        showValidatorsModal = ref(false),
         showSignTxModal = ref(false),
         msgAny = ref([]),
         amount = ref('')
@@ -181,6 +187,7 @@
         // Unlisten events
         emitter.off('auth')
         emitter.off('close_sign_tx_modal')
+        emitter.off('close_validators_modal')
     })
 
 
@@ -220,6 +227,13 @@
     emitter.on('close_sign_tx_modal', () => {
         // Hide SignTx modal
         showSignTxModal.value = false
+    })
+
+
+    // Event "close_validators_modal"
+    emitter.on('close_validators_modal', () => {
+        // Hide validators modal
+        showValidatorsModal.value = false
     })
 </script>
 
@@ -308,7 +322,7 @@
         top: 7px;
         right: 7px;
 
-        padding: 0 6px;
+        padding: 2px 6px;
 
         text-align: center;
 

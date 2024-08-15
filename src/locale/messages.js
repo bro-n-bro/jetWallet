@@ -88,6 +88,10 @@ export default {
             'stake_validator_placeholder': 'Choose your validator',
 
 
+            // Validators
+            'validators_page_title': 'Validators:',
+
+
             // Tx fee
             'tx_fee_label': 'Tx Fee:',
 

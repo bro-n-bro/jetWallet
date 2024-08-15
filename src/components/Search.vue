@@ -21,7 +21,7 @@
     import { ref, inject } from 'vue'
 
 
-    const props = defineProps(['sliderIndex']),
+    const props = defineProps(['source']),
         emitter = inject('emitter'),
         query = ref('')
 
@@ -40,7 +40,7 @@
 
     // Set enter event
     function setEnterEvent() {
-        emitter.emit('search', { query: query.value, sliderIndex: props.sliderIndex })
+        emitter.emit('search', { query: query.value, source: props.source })
     }
 
 
@@ -50,7 +50,7 @@
         query.value = ''
 
         // Set event
-        emitter.emit('search', { query: query.value, sliderIndex: props.sliderIndex })
+        emitter.emit('search', { query: query.value, source: props.source })
     }
 </script>
 

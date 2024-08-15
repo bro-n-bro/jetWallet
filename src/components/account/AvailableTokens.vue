@@ -2,7 +2,7 @@
     <section class="available_tokens">
         <div class="cont">
             <!-- Search -->
-            <Search :sliderIndex="1" />
+            <Search source="availabels" />
 
             <Loader v-if="!store.isBalancesGot" />
 
@@ -76,8 +76,8 @@
 
 
     // Event "search"
-    emitter.on('search', ({ query, sliderIndex }) => {
-        if (sliderIndex === 1) {
+    emitter.on('search', ({ query, source }) => {
+        if (source === 'availabels') {
             // Clear search result
             searchResult.value = []
 

@@ -630,6 +630,16 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Get validators
+        async getValidators() {
+            try {
+                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
         // Clear BD
         async clearAllData() {
             await DBclearData('wallet')

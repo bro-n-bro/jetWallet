@@ -2,9 +2,7 @@
     <section class="stake_tokens">
         <div class="cont">
             <!-- Search -->
-            <Search :sliderIndex="2" />
-
-            <!-- <pre>{{ store.stakedBalances }}</pre> -->
+            <Search source="staked" />
 
             <Loader v-if="!store.isStakedBalancesGot" />
 
@@ -18,7 +16,7 @@
                         <div class="token_wrap">
                             <div class="token">
                                 <div class="logo">
-                                    <img :src="item.balance.token_info.logo_URIs.svg" :alt="item.balance.token_info.name" loading="lazy">
+                                    <img :src="item.balance.token_info.logo_URIs.svg" alt="" loading="lazy">
                                 </div>
 
                                 <div>
@@ -94,8 +92,8 @@
 
 
     // Event "search"
-    emitter.on('search', ({ query, sliderIndex }) => {
-        if (sliderIndex === 2) {
+    emitter.on('search', ({ query, source }) => {
+        if (source === 'staked') {
             // Clear search result
             searchResult.value = []
 
