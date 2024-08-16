@@ -90,6 +90,7 @@ export default {
 
             // Validators
             'validators_page_title': 'Validators:',
+            'validatoes_staked_label': 'Staked:',
 
 
             // Tx fee

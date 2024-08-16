@@ -39,6 +39,7 @@ export const useGlobalStore = defineStore('global', {
         currentAddress: '',
         currentCurrency: '',
         currentCurrencySymbol: '',
+        stakeCurrentValidator: null,
 
         prices: [],
         balances: [],

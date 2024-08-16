@@ -327,3 +327,7 @@ export const getExplorerLink = (network) => {
 
     return (store.networks[network].explorer_link).replace('{tx_hash}', store.networks[network].currentTxHash)
 }
+
+
+// Image load error
+export const imageLoadError = e => e.target.classList.add('hide')

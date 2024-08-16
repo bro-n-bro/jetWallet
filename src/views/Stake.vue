@@ -83,15 +83,43 @@
             </div>
 
 
-            <div class="validator">
+            <div class="validator_info">
                 <div class="label">
                     {{ $t('message.stake_validator_label') }}
                 </div>
 
-                <div class="info_wrap" @click.prevent="showValidatorsModal = true">
+                <div class="info_wrap" @click.prevent="showValidatorsModal = true" v-if="!store.stakeCurrentValidator">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
+                        </div>
+
+                        <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg>
+                    </div>
+                </div>
+
+                <div class="validator_wrap" @click.prevent="showValidatorsModal = true" v-else>
+                    <div class="validator">
+                        <div class="logo">
+                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.stakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+
+                            <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
+                        </div>
+
+                        <div>
+                            <div class="moniker">
+                                {{ store.stakeCurrentValidator.description.moniker }}
+                            </div>
+
+                            <div class="staked" v-if="item = isStakedValidator(store.stakeCurrentValidator.operator_address)">
+                                {{ $t('message.validatoes_staked_label') }}
+
+                                {{ formatTokenAmount(item.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+
+                                <div class="logo">
+                                    <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
+                                </div>
+                            </div>
                         </div>
 
                         <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg>
@@ -122,7 +150,7 @@
 
 
             <!-- Tx fee -->
-            <!-- <TxFee v-if="store.isBalancesGot" :msgAny /> -->
+            <!-- <TxFee v-if="store.stakeCurrentValidator && amount" :msgAny /> -->
 
 
             <div class="btns">
@@ -150,7 +178,7 @@
 <script setup>
     import { ref, inject, onUnmounted, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcStakeAvailabelAmount, calcStakedAmount, formatTokenAmount } from '@/utils'
+    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcStakeAvailabelAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
 
     // Components
     import TxFee from '@/components/TxFee.vue'
@@ -167,6 +195,10 @@
 
 
     onBeforeMount(async () => {
+        // Reset data
+        store.stakeCurrentValidator = null
+
+
         // Get network unbonding period
         await store.getNetworkUnbondingTime()
 
@@ -210,6 +242,12 @@
             // Set MAX amount
             setMaxAmount()
         }
+    }
+
+
+    // Is staked validator
+    function isStakedValidator(address) {
+        return store.stakedBalances.find(balance => balance.validator_info.operator_address === address)
     }
 
 
@@ -456,13 +494,13 @@
 
 
 
-    .validator
+    .validator_info
     {
         margin-top: 12px;
     }
 
 
-    .validator .info_wrap
+    .validator_info .info_wrap
     {
         padding: 1px;
 
@@ -471,7 +509,7 @@
     }
 
 
-    .validator .info
+    .validator_info .info
     {
         position: relative;
 
@@ -491,7 +529,7 @@
     }
 
 
-    .validator .placeholder
+    .validator_info .info .placeholder
     {
         font-size: 16px;
         font-weight: 500;
@@ -500,7 +538,146 @@
     }
 
 
-    .validator .arr
+    .validator_info .info .arr
+    {
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        right: 16px;
+        bottom: 0;
+
+        display: block;
+
+        width: 28px;
+        height: 28px;
+        margin: auto 0;
+
+        transform: rotate(-90deg);
+    }
+
+
+    .validator_info .validator_wrap
+    {
+        padding: 1px;
+
+        cursor: pointer;
+
+        border-radius: 12px;
+        background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
+    }
+
+
+    .validator_info .validator
+    {
+        position: relative;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+
+        padding: 5px 7px;
+
+        border-radius: 11px;
+        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+    }
+
+
+    .validator_info .validator .logo
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 44px;
+        height: 44px;
+        margin-right: 8px;
+        padding: 6px;
+
+        border-radius: 50%;
+        background: #950fff;
+    }
+
+
+    .validator_info .validator .logo img
+    {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: inherit;
+    }
+
+
+    .validator_info .validator .logo .icon
+    {
+        display: none;
+
+        width: 24px;
+        height: 24px;
+    }
+
+
+    .validator_info .validator .logo img.hide
+    {
+        display: none;
+    }
+
+    .validator_info .validator .logo img.hide + .icon
+    {
+        display: block;
+    }
+
+
+    .validator_info .validator .logo + *
+    {
+        width: calc(100% - 100px);
+    }
+
+
+    .validator_info .validator .moniker
+    {
+        font-size: 18px;
+        font-weight: 500;
+
+        overflow: hidden;
+
+        width: calc(100% - 46px);
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .validator_info .validator .staked
+    {
+        font-size: 16px;
+        font-weight: 300;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+
+        color: rgba(255, 255, 255, .80);
+    }
+
+
+    .validator_info .validator .staked .logo
+    {
+        width: 18px;
+        height: 18px;
+        margin: 0 0 0 4px;
+        padding: 0;
+    }
+
+
+    .validator_info .validator .arr
     {
         position: absolute;
         z-index: 3;

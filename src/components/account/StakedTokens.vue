@@ -34,7 +34,9 @@
                                         </div>
 
                                         <div class="logo">
-                                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${item.validator_info.operator_address}.png`" alt="" loading="lazy">
+                                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${item.validator_info.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+
+                                            <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                                         </div>
                                     </div>
                                 </div>
@@ -65,7 +67,7 @@
 <script setup>
     import { inject, watch, ref, computed, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenAmount, formatTokenCost, calcTokenCost } from '@/utils'
+    import { formatTokenAmount, formatTokenCost, calcTokenCost, imageLoadError } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -294,6 +296,7 @@
         margin-left: 4px;
 
         border-radius: 50%;
+        background: #950fff;
     }
 
 
@@ -304,7 +307,27 @@
         width: 100%;
         height: 100%;
 
-        border-radius: 50%;
+        border-radius: inherit;
+    }
+
+
+    .tokens .token .validator .logo .icon
+    {
+        display: none;
+
+        width: 16px;
+        height: 16px;
+    }
+
+
+    .tokens .token .validator .logo img.hide
+    {
+        display: none;
+    }
+
+    .tokens .token .validator .logo img.hide + .icon
+    {
+        display: block;
     }
 
 
