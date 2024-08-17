@@ -92,6 +92,7 @@
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
     import { getNetworkLogo, signTx, sendTx, calcRewardsBalancesCost, formatTokenCost, formatTokenAmount, getExplorerLink } from '@/utils'
+    import { MsgWithdrawDelegatorReward } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -115,10 +116,10 @@
         store.stakedBalances.forEach(balance => {
             msgAny.value.push({
                 typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-                value: {
+                value: MsgWithdrawDelegatorReward.fromPartial({
                     delegatorAddress: store.currentAddress,
                     validatorAddress: balance.validator_info.operator_address
-                }
+                })
             })
         })
     })

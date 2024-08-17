@@ -113,7 +113,9 @@
 
             // Hide pending notification
             notificationTimeout.value = setTimeout(() => {
-                document.querySelector('.notification.pending').classList.add('small')
+                if (document.querySelector('.notification.pending')) {
+                    document.querySelector('.notification.pending').classList.add('small')
+                }
 
                 // Clear timeout
                 notificationTimeout.value = null

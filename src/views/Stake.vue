@@ -150,7 +150,7 @@
 
 
             <!-- Tx fee -->
-            <!-- <TxFee v-if="store.stakeCurrentValidator && amount" :msgAny /> -->
+            <TxFee v-if="isFormValid" :msgAny />
 
 
             <div class="btns">
@@ -176,9 +176,10 @@
 
 
 <script setup>
-    import { ref, inject, onUnmounted, onBeforeMount } from 'vue'
+    import { ref, inject, onUnmounted, onBeforeMount, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcStakeAvailabelAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
+    import { MsgDelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
     // Components
     import TxFee from '@/components/TxFee.vue'
@@ -191,27 +192,17 @@
         showValidatorsModal = ref(false),
         showSignTxModal = ref(false),
         msgAny = ref([]),
-        amount = ref('')
+        amount = ref(''),
+        isAmountReady = ref(false),
+        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator))
 
 
     onBeforeMount(async () => {
         // Reset data
         store.stakeCurrentValidator = null
 
-
         // Get network unbonding period
         await store.getNetworkUnbondingTime()
-
-        // Set messeges
-        // store.stakedBalances.forEach(balance => {
-        //     msgAny.value.push({
-        //         typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-        //         value: {
-        //             delegatorAddress: store.currentAddress,
-        //             validatorAddress: balance.validator_info.operator_address
-        //         }
-        //     })
-        // })
     })
 
 
@@ -223,18 +214,45 @@
     })
 
 
+    watch(computed(() => isFormValid.value), () => {
+        if (isFormValid.value) {
+            // Set messeges
+            msgAny.value = [{
+                typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+                value: MsgDelegate.fromPartial({
+                    delegatorAddress: store.currentAddress,
+                    validatorAddress: store.stakeCurrentValidator.operator_address,
+                    amount: {
+                        denom: store.networks[store.currentNetwork].denom,
+                        amount: `${parseFloat((amount.value).toString().replace(',', '.')).toFixed(store.networks[store.currentNetwork].exponent) * Math.pow(10, store.networks[store.currentNetwork].exponent)}`
+                    }
+                })
+            }]
+        }
+    })
+
+
     // Set MAX amount
     function setMaxAmount() {
         amount.value = formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)
+
+        // Set amount status
+        isAmountReady.value = true
     }
 
 
     // Validate amount
     function validateAmount(e) {
+        // Set amount status
+        isAmountReady.value = false
+
         // Zero
         if (e.target.value.length && e.target.value <= 0) {
-            // Set zero
-            amount.value = 0
+            // Set empty
+            amount.value = ''
+        } else if (e.target.value.length){
+            // Set amount status
+            isAmountReady.value = true
         }
 
         // More than available balance

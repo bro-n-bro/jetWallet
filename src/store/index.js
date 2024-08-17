@@ -491,7 +491,7 @@ export const useGlobalStore = defineStore('global', {
                     // User recipient
                     if (parsedMsg.id == '1') {
                         // Update all balances
-                        store.updateAllBalances()
+                        this.updateAllBalances()
                     }
 
                     // Transaction
@@ -598,7 +598,7 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Update all balances
-        updateAllBalances() {
+        async updateAllBalances() {
             // Get balances
             if (this.isBalancesGot) {
                 this.getBalances()
@@ -612,6 +612,20 @@ export const useGlobalStore = defineStore('global', {
             // Get rewards
             if (this.isRewardsGot) {
                 this.getRewards()
+            }
+
+            // Get DB data
+            let DBData = await this.getMultipleData(['TxFeeCurrentLevel', 'TxFeeIsRemember'])
+
+            // Reset data
+            this.TxFee = {
+                balance: {},
+                currentLevel: DBData.TxFeeCurrentLevel || 'average',
+                userGasAmount: 0,
+                gasAmount: 0,
+                isRemember: DBData.TxFeeIsRemember || false,
+                isGasAdjustmentAuto: true,
+                isEnough: false
             }
         },
 
