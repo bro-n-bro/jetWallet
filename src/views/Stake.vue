@@ -11,8 +11,10 @@
                 </div>
             </div>
 
+            <Loader v-if="!store.isBalancesGot || !store.isStakedBalancesGot" />
 
-            <div class="current_staked">
+            <template v-else>
+                <div class="current_staked">
                 <div class="label">
                     {{ $t('message.stake_current_staked_label') }}
                 </div>
@@ -154,7 +156,7 @@
 
 
             <div class="btns">
-                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true" :class="{ disabled: !store.TxFee.isEnough }">
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showStakeConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_stake') }}</span>
                 </button>
 
@@ -162,16 +164,16 @@
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
             </div>
+            </template>
         </div>
     </section>
 
 
-    <!-- ValidatorsModal -->
+    <!-- Validators modal -->
     <ValidatorsModal v-if="showValidatorsModal"/>
 
-
-    <!-- Sign transaction -->
-    <SignTx v-if="showSignTxModal"/>
+    <!-- Stake confirm modal -->
+    <StakeConfirmModal v-if="showStakeConfirmModal" :amount :msgAny />
 </template>
 
 
@@ -182,15 +184,16 @@
     import { MsgDelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
     // Components
+    import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
-    import SignTx from '@/components/modal/SignTx.vue'
     import ValidatorsModal from '@/components/modal/ValidatorsModal.vue'
+    import StakeConfirmModal from '@/components/modal/StakeConfirmModal.vue'
 
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         showValidatorsModal = ref(false),
-        showSignTxModal = ref(false),
+        showStakeConfirmModal = ref(false),
         msgAny = ref([]),
         amount = ref(''),
         isAmountReady = ref(false),
@@ -208,8 +211,7 @@
 
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_sign_tx_modal')
+        emitter.off('close_stake_confirm_modal')
         emitter.off('close_validators_modal')
     })
 
@@ -234,10 +236,16 @@
 
     // Set MAX amount
     function setMaxAmount() {
-        amount.value = formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)
-
         // Set amount status
-        isAmountReady.value = true
+        isAmountReady.value = false
+
+        setTimeout(() => {
+            // Set amount
+            amount.value = formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)
+
+            // Set amount status
+            isAmountReady.value = true
+        })
     }
 
 
@@ -246,20 +254,25 @@
         // Set amount status
         isAmountReady.value = false
 
-        // Zero
-        if (e.target.value.length && e.target.value <= 0) {
-            // Set empty
-            amount.value = ''
-        } else if (e.target.value.length){
-            // Set amount status
-            isAmountReady.value = true
-        }
+        setTimeout(() => {
+            // Negative value
+            if (e.target.value.length && e.target.value <= 0) {
+                // Set empty
+                amount.value = ''
+            }
 
-        // More than available balance
-        if (e.target.value > formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) {
-            // Set MAX amount
-            setMaxAmount()
-        }
+            // Acceptable value
+            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)){
+                // Set amount status
+                isAmountReady.value = true
+            }
+
+            // More than available balance
+            if (e.target.value > formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) {
+                // Set MAX amount
+                setMaxAmount()
+            }
+        })
     }
 
 
@@ -269,32 +282,33 @@
     }
 
 
-    // Event "auth"
-    emitter.on('auth', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-
-        // Claim tokens
-        claim()
-    })
-
-
-    // Event "close_sign_tx_modal"
-    emitter.on('close_sign_tx_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-    })
-
-
     // Event "close_validators_modal"
     emitter.on('close_validators_modal', () => {
         // Hide validators modal
         showValidatorsModal.value = false
     })
+
+
+    // Event "close_stake_confirm_modal"
+    emitter.on('close_stake_confirm_modal', () => {
+        // Hide stake confirm modal
+        showStakeConfirmModal.value = false
+    })
 </script>
 
 
 <style scoped>
+    .loader_wrap
+    {
+        position: relative;
+
+        height: auto;
+        padding: 20px;
+
+        background: none;
+    }
+
+
     .stake
     {
         padding-top: 8px;

@@ -17,7 +17,8 @@ const networksAdditionalOptions = {
     signingClient: {},
     websocket: null,
     currentTxHash: null,
-    unbondingTime: 0
+    unbondingTime: 0,
+    totalBondedTokens: 0
 }
 
 
@@ -649,6 +650,21 @@ export const useGlobalStore = defineStore('global', {
         async getValidators() {
             try {
                 return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
+        // Get total bonded tokens
+        async getTotalBondedTokena() {
+            try {
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/pool`)
+                    .then(res => res.json())
+                    .then(response => {
+                        // Set data
+                        this.networks[this.currentNetwork].totalBondedTokens = parseInt(response.pool.bonded_tokens)
+                    })
             } catch (error) {
                 console.error(error)
             }

@@ -76,6 +76,7 @@
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
+        loading = ref(true),
         searchResult = ref([])
 
 

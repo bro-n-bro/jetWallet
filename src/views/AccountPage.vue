@@ -151,9 +151,6 @@
                 clean: true
             })
 
-            // Init status
-            store.isInitialized = false
-
             // Balances status
             store.isBalancesGot = false
 
@@ -162,6 +159,9 @@
 
             // Rewards status
             store.isRewardsGot = false
+
+            // Init status
+            store.isInitialized = false
 
             // Reinit APP
             await store.initApp()
