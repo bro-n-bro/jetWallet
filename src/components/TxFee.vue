@@ -5,10 +5,10 @@
 
             {{ cost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
 
-            {{ store.TxFee.balance.token_info.symbol }}
+            {{ store.networks[store.currentNetwork].token_name }}
 
             <div class="cost">
-                (~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent, 'USD'), 'USD') }}$)
+                (~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$)
             </div>
         </button>
     </div>
@@ -31,7 +31,7 @@
         store = useGlobalStore(),
         emitter = inject('emitter'),
         showTxFeeModal = ref(false),
-        cost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent))
+        cost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.networks[store.currentNetwork].exponent))
 
 
     onBeforeMount(async () => {

@@ -4,7 +4,7 @@
             <!-- Search -->
             <Search source="availabels" />
 
-            <Loader v-if="!store.isBalancesGot" />
+            <Loader v-if="!store.isInitialized || !store.isBalancesGot" />
 
             <div class="tokens" v-else>
                 <div class="count" v-if="searchResult.length === store.balances.length">
@@ -70,8 +70,10 @@
 
 
     watch(computed(() => store.isBalancesGot), () => {
-        // Default search result
-        searchResult.value = store.balances
+        if (store.isBalancesGot) {
+            // Default search result
+            searchResult.value = store.balances
+        }
     })
 
 

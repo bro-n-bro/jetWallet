@@ -4,7 +4,7 @@
             <!-- Search -->
             <Search source="staked" />
 
-            <Loader v-if="!store.isStakedBalancesGot" />
+            <Loader v-if="!store.isInitialized || !store.isStakedBalancesGot" />
 
             <div class="tokens" v-else>
                 <div class="count" v-if="searchResult.length === store.stakedBalances.length">
@@ -76,7 +76,6 @@
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
-        loading = ref(true),
         searchResult = ref([])
 
 
@@ -89,8 +88,10 @@
 
 
     watch(computed(() => store.isStakedBalancesGot), () => {
-        // Default search result
-        searchResult.value = store.stakedBalances
+        if (store.isStakedBalancesGot) {
+            // Default search result
+            searchResult.value = store.stakedBalances
+        }
     })
 
 

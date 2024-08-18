@@ -3,7 +3,7 @@
         <div class="cont">
             <div class="data_wrap">
                 <div class="data">
-                    <Loader v-if="!store.isRewardsGot" />
+                    <Loader v-if="!store.isInitialized || !isReady" />
 
                     <template v-else>
                     <div class="info">
@@ -26,7 +26,7 @@
 
                     <div class="dropdown" v-show="showDropdown">
                         <div class="list">
-                            <div class="token_wrap" v-for="(balance, index) in store.rewardsBalances" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
+                            <div class="token_wrap" v-for="(balance, index) in store.rewardsBalances" :key="index">
                                 <div class="token">
                                     <div class="logo">
                                         <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
@@ -54,7 +54,7 @@
 
 
 <script setup>
-    import { ref, watch, computed, onBeforeMount, onMounted, onBeforeUnmount } from 'vue'
+    import { ref, watch, computed, onBeforeMount, onBeforeUnmount } from 'vue'
     import { useGlobalStore } from '@/store'
     import { calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost } from '@/utils'
 
@@ -63,30 +63,15 @@
 
 
     const store = useGlobalStore(),
+        isReady = ref(false),
         showDropdown = ref(false),
-        rewardsCost = ref(null),
+        rewardsCost = ref(0),
         secondProfit = ref(0),
         stakedBalancesCost = ref(0),
         intervalID = ref(null)
 
 
-    onBeforeMount(() => {
-        if (store.isRewardsGot) {
-            // Set rewards cost
-            rewardsCost.value = calcRewardsBalancesCost('USD')
-        }
-    })
-
-
-    onMounted(() => {
-        if (store.isInitialized && store.isStakedBalancesGot && store.isRewardsGot) {
-            // Calc second profit
-            calcSecondProfit()
-
-            // Update rewards
-            store.getRewards()
-        }
-    })
+    onBeforeMount(async() => await getRewards())
 
 
     onBeforeUnmount(() => {
@@ -95,31 +80,47 @@
     })
 
 
-    watch(computed(() => store.isInitialized), () => {
+    watch(computed(() => store.isInitialized), async () => {
         if (store.isInitialized) {
-            // Get rewards
-            store.getRewards()
+            // Clear interval
+            clearInterval(intervalID.value)
         }
-    })
 
-
-    watch(computed(() => store.isStakedBalancesGot), () => {
-        if (store.isStakedBalancesGot) {
-            // Calc second profit
-            calcSecondProfit()
-        }
+        // Get rewards
+        await getRewards()
     })
 
 
     watch(computed(() => store.isRewardsGot), () => {
+        // Ready status
+        isReady.value = false
+
         // Clear interval
         clearInterval(intervalID.value)
 
         if (store.isRewardsGot) {
+            // Calc second profit
+            calcSecondProfit()
+
             // Update rewards cost
             updateRewardsCost()
+
+            // Ready status
+            isReady.value = true
         }
     })
+
+
+    // Get rewards
+    async function getRewards() {
+        if (store.isInitialized) {
+            // Ready status
+            isReady.value = false
+
+            // Get rewards
+            await store.getRewards()
+        }
+    }
 
 
     // Calc second profit
@@ -128,9 +129,7 @@
         stakedBalancesCost.value = calcStakedBalancesCost('USD')
 
         // Set second percent
-        if (stakedBalancesCost.value) {
-            secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
-        }
+        secondProfit.value = stakedBalancesCost.value * store.networks[store.currentNetwork].APR / (365 * 24 * 60 * 60)
     }
 
 
@@ -141,7 +140,7 @@
 
         // Update rewards with timeout
         if (!rewardsCost.value && stakedBalancesCost.value) {
-            setTimeout(async () => await store.getRewards(), 3000)
+            setTimeout(async () => await getRewards(), 5000)
         }
 
         // Update rewards cost

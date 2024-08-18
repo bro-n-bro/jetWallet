@@ -229,9 +229,10 @@ export const calcRewardsBalancesCost = (currency = null) => {
 
 // Calc stake availabel amount
 export const calcStakeAvailabelAmount = () => {
-    let store = useGlobalStore()
+    let store = useGlobalStore(),
+        balance = store.balances.find(balance => balance.denom === store.networks[store.currentNetwork].denom)
 
-    return (store.balances.find(balance => balance.denom === store.networks[store.currentNetwork].denom)).amount
+    return balance ? balance.amount : 0
 }
 
 
@@ -273,7 +274,7 @@ export const simulateTx = async (msg, memo = '') => {
     let gasUsed = await store.networks[store.currentNetwork].signingClient.simulate(store.currentAddress, msg, memo)
 
     // Set gas amount
-    store.TxFee.gasAmount = parseInt(gasUsed * store.networks[store.TxFee.balance.chain_name].gas_adjustment)
+    store.TxFee.gasAmount = parseInt(gasUsed * store.networks[store.currentNetwork].gas_adjustment)
 
     // Set user gas amount
     store.TxFee.userGasAmount = store.TxFee.gasAmount
@@ -287,7 +288,7 @@ export const signTx = async (msg, memo) => {
     // Fee
     let fee = {
         amount: [{
-            denom: store.TxFee.balance.denom,
+            denom: store.networks[store.currentNetwork].denom,
             amount: parseInt(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`]).toString()
         }],
         gas: store.TxFee.userGasAmount.toString()

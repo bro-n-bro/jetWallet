@@ -36,15 +36,15 @@
                                 </div>
 
                                 <div class="cost">
-                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.lowPrice, store.TxFee.balance.exponent, 'USD'), 'USD') }}$
+                                    ~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee.lowPrice, store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.lowPrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.lowPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
                                 </div>
 
                                 <div class="denom">
-                                    {{ store.TxFee.balance.token_info.symbol }}
+                                    {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
                             </button>
 
@@ -54,15 +54,15 @@
                                 </div>
 
                                 <div class="cost">
-                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.averagePrice, store.TxFee.balance.exponent, 'USD'), 'USD') }}$
+                                    ~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee.averagePrice, store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.averagePrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.averagePrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
                                 </div>
 
                                 <div class="denom">
-                                    {{ store.TxFee.balance.token_info.symbol }}
+                                    {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
                             </button>
 
@@ -72,15 +72,15 @@
                                 </div>
 
                                 <div class="cost">
-                                    ~ {{ formatTokenCost(calcTokenCost(store.TxFee.balance.token_info.symbol, store.TxFee.userGasAmount * store.TxFee.highPrice, store.TxFee.balance.exponent, 'USD'), 'USD') }}$
+                                    ~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee.highPrice, store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.highPrice, store.TxFee.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.highPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
                                 </div>
 
                                 <div class="denom">
-                                    {{ store.TxFee.balance.token_info.symbol }}
+                                    {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
                             </button>
                         </div>
@@ -94,7 +94,7 @@
                     </div>
 
                     <div class="field">
-                        <input type="text" class="input big" :value="store.TxFee.balance.token_info.symbol" readonly>
+                        <input type="text" class="input big" :value="store.networks[store.currentNetwork].token_name" readonly>
 
                         <!-- <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg> -->
                     </div>
@@ -120,7 +120,7 @@
                     </div>
 
                     <div class="field" v-if="store.TxFee.isGasAdjustmentAuto">
-                        <input type="number" class="input big" :value="store.networks[store.TxFee.balance.chain_name].gas_adjustment" disabled>
+                        <input type="number" class="input big" :value="store.networks[store.currentNetwork].gas_adjustment" disabled>
                     </div>
 
                     <div class="field" v-else>

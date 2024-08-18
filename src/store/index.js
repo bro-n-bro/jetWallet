@@ -85,6 +85,9 @@ export const useGlobalStore = defineStore('global', {
     actions: {
         // Init APP
         async initApp() {
+            // Init status
+            this.isInitialized = false
+
             // Get DB data
             let DBData = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
 
@@ -124,13 +127,16 @@ export const useGlobalStore = defineStore('global', {
             await this.getCurrenciesPrice()
 
             // Get APR for current network
-            await this.getCurrentNetworkAPR()
+            this.getCurrentNetworkAPR()
 
             // Connect to websocket
             this.connectWebsocket()
 
-            // Init status
-            this.isInitialized = true
+            // Wait balances
+            Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
+                // Init status
+                this.isInitialized = true
+            })
         },
 
 
@@ -347,14 +353,14 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Set current network
-        async setCurrentNetwork(chain) {
-            // Save in store
-            this.currentNetwork = chain
-
+        setCurrentNetwork(chain) {
             // Save in DB
-            await DBaddData('wallet', [
+            DBaddData('wallet', [
                 ['currentNetwork', chain]
             ])
+
+            // Update current network
+            this.currentNetwork = chain
         },
 
 
@@ -493,6 +499,9 @@ export const useGlobalStore = defineStore('global', {
                     if (parsedMsg.id == '1') {
                         // Update all balances
                         this.updateAllBalances()
+
+                        // Reset Tx Fee
+                        this.resetTxFee()
                     }
 
                     // Transaction
@@ -549,14 +558,14 @@ export const useGlobalStore = defineStore('global', {
         // Set current balance
         TxFeeGetCurrentBalance(baseDenom) {
             // Set data
-            this.TxFee.balance = this.balances.find(balance => balance.denom === baseDenom)
+            this.TxFee.balance = this.balances.find(balance => balance.denom === baseDenom) || { amount: 0 }
         },
 
 
         // Get minimum gas price
         TxFeeSetGasPrices() {
             // Get chain info
-            let chain = chains.find(el => el.chain_id === this.TxFee.balance.chain_info.chain_id)
+            let chain = chains.find(el => el.chain_id === this.networks[this.currentNetwork].chain_id)
 
             // Set data
             this.TxFee.lowPrice = chain.fees.fee_tokens[0].fixed_min_gas_price ? chain.fees.fee_tokens[0].fixed_min_gas_price * 1.1 : chain.fees.fee_tokens[0].low_gas_price
@@ -599,13 +608,13 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Update all balances
-        async updateAllBalances() {
+        updateAllBalances() {
             // Get balances
             if (this.isBalancesGot) {
                 this.getBalances()
             }
 
-            // Get Staked balances
+            // Get staked balances
             if (this.isStakedBalancesGot) {
                 this.getStakedBalances()
             }
@@ -614,7 +623,11 @@ export const useGlobalStore = defineStore('global', {
             if (this.isRewardsGot) {
                 this.getRewards()
             }
+        },
 
+
+        // Reset Tx Fee
+        async resetTxFee() {
             // Get DB data
             let DBData = await this.getMultipleData(['TxFeeCurrentLevel', 'TxFeeIsRemember'])
 

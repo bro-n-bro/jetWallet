@@ -14,7 +14,7 @@
             <Loader v-if="!store.isBalancesGot || !store.isStakedBalancesGot" />
 
             <template v-else>
-                <div class="current_staked">
+            <div class="current_staked">
                 <div class="label">
                     {{ $t('message.stake_current_staked_label') }}
                 </div>
@@ -197,7 +197,7 @@
         msgAny = ref([]),
         amount = ref(''),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator))
+        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcStakeAvailabelAmount()))
 
 
     onBeforeMount(async () => {

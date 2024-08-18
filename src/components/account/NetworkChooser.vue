@@ -1,5 +1,5 @@
 <template>
-    <div class="choose_network" ref="target">
+    <div class="choose_network" ref="target" :class="{ disabled: !store.isInitialized || !store.isBalancesGot || !store.isStakedBalancesGot || !store.isRewardsGot }">
         <button class="btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
             <div class="logo">
                 <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
@@ -62,6 +62,16 @@
         z-index: 9;
         top: 11px;
         left: 8px;
+
+        transition: opacity .2s linear;
+    }
+
+
+    .choose_network.disabled
+    {
+        pointer-events: none;
+
+        opacity: .5;
     }
 
 

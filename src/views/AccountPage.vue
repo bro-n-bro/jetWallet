@@ -5,7 +5,7 @@
     <section class="page_container account_page" :class="{ searching: searchingClass }">
         <section class="top_block" v-parallax>
             <!-- Network selection -->
-            <NetworkChooser v-if="store.isInitialized" />
+            <NetworkChooser v-if="store.currentNetwork" />
 
             <!-- Scaner -->
             <QRCode />
@@ -14,7 +14,7 @@
             <CurrentCurrency />
 
             <!-- Swiper -->
-            <swiper-container :initial-slide="swiperActiveIndex" :injectStyles="swiperInjectStyles" speed="500" :pagination="{
+            <swiper-container :initial-slide="swiperActiveIndex" :injectStyles="swiperInjectStyles" speed="500" touchMoveStopPropagation="true" :pagination="{
 				type: 'bullets',
 				clickable: true,
 				bulletActiveClass: 'active'
@@ -102,7 +102,7 @@
         ],
         startY = ref(0),
         isPulling = ref(false),
-        threshold = 50,
+        threshold = 70,
         hasUpdated = ref(false)
 
 
@@ -110,12 +110,6 @@
         if (!store.isInitialized) {
             // Init app
             await store.initApp()
-
-            // Get balances
-            store.getBalances()
-
-            // Get Staked balances
-            store.getStakedBalances()
         }
     })
 
@@ -151,29 +145,8 @@
                 clean: true
             })
 
-            // Balances status
-            store.isBalancesGot = false
-
-            // Staked balances status
-            store.isStakedBalancesGot = false
-
-            // Rewards status
-            store.isRewardsGot = false
-
-            // Init status
-            store.isInitialized = false
-
             // Reinit APP
             await store.initApp()
-
-            // Get balances
-            store.getBalances()
-
-            // Get Staked balances
-            store.getStakedBalances()
-
-            // Get rewards
-            store.getRewards()
         }
     })
 

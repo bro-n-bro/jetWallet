@@ -6,10 +6,12 @@
                 {{ $t('message.current_balance_title') }}
             </div>
 
-            <Loader v-if="!store.isBalancesGot" />
+            <Loader v-if="!store.isInitialized || !store.isBalancesGot" />
 
-            <div v-else class="val" @click.prevent="updateBalances">
-                {{ formatTokenCost(calcBalancesCost()) }}
+            <div v-else class="val">
+                <span @click.prevent="store.updateAllBalances()">
+                    {{ formatTokenCost(calcBalancesCost()) }}
+                </span>
             </div>
 
             <!-- Address -->
@@ -59,13 +61,6 @@
 
     const store = useGlobalStore(),
         emitter = inject('emitter')
-
-
-    // Update balances
-    function updateBalances() {
-        // Get balances
-        store.getBalances()
-    }
 </script>
 
 

@@ -6,10 +6,10 @@
                 {{ $t('message.stacked_balance_title') }}
             </div>
 
-            <Loader v-if="!store.isStakedBalancesGot" />
+            <Loader v-if="!store.isInitialized || !store.isStakedBalancesGot" />
 
-            <div v-else class="val" @click.prevent="updateBalances">
-                {{ formatTokenCost(calcStakedBalancesCost()) }}
+            <div v-else class="val">
+                <span @click.prevent="store.updateAllBalances()">{{ formatTokenCost(calcStakedBalancesCost()) }}</span>
             </div>
 
             <!-- Address -->
@@ -57,16 +57,6 @@
 
 
     const store = useGlobalStore()
-
-
-    // Update balances
-    function updateBalances() {
-        // Get staked balances
-        store.getStakedBalances()
-
-        // Get rewards
-        store.getRewards()
-    }
 </script>
 
 
