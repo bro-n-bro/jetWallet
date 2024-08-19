@@ -13,7 +13,7 @@
 
                 <div class="list" v-if="searchResult.length">
                     <div class="item" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
-                        <div class="token_wrap">
+                        <router-link :to="`/account/send/${balance.denom}`" class="token_wrap">
                             <div class="token">
                                 <div class="logo">
                                     <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
@@ -33,7 +33,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </router-link>
                     </div>
                 </div>
 
@@ -188,8 +188,13 @@
 
     .tokens .token_wrap
     {
+        display: block;
+
         padding: 1px;
 
+        text-decoration: none;
+
+        color: currentColor;
         border-radius: 12px;
         background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
     }

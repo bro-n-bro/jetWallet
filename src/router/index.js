@@ -96,6 +96,15 @@ const routes = [
 			accessDenied: ['not_authorized']
 		}
 	},
+	{
+		path: '/account/send/:denom',
+		name: 'Send',
+		component: () => import('../views/Send.vue'),
+		meta: {
+			layout: defaultLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
 ]
 
 

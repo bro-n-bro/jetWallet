@@ -35,6 +35,18 @@
     }
 
 
+    .qr_code_btn.in_field
+    {
+        top: 0;
+        right: 16px;
+        bottom: 0;
+
+        margin: auto 0;
+
+        background: none;
+    }
+
+
     .qr_code_btn .icon
     {
         display: block;

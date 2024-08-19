@@ -98,6 +98,12 @@ export default {
             'stake_confirm_fee_label': 'Fee:',
 
 
+            // Send
+            'send_page_title': 'Send',
+            'send_amount_label': 'Amount:',
+            'send_address_label': 'Address:',
+
+
             // Validators
             'validators_page_title': 'Validators:',
             'validatoes_staked_label': 'Staked:',
