@@ -144,7 +144,7 @@ export default {
             // Search
             'search_placeholder': 'Search...',
             'search_empty': 'Token not found...',
-            'search_empty_validator': 'Valodator not found...',
+            'search_empty_validator': 'Validator not found...',
 
 
             // Notifications

@@ -1,5 +1,5 @@
 <template>
-    <div class="stacked_section">
+    <div class="staked_section">
         <!-- Balance -->
         <div class="balance">
             <div class="label">
@@ -19,7 +19,7 @@
 
         <!-- Action -->
         <div class="actions">
-            <router-link to="/account/stake" class="btn" :class="{ disabled: !store.isBalancesGot && !store.isStakedBalancesGot }">
+            <router-link to="/account/stake" class="btn stake_btn" :class="{ disabled: !store.isBalancesGot && !store.isStakedBalancesGot }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
                 </div>
@@ -61,7 +61,7 @@
 
 
 <style scoped>
-    .stacked_section
+    .staked_section
     {
         position: relative;
         z-index: 3;

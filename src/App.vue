@@ -2,6 +2,9 @@
     <component :is="layout" />
 
 
+    <div class="virtual_keybord_overlay"></div>
+
+
     <notifications position="top left" group="default" width="100%" @start="notificationsOnStart($event)" @destroy="notificationsOnDestroy()">
         <template #body="props">
             <div class="notification" :class="{ pending: props.item.type == 'pending', success: props.item.type == 'success', error: props.item.type == 'error' }">
@@ -80,6 +83,25 @@
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
         }
+
+
+        // // Virtual keybord
+        // const inputFields = document.querySelectorAll('.input, textarea'),
+        //     overlay = document.querySelector('.virtual_keybord_overlay')
+
+        // inputFields.forEach(field => {
+        //     field.addEventListener('focus', () => {
+        //         if (overlay) {
+        //             overlay.style.display = 'block'
+        //         }
+        //     })
+
+        //     field.addEventListener('blur', () => {
+        //         if (overlay) {
+        //             overlay.style.display = 'hide'
+        //         }
+        //     })
+        // })
     })
 
 

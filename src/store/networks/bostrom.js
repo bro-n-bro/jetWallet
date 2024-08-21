@@ -8,7 +8,7 @@ const network = {
     token_name: 'BOOT',
     chain_id: 'bostrom',
     prefix: 'bostrom',
-    explorer_link: 'https://www.mintscan.io/cosmos/tx/{tx_hash}',
+    explorer_link: 'https://ping.pub/bostrom/tx/{tx_hash}',
     alias: 'bostrom',
     exponent: 0,
     gas_adjustment: 1.3

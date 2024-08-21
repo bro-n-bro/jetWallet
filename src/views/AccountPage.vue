@@ -206,6 +206,14 @@
     emitter.on('swiper_slideTo', ({ index }) => {
         // Swiper move slides
         swiperEl.value.swiper.slideTo(index, 500)
+
+        setTimeout(() => {
+            let stakeBtn = document.querySelector('.staked_section .stake_btn')
+
+            if (stakeBtn) {
+                stakeBtn.click()
+            }
+        }, 500)
     })
 
 
