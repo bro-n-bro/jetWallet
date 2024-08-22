@@ -42,7 +42,9 @@
         store.TxFeeSetGasPrices()
 
         // Simulate Tx
-        await simulateTx(props.msgAny)
+        if (store.TxFee.balance.amount) {
+            await simulateTx(props.msgAny)
+        }
 
         // Enough status
         store.TxFeeIsEnough()

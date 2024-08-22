@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container claim_confirm">
+    <section class="page_container inner_page_container claim_confirm">
         <Loader v-if="isProcess" />
 
         <div class="cont">
@@ -15,7 +15,7 @@
 
 
             <div class="data">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.details_label') }}
 
                     <!-- <button class="json_btn">
@@ -54,7 +54,7 @@
 
 
             <div class="memo">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
@@ -223,39 +223,7 @@
 <style scoped>
     .claim_confirm
     {
-        padding-top: 8px;
-
         background: #170232;
-    }
-
-
-    .head
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-bottom: 10px;
-    }
-
-
-    .back_btn
-    {
-        position: relative;
-        top: 0;
-        left: 0;
-
-        margin-left: -12px;
-    }
-
-
-    .page_title
-    {
-        width: calc(100% - 48px);
-        margin-left: auto;
-        padding: 0;
     }
 
 
@@ -263,27 +231,6 @@
     {
         margin-top: 12px;
         margin-bottom: auto;
-    }
-
-
-    .label
-    {
-        font-size: 14px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-
-        margin-bottom: 2px;
-        padding: 0 10px;
-    }
-
-
-    .json_btn
-    {
-        margin-left: auto;
     }
 
 

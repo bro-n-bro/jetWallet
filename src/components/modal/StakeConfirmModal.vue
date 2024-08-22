@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container stake_confirm">
+    <section class="page_container inner_page_container stake_confirm">
         <Loader v-if="isProcess" />
 
         <div class="cont">
@@ -15,7 +15,7 @@
 
 
             <div class="data">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.details_label') }}
                 </div>
 
@@ -127,6 +127,19 @@
             </div>
 
 
+            <div class="memo">
+                <div class="field_label">
+                    {{ $t('message.memo_label') }}
+                </div>
+
+                <div class="field">
+                    <input type="text" class="input big" v-model="memo"
+                        @focus="emitter.emit('show_keyboard')"
+                        @blur="emitter.emit('hide_keyboard')">
+                </div>
+            </div>
+
+
             <div class="btns">
                 <button class="btn" @click.prevent="showSignTxModal = true">
                     <span>{{ $t('message.btn_confirm_stake') }}</span>
@@ -162,6 +175,7 @@
         showSignTxModal = ref(false),
         votingPower = ref(0),
         dailyProfit = ref(0),
+        memo = ref(''),
         feeCost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent)),
         isProcess = ref(false)
 
@@ -211,7 +225,7 @@
             }
 
             // Sign Tx
-            let txBytes = await signTx(props.msgAny)
+            let txBytes = await signTx(props.msgAny, memo.value)
 
             // Clean notifications
             notification.notify({
@@ -295,39 +309,8 @@
 
         width: 100%;
         height: 100%;
-        padding-top: 8px;
 
         background: #170232;
-    }
-
-
-    .head
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-bottom: 10px;
-    }
-
-
-    .back_btn
-    {
-        position: relative;
-        top: 0;
-        left: 0;
-
-        margin-left: -12px;
-    }
-
-
-    .page_title
-    {
-        width: calc(100% - 48px);
-        margin-left: auto;
-        padding: 0;
     }
 
 
@@ -542,5 +525,30 @@
     .features .val .currency
     {
         color: #836b9e;
+    }
+
+
+
+    .memo
+    {
+        margin-top: 12px;
+        margin-bottom: auto;
+    }
+
+
+
+    .field
+    {
+        padding: 1px;
+
+        border-radius: 10px;
+        background: linear-gradient(to bottom,  #5d33ce 0%,#200750 100%);
+    }
+
+
+    .input
+    {
+        border-radius: 9px;
+        background: #06000e;
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container sens">
+    <section class="page_container inner_page_container send">
         <Loader v-if="isProcess" />
 
         <div class="cont">
@@ -38,7 +38,7 @@
 
 
             <div class="address">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.send_address_label') }}
                 </div>
 
@@ -55,7 +55,7 @@
 
 
             <div class="amount_field">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.send_amount_label') }}
 
                     <div class="cost">
@@ -79,7 +79,7 @@
 
 
             <div class="memo_field">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
@@ -118,7 +118,7 @@
     import { useGlobalStore } from '@/store'
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
-    import { calcTokenCost, formatTokenCost, formatTokenAmount } from '@/utils'
+    import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -133,7 +133,7 @@
         emitter = inject('emitter'),
         i18n = inject('i18n'),
         notification = useNotification(),
-        balance = store.balances.find(balance => balance.denom === route.params.denom),
+        balance = store.balances.find(balance => balance.denom === route.query.denom),
         address = ref(''),
         amount = ref(''),
         memo = ref(''),
@@ -158,8 +158,6 @@
                     }]
                 }
             }]
-
-            console.log(msgAny.value)
         }
     })
 
@@ -289,8 +287,8 @@
         // Hide SignTx modal
         showSignTxModal.value = false
 
-        // Claim tokens
-        claim()
+        // Send tokens
+        send()
     })
 
 
@@ -303,43 +301,6 @@
 
 
 <style scoped>
-    .send
-    {
-        padding-top: 8px;
-    }
-
-
-    .head
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-bottom: 10px;
-    }
-
-
-    .back_btn
-    {
-        position: relative;
-        top: 0;
-        left: 0;
-
-        margin-left: -12px;
-    }
-
-
-    .page_title
-    {
-        width: calc(100% - 48px);
-        margin-left: auto;
-        padding: 0;
-    }
-
-
-
     .token_wrap
     {
         display: block;
@@ -453,21 +414,6 @@
     {
         margin-top: 10px;
         margin-bottom: auto;
-    }
-
-
-    .label
-    {
-        font-size: 14px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-
-        margin-bottom: 2px;
-        padding: 0 10px;
     }
 
 

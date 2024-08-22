@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container stake">
+    <section class="page_container inner_page_container stake">
         <div class="cont">
             <div class="head">
                 <router-link to="/account?activeSlide=1" class="back_btn">
@@ -15,7 +15,7 @@
 
             <template v-else>
             <div class="current_staked">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.stake_current_staked_label') }}
                 </div>
 
@@ -86,7 +86,7 @@
 
 
             <div class="validator_info">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.stake_validator_label') }}
                 </div>
 
@@ -131,7 +131,7 @@
 
 
             <div class="amount">
-                <div class="label">
+                <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
                     <div class="cost">
@@ -314,54 +314,7 @@
 
     .stake
     {
-        padding-top: 8px;
-
         background: #170232;
-    }
-
-
-    .head
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-bottom: 10px;
-    }
-
-
-    .back_btn
-    {
-        position: relative;
-        top: 0;
-        left: 0;
-
-        margin-left: -12px;
-    }
-
-
-    .page_title
-    {
-        width: calc(100% - 48px);
-        margin-left: auto;
-        padding: 0;
-    }
-
-
-    .label
-    {
-        font-size: 14px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-
-        margin-bottom: 2px;
-        padding: 0 10px;
     }
 
 

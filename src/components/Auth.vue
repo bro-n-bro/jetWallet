@@ -1,6 +1,6 @@
 <template>
     <div class="pin">
-        <div class="label">
+        <div class="field_label">
             {{ $t('message.auth_enter_pin_label') }}
         </div>
 
@@ -257,15 +257,6 @@
         position: relative;
 
         margin-top: 8px;
-    }
-
-
-    .pin .label
-    {
-        font-size: 14px;
-
-        margin-bottom: 2px;
-        padding: 0 10px;
     }
 
 

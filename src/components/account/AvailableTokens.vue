@@ -13,7 +13,7 @@
 
                 <div class="list" v-if="searchResult.length">
                     <div class="item" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
-                        <router-link :to="`/account/send/${balance.denom}`" class="token_wrap">
+                        <router-link :to="`/account/send?denom=${balance.denom}`" class="token_wrap">
                             <div class="token">
                                 <div class="logo">
                                     <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">

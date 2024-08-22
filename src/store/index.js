@@ -53,7 +53,7 @@ export const useGlobalStore = defineStore('global', {
 
         TxFee: {
             balance: {},
-            currentLevel: '',
+            currentLevel: 'average',
             userGasAmount: 0,
             gasAmount: 0,
             isRemember: false,
@@ -549,6 +549,12 @@ export const useGlobalStore = defineStore('global', {
 
                         // Clear tx hash
                         this.networks[this.currentNetwork].currentTxHash = null
+
+                        // Update all balances
+                        this.updateAllBalances()
+
+                        // Reset Tx Fee
+                        this.resetTxFee()
                     }
                 }
             }

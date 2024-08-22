@@ -97,7 +97,7 @@ const routes = [
 		}
 	},
 	{
-		path: '/account/send/:denom',
+		path: '/account/send',
 		name: 'Send',
 		component: () => import('../views/Send.vue'),
 		meta: {

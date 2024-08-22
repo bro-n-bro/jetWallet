@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container validators_page">
+    <section class="page_container inner_page_container validators_page">
         <div class="cont">
             <div class="head">
                 <button class="back_btn" @click="emitter.emit('close_validators_modal')">
@@ -147,38 +147,10 @@
 
         width: 100%;
         height: 100%;
-        padding-top: 8px;
 
         background: #170232;
     }
 
-
-    .head
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-
-    .back_btn
-    {
-        position: relative;
-        top: 0;
-        left: 0;
-
-        margin-left: -12px;
-    }
-
-
-    .page_title
-    {
-        width: calc(100% - 48px);
-        margin-left: auto;
-        padding: 0;
-    }
 
 
     .loader_wrap
@@ -190,6 +162,7 @@
 
         background: none;
     }
+
 
 
     .validators
