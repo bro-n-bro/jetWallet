@@ -59,7 +59,9 @@
                 </div>
 
                 <div class="field">
-                    <input type="text" class="input big" v-model="memo">
+                    <input type="text" class="input big" v-model="memo"
+                        @focus="emitter.emit('show_keyboard')"
+                        @blur="emitter.emit('hide_keyboard')">
                 </div>
             </div>
 

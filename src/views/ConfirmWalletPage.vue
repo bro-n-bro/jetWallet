@@ -22,10 +22,13 @@
                                     <span>{{ wordOneNumber }}.</span>
                                 </div>
 
-                                <input type="text" class="input" v-model="wordOne" @keyup="validateWordOne" :class="{
-                                    success: validWordOne && isValidWordOne,
-                                    error: validWordOne && !isValidWordOne
-                                }">
+                                <input type="text" class="input" v-model="wordOne" @keyup="validateWordOne"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
+                                    :class="{
+                                        success: validWordOne && isValidWordOne,
+                                        error: validWordOne && !isValidWordOne
+                                    }">
                             </div>
 
                             <div>
@@ -34,10 +37,13 @@
                                     <span>{{ wordTwoNumber }}.</span>
                                 </div>
 
-                                <input type="text" class="input" v-model="wordTwo" @keyup="validateWordTwo" :class="{
-                                    success: validWordTwo && isValidWordTwo,
-                                    error: validWordTwo && !isValidWordTwo
-                                }">
+                                <input type="text" class="input" v-model="wordTwo" @keyup="validateWordTwo"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
+                                    :class="{
+                                        success: validWordTwo && isValidWordTwo,
+                                        error: validWordTwo && !isValidWordTwo
+                                    }">
                             </div>
                         </div>
                     </div>
@@ -67,7 +73,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount } from 'vue'
+    import { ref, onBeforeMount, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
 
@@ -78,6 +84,7 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
+        emitter = inject('emitter'),
         loading = ref(true),
         wordOneNumber = ref(0),
         wordTwoNumber = ref(0),

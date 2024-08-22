@@ -19,7 +19,12 @@
                         </div>
 
                         <div class="field">
-                            <input type="text" class="input big" v-model="walletName" :placeholder="$t('message.create_pin_wallet_name_placeholder')" :class="{ error: !idValidWalletName && isTouchedWalletName, success: idValidWalletName && isTouchedWalletName }" @input="validateWalletName">
+                            <input type="text" class="input big" v-model="walletName"
+                                :placeholder="$t('message.create_pin_wallet_name_placeholder')"
+                                :class="{ error: !idValidWalletName && isTouchedWalletName, success: idValidWalletName && isTouchedWalletName }"
+                                @input="validateWalletName"
+                                @focus="emitter.emit('show_keyboard')"
+                                @blur="emitter.emit('hide_keyboard')">
                         </div>
                     </div>
 
@@ -31,36 +36,48 @@
                         <div class="row">
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 1)"
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" inputmode="numeric" :disabled="!pinCode[0].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 2)"
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" inputmode="numeric" :disabled="!pinCode[1].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 3)"
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" inputmode="numeric" :disabled="!pinCode[2].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[4]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 5)"
                                     @keydown.backspace="moveBack($event, 4)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[5]" maxlength="1" inputmode="numeric" :disabled="!pinCode[4].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 6)"
                                     @keydown.backspace="moveBack($event, 5)">
                             </div>
@@ -75,36 +92,48 @@
                         <div class="row" :class="{ error: confirmPinCode[5].length && !isPinMatching, success: confirmPinCode[5].length && isPinMatching }">
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[0]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 1)"
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[1]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[0].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 2)"
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[2]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[1].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 3)"
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[3]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[2].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[4]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[3].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 5)"
                                     @keydown.backspace="moveBack($event, 4)">
                             </div>
 
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[5]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[4].length"
+                                    @focus="emitter.emit('show_keyboard')"
+                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 6)"
                                     @keydown.backspace="moveBack($event, 5)">
                             </div>
@@ -144,7 +173,7 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, computed } from 'vue'
+    import { onBeforeMount, ref, computed, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
 
@@ -154,6 +183,7 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
+        emitter = inject('emitter'),
         loading = ref(true),
         walletName = ref(''),
         idValidWalletName = ref(false),

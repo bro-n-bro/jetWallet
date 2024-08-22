@@ -241,17 +241,52 @@ button
 
 
 
-/*---------------------
-    Page transition
----------------------*/
-.fade-enter-active
+/*------------------
+    Effect dylan
+------------------*/
+@-webkit-keyframes effect_dylan
 {
-    transition: opacity .5s ease;
+    50%
+    {
+        transform: scale(1.1, 1.1);
+
+        opacity: 0;
+    }
+    99%
+    {
+        transform: scale(.001, .001);
+
+        opacity: 0;
+    }
+    100%
+    {
+        transform: scale(.001, .001);
+
+        opacity: 1;
+    }
 }
 
-.fade-enter-from
+
+@keyframes effect_dylan
 {
-    opacity: 0;
+    50%
+    {
+        transform: scale(1.1, 1.1);
+
+        opacity: 0;
+    }
+    99%
+    {
+        transform: scale(.001, .001);
+
+        opacity: 0;
+    }
+    100%
+    {
+        transform: scale(.001, .001);
+
+        opacity: 1;
+    }
 }
 
 

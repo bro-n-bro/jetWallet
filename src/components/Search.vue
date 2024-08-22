@@ -28,12 +28,16 @@
 
     // Set focus event
     function setFocusEvent() {
+        emitter.emit('show_keyboard')
+
         setTimeout(() => emitter.emit('search_focus'), 100)
     }
 
 
     // Set blur event
     function setBlurEvent() {
+        emitter.emit('hide_keyboard')
+
         setTimeout(() => emitter.emit('search_blur'), 100)
     }
 

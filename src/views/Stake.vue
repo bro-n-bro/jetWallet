@@ -142,7 +142,10 @@
                 </div>
 
                 <div class="field">
-                    <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00" @input="validateAmount($event)">
+                    <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
+                        @focus="emitter.emit('show_keyboard')"
+                        @blur="emitter.emit('hide_keyboard')"
+                        @input="validateAmount($event)">
 
                     <button type="button" class="max_btn" @click.prevent="setMaxAmount">
                         {{ $t('message.btn_MAX') }}

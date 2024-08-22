@@ -54,7 +54,8 @@
         emitter = inject('emitter'),
         title = useTitle(),
         layout = computed(() => route.meta.layout || 'default-layout'),
-        notificationTimeout = ref(null)
+        notificationTimeout = ref(null),
+        viewportHeight = ref(0)
 
 
     onBeforeMount(() => {
@@ -82,26 +83,10 @@
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
+
+            // Viewport height
+            viewportHeight.value = Telegram.WebApp.viewportHeight
         }
-
-
-        // // Virtual keybord
-        // const inputFields = document.querySelectorAll('.input, textarea'),
-        //     overlay = document.querySelector('.virtual_keybord_overlay')
-
-        // inputFields.forEach(field => {
-        //     field.addEventListener('focus', () => {
-        //         if (overlay) {
-        //             overlay.style.display = 'block'
-        //         }
-        //     })
-
-        //     field.addEventListener('blur', () => {
-        //         if (overlay) {
-        //             overlay.style.display = 'hide'
-        //         }
-        //     })
-        // })
     })
 
 
@@ -125,6 +110,34 @@
         // Clear timeout
         notificationTimeout.value = null
     }
+
+
+    // Event "show_keyboard"
+    emitter.on('show_keyboard', () => {
+        setTimeout(() => {
+            if (viewportHeight.value > Telegram.WebApp.viewportStableHeight) {
+                let overlay = document.querySelector('.virtual_keybord_overlay')
+
+                if (overlay) {
+                    // Show overlay
+                    overlay.style.display = 'block'
+                }
+            }
+        })
+    })
+
+
+    // Event "hide_keyboard"
+    emitter.on('hide_keyboard', () => {
+        setTimeout(() => {
+            let overlay = document.querySelector('.virtual_keybord_overlay')
+
+            if (overlay) {
+                // Show overlay
+                overlay.style.display = 'none'
+            }
+        })
+    })
 
 
     // Event "show_pending_notification"

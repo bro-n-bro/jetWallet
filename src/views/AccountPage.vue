@@ -211,7 +211,9 @@
             let stakeBtn = document.querySelector('.staked_section .stake_btn')
 
             if (stakeBtn) {
-                stakeBtn.click()
+                stakeBtn.classList.add('click_animate')
+
+                setTimeout(() => stakeBtn.click(), 500)
             }
         }, 500)
     })
@@ -362,11 +364,33 @@
     {
         font-size: 12px;
 
+        position: relative;
+
         transition: opacity .2s linear;
         text-align: center;
         text-decoration: none;
 
         color: currentColor;
+    }
+
+
+    .top_block .actions .stake_btn:before
+    {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+
+        display: block;
+
+        width: 80px;
+        height: 80px;
+        margin-left: -40px;
+
+        content: '';
+        transform: scale(.001, .001);
+
+        border-radius: 50%;
+        background-color: rgba(240, 248, 255, .65);
     }
 
 
@@ -392,6 +416,13 @@
 
         width: 22px;
         height: 22px;
+    }
+
+
+    .top_block .actions .stake_btn.click_animate:before
+    {
+        -webkit-animation: effect_dylan .5s ease-out;
+                animation: effect_dylan .5s ease-out;
     }
 
 
