@@ -628,6 +628,31 @@ button
 
 
 
+/*-----------------
+    Field label
+-----------------*/
+.field_label
+{
+    font-size: 14px;
+
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+
+    margin-bottom: 2px;
+    padding: 0 10px;
+}
+
+
+.field_label .json_btn
+{
+    margin-left: auto;
+}
+
+
+
 /*-----------
     Input
 -----------*/
@@ -1129,6 +1154,46 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
     width: 100%;
     height: 100%;
+}
+
+
+
+/*--------------------------
+    Inner page container
+--------------------------*/
+.inner_page_container
+{
+    padding-top: 8px;
+}
+
+
+.inner_page_container .head
+{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+
+.inner_page_container .back_btn
+{
+    position: relative;
+    top: 0;
+    left: 0;
+
+    margin-left: -12px;
+}
+
+
+.inner_page_container .page_title
+{
+    width: calc(100% - 48px);
+    margin-left: auto;
+    padding: 0;
 }
 
 
