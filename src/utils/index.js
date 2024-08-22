@@ -2,7 +2,7 @@ import { useGlobalStore } from '@/store'
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
 import { fromHex } from '@cosmjs/encoding'
 import { SigningStargateClient } from '@cosmjs/stargate'
-import { TxRaw, AuthInfo, TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
+import { TxRaw } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { sha256 } from '@cosmjs/crypto'
 import { chains } from 'chain-registry'
 

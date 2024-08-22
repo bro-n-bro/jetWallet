@@ -46,7 +46,8 @@
                     <input type="text" class="input big" v-model="address"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
-                        @input="validateAddress($event)">
+                        @input="validateAddress($event)"
+                        @paste="validateAddress($event)">
 
                     <!-- Scaner -->
                     <QRCode class="in_field" />
@@ -118,6 +119,7 @@
     import { useGlobalStore } from '@/store'
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
+    import { fromBech32 } from '@cosmjs/encoding'
     import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink } from '@/utils'
 
     // Components
@@ -164,11 +166,20 @@
 
     // Validate address
     function validateAddress(e) {
-        let isStartsWith = address.value.startsWith(balance.chain_info.bech32_prefix)
+        try {
+            let { prefix, data } = fromBech32(address.value)
 
-        isStartsWith
-            ? e.target.classList.remove('error')
-            : e.target.classList.add('error')
+            // Check
+            if (prefix == balance.chain_info.bech32_prefix && data.length == store.networks[store.currentNetwork].address_length) {
+                // Toggle classes
+                e.target.classList.remove('error')
+            }
+        } catch (error) {
+            // Toggle classes
+            e.target.classList.add('error')
+
+            return false
+        }
     }
 
 

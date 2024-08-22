@@ -11,7 +11,8 @@ const network = {
     explorer_link: 'https://ping.pub/bostrom/tx/{tx_hash}',
     alias: 'bostrom',
     exponent: 0,
-    gas_adjustment: 1.3
+    gas_adjustment: 1.3,
+    address_length: 20
 }
 
 export default network

@@ -12,6 +12,7 @@ const network = {
     alias: 'cosmoshub',
     exponent: 6,
     gas_adjustment: 1.6,
+    address_length: 20
 }
 
 export default network
