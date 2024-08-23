@@ -41,6 +41,7 @@ export const useGlobalStore = defineStore('global', {
         currentCurrency: '',
         currentCurrencySymbol: '',
         stakeCurrentValidator: null,
+        unstakeCurrentValidator: null,
 
         prices: [],
         balances: [],
@@ -665,8 +666,8 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Get validators
-        async getValidators() {
+        // Get all validators
+        async getAllValidators() {
             try {
                 return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
             } catch (error) {
@@ -675,8 +676,18 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Get user validators
+        async getUserValidators() {
+            try {
+                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
         // Get total bonded tokens
-        async getTotalBondedTokena() {
+        async getTotalBondedTokens() {
             try {
                 await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/pool`)
                     .then(res => res.json())

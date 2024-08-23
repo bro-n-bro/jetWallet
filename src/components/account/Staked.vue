@@ -27,7 +27,7 @@
                 <div>{{ $t('message.btn_stake') }}</div>
             </router-link>
 
-            <router-link to="/account" class="btn" :class="{ disabled: !store.stakedBalances.length }">
+            <router-link to="/account/unstake" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                 </div>

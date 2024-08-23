@@ -74,6 +74,7 @@ export default {
 
             // Stake
             'stake_page_title': 'Stake',
+            'stake_confirm_page_title': 'Confirm',
 
             'stake_current_staked_label': 'Token:',
             'stake_APR_label': 'APR',
@@ -87,8 +88,6 @@ export default {
 
             'stake_validator_placeholder': 'Choose your validator',
 
-            'stake_confirm_page_title': 'Confirm',
-
             'stake_confirm_voting_power': 'of voting power',
             'stake_confirm_token_label': 'Token:',
             'stake_confirm_amount_label': 'Amount:',
@@ -96,6 +95,11 @@ export default {
             'stake_confirm_commission_label': 'Commission:',
             'stake_confirm_unbonding_period_label': 'Unbonding Period:',
             'stake_confirm_fee_label': 'Fee:',
+
+
+            // Unstake
+            'unstake_page_title': 'Unstake',
+            'unstake_confirm_page_title': 'Confirm',
 
 
             // Send
@@ -172,6 +176,7 @@ export default {
             'btn_receive': 'Receive',
             'btn_stake': 'Stake',
             'btn_confirm_stake': 'Confirm Staking',
+            'btn_confirm_unstake': 'Confirm Unstake',
             'btn_unstake': 'Unstake',
             'btn_restake': 'Restake',
             'btn_claim': 'Claim',

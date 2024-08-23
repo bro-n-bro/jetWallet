@@ -1,15 +1,15 @@
 <template>
-    <section class="page_container inner_page_container stake_confirm">
+    <section class="page_container inner_page_container unstake_confirm">
         <Loader v-if="isProcess" />
 
         <div class="cont">
             <div class="head">
-                <button class="back_btn" @click="emitter.emit('close_stake_confirm_modal')">
+                <button class="back_btn" @click="emitter.emit('close_unstake_confirm_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
                 <div class="page_title">
-                    {{ $t('message.stake_confirm_page_title') }}
+                    {{ $t('message.unstake_confirm_page_title') }}
                 </div>
             </div>
 
@@ -23,14 +23,14 @@
                     <div class="info">
                         <div class="validator">
                             <div class="logo">
-                                <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.stakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                                <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.unstakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                             </div>
 
                             <div>
                                 <div class="moniker">
-                                    {{ store.stakeCurrentValidator.description.moniker }}
+                                    {{ store.unstakeCurrentValidator.description.moniker }}
                                 </div>
 
                                 <div class="voting_power">
@@ -41,7 +41,7 @@
 
 
                         <div class="apr">
-                            <span>{{ $t('message.stake_APR_label') }}<br> {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.stakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%</span>
+                            <span>{{ $t('message.stake_APR_label') }}<br> {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.unstakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%</span>
                         </div>
 
 
@@ -76,25 +76,11 @@
 
                             <div>
                                 <div class="label">
-                                    {{ $t('message.stake_confirm_daily_profit_label') }}
-                                </div>
-
-                                <div class="val">
-                                    ~{{ dailyProfit.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
-
-                                    {{ store.networks[store.currentNetwork].token_name }}
-
-                                    <span class="currency">({{ formatTokenCost(currencyConversion(dailyProfit, store.networks[store.currentNetwork].token_name)) }}{{ store.currentCurrencySymbol }})</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div class="label">
                                     {{ $t('message.stake_confirm_commission_label') }}
                                 </div>
 
                                 <div class="val">
-                                    {{ (store.stakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }) }}%
+                                    {{ (store.unstakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }) }}%
                                 </div>
                             </div>
 
@@ -142,7 +128,7 @@
 
             <div class="btns">
                 <button class="btn" @click.prevent="showSignTxModal = true">
-                    <span>{{ $t('message.btn_confirm_stake') }}</span>
+                    <span>{{ $t('message.btn_confirm_unstake') }}</span>
                 </button>
             </div>
         </div>
@@ -174,7 +160,6 @@
         notification = useNotification(),
         showSignTxModal = ref(false),
         votingPower = ref(0),
-        dailyProfit = ref(0),
         memo = ref(''),
         feeCost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent)),
         isProcess = ref(false)
@@ -183,9 +168,6 @@
     onBeforeMount(() => {
         // Calc voting power
         calcVotingPower()
-
-        // Calc daily profit
-        calcDailyProfit()
     })
 
 
@@ -202,19 +184,12 @@
         await store.getTotalBondedTokens()
 
         // Set data
-        votingPower.value = store.stakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
+        votingPower.value = store.unstakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
     }
 
 
-    // Calc daily profit
-    function calcDailyProfit() {
-        // Set data
-        dailyProfit.value = props.amount * ((store.networks[store.currentNetwork].APR - store.networks[store.currentNetwork].APR * store.stakeCurrentValidator.commission.commission_rates.rate) / 100) / 365
-    }
-
-
-    // Delegate tokens
-    async function delegate() {
+    // Undelegate tokens
+    async function undelegate() {
         // Set process status
         isProcess.value = true
 
@@ -286,8 +261,8 @@
         // Hide SignTx modal
         showSignTxModal.value = false
 
-        // Delegate tokens
-        delegate()
+        // Undelegate tokens
+        undelegate()
     })
 
 
@@ -300,7 +275,7 @@
 
 
 <style scoped>
-    .stake_confirm
+    .unstake_confirm
     {
         position: fixed;
         z-index: 9;

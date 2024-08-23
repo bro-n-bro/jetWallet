@@ -1,5 +1,5 @@
 <template>
-    <div class="tx_fee">
+    <div class="tx_fee" v-if="store.TxFee.balance.amount">
         <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
             {{ $t('message.tx_fee_label') }}
 

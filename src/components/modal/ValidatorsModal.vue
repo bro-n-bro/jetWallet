@@ -79,7 +79,8 @@
     import Search from '@/components/Search.vue'
 
 
-    const store = useGlobalStore(),
+    const props = defineProps(['unstake']),
+        store = useGlobalStore(),
         emitter = inject('emitter'),
         isValidatorsGot = ref(false),
         validators = ref([]),
@@ -87,8 +88,13 @@
 
 
     onBeforeMount(async() => {
-        // Get validators
-        validators.value = (await store.getValidators()).validators
+        if (props.unstake) {
+            // Get validators
+            validators.value = (await store.getUserValidators()).validators
+        } else {
+            // Get validators
+            validators.value = (await store.getAllValidators()).validators
+        }
 
         // Sort by voiting power
         validators.value.sort((a, b) => {
@@ -112,8 +118,13 @@
 
 
     function setValidator(validator) {
-        // Set data
-        store.stakeCurrentValidator = validator
+        if (props.unstake) {
+            // Set data
+            store.unstakeCurrentValidator = validator
+        } else {
+            // Set data
+            store.stakeCurrentValidator = validator
+        }
 
         // Event "close_validators_modal"
         emitter.emit('close_validators_modal')

@@ -28,7 +28,7 @@
                 <!-- Stacked section -->
                 <swiper-slide>
                     <!-- <StackedSection v-if="swiperActiveIndex == 1" /> -->
-                    <StackedSection />
+                    <StakedSection />
                 </swiper-slide>
             </swiper-container>
         </section>
@@ -58,7 +58,7 @@
     import CurrentCurrency from '@/components/account/Currency.vue'
 
     import AvailableSection from '@/components/account/Available.vue'
-    import StackedSection from '@/components/account/Stacked.vue'
+    import StakedSection from '@/components/account/Staked.vue'
 
     import AvailableTokens from '@/components/account/AvailableTokens.vue'
     import ClaimRewards from '@/components/account/ClaimRewards.vue'

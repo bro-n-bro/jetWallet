@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container inner_page_container stake">
+    <section class="page_container inner_page_container unstake">
         <div class="cont">
             <div class="head">
                 <router-link to="/account?activeSlide=1" class="back_btn">
@@ -7,13 +7,11 @@
                 </router-link>
 
                 <div class="page_title">
-                    {{ $t('message.stake_page_title') }}
+                    {{ $t('message.unstake_page_title') }}
                 </div>
             </div>
 
-            <Loader v-if="!store.isBalancesGot || !store.isStakedBalancesGot" />
 
-            <template v-else>
             <div class="current_staked">
                 <div class="field_label">
                     {{ $t('message.stake_current_staked_label') }}
@@ -48,24 +46,6 @@
                         <div class="balances">
                             <div>
                                 <div class="label">
-                                    {{ $t('message.stake_available_label') }}
-                                </div>
-
-                                <div class="amount">
-                                    {{ formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
-
-                                    {{ store.networks[store.currentNetwork].token_name }}
-                                </div>
-
-                                <div class="cost">
-                                    {{ store.currentCurrencySymbol }}
-
-                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) }}
-                                </div>
-                            </div>
-
-                            <div>
-                                <div class="label">
                                     {{ $t('message.stake_staked_label') }}
                                 </div>
 
@@ -90,7 +70,7 @@
                     {{ $t('message.stake_validator_label') }}
                 </div>
 
-                <div class="info_wrap" @click.prevent="showValidatorsModal = true" v-if="!store.stakeCurrentValidator">
+                <div class="info_wrap" @click.prevent="showValidatorsModal = true" v-if="!store.unstakeCurrentValidator">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -103,17 +83,17 @@
                 <div class="validator_wrap" @click.prevent="showValidatorsModal = true" v-else>
                     <div class="validator">
                         <div class="logo">
-                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.stakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.unstakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                         </div>
 
                         <div>
                             <div class="moniker">
-                                {{ store.stakeCurrentValidator.description.moniker }}
+                                {{ store.unstakeCurrentValidator.description.moniker }}
                             </div>
 
-                            <div class="staked" v-if="item = isStakedValidator(store.stakeCurrentValidator.operator_address)">
+                            <div class="staked" v-if="item = isStakedValidator(store.unstakeCurrentValidator.operator_address)">
                                 {{ $t('message.validatoes_staked_label') }}
 
                                 {{ formatTokenAmount(item.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
@@ -130,7 +110,7 @@
             </div>
 
 
-            <div class="amount">
+            <div class="amount" :class="{ disabled: !store.unstakeCurrentValidator }">
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
@@ -159,53 +139,52 @@
 
 
             <div class="btns">
-                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showStakeConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
-                    <span>{{ $t('message.btn_stake') }}</span>
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showUnstakeConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
+                    <span>{{ $t('message.btn_unstake') }}</span>
                 </button>
 
                 <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
             </div>
-            </template>
         </div>
     </section>
 
 
     <!-- Validators modal -->
-    <ValidatorsModal v-if="showValidatorsModal" />
+    <ValidatorsModal v-if="showValidatorsModal" unstake="true" />
 
-    <!-- Stake confirm modal -->
-    <StakeConfirmModal v-if="showStakeConfirmModal" :amount :msgAny />
+    <!-- Unstake confirm modal -->
+    <UnstakeConfirmModal v-if="showUnstakeConfirmModal" :amount :msgAny />
 </template>
 
 
 <script setup>
-    import { ref, inject, onUnmounted, onBeforeMount, watch, computed } from 'vue'
+    import { ref, inject, onBeforeMount, computed, onUnmounted, watch } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcStakeAvailabelAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
-    import { MsgDelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
+    import { getNetworkLogo, formatTokenCost, calcStakedBalancesCost, calcStakedAmount, formatTokenAmount, imageLoadError, calcTokenCost } from '@/utils'
+    import { MsgUndelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
     // Components
-    import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
     import ValidatorsModal from '@/components/modal/ValidatorsModal.vue'
-    import StakeConfirmModal from '@/components/modal/StakeConfirmModal.vue'
+    import UnstakeConfirmModal from '@/components/modal/UnstakeConfirmModal.vue'
 
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         showValidatorsModal = ref(false),
-        showStakeConfirmModal = ref(false),
+        showUnstakeConfirmModal = ref(false),
         msgAny = ref([]),
         amount = ref(''),
+        maxAmount = ref(0),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcStakeAvailabelAmount()))
+        isFormValid = ref(computed(() => isAmountReady.value && !!store.unstakeCurrentValidator))
 
 
     onBeforeMount(() => {
         // Reset data
-        store.stakeCurrentValidator = null
+        store.unstakeCurrentValidator = null
 
         // Get network unbonding period
         store.getNetworkUnbondingTime()
@@ -213,9 +192,18 @@
 
 
     onUnmounted(() => {
+        // Reset data
+        store.unstakeCurrentValidator = null
+
         // Unlisten events
-        emitter.off('close_stake_confirm_modal')
+        emitter.off('close_unstake_confirm_modal')
         emitter.off('close_validators_modal')
+    })
+
+
+    watch(computed(() => store.unstakeCurrentValidator), () => {
+        // Get max amount
+        maxAmount.value = (isStakedValidator(store.unstakeCurrentValidator.operator_address)).balance.amount
     })
 
 
@@ -223,10 +211,10 @@
         if (isFormValid.value) {
             // Set messeges
             msgAny.value = [{
-                typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
-                value: MsgDelegate.fromPartial({
+                typeUrl: '/cosmos.staking.v1beta1.MsgUndelegate',
+                value: MsgUndelegate.fromPartial({
                     delegatorAddress: store.currentAddress,
-                    validatorAddress: store.stakeCurrentValidator.operator_address,
+                    validatorAddress: store.unstakeCurrentValidator.operator_address,
                     amount: {
                         denom: store.networks[store.currentNetwork].denom,
                         amount: `${parseFloat((amount.value).toString().replace(',', '.')).toFixed(store.networks[store.currentNetwork].exponent) * Math.pow(10, store.networks[store.currentNetwork].exponent)}`
@@ -244,7 +232,7 @@
 
         setTimeout(() => {
             // Set amount
-            amount.value = formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)
+            amount.value = formatTokenAmount(maxAmount.value, store.networks[store.currentNetwork].exponent)
 
             // Set amount status
             isAmountReady.value = true
@@ -265,13 +253,13 @@
             }
 
             // Acceptable value
-            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)){
+            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(maxAmount.value, store.networks[store.currentNetwork].exponent)){
                 // Set amount status
                 isAmountReady.value = true
             }
 
             // More than available balance
-            if (e.target.value > formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) {
+            if (e.target.value > formatTokenAmount(maxAmount.value, store.networks[store.currentNetwork].exponent)) {
                 // Set MAX amount
                 setMaxAmount()
             }
@@ -293,26 +281,15 @@
 
 
     // Event "close_stake_confirm_modal"
-    emitter.on('close_stake_confirm_modal', () => {
+    emitter.on('close_unstake_confirm_modal', () => {
         // Hide stake confirm modal
-        showStakeConfirmModal.value = false
+        showUnstakeConfirmModal.value = false
     })
 </script>
 
 
 <style scoped>
-    .loader_wrap
-    {
-        position: relative;
-
-        height: auto;
-        padding: 20px;
-
-        background: none;
-    }
-
-
-    .stake
+    .unstake
     {
         background: #170232;
     }
@@ -433,19 +410,12 @@
 
     .current_staked .balances
     {
-        display: flex;
-        align-content: stretch;
-        align-items: stretch;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
         margin-top: 10px;
     }
 
 
     .current_staked .balances > *
     {
-        width: calc(50% - 4px);
         padding: 4px 8px;
 
         border-radius: 6px;
@@ -692,6 +662,12 @@
         margin-left: auto;
 
         color: rgba(255, 255, 255, .70);
+    }
+
+
+    .amount.disabled
+    {
+        pointer-events: none;
     }
 
 

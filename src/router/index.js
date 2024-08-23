@@ -97,6 +97,15 @@ const routes = [
 		}
 	},
 	{
+		path: '/account/unstake',
+		name: 'Unstake',
+		component: () => import('../views/Unstake.vue'),
+		meta: {
+			layout: defaultLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
+	{
 		path: '/account/send',
 		name: 'Send',
 		component: () => import('../views/Send.vue'),
