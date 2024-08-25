@@ -40,6 +40,9 @@
         <!-- Claim rewards -->
         <ClaimRewards v-show="swiperActiveIndex == 1" />
 
+        <!-- Unstaking tokens -->
+        <UnstakingTokens v-show="swiperActiveIndex == 1" v-if="store.isInitialized" />
+
         <!-- Stacked tokens -->
         <StakedTokens v-show="swiperActiveIndex == 1" />
     </section>
@@ -62,6 +65,7 @@
 
     import AvailableTokens from '@/components/account/AvailableTokens.vue'
     import ClaimRewards from '@/components/account/ClaimRewards.vue'
+    import UnstakingTokens from '@/components/account/UnstakingTokens.vue'
     import StakedTokens from '@/components/account/StakedTokens.vue'
 
 

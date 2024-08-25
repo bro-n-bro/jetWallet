@@ -7,6 +7,7 @@ import i18n from './locale'
 import mitt from 'mitt'
 import Notifications from '@kyvg/vue3-notification'
 import { register } from 'swiper/element/bundle'
+import VueCountdown from '@chenfengyuan/vue-countdown'
 
 import { vFocus } from './directives/v-focus'
 import { vParallax } from './directives/v-parallax'
@@ -45,6 +46,10 @@ app.directive('odometer', vOdometer)
 
 // Swiper - register
 register()
+
+
+// VueCountdown
+app.component(VueCountdown.name, VueCountdown)
 
 
 // Mount

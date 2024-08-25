@@ -56,7 +56,7 @@
 <script setup>
     import { ref, watch, computed, onBeforeMount, onBeforeUnmount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { calcTokenCost, calcRewardsBalancesCost, calcStakedBalancesCost } from '@/utils'
+    import { calcRewardsBalancesCost, calcStakedBalancesCost } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'

@@ -35,7 +35,7 @@
 
                         <div class="amount">
                             <div class="val">
-                                ~ {{ formatTokenAmount(store.rewardsBalances[0].amount, store.rewardsBalances[0].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                                ~ {{ formatTokenAmount(store.rewardsBalances[0].amount, store.rewardsBalances[0].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
 
                                 {{ store.rewardsBalances[0].token_info.symbol }}
                             </div>

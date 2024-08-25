@@ -102,6 +102,16 @@ export default {
             'unstake_confirm_page_title': 'Confirm',
 
 
+            // Unstaking tokens
+            'unstaking_tokens_title': 'Unstaking process',
+            'unstaking_tokens_label': 'Unstaking in progress:',
+            'unstaking_tokens_count_label': 'Validators:',
+            'unstaking_tokens_finish_label': 'Available in:',
+
+            'unstaking_tokens_finish_days': 'Days',
+            'unstaking_tokens_finish_day': 'Day',
+
+
             // Send
             'send_page_title': 'Send',
             'send_amount_label': 'Amount:',
@@ -187,6 +197,7 @@ export default {
             'btn_understood': 'Understood',
             'btn_waiting_tx': 'Waiting tx',
             'btn_MAX': 'MAX',
+            'btn_cancel': 'Cancel',
 
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",

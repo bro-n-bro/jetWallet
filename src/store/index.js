@@ -18,7 +18,8 @@ const networksAdditionalOptions = {
     websocket: null,
     currentTxHash: null,
     unbondingTime: 0,
-    totalBondedTokens: 0
+    totalBondedTokens: 0,
+    totalUnstakingTokens: 0
 }
 
 
@@ -32,6 +33,7 @@ export const useGlobalStore = defineStore('global', {
         isBalancesGot: false,
         isStakedBalancesGot: false,
         isRewardsGot: false,
+        isUnstakingBalancesGot: false,
         isAuthorized: false,
 
         authErrorLimit: 4,
@@ -47,6 +49,7 @@ export const useGlobalStore = defineStore('global', {
         balances: [],
         stakedBalances: [],
         rewardsBalances: [],
+        unstakingBalances: [],
 
         secret: null,
         privateKey: null,
@@ -214,7 +217,7 @@ export const useGlobalStore = defineStore('global', {
                                 await this.getBalanceInfo(item.balance)
 
                                 // Get validator info
-                                await this.getValidatorInfo(item)
+                                await this.getValidatorInfo(item, item.delegation.validator_address)
                             }
 
                             // Clear balances
@@ -268,6 +271,40 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Get unstaking balances
+        async getUnstakingBalances () {
+            // Unstaking balances status
+            this.isUnstakingBalancesGot = false
+
+            // Reset data
+            this.unstakingBalances = []
+            this.networks[this.currentNetwork].totalUnstakingTokens = 0
+
+            // Request
+            try {
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/unbonding_delegations`)
+                    .then(response => response.json())
+                    .then(async data => {
+                        // Set data
+                        this.unstakingBalances = data.unbonding_responses
+
+                        for (let item of this.unstakingBalances) {
+                            // Calc total unstaking tokens
+                            this.networks[this.currentNetwork].totalUnstakingTokens += parseInt(item.entries[0].balance)
+
+                            // Get validator info
+                            await this.getValidatorInfo(item, item.validator_address)
+                        }
+                    })
+
+                // Unstaking balances status
+                this.isUnstakingBalancesGot = true
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
         // Get balance info
         async getBalanceInfo(balance) {
             // Denom traces
@@ -315,9 +352,9 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Get validator info
-        async getValidatorInfo(item) {
+        async getValidatorInfo(item, validator_address) {
             try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators/${item.delegation.validator_address}`)
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators/${validator_address}`)
                     .then(res => res.json())
                     .then(response => {
                         // Set data
