@@ -106,6 +106,15 @@ const routes = [
 		}
 	},
 	{
+		path: '/account/receive',
+		name: 'Receive',
+		component: () => import('../views/Receive.vue'),
+		meta: {
+			layout: defaultLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
+	{
 		path: '/account/send',
 		name: 'Send',
 		component: () => import('../views/Send.vue'),

@@ -92,6 +92,9 @@ export const useGlobalStore = defineStore('global', {
             // Init status
             this.isInitialized = false
 
+            // Reset data
+            this.currentAddress = ''
+
             // Get DB data
             let DBData = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
 
@@ -653,19 +656,24 @@ export const useGlobalStore = defineStore('global', {
 
         // Update all balances
         updateAllBalances() {
-            // Get balances
+            // Update balances
             if (this.isBalancesGot) {
                 this.getBalances()
             }
 
-            // Get staked balances
+            // Update staked balances
             if (this.isStakedBalancesGot) {
                 this.getStakedBalances()
             }
 
-            // Get rewards
+            // Update rewards
             if (this.isRewardsGot) {
                 this.getRewards()
+            }
+
+            // Update unstaking balances
+            if (this.isUnstakingBalancesGot) {
+                this.getUnstakingBalances()
             }
         },
 

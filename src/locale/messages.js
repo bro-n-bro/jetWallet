@@ -118,6 +118,10 @@ export default {
             'send_address_label': 'Address:',
 
 
+            // Receive
+            'receive_page_title': 'Receive',
+
+
             // Validators
             'validators_page_title': 'Validators:',
             'validatoes_staked_label': 'Staked:',
@@ -177,6 +181,7 @@ export default {
             'btn_show': 'Show',
             'btn_next': 'Next',
             'btn_copy': 'Copy to clipboard',
+            'btn_copy_small': 'Copy',
             'btn_copied': 'Copied!',
             'btn_join': 'Join',
             'btn_biometric': 'Turn on biometric security',
@@ -198,6 +203,9 @@ export default {
             'btn_waiting_tx': 'Waiting tx',
             'btn_MAX': 'MAX',
             'btn_cancel': 'Cancel',
+            'btn_amount': 'Amount',
+            'btn_share': 'Share',
+
 
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",
