@@ -5,10 +5,10 @@
                 {{ $t('message.unstaking_tokens_title') }}
             </div>
 
-            <!-- <pre>{{ store.unstakingBalances }}</pre> -->
-
             <div class="data_wrap">
                 <div class="data">
+                    <Loader v-if="isProcess" />
+
                     <div class="info">
                         <div class="label">
                             {{ $t('message.unstaking_tokens_label') }}
@@ -54,7 +54,7 @@
                     <div class="dropdown" v-show="showDropdown">
                         <div class="list">
                             <div v-for="(item, index) in store.unstakingBalances" :key="index">
-                                <UnstakingTokensSwipeItem class="item" v-for="(entry, entryIndex) in item.entries" :key="entryIndex">
+                                <UnstakingTokensItem class="item" v-for="(entry, entryIndex) in item.entries" :key="entryIndex">
                                     <template #validator>
                                     <div class="validator_wrap">
                                         <div class="validator">
@@ -93,14 +93,14 @@
                                     </div>
                                     </template>
 
-                                    <template #cancel_btn>
-                                    <button class="cancel_btn">
+                                    <template #cancel_btn v-if="store.networks[store.currentNetwork].isunstakingCancelSupport">
+                                    <button class="cancel_btn" @click.prevent="cancelUnstaking(item.validator_info.operator_address, entry)">
                                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
 
                                         <span>{{ $t('message.btn_cancel') }}</span>
                                     </button>
                                     </template>
-                                </UnstakingTokensSwipeItem>
+                                </UnstakingTokensItem>
                             </div>
                         </div>
                     </div>
@@ -112,17 +112,24 @@
 
 
 <script setup>
-    import { ref, onBeforeMount } from 'vue'
+    import { ref, onBeforeMount, inject } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { getNetworkLogo, calcTokenCost, formatTokenCost, formatTokenAmount, imageLoadError, dateCalc } from '@/utils'
+    import { useNotification } from '@kyvg/vue3-notification'
+    import { getNetworkLogo, calcTokenCost, formatTokenCost, formatTokenAmount, imageLoadError, dateCalc, signTx, sendTx, getExplorerLink } from '@/utils'
+    import { MsgCancelUnbondingDelegation } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
 
     // Components
-    import UnstakingTokensSwipeItem from '@/components/account/UnstakingTokensSwipeItem.vue'
+    import Loader from '@/components/Loader.vue'
+    import UnstakingTokensItem from '@/components/account/UnstakingTokensItem.vue'
 
 
     const store = useGlobalStore(),
-        showDropdown = ref(false)
+        i18n = inject('i18n'),
+        notification = useNotification(),
+        isProcess = ref(false),
+        showDropdown = ref(false),
+        msgAny = ref([])
 
 
     onBeforeMount(() => {
@@ -136,6 +143,81 @@
         let allDates = store.unstakingBalances.flatMap(item => item.entries.map(entry => new Date(entry.completion_time)))
 
         return Math.min(...allDates)
+    }
+
+
+    // Cancel unstaking
+    async function cancelUnstaking(validator_address, entry) {
+        // Set message
+        msgAny.value.push({
+            typeUrl: '/cosmos.staking.v1beta1.MsgCancelUnbondingDelegation',
+            value: MsgCancelUnbondingDelegation.fromPartial({
+                delegatorAddress: store.currentAddress,
+                validatorAddress: validator_address,
+                amount: [{
+                    denom: store.networks[store.currentNetwork].denom,
+                    amount: `${parseFloat(entry.balance.toString().replace(',', '.')).toFixed(store.networks[store.currentNetwork].exponent) * Math.pow(10, store.networks[store.currentNetwork].exponent)}`
+                }],
+                creation_height: entry.creation_height
+            })
+        })
+
+
+        // Set process status
+        isProcess.value = true
+
+        try {
+            // Sign Tx
+            let txBytes = await signTx(msgAny.value)
+
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: -100,
+                title: i18n.global.t('message.notification_tx_pending_title'),
+                type: 'pending',
+                data: {
+                    explorer_link: getExplorerLink(store.currentNetwork)
+                }
+            })
+
+            // Send Tx
+            sendTx(txBytes)
+        } catch (error) {
+            console.log(error)
+
+            // Show error
+            showError(error)
+        }
+
+
+        // Show error message
+        function showError(error) {
+            // Get error code
+            let errorText = ''
+
+            // Get error title
+            error.code
+                ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
+                : errorText = i18n.global.t('message.notification_tx_error_rejected')
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 6000,
+                title: 'Tx error',
+                text: errorText,
+                type: 'error'
+            })
+        }
     }
 </script>
 

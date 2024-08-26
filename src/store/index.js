@@ -19,7 +19,8 @@ const networksAdditionalOptions = {
     currentTxHash: null,
     unbondingTime: 0,
     totalBondedTokens: 0,
-    totalUnstakingTokens: 0
+    totalUnstakingTokens: 0,
+    isUnstakingCancelSupport: false
 }
 
 
@@ -138,6 +139,9 @@ export const useGlobalStore = defineStore('global', {
 
             // Connect to websocket
             this.connectWebsocket()
+
+            // Is cosmos SDK version support unstaking cancel
+            this.networks[this.currentNetwork].isUnstakingCancelSupport = await this.isUnstakingCancelSupport()
 
             // Wait balances
             Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
@@ -742,6 +746,37 @@ export const useGlobalStore = defineStore('global', {
                     })
             } catch (error) {
                 console.error(error)
+            }
+        },
+
+
+        // Is unstaking cancel support
+        async isUnstakingCancelSupport() {
+            try {
+                let response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/base/tendermint/v1beta1/node_info`),
+                    data = await response.json(),
+                    cosmos_sdk_version = data.application_version.cosmos_sdk_version,
+                    min_version = 'v0.46'
+
+                // Parsing versions
+                let cosmos_sdk_version_parsed = cosmos_sdk_version.replace('v', '').split('-')[0].split('.').map(Number),
+                    min_version_parsed = min_version.replace('v', '').split('-')[0].split('.').map(Number)
+
+                // Fill in the missing with zeros
+                while (cosmos_sdk_version_parsed.length < 3) cosmos_sdk_version_parsed.push(0)
+                while (min_version_parsed.length < 3) min_version_parsed.push(0)
+
+                // Compare versions
+                for (let i = 0; i < 3; i++) {
+                    if (cosmos_sdk_version_parsed[i] > min_version_parsed[i]) return true // Version above minimum
+                    if (cosmos_sdk_version_parsed[i] < min_version_parsed[i]) return false // Version is less than minimum
+                }
+
+                return true
+            } catch (error) {
+                console.error(error)
+
+                return false
             }
         },
 

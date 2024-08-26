@@ -16,7 +16,7 @@
                 <div v-for="(network, index) in store.networks" :key="index">
                     <button class="network" :class="{ active: store.currentNetwork == network.alias }" @click.prevent="changeNetwork(network.alias)">
                         <div class="logo">
-                            <img :src="getNetworkLogo(network.chain_id)" alt="" loading="lazy">
+                            <img :src="getNetworkLogo(network.chain_id)" alt="">
                         </div>
 
                         <div class="name">{{ network.name }}</div>

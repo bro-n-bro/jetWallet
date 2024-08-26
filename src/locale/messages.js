@@ -120,6 +120,8 @@ export default {
 
             // Receive
             'receive_page_title': 'Receive',
+            'receive_amount_title': 'Choose your amount',
+            'receive_amount_label': 'Amount:',
 
 
             // Validators
