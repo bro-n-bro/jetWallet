@@ -7,6 +7,10 @@
             <!-- Network selection -->
             <NetworkChooser v-if="store.currentNetwork" />
 
+            <button class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized" @click.prevent="showStatsModal = true">
+                <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
+            </button>
+
             <!-- Scaner -->
             <QRCode />
 
@@ -46,6 +50,9 @@
         <!-- Stacked tokens -->
         <StakedTokens v-show="swiperActiveIndex == 1" />
     </section>
+
+    <!-- Stats modal -->
+    <StatsModal v-if="showStatsModal" />
 </template>
 
 
@@ -68,12 +75,15 @@
     import UnstakingTokens from '@/components/account/UnstakingTokens.vue'
     import StakedTokens from '@/components/account/StakedTokens.vue'
 
+    import StatsModal from '@/components/modal/StatsModal.vue'
+
 
     const store = useGlobalStore(),
         params = useUrlSearchParams('history'),
         emitter = inject('emitter'),
         notification = useNotification(),
         searchingClass = ref(''),
+        showStatsModal = ref(false),
         swiperEl = ref(null),
         swiperActiveIndex = ref(params.activeSlide || 0),
         swiperInjectStyles = [
@@ -233,6 +243,13 @@
     emitter.on('search_blur', () => {
         searchingClass.value = false
     })
+
+
+    // Event "close_stats_modal"
+    emitter.on('close_stats_modal', () => {
+        // Hide Stats modal
+        showStatsModal.value = false
+    })
 </script>
 
 
@@ -348,6 +365,36 @@
         width: 100%;
 
         cursor: pointer;
+    }
+
+
+
+    .top_block .stats_btn
+    {
+        position: absolute;
+        z-index: 9;
+        top: 17px;
+        right: 60px;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 28px;
+        height: 28px;
+
+        background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
+    }
+
+
+    .top_block .stats_btn .icon
+    {
+        display: block;
+
+        width: 16px;
+        height: 16px;
     }
 
 

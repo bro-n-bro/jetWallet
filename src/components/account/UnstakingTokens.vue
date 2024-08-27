@@ -31,7 +31,7 @@
                                 </div>
 
                                 <div class="count">
-                                    {{ $t('message.unstaking_tokens_count_label') }} <b>{{ store.unstakingBalances.length }}</b>
+                                    {{ $t('message.unstaking_tokens_count_label') }} <b>{{ getUnstakingsCount() }}</b>
                                 </div>
                             </div>
 
@@ -143,6 +143,17 @@
         let allDates = store.unstakingBalances.flatMap(item => item.entries.map(entry => new Date(entry.completion_time)))
 
         return Math.min(...allDates)
+    }
+
+
+    // Get unstakings count
+    function getUnstakingsCount() {
+        let result = 0
+
+        // Calc
+        store.unstakingBalances.forEach(balance => result += balance.entries.length)
+
+        return result
     }
 
 

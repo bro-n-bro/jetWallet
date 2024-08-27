@@ -71,7 +71,7 @@
 
 
             <div class="btns">
-                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true" :class="{ disabled: !store.TxFee.isEnough }">
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true">
                     <span>{{ $t('message.btn_approve') }}</span>
                 </button>
 
@@ -83,8 +83,11 @@
     </section>
 
 
-    <!-- Sign transaction -->
-    <SignTx v-if="showSignTxModal"/>
+    <!-- Sign transaction modal -->
+    <SignTxModal v-if="showSignTxModal"/>
+
+    <!-- Tx warning modal -->
+    <TxWarningModal v-if="showTxWarningModal"/>
 </template>
 
 
@@ -99,7 +102,8 @@
     // Components
     import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
-    import SignTx from '@/components/modal/SignTx.vue'
+    import SignTxModal from '@/components/modal/SignTx.vue'
+    import TxWarningModal from '@/components/modal/TxWarning.vue'
 
 
     const store = useGlobalStore(),
@@ -109,11 +113,15 @@
         notification = useNotification(),
         memo = ref(''),
         showSignTxModal = ref(false),
+        showTxWarningModal = ref(false),
         msgAny = ref([]),
         isProcess = ref(false)
 
 
     onBeforeMount(() => {
+        // Tx warning modal
+        showTxWarningModal.value = !store.hasNativeToken()
+
         // Set messeges
         store.stakedBalances.forEach(balance => {
             msgAny.value.push({
@@ -131,6 +139,7 @@
         // Unlisten events
         emitter.off('auth')
         emitter.off('close_sign_tx_modal')
+        emitter.off('close_tx_warning_modal')
     })
 
 
@@ -167,7 +176,12 @@
             })
 
             // Send Tx
-            sendTx(txBytes)
+            sendTx(txBytes).catch(error => {
+                console.log(error)
+
+                // Show error
+                showError(error)
+            })
 
             // Redirect
             router.push('/account')
@@ -182,6 +196,9 @@
 
     // Show error message
     function showError(error) {
+        // Set process status
+        isProcess.value = false
+
         // Get error code
         let errorText = ''
 
@@ -189,6 +206,12 @@
         error.code
             ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
             : errorText = i18n.global.t('message.notification_tx_error_rejected')
+
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
 
         // Show notification
         notification.notify({
@@ -216,6 +239,13 @@
     emitter.on('close_sign_tx_modal', () => {
         // Hide SignTx modal
         showSignTxModal.value = false
+    })
+
+
+    // Event "close_tx_warning_modal"
+    emitter.on('close_tx_warning_modal', () => {
+        // Hide Tx warning modal
+        showTxWarningModal.value = false
     })
 </script>
 

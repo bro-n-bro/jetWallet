@@ -96,7 +96,11 @@
         if (params.type === 'pending') {
             notificationTimeout.value = setTimeout(() => {
                 // Show pending notification
-                document.querySelector('.notification.pending').classList.add('small')
+                let notification = document.querySelector('.notification.pending')
+
+                if (notification) {
+                    notification.classList.add('small')
+                }
 
                 // Clear timeout
                 notificationTimeout.value = null

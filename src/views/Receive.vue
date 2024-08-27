@@ -37,12 +37,14 @@
 
 
             <div class="amount" v-if="amount">
-                {{ amount.toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                <div @click.prevent="showAmountModal = true">
+                    {{ amount.toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
 
-                {{ store.networks[store.currentNetwork].token_name }}
+                    {{ store.networks[store.currentNetwork].token_name }}
 
-                <div class="cost">
-                    (~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$)
+                    <div class="cost">
+                        (~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$)
+                    </div>
                 </div>
 
                 <button class="reset_btn" @click.prevent="amount = ''">
@@ -206,6 +208,16 @@
 
         text-decoration-thickness: 1px;
         text-decoration-line: underline;
+    }
+
+
+    .amount > div
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
 

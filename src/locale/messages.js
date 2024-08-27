@@ -105,7 +105,7 @@ export default {
             // Unstaking tokens
             'unstaking_tokens_title': 'Unstaking process',
             'unstaking_tokens_label': 'Unstaking in progress:',
-            'unstaking_tokens_count_label': 'Validators:',
+            'unstaking_tokens_count_label': 'Unstakings:',
             'unstaking_tokens_finish_label': 'Available in:',
 
             'unstaking_tokens_finish_days': 'Days',
@@ -124,9 +124,20 @@ export default {
             'receive_amount_label': 'Amount:',
 
 
+            // Tx warning
+            'tx_warning_title': 'Warning',
+            'tx_warning_desc': 'Ti mojesh sdelat tranzakciu, no mi ne otvechaem za posledstvija! Ti mojesh sdelat tranzakciu, no mi ne otvechaem za posledstvija!',
+
+
             // Validators
             'validators_page_title': 'Validators:',
             'validatoes_staked_label': 'Staked:',
+
+
+            // Stats
+            'stats_title': 'Stats',
+            'stats_personal_apr_label': 'Personal APR:',
+            'stats_daily_profit_label': 'Estimated daily profit:',
 
 
             // Tx fee
@@ -207,6 +218,7 @@ export default {
             'btn_cancel': 'Cancel',
             'btn_amount': 'Amount',
             'btn_share': 'Share',
+            'btn_accept': 'Accept',
 
 
             'notification_tx_error_2': "tx parse error",

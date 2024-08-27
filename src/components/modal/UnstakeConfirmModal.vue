@@ -68,7 +68,7 @@
 
                                     {{ store.networks[store.currentNetwork].token_name }}
 
-                                    <span class="currency">
+                                    <span class="cost">
                                         ({{ formatTokenCost(currencyConversion(props.amount, store.networks[store.currentNetwork].token_name)) }}{{ store.currentCurrencySymbol }})
                                     </span>
                                 </div>
@@ -289,21 +289,6 @@
     }
 
 
-    .label
-    {
-        font-size: 14px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-
-        margin-bottom: 2px;
-        padding: 0 10px;
-    }
-
-
 
     .info_wrap
     {
@@ -474,17 +459,6 @@
     }
 
 
-    .features .label
-    {
-        font-size: inherit;
-
-        display: block;
-
-        margin: 0;
-        padding: 0;
-    }
-
-
     .features .val img
     {
         display: block;
@@ -497,7 +471,7 @@
     }
 
 
-    .features .val .currency
+    .features .val .cost
     {
         color: #836b9e;
     }

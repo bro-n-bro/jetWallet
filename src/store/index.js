@@ -63,7 +63,7 @@ export const useGlobalStore = defineStore('global', {
             gasAmount: 0,
             isRemember: false,
             isGasAdjustmentAuto: true,
-            isEnough: false
+            isEnough: true
         },
 
         networks: {
@@ -297,7 +297,7 @@ export const useGlobalStore = defineStore('global', {
 
                         for (let item of this.unstakingBalances) {
                             // Calc total unstaking tokens
-                            this.networks[this.currentNetwork].totalUnstakingTokens += parseInt(item.entries[0].balance)
+                            item.entries.forEach(entry => this.networks[this.currentNetwork].totalUnstakingTokens += parseInt(entry.balance))
 
                             // Get validator info
                             await this.getValidatorInfo(item, item.validator_address)
@@ -355,6 +355,12 @@ export const useGlobalStore = defineStore('global', {
 
             // Get price
             balance.price = getPriceByDenom(balance.token_info.symbol)
+        },
+
+
+        // Has native token
+        hasNativeToken() {
+            return this.balances.some(balance => balance.denom == this.networks[this.currentNetwork].denom)
         },
 
 
@@ -695,7 +701,7 @@ export const useGlobalStore = defineStore('global', {
                 gasAmount: 0,
                 isRemember: DBData.TxFeeIsRemember || false,
                 isGasAdjustmentAuto: true,
-                isEnough: false
+                isEnough: true
             }
         },
 
