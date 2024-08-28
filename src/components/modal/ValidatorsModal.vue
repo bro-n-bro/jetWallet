@@ -19,7 +19,7 @@
             <div class="validators" v-else>
                 <div class="list" v-if="searchResult.length">
                     <div class="item" v-for="(validator, index) in searchResult" :key="index">
-                        <div class="validator_wrap" @click.prevent="setValidator(validator)" :class="{ current: store.stakeCurrentValidator && store.stakeCurrentValidator.operator_address === validator.operator_address }">
+                        <div class="validator_wrap" @click.prevent="setValidator(validator)" :class="{ current: isCurrentValidator(validator.operator_address) }">
                             <div class="validator">
                                 <div class="logo">
                                     <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
@@ -52,7 +52,7 @@
                                 </div>
 
                                 <div class="check">
-                                    <svg v-if="store.stakeCurrentValidator && store.stakeCurrentValidator.operator_address === validator.operator_address"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
+                                    <svg v-if="isCurrentValidator(validator.operator_address)"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
                                 </div>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
     import Search from '@/components/Search.vue'
 
 
-    const props = defineProps(['unstake']),
+    const props = defineProps(['unstake', 'restake']),
         store = useGlobalStore(),
         emitter = inject('emitter'),
         isValidatorsGot = ref(false),
@@ -91,6 +91,14 @@
         if (props.unstake) {
             // Get validators
             validators.value = (await store.getUserValidators()).validators
+        } else if(props.restake) {
+            if (props.restake === 'from') {
+                // Get validators
+                validators.value = (await store.getUserValidators()).validators
+            } else {
+                // Get validators (Exclude validator from)
+                validators.value = (await store.getAllValidators()).validators.filter(validator => validator.operator_address !== store.restakeValidatorFrom?.operator_address)
+            }
         } else {
             // Get validators
             validators.value = (await store.getAllValidators()).validators
@@ -117,10 +125,51 @@
     }
 
 
+    // Is current validator
+    function isCurrentValidator(address) {
+        if (props.unstake) {
+            // Check
+            if (store.unstakeCurrentValidator && store.unstakeCurrentValidator.operator_address === address) {
+                return true
+            }
+        } else if(props.restake) {
+            if (props.restake === 'from') {
+                // Check
+                if (store.restakeValidatorFrom && store.restakeValidatorFrom.operator_address === address) {
+                    return true
+                }
+            } else {
+                // Check
+                if (store.restakeValidatorTo && store.restakeValidatorTo.operator_address === address) {
+                    return true
+                }
+            }
+        } else {
+            // Check
+            if (store.stakeCurrentValidator && store.stakeCurrentValidator.operator_address === address) {
+                return true
+            }
+        }
+    }
+
+
     function setValidator(validator) {
         if (props.unstake) {
             // Set data
             store.unstakeCurrentValidator = validator
+        } else if (props.restake) {
+            if (props.restake === 'from') {
+                // Set data
+                store.restakeValidatorFrom = validator
+
+                // Remove duplicate
+                if (store.restakeValidatorFrom.operator_address === store.restakeValidatorTo?.operator_address) {
+                    store.restakeValidatorTo = null
+                }
+            } else {
+                // Set data
+                store.restakeValidatorTo = validator
+            }
         } else {
             // Set data
             store.stakeCurrentValidator = validator
@@ -160,6 +209,12 @@
         height: 100%;
 
         background: #170232;
+    }
+
+
+    .validators_page .head
+    {
+        margin-bottom: 0;
     }
 
 

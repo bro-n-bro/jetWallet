@@ -124,6 +124,15 @@ export default {
             'receive_amount_label': 'Amount:',
 
 
+            // Restake
+            'restake_page_title': 'Restake',
+            'restake_confirm_page_title': 'Confirm',
+            'restake_validator_from_label': 'From:',
+            'restake_validator_to_label': 'To:',
+            'restake_confirm_token_label': 'Token:',
+            'restake_confirm_amount_label': 'Amount:',
+
+
             // Tx warning
             'tx_warning_title': 'Warning',
             'tx_warning_desc': 'Ti mojesh sdelat tranzakciu, no mi ne otvechaem za posledstvija! Ti mojesh sdelat tranzakciu, no mi ne otvechaem za posledstvija!',
@@ -137,7 +146,7 @@ export default {
             // Stats
             'stats_title': 'Stats',
             'stats_personal_apr_label': 'Personal APR:',
-            'stats_daily_profit_label': 'Estimated daily profit:',
+            'stats_daily_profit_label': 'Est. daily profit:',
 
 
             // Tx fee
@@ -205,6 +214,7 @@ export default {
             'btn_stake': 'Stake',
             'btn_confirm_stake': 'Confirm Staking',
             'btn_confirm_unstake': 'Confirm Unstake',
+            'btn_confirm_restake': 'Confirm Restake',
             'btn_unstake': 'Unstake',
             'btn_restake': 'Restake',
             'btn_claim': 'Claim',

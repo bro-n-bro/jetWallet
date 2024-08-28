@@ -134,8 +134,9 @@
         align-content: center;
         align-items: center;
         flex-wrap: nowrap;
-        white-space: nowrap;
         justify-content: space-between;
+
+        white-space: nowrap;
     }
 
 
@@ -151,9 +152,11 @@
         align-content: center;
         align-items: center;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: flex-end;
 
         margin-left: 20px;
+
+        text-align: right;
     }
 
 

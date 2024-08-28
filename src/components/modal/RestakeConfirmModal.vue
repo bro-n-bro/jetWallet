@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container inner_page_container stake_confirm">
+    <section class="page_container inner_page_container restake_confirm">
         <Loader v-if="isProcess" />
 
         <div class="cont">
@@ -9,7 +9,7 @@
                 </button>
 
                 <div class="page_title">
-                    {{ $t('message.stake_confirm_page_title') }}
+                    {{ $t('message.restake_confirm_page_title') }}
                 </div>
             </div>
 
@@ -21,34 +21,10 @@
 
                 <div class="info_wrap">
                     <div class="info">
-                        <div class="validator">
-                            <div class="logo">
-                                <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.stakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
-
-                                <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
-                            </div>
-
-                            <div>
-                                <div class="moniker">
-                                    {{ store.stakeCurrentValidator.description.moniker }}
-                                </div>
-
-                                <div class="voting_power">
-                                    {{ (votingPower * 100).toFixed(2) }}% {{ $t('message.stake_confirm_voting_power') }}
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="apr">
-                            <span>{{ $t('message.stake_APR_label') }}<br> {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.stakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%</span>
-                        </div>
-
-
                         <div class="features">
                             <div>
                                 <div class="label">
-                                    {{ $t('message.stake_confirm_token_label') }}
+                                    {{ $t('message.restake_confirm_token_label') }}
                                 </div>
 
                                 <div class="val">
@@ -60,7 +36,7 @@
 
                             <div>
                                 <div class="label">
-                                    {{ $t('message.stake_confirm_amount_label') }}
+                                    {{ $t('message.restake_confirm_amount_label') }}
                                 </div>
 
                                 <div class="val">
@@ -76,37 +52,33 @@
 
                             <div>
                                 <div class="label">
-                                    {{ $t('message.stake_confirm_daily_profit_label') }}
+                                    {{ $t('message.restake_validator_from_label') }}
                                 </div>
 
                                 <div class="val">
-                                    ~{{ dailyProfit.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    <span class="moniker">{{ store.restakeValidatorFrom.description.moniker }}</span>
 
-                                    {{ store.networks[store.currentNetwork].token_name }}
+                                    <div class="logo">
+                                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.restakeValidatorFrom.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
-                                    <span class="currency">({{ formatTokenCost(currencyConversion(dailyProfit, store.networks[store.currentNetwork].token_name)) }}{{ store.currentCurrencySymbol }})</span>
+                                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
+                                    </div>
                                 </div>
                             </div>
 
                             <div>
                                 <div class="label">
-                                    {{ $t('message.stake_confirm_commission_label') }}
+                                    {{ $t('message.restake_validator_to_label') }}
                                 </div>
 
                                 <div class="val">
-                                    {{ (store.stakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }) }}%
-                                </div>
-                            </div>
+                                    <span class="moniker">{{ store.restakeValidatorTo.description.moniker }}</span>
 
-                            <div>
-                                <div class="label">
-                                    {{ $t('message.stake_confirm_unbonding_period_label') }}
-                                </div>
+                                    <div class="logo">
+                                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.restakeValidatorTo.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
-                                <div class="val">
-                                    {{ store.networks[store.currentNetwork].unbondingTime }}
-
-                                    {{ $t('message.stake_unbonding_time_unit') }}
+                                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
+                                    </div>
                                 </div>
                             </div>
 
@@ -142,7 +114,7 @@
 
             <div class="btns">
                 <button class="btn" @click.prevent="showSignTxModal = true">
-                    <span>{{ $t('message.btn_confirm_stake') }}</span>
+                    <span>{{ $t('message.btn_confirm_restake') }}</span>
                 </button>
             </div>
         </div>
@@ -155,7 +127,7 @@
 
 
 <script setup>
-    import { ref, inject, computed, onBeforeMount, onUnmounted } from 'vue'
+    import { ref, inject, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -173,20 +145,9 @@
         i18n = inject('i18n'),
         notification = useNotification(),
         showSignTxModal = ref(false),
-        votingPower = ref(0),
-        dailyProfit = ref(0),
         memo = ref(''),
         feeCost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent)),
         isProcess = ref(false)
-
-
-    onBeforeMount(() => {
-        // Calc voting power
-        calcVotingPower()
-
-        // Calc daily profit
-        calcDailyProfit()
-    })
 
 
     onUnmounted(() => {
@@ -196,25 +157,8 @@
     })
 
 
-    // Calc voting power
-    async function calcVotingPower() {
-        // Get total bonded tokens
-        await store.getTotalBondedTokens()
-
-        // Set data
-        votingPower.value = store.stakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
-    }
-
-
-    // Calc daily profit
-    function calcDailyProfit() {
-        // Set data
-        dailyProfit.value = props.amount * ((store.networks[store.currentNetwork].APR - store.networks[store.currentNetwork].APR * store.stakeCurrentValidator.commission.commission_rates.rate) / 100) / 365
-    }
-
-
-    // Delegate tokens
-    async function delegate() {
+    // Redelegate tokens
+    async function redelegate() {
         // Set process status
         isProcess.value = true
 
@@ -286,8 +230,8 @@
         // Hide SignTx modal
         showSignTxModal.value = false
 
-        // Delegate tokens
-        delegate()
+        // Redelegate tokens
+        redelegate()
     })
 
 
@@ -300,7 +244,7 @@
 
 
 <style scoped>
-    .stake_confirm
+    .restake_confirm
     {
         position: fixed;
         z-index: 9;
@@ -336,126 +280,6 @@
 
 
 
-    .validator
-    {
-        display: flex;
-        align-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-bottom: 20px;
-        padding-right: 60px;
-    }
-
-
-    .validator .logo
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 38px;
-        height: 38px;
-        margin-right: 6px;
-        padding: 6px;
-
-        border-radius: 50%;
-        background: #950fff;
-    }
-
-
-    .validator .logo img
-    {
-        display: block;
-
-        width: 100%;
-        height: 100%;
-
-        border-radius: inherit;
-    }
-
-
-    .validator .logo .icon
-    {
-        display: none;
-
-        width: 24px;
-        height: 24px;
-    }
-
-
-    .validator .logo img.hide
-    {
-        display: none;
-    }
-
-    .validator .logo img.hide + .icon
-    {
-        display: block;
-    }
-
-
-    .validator .logo + *
-    {
-        align-self: center;
-
-        width: calc(100% - 44px);
-    }
-
-
-    .validator .moniker
-    {
-        font-size: 16px;
-        font-weight: 500;
-
-        overflow: hidden;
-
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-
-    .validator .voting_power
-    {
-        font-size: 12px;
-        font-weight: 200;
-    }
-
-
-
-    .apr
-    {
-        font-size: 12px;
-
-        position: absolute;
-        top: 9px;
-        right: 9px;
-
-        padding: 2px 6px;
-
-        text-align: center;
-
-        border-radius: 4px;
-        background: #170232;
-    }
-
-
-    .apr span
-    {
-        display: block;
-
-        background: linear-gradient(180deg, #dd93fe 0%, #aa36de 100%);
-        -webkit-background-clip: text;
-                background-clip: text;
-
-        -webkit-text-fill-color: transparent;
-    }
-
-
-
     .features > *
     {
         font-size: 16px;
@@ -480,7 +304,10 @@
         align-content: center;
         align-items: center;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: flex-end;
+
+        text-align: right;
+        max-width: 50%;
     }
 
 
@@ -495,7 +322,7 @@
     }
 
 
-    .features .val img
+    .features .val > img
     {
         display: block;
 
@@ -504,6 +331,66 @@
         margin-right: 4px;
 
         border-radius: 50%;
+    }
+
+
+    .features .moniker
+    {
+        overflow: hidden;
+
+        max-width: calc(100% - 22px);
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .features .logo
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 18px;
+        height: 18px;
+        margin-left: 4px;
+        padding: 4px;
+
+        border-radius: 50%;
+        background: #950fff;
+    }
+
+
+    .features .logo img
+    {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: inherit;
+    }
+
+
+    .features .logo .icon
+    {
+        display: none;
+
+        width: 14px;
+        height: 14px;
+    }
+
+
+    .features .logo img.hide
+    {
+        display: none;
+    }
+
+    .features .logo img.hide + .icon
+    {
+        display: block;
     }
 
 

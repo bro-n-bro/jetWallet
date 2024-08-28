@@ -106,6 +106,15 @@ const routes = [
 		}
 	},
 	{
+		path: '/account/restake',
+		name: 'Restake',
+		component: () => import('../views/Restake.vue'),
+		meta: {
+			layout: defaultLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
+	{
 		path: '/account/receive',
 		name: 'Receive',
 		component: () => import('../views/Receive.vue'),

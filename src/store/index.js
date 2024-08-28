@@ -45,6 +45,8 @@ export const useGlobalStore = defineStore('global', {
         currentCurrencySymbol: '',
         stakeCurrentValidator: null,
         unstakeCurrentValidator: null,
+        restakeValidatorFrom: null,
+        restakeValidatorTo: null,
 
         prices: [],
         balances: [],
@@ -63,7 +65,7 @@ export const useGlobalStore = defineStore('global', {
             gasAmount: 0,
             isRemember: false,
             isGasAdjustmentAuto: true,
-            isEnough: true
+            isEnough: false
         },
 
         networks: {
@@ -701,7 +703,7 @@ export const useGlobalStore = defineStore('global', {
                 gasAmount: 0,
                 isRemember: DBData.TxFeeIsRemember || false,
                 isGasAdjustmentAuto: true,
-                isEnough: true
+                isEnough: false
             }
         },
 
