@@ -71,7 +71,12 @@
         intervalID = ref(null)
 
 
-    onBeforeMount(async() => await getRewards())
+    onBeforeMount(async() => {
+        if (store.isInitialized) {
+            // Get rewards
+            await getRewards()
+        }
+    })
 
 
     onBeforeUnmount(() => {

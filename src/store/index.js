@@ -667,26 +667,29 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Update all balances
-        updateAllBalances() {
+        async updateAllBalances() {
             // Update balances
             if (this.isBalancesGot) {
-                this.getBalances()
+                var getBalances = await this.getBalances()
             }
 
             // Update staked balances
             if (this.isStakedBalancesGot) {
-                this.getStakedBalances()
+                var getStakedBalances = await this.getStakedBalances()
             }
 
-            // Update rewards
-            if (this.isRewardsGot) {
-                this.getRewards()
-            }
+            // Wait balances
+            Promise.all([getBalances, getStakedBalances]).then(() => {
+                // Update rewards
+                if (this.isRewardsGot) {
+                    this.getRewards()
+                }
 
-            // Update unstaking balances
-            if (this.isUnstakingBalancesGot) {
-                this.getUnstakingBalances()
-            }
+                // Update unstaking balances
+                if (this.isUnstakingBalancesGot) {
+                    this.getUnstakingBalances()
+                }
+            })
         },
 
 
