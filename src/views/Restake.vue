@@ -63,6 +63,13 @@
             </div>
 
 
+            <div class="arrow_wrap">
+                <div class="arrow">
+                    <svg><use xlink:href="@/assets/sprite.svg#ic_arrow_ver"></use></svg>
+                </div>
+            </div>
+
+
             <div class="validator_info to">
                 <div class="field_label">
                     {{ $t('message.restake_validator_to_label') }}
@@ -325,18 +332,15 @@
     {
         position: relative;
 
-        margin-top: 8px;
         padding: 8px;
 
         border-radius: 10px;
-        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(53, 12, 107, .7) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(148, 56, 248, .7) 85.09%);
+        background: linear-gradient(to bottom,  #2c0a5a 0%,#6b27b9 100%);
     }
 
     .validator_info.from
     {
-        margin-top: 10px;
-
-        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .7) 0%, rgba(89, 21, 167, .7) 50.94%, rgba(53, 12, 107, .7) 85.09%);
+        background: linear-gradient(to top,  #2c0a5a 0%,#6b27b9 100%);
     }
 
 
@@ -346,6 +350,48 @@
 
         border-radius: 12px;
         background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
+    }
+
+
+    .validator_info.from:before
+    {
+        position: absolute;
+        z-index: 1;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        display: block;
+
+        width: 72px;
+        height: 8px;
+        margin: 0 auto;
+
+        content: '';
+        pointer-events: none;
+
+        background: url(@/assets/bg_restake_validator_from.png) 0 0 no-repeat;
+    }
+
+
+    .validator_info.to:before
+    {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        right: 0;
+        left: 0;
+
+        display: block;
+
+        width: 72px;
+        height: 19px;
+        margin: 0 auto;
+
+        content: '';
+        pointer-events: none;
+
+        background: url(@/assets/bg_restake_validator_to.png) 0 0 no-repeat;
     }
 
 
@@ -537,11 +583,34 @@
 
     .validator_info .staked
     {
+        position: relative;
+        z-index: 2;
+
         margin-top: 6px;
         padding: 4px 7px 5px;
 
         border-radius: 10px;
         background: #170232;
+    }
+
+
+    .validator_info.from .staked:before
+    {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        display: block;
+
+        width: 72px;
+        height: 19px;
+        margin: 0 auto;
+
+        content: '';
+        pointer-events: none;
+
+        background: url(@/assets/bg_restake_validator_from_staked.png) 0 0 no-repeat;
     }
 
 
@@ -572,9 +641,50 @@
 
 
 
+    .arrow_wrap
+    {
+        position: relative;
+        z-index: 5;
+
+        width: 38px;
+        height: 38px;
+        margin: -15px auto;
+        padding: 1px;
+
+        border-radius: 5px;
+        background: linear-gradient(180deg, #dc92fe 0%, #310446 100%);
+    }
+
+
+    .arrow_wrap .arrow
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 36px;
+        height: 36px;
+
+        border-radius: 4px;
+        background: linear-gradient(180deg, #af60d3 0%, #56007e 100%);
+    }
+
+
+    .arrow_wrap .arrow svg
+    {
+        display: block;
+
+        width: 12px;
+        height: 20px;
+    }
+
+
+
     .amount
     {
-        margin-top: 2px;
+        margin-top: 12px;
         margin-bottom: auto;
     }
 
