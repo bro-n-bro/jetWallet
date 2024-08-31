@@ -137,7 +137,6 @@
 
     // Share
     function share() {
-        Telegram.WebApp.shareToStory()
         Telegram.WebApp.openTelegramLink('https://t.me/share/url?url=OUR_URL&text=OUR_TEXT')
     }
 
