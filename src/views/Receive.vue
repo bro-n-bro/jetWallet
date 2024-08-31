@@ -137,7 +137,13 @@
 
     // Share
     function share() {
-        Telegram.WebApp.openTelegramLink('https://t.me/share/url?url=OUR_URL&text=OUR_TEXT')
+        if (navigator.share) {
+            navigator.share({
+                title: 'Amazing Content',
+                text: 'Check this out!',
+                url: 'https://example.com',
+            })
+        }
     }
 
 
