@@ -53,6 +53,9 @@
             </div>
 
 
+            <pre>{{ navigator }}</pre>
+
+
             <!-- Action -->
             <div class="actions">
                 <button class="btn" @click.prevent="copyHandler">
@@ -71,7 +74,7 @@
                     <div>{{ $t('message.btn_amount') }}</div>
                 </button>
 
-                <button class="btn" @click.prevent="share()">
+                <button class="btn" @click.prevent="share()" v-if="navigator.share">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
@@ -143,6 +146,8 @@
                 text: 'Check this out!',
                 url: 'https://example.com',
             })
+            .then(() => console.log('Content shared successfully'))
+            .catch(error => console.error(error))
         }
     }
 
