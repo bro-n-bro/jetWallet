@@ -53,9 +53,6 @@
             </div>
 
 
-            <pre>{{ navigatorData }}</pre>
-
-
             <!-- Action -->
             <div class="actions">
                 <button class="btn" @click.prevent="copyHandler">
@@ -109,8 +106,7 @@
         { copy } = useClipboard(),
         showAmountModal = ref(false),
         amount = ref(''),
-        qrKey = ref(0),
-        navigatorData = ref({})
+        qrKey = ref(0)
 
 
     onUnmounted(() => {
@@ -141,8 +137,6 @@
 
     // Share
     function share() {
-        navigatorData.value = navigator.share
-
         if (navigator.share) {
             navigator.share({
                 title: 'Amazing Content',
@@ -151,6 +145,9 @@
             })
             .then(() => console.log('Content shared successfully'))
             .catch(error => console.error(error))
+        } else {
+            console.log('Web Share API is not supported in this browser.');
+            alert('This feature is not available on your device.');
         }
     }
 
