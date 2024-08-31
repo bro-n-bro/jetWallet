@@ -71,7 +71,7 @@
                     <div>{{ $t('message.btn_amount') }}</div>
                 </button>
 
-                <button class="btn" @click.prevent="elegram.WebApp.openTelegramLink('https://t.me/share/url?url=OUR_URL&text=OUR_TEXT')">
+                <button class="btn" @click.prevent="share()">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
@@ -132,6 +132,13 @@
             title: i18n.global.t('message.notification_copied_title'),
             type: 'copied'
         })
+    }
+
+
+    // Share
+    function share() {
+        Telegram.WebApp.shareToStory()
+        Telegram.WebApp.openTelegramLink('https://t.me/share/url?url=OUR_URL&text=OUR_TEXT')
     }
 
 
