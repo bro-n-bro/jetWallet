@@ -71,7 +71,7 @@
                     <div>{{ $t('message.btn_amount') }}</div>
                 </button>
 
-                <button class="btn" @click.prevent="share()">
+                <button class="btn" @click.prevent="share()" v-if="isShareSupported">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
@@ -106,7 +106,11 @@
         { copy } = useClipboard(),
         showAmountModal = ref(false),
         amount = ref(''),
-        qrKey = ref(0)
+        qrKey = ref(0),
+        isShareSupported = ref(false)
+
+
+    onBeforeMount(() => isShareSupported.value = navigator.share)
 
 
     onUnmounted(() => {
@@ -137,21 +141,14 @@
 
     // Share
     function share() {
-        if (navigator.share) {
+        if (isShareSupported.value) {
             navigator.share({
-                title: 'Amazing Content',
+                title: 'Jet Wallet',
                 text: 'Check this out!',
-                url: 'https://example.com',
+                url: 'https://t.me/cosmos_wallet_bot',
             })
-            .then(() => console.log('Content shared successfully'))
             .catch(error => console.error(error))
-        } else {
-            console.log('Web Share API is not supported in this browser.');
-            alert('This feature is not available on your device.');
         }
-
-
-        Telegram.WebApp.openLink('https://tgsigner.bronbro.io/', { try_instant_view: true })
     }
 
 
