@@ -137,18 +137,7 @@
 
     // Share
     function share() {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Amazing Content',
-                text: 'Check this out!',
-                url: 'https://example.com',
-            })
-            .then(() => console.log('Content shared successfully'))
-            .catch(error => console.error(error))
-        } else {
-            console.log('Web Share API is not supported in this browser.');
-            alert('This feature is not available on your device.');
-        }
+        Telegram.WebApp.openTelegramLink('https://t.me/share/url?url=OUR_URL&text=OUR_TEXT')
     }
 
 
