@@ -88,7 +88,7 @@
 
 
 <script setup>
-    import { ref, inject, onUnmounted, watch, computed } from 'vue'
+    import { ref, inject, onUnmounted, watch, computed, onBeforeMount } from 'vue'
     import { useClipboard } from '@vueuse/core'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
