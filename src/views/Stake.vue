@@ -52,7 +52,7 @@
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                                    {{ formatTokenAmount(calcAvailabelAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
@@ -60,7 +60,7 @@
                                 <div class="cost">
                                     {{ store.currentCurrencySymbol }}
 
-                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) }}
+                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcAvailabelAmount(), store.networks[store.currentNetwork].exponent)) }}
                                 </div>
                             </div>
 
@@ -70,7 +70,7 @@
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                                    {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
@@ -183,7 +183,7 @@
 <script setup>
     import { ref, inject, onUnmounted, onBeforeMount, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcStakeAvailabelAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
+    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcAvailabelAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
     import { MsgDelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
     // Components
@@ -200,7 +200,7 @@
         msgAny = ref([]),
         amount = ref(''),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcStakeAvailabelAmount()))
+        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcAvailabelAmount()))
 
 
     onBeforeMount(() => {
@@ -244,7 +244,7 @@
 
         setTimeout(() => {
             // Set amount
-            amount.value = formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)
+            amount.value = formatTokenAmount(calcAvailabelAmount(), store.networks[store.currentNetwork].exponent)
 
             // Set amount status
             isAmountReady.value = true
@@ -265,13 +265,13 @@
             }
 
             // Acceptable value
-            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)){
+            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(calcAvailabelAmount(), store.networks[store.currentNetwork].exponent)){
                 // Set amount status
                 isAmountReady.value = true
             }
 
             // More than available balance
-            if (e.target.value > formatTokenAmount(calcStakeAvailabelAmount(), store.networks[store.currentNetwork].exponent)) {
+            if (e.target.value > formatTokenAmount(calcAvailabelAmount(), store.networks[store.currentNetwork].exponent)) {
                 // Set MAX amount
                 setMaxAmount()
             }

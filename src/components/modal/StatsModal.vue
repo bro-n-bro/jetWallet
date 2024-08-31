@@ -14,6 +14,50 @@
                     <div class="info">
                         <div>
                             <div class="label">
+                                {{ $t('message.stats_token_label') }}
+                            </div>
+
+                            <div class="val">
+                                <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
+
+                                <span>{{ store.networks[store.currentNetwork].token_name }}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="label">
+                                {{ $t('message.stats_availabel_label') }}
+                            </div>
+
+                            <div class="val">
+                                {{ formatTokenAmount(calcAvailabelAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
+
+                                {{ store.networks[store.currentNetwork].token_name }}
+
+                                <div class="cost">
+                                    ({{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcAvailabelAmount(), store.networks[store.currentNetwork].exponent)) }}{{ store.currentCurrencySymbol }})
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="label">
+                                {{ $t('message.stats_staked_label') }}
+                            </div>
+
+                            <div class="val">
+                                {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
+
+                                {{ store.networks[store.currentNetwork].token_name }}
+
+                                <div class="cost">
+                                    ({{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcStakedAmount(), store.networks[store.currentNetwork].exponent)) }}{{ store.currentCurrencySymbol }})
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="label">
                                 {{ $t('message.stats_personal_apr_label') }}
                             </div>
 
@@ -28,7 +72,7 @@
                             </div>
 
                             <div class="val">
-                                {{ formatTokenAmount(dailyProfit, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 3 }) }}
+                                {{ formatTokenAmount(dailyProfit, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 3 }).replace(',', '.') }}
 
                                 {{ store.networks[store.currentNetwork].token_name }}
 
@@ -50,7 +94,7 @@
 <script setup>
     import { ref, inject, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenAmount, formatTokenCost, calcTokenCost, calcStakedAmount } from '@/utils'
+    import { formatTokenAmount, formatTokenCost, calcTokenCost, calcStakedAmount, getNetworkLogo, calcAvailabelAmount } from '@/utils'
 
 
     const store = useGlobalStore(),
@@ -167,6 +211,18 @@
                 background-clip: text;
 
         -webkit-text-fill-color: transparent;
+    }
+
+
+    .info .val img
+    {
+        display: block;
+
+        width: 18px;
+        height: 18px;
+        margin-right: 4px;
+
+        border-radius: 50%;
     }
 
 

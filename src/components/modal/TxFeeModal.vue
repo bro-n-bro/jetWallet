@@ -40,7 +40,7 @@
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.lowPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.lowPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
                                 </div>
 
                                 <div class="denom">
@@ -58,7 +58,7 @@
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.averagePrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.averagePrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
                                 </div>
 
                                 <div class="denom">
@@ -76,7 +76,7 @@
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.highPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.highPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
                                 </div>
 
                                 <div class="denom">

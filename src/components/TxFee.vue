@@ -3,7 +3,7 @@
         <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
             {{ $t('message.tx_fee_label') }}
 
-            {{ cost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+            {{ cost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
             {{ store.networks[store.currentNetwork].token_name }}
 

@@ -80,7 +80,7 @@
                                 </div>
 
                                 <div class="val">
-                                    ~{{ dailyProfit.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    ~{{ dailyProfit.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
 
@@ -94,7 +94,7 @@
                                 </div>
 
                                 <div class="val">
-                                    {{ (store.stakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }) }}%
+                                    {{ (store.stakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }).replace(',', '.') }}%
                                 </div>
                             </div>
 
@@ -116,7 +116,7 @@
                                 </div>
 
                                 <div class="val">
-                                    {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>

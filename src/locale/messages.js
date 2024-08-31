@@ -145,6 +145,9 @@ export default {
 
             // Stats
             'stats_title': 'Stats',
+            'stats_token_label': 'Token:',
+            'stats_availabel_label': 'Availabel:',
+            'stats_staked_label': 'Staked:',
             'stats_personal_apr_label': 'Personal APR:',
             'stats_daily_profit_label': 'Est. daily profit:',
 

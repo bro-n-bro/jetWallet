@@ -80,7 +80,7 @@
                                 </div>
 
                                 <div class="val">
-                                    {{ (store.unstakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }) }}%
+                                    {{ (store.unstakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }).replace(',', '.') }}%
                                 </div>
                             </div>
 
@@ -102,7 +102,7 @@
                                 </div>
 
                                 <div class="val">
-                                    {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>

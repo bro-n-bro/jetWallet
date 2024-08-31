@@ -151,13 +151,13 @@ export const formatTokenCost = (cost, currency = null) => {
     // Rounding
     switch (currentCurrency) {
         case 'BTC':
-            return cost > 0.0000000001 || cost == 0 ? cost.toLocaleString('ru-RU', { maximumFractionDigits: 10 }) : '<0.0000000001'
+            return cost > 0.0000000001 || cost == 0 ? cost.toLocaleString('ru-RU', { maximumFractionDigits: 10 }).replace(',', '.') : '<0.0000000001'
 
         case 'ETH':
-            return cost > 0.0000001 || cost == 0 ? cost.toLocaleString('ru-RU', { maximumFractionDigits: 7 }) : '<0.0000001'
+            return cost > 0.0000001 || cost == 0 ? cost.toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') : '<0.0000001'
 
         default:
-            return cost > 0.01 || cost == 0 ? cost.toLocaleString('ru-RU', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : '<0.01'
+            return cost > 0.01 || cost == 0 ? cost.toLocaleString('ru-RU', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).replace(',', '.') : '<0.01'
     }
 }
 
@@ -228,7 +228,7 @@ export const calcRewardsBalancesCost = (currency = null) => {
 
 
 // Calc stake availabel amount
-export const calcStakeAvailabelAmount = () => {
+export const calcAvailabelAmount = () => {
     let store = useGlobalStore(),
         balance = store.balances.find(balance => balance.denom === store.networks[store.currentNetwork].denom)
 

@@ -50,7 +50,7 @@
                                 </div>
 
                                 <div class="amount">
-                                    {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                                    {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
@@ -96,7 +96,7 @@
                             <div class="staked" v-if="item = isStakedValidator(store.unstakeCurrentValidator.operator_address)">
                                 {{ $t('message.validatoes_staked_label') }}
 
-                                {{ formatTokenAmount(item.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                                {{ formatTokenAmount(item.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                 <div class="logo">
                                     <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">

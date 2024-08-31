@@ -88,7 +88,7 @@
                                 </div>
 
                                 <div class="val">
-                                    {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }) }}
+                                    {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>

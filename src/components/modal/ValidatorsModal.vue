@@ -33,13 +33,13 @@
                                     </div>
 
                                     <div class="commission">
-                                        {{ (validator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }) }}%
+                                        {{ (validator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }).replace(',', '.') }}%
                                     </div>
 
                                     <div class="staked" v-if="item = isStakedValidator(validator.operator_address)">
                                         {{ $t('message.validatoes_staked_label') }}
 
-                                        {{ formatTokenAmount(item.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                                        {{ formatTokenAmount(item.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                         <div class="logo">
                                             <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">

@@ -51,13 +51,15 @@
                     </div>
 
                     <div class="amount">
-                        {{ formatTokenAmount(validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                        {{ formatTokenAmount(validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                         <span>{{ store.networks[store.currentNetwork].token_name }}</span>
                     </div>
 
                     <div class="cost">
-                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }} {{ store.currentCurrencySymbol }}
+                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
+
+                        {{ store.currentCurrencySymbol }}
                     </div>
                 </div>
             </div>
@@ -109,19 +111,21 @@
                     </div>
 
                     <div class="amount">
-                        {{ formatTokenAmount(validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+                        {{ formatTokenAmount(validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                         <span>{{ store.networks[store.currentNetwork].token_name }}</span>
                     </div>
 
                     <div class="cost">
-                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }} {{ store.currentCurrencySymbol }}
+                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
+
+                        {{ store.currentCurrencySymbol }}
                     </div>
                 </div>
             </div>
 
 
-            <div class="amount" :class="{ disabled: !store.restakeValidatorFrom }">
+            <div class="amount_field" :class="{ disabled: !store.restakeValidatorFrom }">
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
@@ -682,14 +686,15 @@
 
 
 
-    .amount
+    .amount_field
     {
         margin-top: 12px;
         margin-bottom: auto;
+        padding-bottom: 20px;
     }
 
 
-    .amount .cost
+    .amount_field .cost
     {
         margin-left: auto;
 
@@ -697,7 +702,7 @@
     }
 
 
-    .amount.disabled
+    .amount_field.disabled
     {
         pointer-events: none;
     }

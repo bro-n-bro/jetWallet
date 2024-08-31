@@ -37,7 +37,7 @@
 
                             <div class="amount">
                                 <div class="val">
-                                    {{ formatTokenAmount(store.networks[store.currentNetwork].totalUnstakingTokens, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }} {{ store.networks[store.currentNetwork].token_name }}
+                                    {{ formatTokenAmount(store.networks[store.currentNetwork].totalUnstakingTokens, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }} {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
                                 <div class="cost">
