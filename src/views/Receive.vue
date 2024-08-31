@@ -151,7 +151,7 @@
         }
 
 
-        Telegram.WebApp.openLink('https://tgsigner.bronbro.io/')
+        Telegram.WebApp.openLink('https://tgsigner.bronbro.io/', { try_instant_view: true })
     }
 
 
