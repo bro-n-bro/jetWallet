@@ -130,6 +130,8 @@ input[type=number]
 html
 {
     height: var(--tg-viewport-stable-height);
+
+    transition: height .2s linear;
 }
 
 
@@ -139,14 +141,13 @@ body
 
     height: var(--tg-viewport-stable-height);
 
+    transition: height .2s linear;
+
     color: var(--text_color);
 }
 
 body.lock
 {
-    /* position: fixed;
-    top: 0;
-    left: 0; */
     overflow: hidden;
 
     padding-right: var(--scroll_width);
