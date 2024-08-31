@@ -53,7 +53,7 @@
             </div>
 
 
-            <pre>{{ navigator }}</pre>
+            <pre>{{ navigatorData }}</pre>
 
 
             <!-- Action -->
@@ -74,7 +74,7 @@
                     <div>{{ $t('message.btn_amount') }}</div>
                 </button>
 
-                <button class="btn" @click.prevent="share()" v-if="navigator.share">
+                <button class="btn" @click.prevent="share()">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
@@ -109,7 +109,8 @@
         { copy } = useClipboard(),
         showAmountModal = ref(false),
         amount = ref(''),
-        qrKey = ref(0)
+        qrKey = ref(0),
+        navigatorData = ref({})
 
 
     onUnmounted(() => {
@@ -140,6 +141,8 @@
 
     // Share
     function share() {
+        navigatorData.value = navigator
+
         if (navigator.share) {
             navigator.share({
                 title: 'Amazing Content',
