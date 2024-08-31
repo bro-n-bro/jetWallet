@@ -115,7 +115,7 @@
 
 
 <script setup>
-    import { ref, inject, watch, computed, onUnmounted } from 'vue'
+    import { ref, inject, watch, computed, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -161,6 +161,11 @@
                 }
             }]
         }
+    })
+
+
+    onMounted(() => {
+        // qrTextReceived
     })
 
 

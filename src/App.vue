@@ -86,9 +86,6 @@
 
             // Viewport height
             viewportHeight.value = Telegram.WebApp.viewportHeight
-
-
-            Telegram.WebApp.shareToStory()
         }
     })
 

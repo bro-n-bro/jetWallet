@@ -71,7 +71,7 @@
                     <div>{{ $t('message.btn_amount') }}</div>
                 </button>
 
-                <button class="btn">
+                <button class="btn" @click.prevent="Telegram.WebApp.shareToStory()">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
