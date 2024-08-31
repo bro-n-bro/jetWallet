@@ -141,7 +141,7 @@
 
     // Share
     function share() {
-        navigatorData.value = navigator
+        navigatorData.value = navigator.share
 
         if (navigator.share) {
             navigator.share({
