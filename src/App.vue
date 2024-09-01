@@ -1,34 +1,48 @@
 <template>
+    <!-- Main component -->
     <component :is="layout" />
 
-
+    <!-- Virtual keybord overlay -->
     <div class="virtual_keybord_overlay"></div>
 
-
-    <notifications position="top left" group="default" width="100%" @start="notificationsOnStart($event)" @destroy="notificationsOnDestroy()">
+    <!-- Notifications -->
+    <notifications position="top left" group="default" width="100%"
+        @start="notificationsOnStart($event)"
+        @destroy="notificationsOnDestroy()"
+    >
         <template #body="props">
-            <div class="notification" :class="{ pending: props.item.type == 'pending', success: props.item.type == 'success', error: props.item.type == 'error' }">
+            <div class="notification" :class="{
+                pending: props.item.type == 'pending',
+                success: props.item.type == 'success',
+                error: props.item.type == 'error'
+            }">
+                <!-- Notifications icon -->
                 <div class="icon" v-if="props.item.type == 'copied'">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_copied"></use></svg>
                 </div>
 
+                <!-- Notifications icon -->
                 <div class="icon" v-if="props.item.type == 'pending'">
                     <div class="loader"></div>
                 </div>
 
+                <!-- Notifications icon -->
                 <div class="icon" v-if="props.item.type == 'success'">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_success"></use></svg>
                 </div>
 
+                <!-- Notifications icon -->
                 <div class="icon" v-if="props.item.type == 'error'">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_notification_error"></use></svg>
                 </div>
 
                 <div>
+                    <!-- Notifications title -->
                     <div class="title">
                         {{ props.item.title }} {{ props.item.text }}
                     </div>
 
+                    <!-- Notifications explorer link -->
                     <div class="explorer" v-if="props.item.data.explorer_link">
                         <a :href="props.item.data.explorer_link" target="_blank" rel="noopener nofollow">
                             {{ $t('message.notification_explorer_link') }}
@@ -59,7 +73,7 @@
 
 
     onBeforeMount(() => {
-        // Set title
+        // Set page title
         title.value = i18n.global.t('message.page_title')
     })
 
@@ -69,8 +83,8 @@
             // Initialize the mini-application
             await Telegram.WebApp.ready()
 
-            // Disable vertical swipes
-            Telegram.WebApp.disableVerticalSwipes()
+            // Call the expand method to open to full height
+            Telegram.WebApp.expand()
 
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
@@ -78,8 +92,8 @@
             // Show progress
             Telegram.WebApp.MainButton.showProgress(true)
 
-            // Call the expand method to open to full height
-            Telegram.WebApp.expand()
+            // Disable vertical swipes
+            Telegram.WebApp.disableVerticalSwipes()
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
@@ -99,6 +113,7 @@
                 let notification = document.querySelector('.notification.pending')
 
                 if (notification) {
+                    // Add notification class
                     notification.classList.add('small')
                 }
 
@@ -120,6 +135,7 @@
     emitter.on('show_keyboard', () => {
         setTimeout(() => {
             if (viewportHeight.value > Telegram.WebApp.viewportStableHeight) {
+                // Overlay
                 let overlay = document.querySelector('.virtual_keybord_overlay')
 
                 if (overlay) {
@@ -134,10 +150,11 @@
     // Event "hide_keyboard"
     emitter.on('hide_keyboard', () => {
         setTimeout(() => {
+            // Overlay
             let overlay = document.querySelector('.virtual_keybord_overlay')
 
             if (overlay) {
-                // Show overlay
+                // Hide overlay
                 overlay.style.display = 'none'
             }
         })
@@ -147,18 +164,23 @@
     // Event "show_pending_notification"
     emitter.on('show_pending_notification', () => {
         if (!notificationTimeout.value) {
-            // Show pending notification
-            document.querySelector('.notification.pending').classList.remove('small')
+            let notification = document.querySelector('.notification.pending')
 
-            // Hide pending notification
-            notificationTimeout.value = setTimeout(() => {
-                if (document.querySelector('.notification.pending')) {
-                    document.querySelector('.notification.pending').classList.add('small')
-                }
+            if (notification) {
+                // Show pending notification
+                notification.classList.remove('small')
 
-                // Clear timeout
-                notificationTimeout.value = null
-            }, store.notificationsPendingDelay)
+                // Hide pending notification
+                notificationTimeout.value = setTimeout(() => {
+                    if (notification) {
+                        // Add notification class
+                        notification.classList.add('small')
+                    }
+
+                    // Clear timeout
+                    notificationTimeout.value = null
+                }, store.notificationsPendingDelay)
+            }
         }
     })
 </script>

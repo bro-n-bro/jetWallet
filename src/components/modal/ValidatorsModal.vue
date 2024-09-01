@@ -79,7 +79,7 @@
     import Search from '@/components/Search.vue'
 
 
-    const props = defineProps(['unstake', 'restake']),
+    const props = defineProps(['unstake', 'redelegate']),
         store = useGlobalStore(),
         emitter = inject('emitter'),
         isValidatorsGot = ref(false),
@@ -91,13 +91,13 @@
         if (props.unstake) {
             // Get validators
             validators.value = (await store.getUserValidators()).validators
-        } else if(props.restake) {
-            if (props.restake === 'from') {
+        } else if(props.redelegate) {
+            if (props.redelegate === 'from') {
                 // Get validators
                 validators.value = (await store.getUserValidators()).validators
             } else {
                 // Get validators (Exclude validator from)
-                validators.value = (await store.getAllValidators()).validators.filter(validator => validator.operator_address !== store.restakeValidatorFrom?.operator_address)
+                validators.value = (await store.getAllValidators()).validators.filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
             }
         } else {
             // Get validators
@@ -132,15 +132,15 @@
             if (store.unstakeCurrentValidator && store.unstakeCurrentValidator.operator_address === address) {
                 return true
             }
-        } else if(props.restake) {
-            if (props.restake === 'from') {
+        } else if(props.redelegate) {
+            if (props.redelegate === 'from') {
                 // Check
-                if (store.restakeValidatorFrom && store.restakeValidatorFrom.operator_address === address) {
+                if (store.redelegateValidatorFrom && store.redelegateValidatorFrom.operator_address === address) {
                     return true
                 }
             } else {
                 // Check
-                if (store.restakeValidatorTo && store.restakeValidatorTo.operator_address === address) {
+                if (store.redelegateValidatorTo && store.redelegateValidatorTo.operator_address === address) {
                     return true
                 }
             }
@@ -157,18 +157,18 @@
         if (props.unstake) {
             // Set data
             store.unstakeCurrentValidator = validator
-        } else if (props.restake) {
-            if (props.restake === 'from') {
+        } else if (props.redelegate) {
+            if (props.redelegate === 'from') {
                 // Set data
-                store.restakeValidatorFrom = validator
+                store.redelegateValidatorFrom = validator
 
                 // Remove duplicate
-                if (store.restakeValidatorFrom.operator_address === store.restakeValidatorTo?.operator_address) {
-                    store.restakeValidatorTo = null
+                if (store.redelegateValidatorFrom.operator_address === store.redelegateValidatorTo?.operator_address) {
+                    store.redelegateValidatorTo = null
                 }
             } else {
                 // Set data
-                store.restakeValidatorTo = validator
+                store.redelegateValidatorTo = validator
             }
         } else {
             // Set data

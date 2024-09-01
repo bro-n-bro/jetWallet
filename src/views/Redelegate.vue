@@ -1,5 +1,5 @@
 <template>
-    <section class="page_container inner_page_container restake">
+    <section class="page_container inner_page_container redelegate">
         <div class="cont">
             <div class="head">
                 <router-link to="/account?activeSlide=1" class="back_btn">
@@ -7,17 +7,17 @@
                 </router-link>
 
                 <div class="page_title">
-                    {{ $t('message.restake_page_title') }}
+                    {{ $t('message.redelegate_page_title') }}
                 </div>
             </div>
 
 
             <div class="validator_info from">
                 <div class="field_label">
-                    {{ $t('message.restake_validator_from_label') }}
+                    {{ $t('message.redelegate_validator_from_label') }}
                 </div>
 
-                <div class="info_wrap" @click.prevent="showValidatorsFromModal = true" v-if="!store.restakeValidatorFrom">
+                <div class="info_wrap" @click.prevent="showValidatorsFromModal = true" v-if="!store.redelegateValidatorFrom">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -30,14 +30,14 @@
                 <div class="validator_wrap" @click.prevent="showValidatorsFromModal = true" v-else>
                     <div class="validator">
                         <div class="logo">
-                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.restakeValidatorFrom.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.redelegateValidatorFrom.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                         </div>
 
                         <div>
                             <div class="moniker">
-                                {{ store.restakeValidatorFrom.description.moniker }}
+                                {{ store.redelegateValidatorFrom.description.moniker }}
                             </div>
                         </div>
 
@@ -74,10 +74,10 @@
 
             <div class="validator_info to">
                 <div class="field_label">
-                    {{ $t('message.restake_validator_to_label') }}
+                    {{ $t('message.redelegate_validator_to_label') }}
                 </div>
 
-                <div class="info_wrap" @click.prevent="showValidatorsToModal = true" v-if="!store.restakeValidatorTo">
+                <div class="info_wrap" @click.prevent="showValidatorsToModal = true" v-if="!store.redelegateValidatorTo">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -90,14 +90,14 @@
                 <div class="validator_wrap" @click.prevent="showValidatorsToModal = true" v-else>
                     <div class="validator">
                         <div class="logo">
-                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.restakeValidatorTo.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.redelegateValidatorTo.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                         </div>
 
                         <div>
                             <div class="moniker">
-                                {{ store.restakeValidatorTo.description.moniker }}
+                                {{ store.redelegateValidatorTo.description.moniker }}
                             </div>
                         </div>
 
@@ -125,7 +125,7 @@
             </div>
 
 
-            <div class="amount_field" :class="{ disabled: !store.restakeValidatorFrom }">
+            <div class="amount_field" :class="{ disabled: !store.redelegateValidatorFrom }">
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
@@ -154,8 +154,8 @@
 
 
             <div class="btns">
-                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showRestakeConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
-                    <span>{{ $t('message.btn_restake') }}</span>
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showRedelegateConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
+                    <span>{{ $t('message.btn_redelegate') }}</span>
                 </button>
 
                 <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
@@ -167,11 +167,11 @@
 
 
     <!-- Validators modal -->
-    <ValidatorsModal v-if="showValidatorsFromModal" restake="from" />
-    <ValidatorsModal v-if="showValidatorsToModal" restake="to" />
+    <ValidatorsModal v-if="showValidatorsFromModal" redelegate="from" />
+    <ValidatorsModal v-if="showValidatorsToModal" redelegate="to" />
 
-    <!-- restake confirm modal -->
-    <RestakeConfirmModal v-if="showRestakeConfirmModal" :amount :msgAny />
+    <!-- Redelegate confirm modal -->
+    <RedelegateConfirmModal v-if="showRedelegateConfirmModal" :amount :msgAny />
 </template>
 
 
@@ -184,21 +184,21 @@
     // Components
     import TxFee from '@/components/TxFee.vue'
     import ValidatorsModal from '@/components/modal/ValidatorsModal.vue'
-    import RestakeConfirmModal from '@/components/modal/RestakeConfirmModal.vue'
+    import RedelegateConfirmModal from '@/components/modal/RedelegateConfirmModal.vue'
 
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         showValidatorsFromModal = ref(false),
         showValidatorsToModal = ref(false),
-        showRestakeConfirmModal = ref(false),
+        showRedelegateConfirmModal = ref(false),
         msgAny = ref([]),
         amount = ref(''),
         maxAmount = ref(0),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && !!store.restakeValidatorFrom && !!store.restakeValidatorTo)),
+        isFormValid = ref(computed(() => isAmountReady.value && !!store.redelegateValidatorFrom && !!store.redelegateValidatorTo)),
         validatorFromStaked = computed(() => {
-            let result = isStakedValidator(store.restakeValidatorFrom?.operator_address)
+            let result = isStakedValidator(store.redelegateValidatorFrom?.operator_address)
 
             return result || {
                 balance: {
@@ -207,7 +207,7 @@
             }
         }),
         validatorToStaked = computed(() => {
-            let result = isStakedValidator(store.restakeValidatorTo?.operator_address)
+            let result = isStakedValidator(store.redelegateValidatorTo?.operator_address)
 
             return result || {
                 balance: {
@@ -219,25 +219,25 @@
 
     onBeforeMount(() => {
         // Reset data
-        store.restakeValidatorFrom = null
-        store.restakeValidatorTo = null
+        store.redelegateValidatorFrom = null
+        store.redelegateValidatorTo = null
     })
 
 
     onUnmounted(() => {
         // Reset data
-        store.restakeValidatorFrom = null
-        store.restakeValidatorTo = null
+        store.redelegateValidatorFrom = null
+        store.redelegateValidatorTo = null
 
         // Unlisten events
-        emitter.off('close_restake_confirm_modal')
+        emitter.off('close_redelegate_confirm_modal')
         emitter.off('close_validators_modal')
     })
 
 
-    watch(computed(() => store.restakeValidatorFrom), () => {
+    watch(computed(() => store.redelegateValidatorFrom), () => {
         // Get max amount
-        maxAmount.value = (isStakedValidator(store.restakeValidatorFrom.operator_address)).balance.amount
+        maxAmount.value = (isStakedValidator(store.redelegateValidatorFrom.operator_address)).balance.amount
     })
 
 
@@ -248,8 +248,8 @@
                 typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
                 value: MsgBeginRedelegate.fromPartial({
                     delegatorAddress: store.currentAddress,
-                    validatorSrcAddress: store.restakeValidatorFrom.operator_address,
-                    validatorDstAddress: store.restakeValidatorTo.operator_address,
+                    validatorSrcAddress: store.redelegateValidatorFrom.operator_address,
+                    validatorDstAddress: store.redelegateValidatorTo.operator_address,
                     amount: {
                         denom: store.networks[store.currentNetwork].denom,
                         amount: `${parseFloat((amount.value).toString().replace(',', '.')).toFixed(store.networks[store.currentNetwork].exponent) * Math.pow(10, store.networks[store.currentNetwork].exponent)}`
@@ -317,15 +317,15 @@
 
 
     // Event "close_stake_confirm_modal"
-    emitter.on('close_restake_confirm_modal', () => {
-        // Hide restake confirm modal
-        showRestakeConfirmModal.value = false
+    emitter.on('close_redelegate_confirm_modal', () => {
+        // Hide redelegate confirm modal
+        showRedelegateConfirmModal.value = false
     })
 </script>
 
 
 <style scoped>
-    .restake
+    .redelegate
     {
         background: #170232;
     }
@@ -374,7 +374,7 @@
         content: '';
         pointer-events: none;
 
-        background: url(@/assets/bg_restake_validator_from.png) 0 0 no-repeat;
+        background: url(@/assets/bg_redelegate_validator_from.png) 0 0 no-repeat;
     }
 
 
@@ -395,7 +395,7 @@
         content: '';
         pointer-events: none;
 
-        background: url(@/assets/bg_restake_validator_to.png) 0 0 no-repeat;
+        background: url(@/assets/bg_redelegate_validator_to.png) 0 0 no-repeat;
     }
 
 
@@ -614,7 +614,7 @@
         content: '';
         pointer-events: none;
 
-        background: url(@/assets/bg_restake_validator_from_staked.png) 0 0 no-repeat;
+        background: url(@/assets/bg_redelegate_validator_from_staked.png) 0 0 no-repeat;
     }
 
 

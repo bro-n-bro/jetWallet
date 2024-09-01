@@ -1,26 +1,31 @@
 <template>
+    <!-- Index page -->
     <section class="page_container index_page">
         <div class="cont">
+            <!-- Index page logo -->
             <div class="logo">
                 <img src="@/assets/logo.svg" alt="" loading="lazy">
             </div>
 
-
+            <!-- Index page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
+                    <!-- Loader -->
                     <Loader v-if="loading" />
 
-
+                    <!-- Index page image -->
                     <div class="image">
                         <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
                     </div>
 
-
+                    <!-- Index page buttons -->
                     <div class="btns">
+                        <!-- Create wallet button -->
                         <button class="btn" @click="goTo('/create_wallet')">
                             <span>{{ $t('message.btn_create_wallet') }}</span>
                         </button>
 
+                        <!-- Import wallet button -->
                         <button class="btn purple_btn" @click="goTo('/import_wallet')">
                             <span>{{ $t('message.btn_import_wallet') }}</span>
                         </button>
@@ -35,7 +40,6 @@
 <script setup>
     import { ref, onBeforeMount } from 'vue'
     import { useRouter } from 'vue-router'
-
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -56,7 +60,7 @@
         // Show loader
         loading.value = true
 
-        // Set router
+        // Redirect
         router.push(path)
     }
 </script>

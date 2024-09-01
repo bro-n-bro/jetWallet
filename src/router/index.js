@@ -106,9 +106,9 @@ const routes = [
 		}
 	},
 	{
-		path: '/account/restake',
-		name: 'Restake',
-		component: () => import('../views/Restake.vue'),
+		path: '/account/redelegate',
+		name: 'Redelegate',
+		component: () => import('../views/Redelegate.vue'),
 		meta: {
 			layout: defaultLayout,
 			accessDenied: ['not_authorized']

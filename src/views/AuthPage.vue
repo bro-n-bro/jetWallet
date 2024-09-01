@@ -1,10 +1,13 @@
 <template>
+    <!-- Auth page -->
     <section class="page_container auth_page">
         <div class="cont">
+            <!-- Auth page title -->
             <div class="page_title">
                 {{ $t('message.auth_title') }}
             </div>
 
+            <!-- Auth page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
                     <!-- Auth -->
@@ -59,7 +62,10 @@
 
 
     // Event "show_error_auth_modal"
-    emitter.on('show_error_auth_modal', () => showErrorAuthModal.value = true)
+    emitter.on('show_error_auth_modal', () => {
+        // Show error auth modal
+        showErrorAuthModal.value = true
+    })
 
 
     async function deleteAll() {

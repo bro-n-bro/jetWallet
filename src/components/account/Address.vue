@@ -1,7 +1,10 @@
 <template>
+    <!-- Current address -->
     <div class="address" @click.prevent="copyHandler">
+        <!-- Current address icon -->
         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy2"></use></svg>
 
+        <!-- Current address value -->
         <span>{{ store.currentAddress.slice(0, 9) + '...' + store.currentAddress.slice(-6) }}</span>
     </div>
 </template>
@@ -24,6 +27,12 @@
     function copyHandler() {
         // Copy
         copy(store.currentAddress)
+
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
 
         // Show notification
         notification.notify({
@@ -51,9 +60,12 @@
         padding: 2px;
 
         cursor: pointer;
+        transition: .2s linear;
 
         border-radius: 5px;
         background: #5b3895;
+
+        gap: 4px;
     }
 
 
@@ -63,6 +75,12 @@
 
         width: 14px;
         height: 14px;
-        margin-right: 4px;
+    }
+
+
+    .address:active
+    {
+        color: #5b3895;
+        background: #fff;
     }
 </style>

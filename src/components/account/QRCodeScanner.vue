@@ -1,5 +1,7 @@
 <template>
-    <button class="qr_code_btn" @click.prevent="openScaner">
+    <!-- QR code button -->
+    <button class="btn" @click.prevent="openScanner()">
+        <!-- QR code button icon -->
         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_scaner"></use></svg>
     </button>
 </template>
@@ -7,14 +9,14 @@
 
 <script setup>
     // Open QR popup
-    function openScaner() {
+    function openScanner() {
         Telegram.WebApp.showScanQrPopup({ text: 'Наш текст' })
     }
 </script>
 
 
 <style scoped>
-    .qr_code_btn
+    .btn
     {
         position: absolute;
         z-index: 9;
@@ -31,11 +33,13 @@
         height: 28px;
         margin-left: auto;
 
+        transition: .2s linear;
+
         background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
     }
 
 
-    .qr_code_btn.in_field
+    .btn.in_field
     {
         top: 0;
         right: 16px;
@@ -47,11 +51,18 @@
     }
 
 
-    .qr_code_btn .icon
+    .btn .icon
     {
         display: block;
 
         width: 14px;
         height: 14px;
+    }
+
+
+    .btn:active
+    {
+        color: #5b3895;
+        background: url(@/assets/bg_action_btn_a.svg) 0 0/100% 100% no-repeat;
     }
 </style>

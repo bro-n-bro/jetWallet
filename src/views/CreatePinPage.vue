@@ -1,23 +1,31 @@
 <template>
+    <!-- Create pin page -->
     <section class="page_container careate_pin_page">
         <div class="cont">
+            <!-- Create pin page title -->
             <div class="page_title">
                 {{ $t('message.create_pin_title') }}
             </div>
 
+            <!-- Create pin page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
+                    <!-- Loader -->
                     <Loader v-if="loading" />
 
+                    <!-- Back button -->
                     <!-- <router-link class="back_btn" to="/create_wallet">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                     </router-link> -->
 
+                    <!-- Wallet name -->
                     <div class="wallet_name">
-                        <div class="label">
+                        <!-- Wallet name label -->
+                        <div class="field_label">
                             {{ $t('message.create_pin_wallet_name_label') }}
                         </div>
 
+                        <!-- Wallet name field -->
                         <div class="field">
                             <input type="text" class="input big" v-model="walletName"
                                 :placeholder="$t('message.create_pin_wallet_name_placeholder')"
@@ -28,12 +36,15 @@
                         </div>
                     </div>
 
+                    <!-- Pin code -->
                     <div class="pin">
-                        <div class="label">
+                        <!-- Pin code label -->
+                        <div class="field_label">
                             {{ $t('message.create_pin_create_pin_label') }}
                         </div>
 
                         <div class="row">
+                            <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric"
                                     @focus="emitter.emit('show_keyboard')"
@@ -42,6 +53,7 @@
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
 
+                            <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" inputmode="numeric" :disabled="!pinCode[0].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -50,6 +62,7 @@
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
 
+                            <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" inputmode="numeric" :disabled="!pinCode[1].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -58,6 +71,7 @@
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
 
+                            <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" inputmode="numeric" :disabled="!pinCode[2].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -66,6 +80,7 @@
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
 
+                            <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[4]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -74,6 +89,7 @@
                                     @keydown.backspace="moveBack($event, 4)">
                             </div>
 
+                            <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[5]" maxlength="1" inputmode="numeric" :disabled="!pinCode[4].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -84,12 +100,15 @@
                         </div>
                     </div>
 
+                    <!-- Confirm pin code -->
                     <div class="pin">
-                        <div class="label">
+                        <!-- Confirm pin code label -->
+                        <div class="field_label">
                             {{ $t('message.create_pin_confirm_pin_label') }}
                         </div>
 
                         <div class="row" :class="{ error: confirmPinCode[5].length && !isPinMatching, success: confirmPinCode[5].length && isPinMatching }">
+                            <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[0]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -98,6 +117,7 @@
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
 
+                            <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[1]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[0].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -106,6 +126,7 @@
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
 
+                            <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[2]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[1].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -114,6 +135,7 @@
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
 
+                            <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[3]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[2].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -122,6 +144,7 @@
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
 
+                            <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[4]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[3].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -130,6 +153,7 @@
                                     @keydown.backspace="moveBack($event, 4)">
                             </div>
 
+                            <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[5]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[4].length"
                                     @focus="emitter.emit('show_keyboard')"
@@ -140,17 +164,22 @@
                         </div>
                     </div>
 
+                    <!-- Biometric button -->
                     <button class="biometric_btn" @click.prevent="toggleBiometric" v-if="isBiometricAvailable" :class="{ enabled: isBiometricEnabled }">
+                        <!-- Biometric button icon -->
                         <svg class="icon" v-if="biometrictype === 'face'">
                             <use xlink:href="@/assets/sprite.svg#ic_biometric_face"></use>
                         </svg>
 
+                        <!-- Biometric button icon -->
                         <svg class="icon" v-else>
                             <use xlink:href="@/assets/sprite.svg#ic_biometric_finger"></use>
                         </svg>
 
+                        <!-- Biometric button text -->
                         <span>{{ $t('message.btn_biometric') }}</span>
 
+                        <!-- Biometric button toggle -->
                         <div class="toggle_wrap">
                             <div class="toggle">
                                 <div class="ball_wrap">
@@ -160,7 +189,9 @@
                         </div>
                     </button>
 
+                    <!-- Create pin page buttons -->
                     <div class="btns">
+                        <!-- Next button -->
                         <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save()">
                             <span>{{ $t('message.btn_next') }}</span>
                         </button>
@@ -297,16 +328,6 @@
 
 
 <style scoped>
-    .label
-    {
-        font-size: 14px;
-
-        margin-bottom: 2px;
-        padding: 0 10px;
-    }
-
-
-
     .pin
     {
         margin-top: 8px;

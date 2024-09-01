@@ -1,15 +1,15 @@
 <template>
-    <section class="page_container inner_page_container restake_confirm">
+    <section class="page_container inner_page_container redelegate_confirm">
         <Loader v-if="isProcess" />
 
         <div class="cont">
             <div class="head">
-                <button class="back_btn" @click="emitter.emit('close_stake_confirm_modal')">
+                <button class="back_btn" @click="emitter.emit('close_redelegate_confirm_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
                 <div class="page_title">
-                    {{ $t('message.restake_confirm_page_title') }}
+                    {{ $t('message.redelegate_confirm_page_title') }}
                 </div>
             </div>
 
@@ -24,7 +24,7 @@
                         <div class="features">
                             <div>
                                 <div class="label">
-                                    {{ $t('message.restake_confirm_token_label') }}
+                                    {{ $t('message.redelegate_confirm_token_label') }}
                                 </div>
 
                                 <div class="val">
@@ -36,7 +36,7 @@
 
                             <div>
                                 <div class="label">
-                                    {{ $t('message.restake_confirm_amount_label') }}
+                                    {{ $t('message.redelegate_confirm_amount_label') }}
                                 </div>
 
                                 <div class="val">
@@ -52,14 +52,14 @@
 
                             <div>
                                 <div class="label">
-                                    {{ $t('message.restake_validator_from_label') }}
+                                    {{ $t('message.redelegate_validator_from_label') }}
                                 </div>
 
                                 <div class="val">
-                                    <span class="moniker">{{ store.restakeValidatorFrom.description.moniker }}</span>
+                                    <span class="moniker">{{ store.redelegateValidatorFrom.description.moniker }}</span>
 
                                     <div class="logo">
-                                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.restakeValidatorFrom.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.redelegateValidatorFrom.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                                     </div>
@@ -68,14 +68,14 @@
 
                             <div>
                                 <div class="label">
-                                    {{ $t('message.restake_validator_to_label') }}
+                                    {{ $t('message.redelegate_validator_to_label') }}
                                 </div>
 
                                 <div class="val">
-                                    <span class="moniker">{{ store.restakeValidatorTo.description.moniker }}</span>
+                                    <span class="moniker">{{ store.redelegateValidatorTo.description.moniker }}</span>
 
                                     <div class="logo">
-                                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.restakeValidatorTo.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.redelegateValidatorTo.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                                     </div>
@@ -114,7 +114,7 @@
 
             <div class="btns">
                 <button class="btn" @click.prevent="showSignTxModal = true">
-                    <span>{{ $t('message.btn_confirm_restake') }}</span>
+                    <span>{{ $t('message.btn_confirm_redelegate') }}</span>
                 </button>
             </div>
         </div>
@@ -190,7 +190,15 @@
             })
 
             // Send Tx
-            sendTx(txBytes)
+            sendTx(txBytes).catch(error => {
+                console.log(error)
+
+                // Show error
+                showError(error)
+            })
+
+            // Check Tx result
+            store.checkTxResult()
 
             // Redirect
             router.push('/account')
@@ -205,6 +213,9 @@
 
     // Show error message
     function showError(error) {
+        // Set process status
+        isProcess.value = false
+
         // Get error code
         let errorText = ''
 
@@ -213,15 +224,27 @@
             ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
             : errorText = i18n.global.t('message.notification_tx_error_rejected')
 
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
+
         // Show notification
         notification.notify({
             group: 'default',
             speed: 200,
             duration: 6000,
-            title: 'Tx error',
+            title: i18n.global.t('message.notification_tx_error_title'),
             text: errorText,
             type: 'error'
         })
+
+        // Clear tx hash
+        store.networks[store.currentNetwork].currentTxHash = null
+
+        // Reset Tx Fee
+        store.resetTxFee()
     }
 
 
@@ -244,7 +267,7 @@
 
 
 <style scoped>
-    .restake_confirm
+    .redelegate_confirm
     {
         position: fixed;
         z-index: 9;

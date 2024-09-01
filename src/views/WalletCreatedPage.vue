@@ -1,21 +1,22 @@
 <template>
+    <!-- Wallet created page -->
     <section class="page_container wallet_created_page">
         <div class="cont">
+            <!-- Wallet created page title -->
             <div class="page_title">
                 {{ $t('message.wallet_created_title') }}
             </div>
 
+            <!-- Wallet created page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
-                    <Loader v-if="loading" />
-
-                    <template v-else>
+                    <!-- Wallet created page buttons -->
                     <div class="btns">
+                        <!-- Join button -->
                         <router-link to="/account" class="btn">
                             <span>{{ $t('message.btn_join') }}</span>
                         </router-link>
                     </div>
-                    </template>
                 </div>
             </div>
         </div>
@@ -24,19 +25,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount } from 'vue'
 
-    // Components
-    import Loader from '@/components/Loader.vue'
-
-
-    const loading = ref(true)
-
-
-    onBeforeMount(() => {
-        // Hide loader
-        loading.value = false
-    })
 </script>
 
 

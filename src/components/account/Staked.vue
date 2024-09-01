@@ -35,12 +35,12 @@
                 <div>{{ $t('message.btn_unstake') }}</div>
             </router-link>
 
-            <router-link to="/account/restake" class="btn" :class="{ disabled: !store.stakedBalances.length }">
+            <router-link to="/account/redelegate" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                 </div>
 
-                <div>{{ $t('message.btn_restake') }}</div>
+                <div>{{ $t('message.btn_redelegate') }}</div>
             </router-link>
         </div>
     </div>

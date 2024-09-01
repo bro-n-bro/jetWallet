@@ -11,8 +11,8 @@
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
             </button>
 
-            <!-- Scaner -->
-            <QRCode />
+            <!-- QR code scanner -->
+            <QRCodeScanner />
 
             <!-- Currency -->
             <CurrentCurrency />
@@ -64,7 +64,7 @@
 
     // Components
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
-    import QRCode from '@/components/account/QRCode.vue'
+    import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
 
     import AvailableSection from '@/components/account/Available.vue'

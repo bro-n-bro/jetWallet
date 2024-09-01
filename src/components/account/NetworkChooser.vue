@@ -1,25 +1,38 @@
 <template>
+    <!-- Networks chooser -->
     <div class="choose_network" ref="target" :class="{ disabled: !store.isInitialized || !store.isBalancesGot || !store.isStakedBalancesGot || !store.isRewardsGot }">
+        <!-- Current chain -->
         <button class="btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
+            <!-- Current chain logo -->
             <div class="logo">
                 <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
             </div>
 
-            <div class="name">{{ store.networks[store.currentNetwork].name }}</div>
+            <!-- Current chain name -->
+            <div class="name">
+                {{ store.networks[store.currentNetwork].name }}
+            </div>
 
+            <!-- Current chain arrow -->
             <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver"></use></svg>
         </button>
 
 
+        <!-- Dropdown -->
         <div class="mini_modal" v-show="showDropdown">
             <div class="scroll">
+                <!-- Chain -->
                 <div v-for="(network, index) in store.networks" :key="index">
                     <button class="network" :class="{ active: store.currentNetwork == network.alias }" @click.prevent="changeNetwork(network.alias)">
+                        <!-- Chain logo -->
                         <div class="logo">
                             <img :src="getNetworkLogo(network.chain_id)" alt="">
                         </div>
 
-                        <div class="name">{{ network.name }}</div>
+                        <!-- Chain name -->
+                        <div class="name">
+                            {{ network.name }}
+                        </div>
                     </button>
                 </div>
             </div>
@@ -41,7 +54,7 @@
 
 
     // Click outside
-    onClickOutside(target, e => showDropdown.value = false)
+    onClickOutside(target, () => showDropdown.value = false)
 
 
     // Change network
@@ -75,6 +88,7 @@
     }
 
 
+
     .choose_network .btn
     {
         font-size: 12px;
@@ -99,12 +113,15 @@
 
     .choose_network .btn .logo
     {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
         width: 28px;
         height: 28px;
         margin-right: 12px;
-
-        border-radius: 50%;
-        background: rgba(0,0,0,.3);
     }
 
 
@@ -112,8 +129,8 @@
     {
         display: block;
 
-        width: 100%;
-        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
     }
 
 
@@ -135,7 +152,6 @@
     }
 
 
-
     .choose_network .btn.active
     {
         border-radius: 8px 8px 0 0;
@@ -155,6 +171,7 @@
         left: 0;
 
         width: 100%;
+        padding: 0 10px 6px;
 
         border-radius: 0 0 8px 8px;
         background: #5b3895;
@@ -170,10 +187,17 @@
         overscroll-behavior-y: contain;
     }
 
+
     .choose_network .scroll::-webkit-scrollbar
     {
         width: 4px;
         height: 4px;
+    }
+
+
+    .choose_network .scroll > *
+    {
+        margin-top: 12px;
     }
 
 
@@ -186,23 +210,28 @@
         align-content: center;
         align-items: center;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: space-between;
 
         width: 100%;
-        padding: 6px 10px;
+        padding: 2px 4px;
 
+        transition: background .2s linear;
         text-align: left;
+
+        border-radius: 4px;
     }
 
 
     .choose_network .network .logo
     {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
         width: 28px;
         height: 28px;
-        margin-right: 12px;
-
-        border-radius: 50%;
-        background: rgba(0,0,0,.3);
     }
 
 
@@ -210,14 +239,20 @@
     {
         display: block;
 
-        width: 100%;
-        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
     }
 
 
     .choose_network .network .name
     {
         width: calc(100% - 40px);
+    }
+
+
+    .choose_network .network:active
+    {
+        background: #a072ea;
     }
 
 

@@ -45,8 +45,8 @@ export const useGlobalStore = defineStore('global', {
         currentCurrencySymbol: '',
         stakeCurrentValidator: null,
         unstakeCurrentValidator: null,
-        restakeValidatorFrom: null,
-        restakeValidatorTo: null,
+        redelegateValidatorFrom: null,
+        redelegateValidatorTo: null,
 
         prices: [],
         balances: [],
@@ -520,16 +520,6 @@ export const useGlobalStore = defineStore('global', {
 
             // Listening events
             this.networks[this.currentNetwork].websocket.onopen = () => {
-                // Event Tx with sender
-                // this.networks[this.currentNetwork].websocket.send(JSON.stringify({
-                //     jsonrpc: '2.0',
-                //     method: 'subscribe',
-                //     id: '1',
-                //     params: {
-                //         query: `tm.event='Tx' AND transfer.sender='${this.currentAddress}'`
-                //     }
-                // }))
-
                 // Event Tx with recipient
                 this.networks[this.currentNetwork].websocket.send(JSON.stringify({
                     jsonrpc: '2.0',
@@ -560,54 +550,7 @@ export const useGlobalStore = defineStore('global', {
                     // Transaction
                     if (parsedMsg.id == '2') {
                         // Check Tx result
-                        let txResult = await this.checkTxResult(this.networks[this.currentNetwork].currentTxHash)
-
-                        // Clean notifications
-                        notification.notify({
-                            group: 'default',
-                            clean: true
-                        })
-
-                        if (txResult.tx_response.code == '0') {
-                            // Show notification
-                            notification.notify({
-                                group: 'default',
-                                speed: 200,
-                                duration: 4000,
-                                title: i18n.global.t('message.notification_tx_success_title'),
-                                type: 'success',
-                                data: {
-                                    explorer_link: getExplorerLink(this.currentNetwork)
-                                }
-                            })
-                        } else {
-                            // Get error code
-                            let errorText = ''
-
-                            // Get error title
-                            txResult.tx_response.code
-                                ? errorText = i18n.global.t(`message.notification_tx_error_${txResult.tx_response.code}`)
-                                : errorText = i18n.global.t('message.notification_tx_error_rejected')
-
-                            // Show notification
-                            notification.notify({
-                                group: 'default',
-                                speed: 200,
-                                duration: 6000,
-                                title: i18n.global.t('message.notification_tx_error_title'),
-                                text: errorText,
-                                type: 'error'
-                            })
-                        }
-
-                        // Clear tx hash
-                        this.networks[this.currentNetwork].currentTxHash = null
-
-                        // Update all balances
-                        this.updateAllBalances()
-
-                        // Reset Tx Fee
-                        this.resetTxFee()
+                        this.checkTxResult()
                     }
                 }
             }
@@ -656,12 +599,68 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Check Tx result
-        async checkTxResult(txHash) {
+        // Get Tx info
+        async getTxInfo(txHash) {
             try {
+                // Request
                 return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
             } catch (error) {
                 console.error(error)
+            }
+        },
+
+
+        // Check Tx result
+        async checkTxResult() {
+            let txResult = await this.getTxInfo(this.networks[this.currentNetwork].currentTxHash)
+
+            if (txResult.code != 5) {
+                // Clean notifications
+                notification.notify({
+                    group: 'default',
+                    clean: true
+                })
+
+                if (txResult.tx_response.code == '0') {
+                    // Show notification
+                    notification.notify({
+                        group: 'default',
+                        speed: 200,
+                        duration: 4000,
+                        title: i18n.global.t('message.notification_tx_success_title'),
+                        type: 'success',
+                        data: {
+                            explorer_link: getExplorerLink(this.currentNetwork)
+                        }
+                    })
+                } else {
+                    // Get error code
+                    let errorText = ''
+
+                    // Get error title
+                    txResult.tx_response.code
+                        ? errorText = i18n.global.t(`message.notification_tx_error_${txResult.tx_response.code}`)
+                        : errorText = i18n.global.t('message.notification_tx_error_rejected')
+
+                    // Show notification
+                    notification.notify({
+                        group: 'default',
+                        speed: 200,
+                        duration: 6000,
+                        title: i18n.global.t('message.notification_tx_error_title'),
+                        text: errorText,
+                        type: 'error'
+                    })
+                }
+
+                // Clear tx hash
+                this.networks[this.currentNetwork].currentTxHash = null
+
+                // Update all balances
+                this.updateAllBalances()
+
+                // Reset Tx Fee
+                this.resetTxFee()
             }
         },
 

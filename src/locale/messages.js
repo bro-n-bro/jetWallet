@@ -124,13 +124,13 @@ export default {
             'receive_amount_label': 'Amount:',
 
 
-            // Restake
-            'restake_page_title': 'Restake',
-            'restake_confirm_page_title': 'Confirm',
-            'restake_validator_from_label': 'From:',
-            'restake_validator_to_label': 'To:',
-            'restake_confirm_token_label': 'Token:',
-            'restake_confirm_amount_label': 'Amount:',
+            // Redelegate
+            'redelegate_page_title': 'Redelegate',
+            'redelegate_confirm_page_title': 'Confirm',
+            'redelegate_validator_from_label': 'From:',
+            'redelegate_validator_to_label': 'To:',
+            'redelegate_confirm_token_label': 'Token:',
+            'redelegate_confirm_amount_label': 'Amount:',
 
 
             // Tx warning
@@ -217,9 +217,9 @@ export default {
             'btn_stake': 'Stake',
             'btn_confirm_stake': 'Confirm Staking',
             'btn_confirm_unstake': 'Confirm Unstake',
-            'btn_confirm_restake': 'Confirm Restake',
+            'btn_confirm_redelegate': 'Confirm Redelegate',
             'btn_unstake': 'Unstake',
-            'btn_restake': 'Restake',
+            'btn_redelegate': 'Redelegate',
             'btn_claim': 'Claim',
             'btn_approve': 'Approve',
             'btn_json': 'View JSON',

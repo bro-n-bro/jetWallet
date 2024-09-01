@@ -246,7 +246,15 @@
             })
 
             // Send Tx
-            sendTx(txBytes)
+            sendTx(txBytes).catch(error => {
+                console.log(error)
+
+                // Show error
+                showError(error)
+            })
+
+            // Check Tx result
+            store.checkTxResult()
 
             // Redirect
             router.push('/account')
@@ -261,6 +269,9 @@
 
     // Show error message
     function showError(error) {
+        // Set process status
+        isProcess.value = false
+
         // Get error code
         let errorText = ''
 
@@ -269,15 +280,27 @@
             ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
             : errorText = i18n.global.t('message.notification_tx_error_rejected')
 
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
+
         // Show notification
         notification.notify({
             group: 'default',
             speed: 200,
             duration: 6000,
-            title: 'Tx error',
+            title: i18n.global.t('message.notification_tx_error_title'),
             text: errorText,
             type: 'error'
         })
+
+        // Clear tx hash
+        store.networks[store.currentNetwork].currentTxHash = null
+
+        // Reset Tx Fee
+        store.resetTxFee()
     }
 
 

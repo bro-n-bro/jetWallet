@@ -124,25 +124,6 @@ export const denomTraces = async (string) => {
 export const formatTokenAmount = (amount, exponent) => amount / Math.pow(10, exponent)
 
 
-// Get price by denom
-export const getPriceByDenom = denom => {
-    let store = useGlobalStore(),
-        price = store.prices.find(el => el.symbol === denom)?.price || 0,
-        formatableToken = store.formatableTokens.find(el => el.token_name == denom),
-        formatPrice = formatableToken ? price * Math.pow(10, formatableToken.exponent) : price
-
-    return formatPrice
-}
-
-
-// Calc token cost in current cucrrency
-export const calcTokenCost = (denom, amount, exponent, currency = null) => {
-    let formatAmount = formatTokenAmount(amount, exponent)
-
-    return currencyConversion(formatAmount, denom, currency)
-}
-
-
 // Format token cost
 export const formatTokenCost = (cost, currency = null) => {
     let store = useGlobalStore(),
@@ -162,6 +143,27 @@ export const formatTokenCost = (cost, currency = null) => {
 }
 
 
+// Formating token name
+export const formatTokenName = tokenName => {
+    let store = useGlobalStore(),
+        formatableToken = store.formatableTokens.find(el => el.token_name == tokenName),
+        formatTokenName = formatableToken ? formatableToken.format_token_name : tokenName
+
+    return formatTokenName
+}
+
+
+// Get price by denom
+export const getPriceByDenom = denom => {
+    let store = useGlobalStore(),
+        price = store.prices.find(el => el.symbol === denom)?.price || 0,
+        formatableToken = store.formatableTokens.find(el => el.token_name == denom),
+        formatPrice = formatableToken ? price * Math.pow(10, formatableToken.exponent) : price
+
+    return formatPrice
+}
+
+
 // Currency conversion
 export const currencyConversion = (amount, denom, currency) => {
     let store = useGlobalStore(),
@@ -175,13 +177,11 @@ export const currencyConversion = (amount, denom, currency) => {
 }
 
 
-// Formating token name
-export const formatTokenName = tokenName => {
-    let store = useGlobalStore(),
-        formatableToken = store.formatableTokens.find(el => el.token_name == tokenName),
-        formatTokenName = formatableToken ? formatableToken.format_token_name : tokenName
+// Calc token cost in current cucrrency
+export const calcTokenCost = (denom, amount, exponent, currency = null) => {
+    let formatAmount = formatTokenAmount(amount, exponent)
 
-    return formatTokenName
+    return currencyConversion(formatAmount, denom, currency)
 }
 
 

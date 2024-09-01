@@ -12,7 +12,12 @@ const network = {
     alias: 'cosmoshub',
     exponent: 6,
     gas_adjustment: 1.6,
-    address_length: 20
+    address_length: 20,
+    gas_amount_send: 100000,
+    gas_amount_claim: 1000000,
+    gas_amount_stake: 500000,
+    gas_amount_unstake: 500000,
+    gas_amount_redelegate: 1000000
 }
 
 export default network

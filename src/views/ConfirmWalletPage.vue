@@ -1,28 +1,37 @@
 <template>
-    <section class="page_container create_wallet_confirm_page">
+    <!-- Confirm create wallet page -->
+    <section class="page_container confirm_create_wallet_page">
         <div class="cont">
+            <!-- Confirm create wallet page title -->
             <div class="page_title">
                 {{ $t('message.create_wallet_confirm_title') }}
             </div>
 
-
+            <!-- Confirm create wallet page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
+                    <!-- Loader -->
                     <Loader v-if="loading" />
 
+                    <!-- Back button -->
                     <router-link class="back_btn" to="/create_wallet">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                     </router-link>
 
+                    <!-- Confirm data -->
                     <div class="confirm">
                         <div class="row">
+                            <!-- Confirm first word -->
                             <div>
+                                <!-- Confirm word label -->
                                 <div class="label">
                                     <span>{{ $t('message.confirm_label') }}</span>
                                     <span>{{ wordOneNumber }}.</span>
                                 </div>
 
-                                <input type="text" class="input" v-model="wordOne" @keyup="validateWordOne"
+                                <!-- Confirm word field -->
+                                <input type="text" class="input" v-model="wordOne"
+                                    @keyup="validateFirstWord()"
                                     @focus="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     :class="{
@@ -31,13 +40,17 @@
                                     }">
                             </div>
 
+                            <!-- Confirm second word -->
                             <div>
+                                <!-- Confirm word label -->
                                 <div class="label">
                                     <span>{{ $t('message.confirm_label') }}</span>
                                     <span>{{ wordTwoNumber }}.</span>
                                 </div>
 
-                                <input type="text" class="input" v-model="wordTwo" @keyup="validateWordTwo"
+                                <!-- Confirm word field -->
+                                <input type="text" class="input" v-model="wordTwo"
+                                    @keyup="validateSecondWord()"
                                     @focus="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     :class="{
@@ -48,20 +61,25 @@
                         </div>
                     </div>
 
+                    <!-- Confirm create wallet page image -->
                     <div class="image">
                         <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
                     </div>
 
+                    <!-- Confirm create wallet page buttons -->
                     <div class="btns">
-                        <button class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save">
+                        <!-- Next button -->
+                        <button class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save()">
                             <span>{{ $t('message.btn_next') }}</span>
                         </button>
 
+                        <!-- Next button -->
                         <button class="btn" @click.prevent="save">
                             <span>{{ $t('message.btn_next') }}</span>
                         </button>
                     </div>
 
+                    <!-- Confirm create wallet page text -->
                     <div class="exp">
                         {{ $t('message.confirm_exp') }}
                     </div>
@@ -76,7 +94,6 @@
     import { ref, onBeforeMount, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
-
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -116,8 +133,8 @@
     })
 
 
-    // Validate word one
-    function validateWordOne() {
+    // Validate first word
+    function validateFirstWord() {
         validWordOne.value = true
 
         wordOne.value === store.secret.split(' ')[wordOneNumber.value - 1]
@@ -126,8 +143,8 @@
     }
 
 
-    // Validate word two
-    function validateWordTwo() {
+    // Validate second word
+    function validateSecondWord() {
         validWordTwo.value = true
 
         wordTwo.value === store.secret.split(' ')[wordTwoNumber.value - 1]
