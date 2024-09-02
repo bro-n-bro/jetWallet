@@ -1,40 +1,48 @@
 <template>
+    <!-- Import wallet page -->
     <section class="page_container import_wallet_page">
         <div class="cont">
+            <!-- Import wallet page title -->
             <div class="page_title">
                 {{ $t('message.import_wallet_title') }}
             </div>
 
-
+            <!-- Import wallet page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
+                    <!-- Loader -->
                     <Loader v-if="loading" />
 
                     <template v-else>
+                    <!-- Back button -->
                     <router-link class="back_btn" to="/">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                     </router-link>
 
-
+                    <!-- Tabs -->
                     <div class="tabs_wrap">
                         <div class="tabs">
+                            <!-- Tab 12 words -->
                             <button class="btn" @click.prevent="activeTab = 1" :class="{ active: activeTab === 1 }">
                                 <span>{{ $t('message.mnemonic_tab1') }}</span>
                             </button>
 
+                            <!-- Tab 24 words -->
                             <button class="btn" @click.prevent="activeTab = 2" :class="{ active: activeTab === 2 }">
                                 <span>{{ $t('message.mnemonic_tab2') }}</span>
                             </button>
 
+                            <!-- Tab Private Key -->
                             <button class="btn" @click.prevent="activeTab = 3" :class="{ active: activeTab === 3 }">
                                 <span>{{ $t('message.mnemonic_tab3') }}</span>
                             </button>
                         </div>
                     </div>
 
-
+                    <!-- Mnemonic -->
                     <div class="mnemonic" v-if="activeTab != 3">
                         <div class="row">
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[0]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -43,6 +51,7 @@
                                     @paste="handlePaste" :class="getValidationClass(0)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[1]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -51,6 +60,7 @@
                                     @paste="handlePaste" :class="getValidationClass(1)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[2]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -59,6 +69,7 @@
                                     @paste="handlePaste" :class="getValidationClass(2)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[3]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -67,6 +78,7 @@
                                     @paste="handlePaste" :class="getValidationClass(3)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[4]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -75,6 +87,7 @@
                                     @paste="handlePaste" :class="getValidationClass(4)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[5]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -83,6 +96,7 @@
                                     @paste="handlePaste" :class="getValidationClass(5)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[6]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -91,6 +105,7 @@
                                     @paste="handlePaste" :class="getValidationClass(6)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[7]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -99,6 +114,7 @@
                                     @paste="handlePaste" :class="getValidationClass(7)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[8]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -107,6 +123,7 @@
                                     @paste="handlePaste" :class="getValidationClass(8)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[9]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -115,6 +132,7 @@
                                     @paste="handlePaste" :class="getValidationClass(9)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[10]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -123,6 +141,7 @@
                                     @paste="handlePaste" :class="getValidationClass(10)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[11]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -131,6 +150,7 @@
                                     @paste="handlePaste" :class="getValidationClass(11)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[12]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -139,6 +159,7 @@
                                     @paste="handlePaste" :class="getValidationClass(12)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[13]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -147,6 +168,7 @@
                                     @paste="handlePaste" :class="getValidationClass(13)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[14]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -155,6 +177,7 @@
                                     @paste="handlePaste" :class="getValidationClass(14)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[15]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -163,6 +186,7 @@
                                     @paste="handlePaste" :class="getValidationClass(15)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[16]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -171,6 +195,7 @@
                                     @paste="handlePaste" :class="getValidationClass(16)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[17]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -179,6 +204,7 @@
                                     @paste="handlePaste" :class="getValidationClass(17)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[18]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -187,6 +213,7 @@
                                     @paste="handlePaste" :class="getValidationClass(18)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[19]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -195,6 +222,7 @@
                                     @paste="handlePaste" :class="getValidationClass(19)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[20]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -203,6 +231,7 @@
                                     @paste="handlePaste" :class="getValidationClass(20)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[21]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -211,6 +240,7 @@
                                     @paste="handlePaste" :class="getValidationClass(21)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[22]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -219,6 +249,7 @@
                                     @paste="handlePaste" :class="getValidationClass(22)">
                             </div>
 
+                            <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[23]"
                                     @focus="emitter.emit('show_keyboard')"
@@ -228,24 +259,35 @@
                             </div>
                         </div>
 
+                        <!-- Import wallet page exp -->
                         <div class="exp">
                             {{ $t('message.import_wallet_exp') }}
                         </div>
                     </div>
 
 
+                    <!-- Import private key -->
                     <div class="private_key" v-else>
                         <div class="field">
-                            <input type="text" class="input big" v-model="privateKey" :class="{ error: !idValidPrivateKey && isTouchedPrivateKey, success: idValidPrivateKey && isTouchedPrivateKey }" @input="validatePrivateKey">
+                            <!-- Import private key field -->
+                            <input type="text" class="input big" v-model="privateKey"
+                                :class="{
+                                    error: !idValidPrivateKey && isTouchedPrivateKey,
+                                    success: idValidPrivateKey && isTouchedPrivateKey
+                                }"
+                                @input="validatePrivateKey">
                         </div>
 
+                        <!-- Import private key exp -->
                         <div class="exp">
                             {{ $t('message.import_wallet_exp') }}
                         </div>
                     </div>
 
 
+                    <!-- Import wallet page button -->
                     <div class="btns">
+                        <!-- Next button -->
                         <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save">
                             <span>{{ $t('message.btn_next') }}</span>
                         </button>
@@ -263,7 +305,6 @@
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
     import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils'
-
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -428,6 +469,7 @@
     {
         margin-top: 54px;
     }
+
 
 
     .exp

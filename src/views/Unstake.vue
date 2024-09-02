@@ -1,38 +1,50 @@
 <template>
+    <!-- Unstake page -->
     <section class="page_container inner_page_container unstake">
         <div class="cont">
+            <!-- Unstake page head -->
             <div class="head">
+                <!-- Back button -->
                 <router-link to="/account?activeSlide=1" class="back_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
+                <!-- Unstake page title -->
                 <div class="page_title">
                     {{ $t('message.unstake_page_title') }}
                 </div>
             </div>
 
 
+            <!-- Current staked -->
             <div class="current_staked">
+                <!-- Current staked label -->
                 <div class="field_label">
                     {{ $t('message.stake_current_staked_label') }}
                 </div>
 
+                <!-- Current staked data -->
                 <div class="data_wrap">
                     <div class="data">
+                        <!-- Current staked APR -->
                         <div class="apr">
                             <span>{{ $t('message.stake_APR_label') }}<br> {{ (store.networks[store.currentNetwork].APR * 100).toFixed(2) }}%</span>
                         </div>
 
+                        <!-- Current staked token -->
                         <div class="token">
+                            <!-- Current staked token logo -->
                             <div class="logo">
                                 <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
                             </div>
 
                             <div>
+                                <!-- Current staked token denom -->
                                 <div class="denom">
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
+                                <!-- Current staked token unbonding period -->
                                 <div class="unbonding_period">
                                     {{ $t('message.stake_unbonding_period_label') }}
 
@@ -43,18 +55,22 @@
                             </div>
                         </div>
 
+                        <!-- Current staked balances -->
                         <div class="balances">
                             <div>
+                                <!-- Current staked balances label -->
                                 <div class="label">
                                     {{ $t('message.stake_staked_label') }}
                                 </div>
 
+                                <!-- Current staked balances amount -->
                                 <div class="amount">
                                     {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
+                                <!-- Current staked balances cost -->
                                 <div class="cost">
                                     {{ store.currentCurrencySymbol }}{{ formatTokenCost(calcStakedBalancesCost()) }}
                                 </div>
@@ -65,11 +81,14 @@
             </div>
 
 
+            <!-- Unstake page validator -->
             <div class="validator_info">
+                <!-- Unstake page validator label -->
                 <div class="field_label">
                     {{ $t('message.stake_validator_label') }}
                 </div>
 
+                <!-- Unstake page validator info -->
                 <div class="info_wrap" @click.prevent="showValidatorsModal = true" v-if="!store.unstakeCurrentValidator">
                     <div class="info">
                         <div class="placeholder">
@@ -80,8 +99,10 @@
                     </div>
                 </div>
 
+                <!-- Unstake page validator info -->
                 <div class="validator_wrap" @click.prevent="showValidatorsModal = true" v-else>
                     <div class="validator">
+                        <!-- Unstake page validator logo -->
                         <div class="logo">
                             <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.unstakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -89,10 +110,12 @@
                         </div>
 
                         <div>
+                            <!-- Unstake page validator moniker -->
                             <div class="moniker">
                                 {{ store.unstakeCurrentValidator.description.moniker }}
                             </div>
 
+                            <!-- Unstake page validator staked -->
                             <div class="staked" v-if="item = isStakedValidator(store.unstakeCurrentValidator.operator_address)">
                                 {{ $t('message.validatoes_staked_label') }}
 
@@ -110,10 +133,13 @@
             </div>
 
 
+            <!-- Unstake page amount -->
             <div class="amount" :class="{ disabled: !store.unstakeCurrentValidator }">
+                <!-- Unstake page amount label -->
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
+                    <!-- Unstake page amount cost -->
                     <div class="cost">
                         {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
 
@@ -121,12 +147,14 @@
                     </div>
                 </div>
 
+                <!-- Unstake page amount field -->
                 <div class="field">
                     <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
                         @input="validateAmount($event)">
 
+                    <!-- Unstake page amount max. button -->
                     <button type="button" class="max_btn" @click.prevent="setMaxAmount">
                         {{ $t('message.btn_MAX') }}
                     </button>
@@ -135,14 +163,17 @@
 
 
             <!-- Tx fee -->
-            <TxFee v-if="isFormValid" :msgAny />
+            <TxFee v-if="isFormValid" :msgAny txType="unstake" />
 
 
+            <!-- Unstake page buttons -->
             <div class="btns">
+                <!-- Unstake button -->
                 <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showUnstakeConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_unstake') }}</span>
                 </button>
 
+                <!-- Waiting button -->
                 <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
@@ -289,13 +320,6 @@
 
 
 <style scoped>
-    .unstake
-    {
-        background: #170232;
-    }
-
-
-
     .current_staked .data_wrap
     {
         padding: 1px;

@@ -1,40 +1,53 @@
 <template>
+    <!-- Stake page -->
     <section class="page_container inner_page_container stake">
         <div class="cont">
+            <!-- Stake page head -->
             <div class="head">
+                <!-- Bacj button -->
                 <router-link to="/account?activeSlide=1" class="back_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
+                <!-- Stake page title -->
                 <div class="page_title">
                     {{ $t('message.stake_page_title') }}
                 </div>
             </div>
 
+            <!-- Loader -->
             <Loader v-if="!store.isBalancesGot || !store.isStakedBalancesGot" />
 
             <template v-else>
+            <!-- Current staked -->
             <div class="current_staked">
+                <!-- Current staked label -->
                 <div class="field_label">
                     {{ $t('message.stake_current_staked_label') }}
                 </div>
 
+                <!-- Current staked data -->
                 <div class="data_wrap">
                     <div class="data">
+                        <!-- Current staked APR -->
                         <div class="apr">
                             <span>{{ $t('message.stake_APR_label') }}<br> {{ (store.networks[store.currentNetwork].APR * 100).toFixed(2) }}%</span>
                         </div>
 
+                        <!-- Current staked token -->
                         <div class="token">
+                            <!-- Current staked token logo -->
                             <div class="logo">
                                 <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
                             </div>
 
                             <div>
+                                <!-- Current staked token denom -->
                                 <div class="denom">
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
+                                <!-- Current staked token unbonding period -->
                                 <div class="unbonding_period">
                                     {{ $t('message.stake_unbonding_period_label') }}
 
@@ -45,18 +58,22 @@
                             </div>
                         </div>
 
+                        <!-- Current staked balances -->
                         <div class="balances">
                             <div>
+                                <!-- Current staked balances label -->
                                 <div class="label">
                                     {{ $t('message.stake_available_label') }}
                                 </div>
 
+                                <!-- Current staked balances amount -->
                                 <div class="amount">
                                     {{ formatTokenAmount(calcAvailabelAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
+                                <!-- Current staked balances cost -->
                                 <div class="cost">
                                     {{ store.currentCurrencySymbol }}
 
@@ -65,16 +82,19 @@
                             </div>
 
                             <div>
+                                <!-- Current staked balances label -->
                                 <div class="label">
                                     {{ $t('message.stake_staked_label') }}
                                 </div>
 
+                                <!-- Current staked balances amount -->
                                 <div class="amount">
                                     {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
+                                <!-- Current staked balances cost -->
                                 <div class="cost">
                                     {{ store.currentCurrencySymbol }}{{ formatTokenCost(calcStakedBalancesCost()) }}
                                 </div>
@@ -85,11 +105,14 @@
             </div>
 
 
+            <!-- Stake page validator -->
             <div class="validator_info">
+                <!-- Stake page validator label -->
                 <div class="field_label">
                     {{ $t('message.stake_validator_label') }}
                 </div>
 
+                <!-- Stake page validator info -->
                 <div class="info_wrap" @click.prevent="showValidatorsModal = true" v-if="!store.stakeCurrentValidator">
                     <div class="info">
                         <div class="placeholder">
@@ -100,8 +123,10 @@
                     </div>
                 </div>
 
+                <!-- Stake page validator info -->
                 <div class="validator_wrap" @click.prevent="showValidatorsModal = true" v-else>
                     <div class="validator">
+                        <!-- Stake page validator logo -->
                         <div class="logo">
                             <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.stakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -109,10 +134,12 @@
                         </div>
 
                         <div>
+                            <!-- Stake page validator moniker -->
                             <div class="moniker">
                                 {{ store.stakeCurrentValidator.description.moniker }}
                             </div>
 
+                            <!-- Stake page validator staked -->
                             <div class="staked" v-if="item = isStakedValidator(store.stakeCurrentValidator.operator_address)">
                                 {{ $t('message.validatoes_staked_label') }}
 
@@ -130,10 +157,13 @@
             </div>
 
 
+            <!-- Stake page amount -->
             <div class="amount">
+                <!-- Stake page amount label -->
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
+                    <!-- Stake page amount cost -->
                     <div class="cost">
                         {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
 
@@ -141,12 +171,14 @@
                     </div>
                 </div>
 
+                <!-- Stake page amount field -->
                 <div class="field">
                     <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
                         @input="validateAmount($event)">
 
+                    <!-- Stake page amount max. button -->
                     <button type="button" class="max_btn" @click.prevent="setMaxAmount">
                         {{ $t('message.btn_MAX') }}
                     </button>
@@ -155,14 +187,17 @@
 
 
             <!-- Tx fee -->
-            <TxFee v-if="isFormValid" :msgAny />
+            <TxFee v-if="isFormValid" :msgAny txType="stake" />
 
 
+            <!-- Stake page button -->
             <div class="btns">
+                <!-- Stake button -->
                 <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showStakeConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_stake') }}</span>
                 </button>
 
+                <!-- Waiting button -->
                 <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
@@ -309,12 +344,6 @@
         padding: 20px;
 
         background: none;
-    }
-
-
-    .stake
-    {
-        background: #170232;
     }
 
 

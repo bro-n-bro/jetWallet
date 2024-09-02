@@ -125,7 +125,7 @@ export default {
 
 
             // Redelegate
-            'redelegate_page_title': 'Redelegate',
+            'redelegate_page_title': 'Restake',
             'redelegate_confirm_page_title': 'Confirm',
             'redelegate_validator_from_label': 'From:',
             'redelegate_validator_to_label': 'To:',
@@ -217,9 +217,9 @@ export default {
             'btn_stake': 'Stake',
             'btn_confirm_stake': 'Confirm Staking',
             'btn_confirm_unstake': 'Confirm Unstake',
-            'btn_confirm_redelegate': 'Confirm Redelegate',
+            'btn_confirm_redelegate': 'Confirm Restake',
             'btn_unstake': 'Unstake',
-            'btn_redelegate': 'Redelegate',
+            'btn_redelegate': 'Restake',
             'btn_claim': 'Claim',
             'btn_approve': 'Approve',
             'btn_json': 'View JSON',

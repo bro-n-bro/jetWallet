@@ -150,7 +150,7 @@
 
 
             <!-- Tx fee -->
-            <TxFee v-if="isFormValid" :msgAny />
+            <TxFee v-if="isFormValid" :msgAny txType="redelegate" />
 
 
             <div class="btns">
@@ -325,13 +325,6 @@
 
 
 <style scoped>
-    .redelegate
-    {
-        background: #170232;
-    }
-
-
-
     .validator_info
     {
         position: relative;

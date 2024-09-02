@@ -1,29 +1,38 @@
 <template>
+    <!-- Send page -->
     <section class="page_container inner_page_container send">
+        <!-- Loader -->
         <Loader v-if="isProcess" />
 
         <div class="cont">
+            <!-- Send page head -->
             <div class="head">
+                <!-- Back button -->
                 <router-link to="/account" class="back_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
+                <!-- Send page title -->
                 <div class="page_title">
                     {{ $t('message.send_page_title') }}
                 </div>
             </div>
 
 
+            <!-- Send page token -->
             <div class="token_wrap">
                 <div class="token">
+                    <!-- Send page token logo -->
                     <div class="logo">
                         <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
                     </div>
 
+                    <!-- Send page token denom -->
                     <div class="denom">
                         {{ balance.token_info.symbol }}
                     </div>
 
+                    <!-- Send page token amount -->
                     <div class="amount">
                         <div class="val">
                             {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
@@ -37,11 +46,14 @@
             </div>
 
 
+            <!-- Send page recipient address -->
             <div class="address">
+                <!-- Send page recipient address label -->
                 <div class="field_label">
                     {{ $t('message.send_address_label') }}
                 </div>
 
+                <!-- Send page recipient address field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="address"
                         @focus="emitter.emit('show_keyboard')"
@@ -55,10 +67,13 @@
             </div>
 
 
+            <!-- Send page amount -->
             <div class="amount_field">
+                <!-- Send page amount label -->
                 <div class="field_label">
                     {{ $t('message.send_amount_label') }}
 
+                    <!-- Send page amount cost -->
                     <div class="cost">
                         {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
 
@@ -66,12 +81,14 @@
                     </div>
                 </div>
 
+                <!-- Send page amount field -->
                 <div class="field">
                     <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
                         @input="validateAmount($event)">
 
+                    <!-- Send page amount max. button -->
                     <button type="button" class="max_btn" @click.prevent="setMaxAmount">
                         {{ $t('message.btn_MAX') }}
                     </button>
@@ -79,11 +96,14 @@
             </div>
 
 
+            <!-- Send page memo -->
             <div class="memo_field">
+                <!-- Send page memo label -->
                 <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
+                <!-- Send page memo field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="memo"
                         @focus="emitter.emit('show_keyboard')"
@@ -93,14 +113,17 @@
 
 
             <!-- Tx fee -->
-            <TxFee v-if="isFormValid" :msgAny />
+            <TxFee v-if="isFormValid" :msgAny txType="send" />
 
 
+            <!-- Send page button -->
             <div class="btns">
+                <!-- Send button -->
                 <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_send') }}</span>
                 </button>
 
+                <!-- Waiting button -->
                 <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
@@ -347,6 +370,12 @@
 
 
 <style scoped>
+    .send
+    {
+        background: none;
+    }
+
+
     .token_wrap
     {
         display: block;

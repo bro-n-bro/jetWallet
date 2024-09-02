@@ -1,10 +1,13 @@
 <template>
+    <!-- Pin code -->
     <div class="pin">
+        <!-- Pin code label -->
         <div class="field_label">
             {{ $t('message.auth_enter_pin_label') }}
         </div>
 
         <div class="row" :class="{ error: wrongPin }">
+            <!-- Pin code field -->
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric" ref="inputRef"
                     :class="{ active: pinCode[0].length }"
@@ -14,6 +17,7 @@
                     @keydown.backspace="moveBack($event, 0)">
             </div>
 
+            <!-- Pin code field -->
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" inputmode="numeric" :disabled="!pinCode[0].length"
                     :class="{ active: pinCode[1].length }"
@@ -23,6 +27,7 @@
                     @keydown.backspace="moveBack($event, 1)">
             </div>
 
+            <!-- Pin code field -->
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" inputmode="numeric" :disabled="!pinCode[1].length"
                     :class="{ active: pinCode[2].length }"
@@ -32,6 +37,7 @@
                     @keydown.backspace="moveBack($event, 2)">
             </div>
 
+            <!-- Pin code field -->
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" inputmode="numeric" :disabled="!pinCode[2].length"
                     :class="{ active: pinCode[3].length }"
@@ -41,6 +47,7 @@
                     @keydown.backspace="moveBack($event, 3)">
             </div>
 
+            <!-- Pin code field -->
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[4]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
                     :class="{ active: pinCode[4].length }"
@@ -50,6 +57,7 @@
                     @keydown.backspace="moveBack($event, 4)">
             </div>
 
+            <!-- Pin code field -->
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[5]" maxlength="1" inputmode="numeric" :disabled="!pinCode[4].length"
                     :class="{ active: pinCode[5].length }"
@@ -60,27 +68,33 @@
             </div>
         </div>
 
-
+        <!-- Pin warning text -->
         <div class="warning" v-if="userAuthErrorLimit < store.authErrorLimit">
             {{ $t('message.auth_error_warning', { count: userAuthErrorLimit }) }}
         </div>
     </div>
 
 
+    <!-- Biometric button -->
     <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit">
+        <!-- Biometric button text -->
         <span>{{ $t('message.btn_biometric2') }}</span>
 
+        <!-- Biometric button icon -->
         <svg class="icon" v-if="biometrictype === 'face'">
             <use xlink:href="@/assets/sprite.svg#ic_biometric_face"></use>
         </svg>
 
+        <!-- Biometric button icon -->
         <svg class="icon" v-else>
             <use xlink:href="@/assets/sprite.svg#ic_biometric_finger"></use>
         </svg>
     </button>
 
 
+    <!-- Buttons -->
     <div class="btns">
+        <!-- Login button -->
         <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < store.authErrorLimit">
             <span v-if="store.isAuthorized">{{ $t('message.btn_sign') }}</span>
             <span v-else>{{ $t('message.btn_login') }}</span>

@@ -1,22 +1,28 @@
 <template>
+    <!-- Stats modal -->
     <section class="modal">
         <div class="modal_content">
             <div class="data">
+                <!-- Close button -->
                 <button class="close_btn" @click.prevent="emitter.emit('close_stats_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
+                <!-- Modal title -->
                 <div class="modal_title">
                     {{ $t('message.stats_title') }}
                 </div>
 
+                <!-- Stats modal data -->
                 <div class="info_wrap">
                     <div class="info">
                         <div>
+                            <!-- Stats modal label -->
                             <div class="label">
                                 {{ $t('message.stats_token_label') }}
                             </div>
 
+                            <!-- Stats modal value -->
                             <div class="val">
                                 <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
 
@@ -25,10 +31,12 @@
                         </div>
 
                         <div>
+                            <!-- Stats modal label -->
                             <div class="label">
                                 {{ $t('message.stats_availabel_label') }}
                             </div>
 
+                            <!-- Stats modal value -->
                             <div class="val">
                                 {{ formatTokenAmount(calcAvailabelAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
@@ -41,10 +49,12 @@
                         </div>
 
                         <div>
+                            <!-- Stats modal label -->
                             <div class="label">
                                 {{ $t('message.stats_staked_label') }}
                             </div>
 
+                            <!-- Stats modal value -->
                             <div class="val">
                                 {{ formatTokenAmount(calcStakedAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
@@ -57,20 +67,24 @@
                         </div>
 
                         <div>
+                            <!-- Stats modal label -->
                             <div class="label">
                                 {{ $t('message.stats_personal_apr_label') }}
                             </div>
 
+                            <!-- Stats modal value -->
                             <div class="val gradient">
                                 {{ personalAPR.toFixed(2) }}%
                             </div>
                         </div>
 
                         <div>
+                            <!-- Stats modal label -->
                             <div class="label">
                                 {{ $t('message.stats_daily_profit_label') }}
                             </div>
 
+                            <!-- Stats modal value -->
                             <div class="val">
                                 {{ formatTokenAmount(dailyProfit, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 3 }).replace(',', '.') }}
 
@@ -86,6 +100,7 @@
             </div>
         </div>
 
+        <!-- Overlay -->
         <div class="overlay" @click.prevent="emitter.emit('close_stats_modal')"></div>
     </section>
 </template>

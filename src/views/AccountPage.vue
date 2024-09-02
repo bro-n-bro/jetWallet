@@ -7,9 +7,9 @@
             <!-- Network selection -->
             <NetworkChooser v-if="store.currentNetwork" />
 
-            <button class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized" @click.prevent="showStatsModal = true">
+            <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized" @click.prevent="showStatsModal = true">
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
-            </button>
+            </div>
 
             <!-- QR code scanner -->
             <QRCodeScanner />
@@ -314,7 +314,7 @@
 
         transition: opacity .2s linear;
 
-        border-radius: 0 0 15px 15px;
+        border-radius: 0 0 20px 20px;
     }
 
 
@@ -395,6 +395,13 @@
 
         width: 16px;
         height: 16px;
+    }
+
+
+    .top_block .stats_btn:active
+    {
+        color: #170232;
+        background-image: url(@/assets/bg_action_btn_a.svg);
     }
 
 

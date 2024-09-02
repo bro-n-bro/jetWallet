@@ -1,20 +1,27 @@
 <template>
+    <!-- Claim confirm -->
     <section class="page_container inner_page_container claim_confirm">
+        <!-- Loader -->
         <Loader v-if="isProcess" />
 
         <div class="cont">
+            <!-- Claim confirm head -->
             <div class="head">
+                <!-- Back button -->
                 <router-link to="/account?activeSlide=1" class="back_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
+                <!-- Claim confirm title -->
                 <div class="page_title">
                     {{ $t('message.claim_rewards_page_title') }}
                 </div>
             </div>
 
 
+            <!-- Claim confirm data -->
             <div class="data">
+                <!-- Claim confirm label -->
                 <div class="field_label">
                     {{ $t('message.details_label') }}
 
@@ -23,16 +30,20 @@
                     </button> -->
                 </div>
 
+                <!-- Claim confirm info -->
                 <div class="info_wrap">
                     <div class="info">
+                        <!-- Claim confirm logo -->
                         <div class="logo">
                             <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
                         </div>
 
+                        <!-- Claim confirm title -->
                         <div class="title">
                             {{ $t('message.claim_rewards_title') }}
                         </div>
 
+                        <!-- Claim confirm amount -->
                         <div class="amount">
                             <div class="val">
                                 ~ {{ formatTokenAmount(store.rewardsBalances[0].amount, store.rewardsBalances[0].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
@@ -47,17 +58,21 @@
                     </div>
                 </div>
 
+                <!-- Not enought -->
                 <div class="not_enought" v-if="!store.TxFee.isEnough">
                     {{ $t('message.claim_rewards_not_enought', { denom: store.TxFee.currentSymbol }) }}
                 </div>
             </div>
 
 
+            <!-- Memo -->
             <div class="memo">
+                <!-- Memo label -->
                 <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
+                <!-- Memo field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="memo"
                         @focus="emitter.emit('show_keyboard')"
@@ -67,14 +82,17 @@
 
 
             <!-- Tx fee -->
-            <TxFee v-if="store.isBalancesGot" :msgAny />
+            <TxFee v-if="store.isBalancesGot" :msgAny txType="claim" />
 
 
+            <!-- Claim confirm buttons -->
             <div class="btns">
-                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true">
+                <!-- Approve button -->
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_approve') }}</span>
                 </button>
 
+                <!-- Waiting button -->
                 <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
@@ -260,12 +278,6 @@
 
 
 <style scoped>
-    .claim_confirm
-    {
-        background: #170232;
-    }
-
-
     .memo
     {
         margin-top: 12px;

@@ -1,15 +1,24 @@
 <template>
+    <!-- Search -->
     <div class="search">
+        <!-- Search back button -->
         <button class="back_btn" @click.prevent="setBlurEvent">
             <span><svg><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg></span>
         </button>
 
+        <!-- Search field -->
         <div class="field">
+            <!-- Search field icon -->
             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_search"></use></svg>
 
-            <input type="text" v-model="query" class="input" :placeholder="$t('message.search_placeholder')" @focus="setFocusEvent" @blur="setBlurEvent" @input="setEnterEvent">
+            <!-- Search field input -->
+            <input type="text" v-model="query" class="input" :placeholder="$t('message.search_placeholder')"
+                @focus="setFocusEvent"
+                @blur="setBlurEvent"
+                @input="setEnterEvent">
 
-            <button class="clear_btn" v-if="query.length" @click.prevent="clearField">
+            <!-- Search field clear button -->
+            <button class="clear_btn" v-if="query.length" @click.prevent="clearField()">
                 <svg><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
             </button>
         </div>
@@ -28,33 +37,43 @@
 
     // Set focus event
     function setFocusEvent() {
+        // Set event "show_keyboard"
         emitter.emit('show_keyboard')
 
+        // Set event "search_focus"
         setTimeout(() => emitter.emit('search_focus'), 100)
     }
 
 
     // Set blur event
     function setBlurEvent() {
+        // Set event "hide_keyboard"
         emitter.emit('hide_keyboard')
 
+        // Set event "search_blur"
         setTimeout(() => emitter.emit('search_blur'), 100)
     }
 
 
-    // Set enter event
+    // Set event "search"
     function setEnterEvent() {
-        emitter.emit('search', { query: query.value, source: props.source })
+        emitter.emit('search', {
+            query: query.value,
+            source: props.source
+        })
     }
 
 
     // Clear field
     function clearField() {
-        //clear data
+        //clear query
         query.value = ''
 
-        // Set event
-        emitter.emit('search', { query: query.value, source: props.source })
+        /// Set event "search"
+        emitter.emit('search', {
+            query: query.value,
+            source: props.source
+        })
     }
 </script>
 

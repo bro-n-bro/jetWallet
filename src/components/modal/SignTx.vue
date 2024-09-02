@@ -1,11 +1,14 @@
 <template>
+    <!-- Sign Tx modal -->
     <section class="modal" v-if="!showErrorSignTxModal">
         <div class="modal_content">
             <div class="data">
+                <!-- Close button -->
                 <button class="close_btn" @click.prevent="emitter.emit('close_sign_tx_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
+                <!-- Modal title -->
                 <div class="modal_title">
                     {{ $t('message.sign_tx_title') }}
                 </div>
@@ -17,6 +20,7 @@
             </div>
         </div>
 
+        <!-- Overlay -->
         <div class="overlay" @click.prevent="emitter.emit('close_sign_tx_modal')"></div>
     </section>
 
@@ -39,7 +43,9 @@
 
 
     // Event "show_error_sign_tx_modal"
-    emitter.on('show_error_sign_tx_modal', () => showErrorSignTxModal.value = true)
+    emitter.on('show_error_sign_tx_modal', () => {
+        showErrorSignTxModal.value = true
+    })
 </script>
 
 

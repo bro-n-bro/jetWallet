@@ -1,8 +1,8 @@
 <template>
     <!-- Currency button -->
-    <button class="currency" @click.prevent="store.updateCurrentCurrency()">
+    <div class="currency" @click.prevent="store.updateCurrentCurrency()">
         {{ store.currentCurrency }}
-    </button>
+    </div>
 </template>
 
 

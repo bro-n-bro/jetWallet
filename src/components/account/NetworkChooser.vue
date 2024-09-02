@@ -2,7 +2,7 @@
     <!-- Networks chooser -->
     <div class="choose_network" ref="target" :class="{ disabled: !store.isInitialized || !store.isBalancesGot || !store.isStakedBalancesGot || !store.isRewardsGot }">
         <!-- Current chain -->
-        <button class="btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
+        <div class="btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
             <!-- Current chain logo -->
             <div class="logo">
                 <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
@@ -15,7 +15,7 @@
 
             <!-- Current chain arrow -->
             <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver"></use></svg>
-        </button>
+        </div>
 
 
         <!-- Dropdown -->
@@ -23,7 +23,7 @@
             <div class="scroll">
                 <!-- Chain -->
                 <div v-for="(network, index) in store.networks" :key="index">
-                    <button class="network" :class="{ active: store.currentNetwork == network.alias }" @click.prevent="changeNetwork(network.alias)">
+                    <div class="network" :class="{ active: store.currentNetwork == network.alias }" @click.prevent="changeNetwork(network.alias)">
                         <!-- Chain logo -->
                         <div class="logo">
                             <img :src="getNetworkLogo(network.chain_id)" alt="">
@@ -33,7 +33,7 @@
                         <div class="name">
                             {{ network.name }}
                         </div>
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>

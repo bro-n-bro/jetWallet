@@ -1,5 +1,7 @@
 <template>
+    <!-- Tx fee -->
     <div class="tx_fee">
+        <!-- Tx fee value -->
         <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
             {{ $t('message.tx_fee_label') }}
 
@@ -27,7 +29,7 @@
     import TxFeeModal from '@/components/modal/TxFeeModal.vue'
 
 
-    const props = defineProps(['msgAny']),
+    const props = defineProps(['msgAny', 'txType']),
         store = useGlobalStore(),
         emitter = inject('emitter'),
         showTxFeeModal = ref(false),
@@ -44,6 +46,27 @@
         // Simulate Tx
         if (store.TxFee.balance.amount) {
             await simulateTx(props.msgAny)
+        } else {
+            // Set default gas amount
+            if (props.txType === 'send') {
+                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_send
+            }
+
+            if (props.txType === 'claim') {
+                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_claim
+            }
+
+            if (props.txType === 'stake') {
+                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_stake
+            }
+
+            if (props.txType === 'unstake') {
+                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_unstake
+            }
+
+            if (props.txType === 'redelegate') {
+                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_redelegate
+            }
         }
 
         // Enough status

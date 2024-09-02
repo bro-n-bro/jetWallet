@@ -1,4 +1,5 @@
 <template>
+    <!-- Loader -->
     <div class="loader_wrap">
         <div class="loader"><span></span></div>
     </div>

@@ -1,18 +1,24 @@
 <template>
+    <!-- Receive page -->
     <section class="page_container inner_page_container receive">
         <div class="cont">
+            <!-- Receive page head -->
             <div class="head">
+                <!-- Back button -->
                 <router-link to="/account" class="back_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
+                <!-- Receive page title -->
                 <div class="page_title">
                     {{ $t('message.receive_page_title') }}
                 </div>
             </div>
 
 
+            <!-- Receive page QR code -->
             <div class="qr_code">
+                <!-- QR code -->
                 <div class="code">
                     <QRCodeVue3
                         :key="qrKey"
@@ -30,12 +36,14 @@
                         :cornersDotOptions="{ type: 'square', color: '#000000' }" />
                 </div>
 
+                <!-- Address -->
                 <div class="address">
                     {{ store.currentAddress }}
                 </div>
             </div>
 
 
+            <!-- Receive page amount info -->
             <div class="amount" v-if="amount">
                 <div @click.prevent="showAmountModal = true">
                     {{ amount.toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
@@ -47,40 +55,45 @@
                     </div>
                 </div>
 
-                <button class="reset_btn" @click.prevent="amount = ''">
+                <!-- Reset button -->
+                <div class="reset_btn" @click.prevent="amount = ''">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_reset"></use></svg>
-                </button>
+                </div>
             </div>
 
 
             <!-- Action -->
             <div class="actions">
-                <button class="btn" @click.prevent="copyHandler">
+                <!-- Copy button -->
+                <div class="btn" @click.prevent="copyHandler">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
                     </div>
 
                     <div>{{ $t('message.btn_copy_small') }}</div>
-                </button>
+                </div>
 
-                <button class="btn" @click.prevent="showAmountModal = true">
+                <!-- Amount button -->
+                <div class="btn" @click.prevent="showAmountModal = true">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
 
                     <div>{{ $t('message.btn_amount') }}</div>
-                </button>
+                </div>
 
-                <button class="btn" @click.prevent="share()" v-if="isShareSupported">
+                <!-- Share button -->
+                <div class="btn" @click.prevent="share()" v-if="isShareSupported">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
 
                     <div>{{ $t('message.btn_share') }}</div>
-                </button>
+                </div>
             </div>
         </div>
     </section>
+
 
     <!-- Amount modal -->
     <AmountModal v-if="showAmountModal" :amount />
@@ -128,6 +141,12 @@
         // Copy
         copy(store.currentAddress)
 
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
+
         // Show notification
         notification.notify({
             group: 'default',
@@ -168,13 +187,6 @@
 
 
 <style scoped>
-    .receive
-    {
-        background: #170232;
-    }
-
-
-
     .qr_code
     {
         width: 220px;
@@ -312,5 +324,12 @@
 
         width: 22px;
         height: 22px;
+    }
+
+
+    .actions .btn:active .icon
+    {
+        color: #170232;
+        background-image: url(@/assets/bg_action_btn_a.svg);
     }
 </style>
