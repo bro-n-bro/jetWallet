@@ -609,7 +609,7 @@ button
     padding: 1px;
 
     border-radius: 18px;
-    background: linear-gradient(to bottom,  #7544ff 0%,#1a0242 100%);
+    background: linear-gradient(to bottom,  #5d33ce 0%,#21074f 100%);
 }
 
 
@@ -624,7 +624,7 @@ button
     padding: 19px;
 
     border-radius: 17px;
-    background: var(--Frames, radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%));
+    background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
 }
 
 
@@ -724,7 +724,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 .input:-webkit-autofill
 {
-    -webkit-box-shadow: inset 0 0 0 50px var(--form_bg_color) !important;
+    -webkit-box-shadow: inset 0 0 0 50px #170232 !important;
 }
 
 
@@ -816,7 +816,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .checkbox input:checked ~ .check
 {
     border: none;
-    background: linear-gradient(173deg, #67bbf8 -1.79%, #02438f 90.9%);
+    background: linear-gradient(to bottom, #67bbf8 0%, #02438f 100%);
 }
 
 
@@ -1017,12 +1017,12 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
     color: currentColor;
     border-radius: 10px;
-    background: linear-gradient(to bottom,  #1e5799 0%,#002648 100%);
+    background: linear-gradient(to bottom,  #6be3fd 0%,#002749 100%);
 }
 
 .btns .btn.purple_btn
 {
-    background: linear-gradient(to bottom,  #dd93fe 0%,#2f0244 100%);
+    background: linear-gradient(to bottom,  #da91fc 0%,#300345 100%);
 }
 
 
@@ -1053,12 +1053,23 @@ input[type='password']::-webkit-credentials-auto-fill-button
     padding: 11px;
 
     border-radius: 9px;
-    background: linear-gradient(173deg, #67bbf8 -1.79%, #02438f 90.9%);
+    background: linear-gradient(to bottom, #5badec 0%, #01428f 100%);
 }
 
 .btns .btn.purple_btn span
 {
-    background: linear-gradient(180deg, #af60d3 0%, #56007e 100%);
+    background: linear-gradient(to bottom, #ad5dd1 0%, #580280 100%);
+}
+
+
+.btns .btn:active span
+{
+    background: linear-gradient(to bottom,  #195fa8 0%,#66baf7 100%);
+}
+
+.btns .btn.purple_btn:active span
+{
+    background: linear-gradient(to bottom,  #580280 0%,#ac5dd1 100%);
 }
 
 
@@ -1165,6 +1176,8 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .inner_page_container
 {
     padding-top: 8px;
+
+    background: #170232;
 }
 
 
