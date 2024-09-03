@@ -188,7 +188,8 @@
 
 
     onMounted(() => {
-        // qrTextReceived
+        // Telegram.WebApp.qrTextReceived
+        Telegram.WebApp.onEvent('qrTextReceived', data => console.log(data))
     })
 
 
