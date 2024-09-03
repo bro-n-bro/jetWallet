@@ -109,8 +109,11 @@
 
                 // Redirect
                 // router.push(`/account/send?denom=${store.networks[store.currentNetwork].denom}`, {
-                router.push(`/account/send?denom=ibc/6B8A3F5C2AD51CD6171FA41A7E8C35AD594AB69226438DB94450436EA57B3A89`, {
-                    data: data.data
+                router.push({
+                    path: `/account/send?denom=ibc/6B8A3F5C2AD51CD6171FA41A7E8C35AD594AB69226438DB94450436EA57B3A89`,
+                    params: {
+                        data: data.data
+                    }
                 })
             })
         }
