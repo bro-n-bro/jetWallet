@@ -25,8 +25,7 @@
                         :width="200"
                         :height="200"
                         :value="`send|${store.currentAddress}|${amount}`"
-                        :image="`/qrcode_logo_cosmoshub.png`"
-                        :imageOptions="{ hideBackgroundDots: false, imageSize: 0.5, margin: 0 }"
+
                         :dotsOptions="{
                             type: 'square',
                             color: '#000000'
