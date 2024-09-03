@@ -8,16 +8,17 @@
 
 
 <script setup>
-    import { inject } from 'vue'
+    import { useRouter } from 'vue-router'
 
 
-    const emitter = inject('emitter')
+    const  router = useRouter()
 
 
     // Open QR popup
     function openScanner() {
         Telegram.WebApp.showScanQrPopup({ text: 'Наш текст' }, data => {
-            alert(data)
+            // Redirect
+            router.push('/account', { data })
         })
     }
 </script>
