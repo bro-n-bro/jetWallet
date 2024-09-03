@@ -100,6 +100,12 @@
 
             // Viewport height
             viewportHeight.value = Telegram.WebApp.viewportHeight
+
+            // Telegram.WebApp.qrTextReceived
+            Telegram.WebApp.onEvent('qrTextReceived', data => {
+                console.log(data)
+                alert(data)
+            })
         }
     })
 

@@ -187,12 +187,6 @@
     })
 
 
-    onMounted(() => {
-        // Telegram.WebApp.qrTextReceived
-        Telegram.WebApp.onEvent('qrTextReceived', data => console.log(data))
-    })
-
-
     onUnmounted(() => {
         // Unlisten events
         emitter.off('auth')
