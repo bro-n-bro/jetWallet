@@ -18,7 +18,7 @@
 
             <!-- Receive page QR code -->
             <div class="qr_code">
-                <qrcode-stream @decode="onDecode" />
+                <QrcodeStream @decode="onDecodeQR" />
 
 
                 <!-- QR code -->
@@ -27,6 +27,11 @@
                         :key="qrKey"
                         :width="200"
                         :height="200"
+                        :qrOptions="{
+                            typeNumber: 0,
+                            mode: 'Byte',
+                            errorCorrectionLevel: 'H'
+                        }"
                         :value="`send|${store.currentAddress}|${amount}`"
                         :image="`/qrcode_logo_cosmoshub.png`"
                         :imageOptions="{
@@ -121,6 +126,7 @@
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { calcTokenCost, formatTokenCost } from '@/utils'
+    import { QrcodeStream } from 'qrcode-reader-vue3'
 
     // Components
     import QRCodeVue3 from 'qrcode-vue3'
@@ -151,7 +157,7 @@
     watch(computed(() => amount.value), () => qrKey.value += 1)
 
 
-    function onDecode (result) {
+    function onDecodeQR (result) {
       console.log(result)
     }
 
