@@ -158,6 +158,7 @@
 
 
     function onDecodeQR (result) {
+        alert(result)
       console.log(result)
     }
 
