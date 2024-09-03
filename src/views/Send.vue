@@ -4,6 +4,9 @@
         <!-- Loader -->
         <Loader v-if="isProcess" />
 
+        <pre>{{ router }}</pre>
+        <pre>{{ route }}</pre>
+
         <div class="cont">
             <!-- Send page head -->
             <div class="head">
@@ -138,7 +141,7 @@
 
 
 <script setup>
-    import { ref, inject, watch, computed, onMounted, onUnmounted } from 'vue'
+    import { ref, inject, watch, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -189,7 +192,6 @@
 
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('qr_code_received')
         emitter.off('auth')
         emitter.off('close_sign_tx_modal')
     })
@@ -345,18 +347,6 @@
         // Reset Tx Fee
         store.resetTxFee()
     }
-
-
-    // Event "qr_code_received"
-    emitter.on('qr_code_received', data => {
-        let parsedData = data.split('|')
-
-        if (parsedData[0] === 'send') {
-            // Set data
-            address.value = parsedData[1]
-            amount.value = parsedData[2]
-        }
-    })
 
 
     // Event "auth"
