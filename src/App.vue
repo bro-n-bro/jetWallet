@@ -101,10 +101,10 @@
             // Viewport height
             viewportHeight.value = Telegram.WebApp.viewportHeight
 
-            // Telegram.WebApp.qrTextReceived
+            // Scan receive QR code
             Telegram.WebApp.onEvent('qrTextReceived', data => {
-                console.log(data)
-                alert(data)
+                // Redirect
+                router.push('/account/send', data)
             })
         }
     })
