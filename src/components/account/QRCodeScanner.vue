@@ -17,6 +17,7 @@
     // Open QR popup
     function openScanner() {
         Telegram.WebApp.showScanQrPopup({ text: 'Наш текст' }, data => {
+            alert(data.data)
             // Event "qr_code_received"
             emitter.emit('qr_code_received', { data: data.data })
         })
