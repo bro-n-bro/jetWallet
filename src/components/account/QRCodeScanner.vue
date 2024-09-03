@@ -8,10 +8,17 @@
 
 
 <script setup>
+    import { inject } from 'vue'
+
+
+    const emitter = inject('emitter')
+
+
     // Open QR popup
     function openScanner() {
-        Telegram.WebApp.showScanQrPopup({
-            text: 'Наш текст'
+        Telegram.WebApp.showScanQrPopup({ text: 'Наш текст' }, data => {
+            // Event "qr_code_received"
+            emitter.emit('qr_code_received', { data: data.data })
         })
     }
 </script>

@@ -192,6 +192,7 @@
 
     onUnmounted(() => {
         // Unlisten events
+        emitter.off('qr_code_received')
         emitter.off('auth')
         emitter.off('close_sign_tx_modal')
     })
@@ -347,6 +348,18 @@
         // Reset Tx Fee
         store.resetTxFee()
     }
+
+
+    // Event "qr_code_received"
+    emitter.on('qr_code_received', data => {
+        let parsedData = data.split('|')
+
+        if (parsedData[0] === 'send') {
+            // Set data
+            address.value = parsedData[1]
+            address.amount = parsedData[2]
+        }
+    })
 
 
     // Event "auth"
