@@ -114,7 +114,8 @@
                         denom: store.networks[store.currentNetwork].denom
                     },
                     params: {
-                        data: data.data
+                        data: data,
+                        data2: data.data
                     }
                 })
             })
