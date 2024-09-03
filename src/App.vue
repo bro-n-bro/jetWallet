@@ -58,12 +58,13 @@
 <script setup>
     import { ref, onBeforeMount, inject, computed, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRoute } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
     import { useTitle } from '@vueuse/core'
 
 
     const store = useGlobalStore(),
         i18n = inject('i18n'),
+        router = useRouter(),
         route = useRoute(),
         emitter = inject('emitter'),
         title = useTitle(),
@@ -103,6 +104,7 @@
 
             // Scan receive QR code
             Telegram.WebApp.onEvent('qrTextReceived', data => {
+                alert(data.data)
                 // Redirect
                 router.push('/account/send', data)
             })
