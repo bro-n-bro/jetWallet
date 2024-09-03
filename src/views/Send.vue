@@ -4,9 +4,8 @@
         <!-- Loader -->
         <Loader v-if="isProcess" />
 
-        <!-- <pre>{{ router }}</pre>
+        <pre>{{ router }}</pre>
         <pre>{{ route }}</pre>
-        <pre>{{ route.params }}</pre> -->
 
         <div class="cont">
             <!-- Send page head -->

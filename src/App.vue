@@ -111,11 +111,8 @@
                 router.push({
                     path: '/account/send',
                     query: {
-                        denom: store.networks[store.currentNetwork].denom
-                    },
-                    params: {
-                        data: data,
-                        data2: data.data
+                        denom: store.networks[store.currentNetwork].denom,
+                        data: data.data
                     }
                 })
             })
