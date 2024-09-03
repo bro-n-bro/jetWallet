@@ -354,7 +354,7 @@
         if (parsedData[0] === 'send') {
             // Set data
             address.value = parsedData[1]
-            address.amount = parsedData[2]
+            amount.value = parsedData[2]
         }
     })
 
