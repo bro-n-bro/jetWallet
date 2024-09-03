@@ -8,6 +8,7 @@ import mitt from 'mitt'
 import Notifications from '@kyvg/vue3-notification'
 import { register } from 'swiper/element/bundle'
 import VueCountdown from '@chenfengyuan/vue-countdown'
+import QrcodeReaderVue3 from 'qrcode-reader-vue3'
 
 import { vFocus } from './directives/v-focus'
 import { vParallax } from './directives/v-parallax'
@@ -31,6 +32,7 @@ app.use(pinia)
 app.use(router)
 app.use(i18n)
 app.use(Notifications)
+app.use(QrcodeReaderVue3)
 
 
 // Vue provide

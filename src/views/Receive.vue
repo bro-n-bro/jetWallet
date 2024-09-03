@@ -18,6 +18,9 @@
 
             <!-- Receive page QR code -->
             <div class="qr_code">
+                <qrcode-stream @decode="onDecode" />
+
+
                 <!-- QR code -->
                 <div class="code">
                     <QRCodeVue3
@@ -25,14 +28,27 @@
                         :width="200"
                         :height="200"
                         :value="`send|${store.currentAddress}|${amount}`"
-
+                        :image="`/qrcode_logo_cosmoshub.png`"
+                        :imageOptions="{
+                            mageSize: 0.4,
+                            margin: 0
+                        }"
                         :dotsOptions="{
+                            type: 'square',
+                            color: '#000000',
+                        }"
+                        :backgroundOptions="{
+                            color: '#ffffff'
+                        }"
+                        :cornersSquareOptions="{
                             type: 'square',
                             color: '#000000'
                         }"
-                        :backgroundOptions="{ color: '#ffffff' }"
-                        :cornersSquareOptions="{ type: 'square', color: '#000000' }"
-                        :cornersDotOptions="{ type: 'square', color: '#000000' }" />
+                        :cornersDotOptions="{
+                            type: 'square',
+                            color: '#000000'
+                        }"
+                    />
                 </div>
 
                 <!-- Address -->
@@ -133,6 +149,11 @@
 
     // Update qr code
     watch(computed(() => amount.value), () => qrKey.value += 1)
+
+
+    function onDecode (result) {
+      console.log(result)
+    }
 
 
     // Copy handler
