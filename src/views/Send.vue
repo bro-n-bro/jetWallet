@@ -4,9 +4,6 @@
         <!-- Loader -->
         <Loader v-if="isProcess" />
 
-        <pre>{{ router }}</pre>
-        <pre>{{ route }}</pre>
-
         <div class="cont">
             <!-- Send page head -->
             <div class="head">
@@ -141,7 +138,7 @@
 
 
 <script setup>
-    import { ref, inject, watch, computed, onUnmounted } from 'vue'
+    import { ref, inject, watch, onBeforeMount, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -170,6 +167,18 @@
         isProcess = ref(false),
         isAmountReady = ref(false),
         isFormValid = ref(computed(() => isAmountReady.value && address.value.length))
+
+
+    onBeforeMount(() => {
+        // Parse query data
+        let parsedData = route.query.data.split('|')
+
+        if (parsedData[0] === 'send') {
+            // Set data
+            address.value = parsedData[1]
+            amount.value = parsedData[2]
+        }
+    })
 
 
     watch(computed(() => isFormValid.value), () => {
