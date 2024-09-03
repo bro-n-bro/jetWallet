@@ -18,9 +18,6 @@
 
             <!-- Receive page QR code -->
             <div class="qr_code">
-                <QrcodeStream @decode="onDecodeQR" />
-
-
                 <!-- QR code -->
                 <div class="code">
                     <QRCodeVue3
@@ -126,7 +123,6 @@
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { calcTokenCost, formatTokenCost } from '@/utils'
-    import { QrcodeStream } from 'qrcode-reader-vue3'
 
     // Components
     import QRCodeVue3 from 'qrcode-vue3'
