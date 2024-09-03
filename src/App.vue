@@ -109,7 +109,10 @@
 
                 // Redirect
                 router.push({
-                    path: `/account/send?denom=${store.networks[store.currentNetwork].denom}`,
+                    path: '/account/send',
+                    query: {
+                        denom: store.networks[store.currentNetwork].denom
+                    },
                     params: {
                         data: data.data
                     }
