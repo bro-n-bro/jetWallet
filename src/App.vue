@@ -108,7 +108,7 @@
                 Telegram.WebApp.closeScanQrPopup()
 
                 // Redirect
-                router.push({
+                router.replace({
                     path: '/account/send',
                     query: {
                         denom: store.networks[store.currentNetwork].denom,
