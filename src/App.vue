@@ -104,6 +104,12 @@
 
             // Qr code received
             Telegram.WebApp.onEvent('qrTextReceived', data => {
+                alert(data)
+                alert(data.data)
+
+                // Close QR popup
+                Telegram.WebApp.closeScanQrPopup()
+
                 // Redirect
                 router.push(`/account/send?denom=${store.networks[store.currentNetwork].denom}`, {
                     data: data.data
