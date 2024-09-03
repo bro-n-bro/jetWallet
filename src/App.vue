@@ -58,12 +58,13 @@
 <script setup>
     import { ref, onBeforeMount, inject, computed, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import { useTitle } from '@vueuse/core'
 
 
     const store = useGlobalStore(),
         i18n = inject('i18n'),
+        router = useRouter(),
         route = useRoute(),
         emitter = inject('emitter'),
         title = useTitle(),
@@ -100,6 +101,14 @@
 
             // Viewport height
             viewportHeight.value = Telegram.WebApp.viewportHeight
+
+            // Qr code received
+            Telegram.WebApp.onEvent('qrTextReceived', data => {
+                // Redirect
+                router.push(`/account/send?denom=${store.networks[store.currentNetwork].denom}`, {
+                    data: data.data
+                })
+            })
         }
     })
 

@@ -8,20 +8,9 @@
 
 
 <script setup>
-    import { useGlobalStore } from '@/store'
-    import { useRouter } from 'vue-router'
-
-
-    const store = useGlobalStore(),
-        router = useRouter()
-
-
     // Open QR popup
     function openScanner() {
-        Telegram.WebApp.showScanQrPopup({ text: 'Наш текст' }, data => {
-            // Redirect
-            router.push(`/account/send?denom=${store.networks[store.currentNetwork].token_name}`, { data })
-        })
+        Telegram.WebApp.showScanQrPopup({ text: 'Наш текст' })
     }
 </script>
 
