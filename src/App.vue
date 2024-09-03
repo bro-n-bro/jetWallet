@@ -108,13 +108,14 @@
                 Telegram.WebApp.closeScanQrPopup()
 
                 // Redirect
-                router.replace({
-                    path: '/account/send',
-                    query: {
-                        denom: store.networks[store.currentNetwork].denom,
-                        data: data.data
-                    }
-                })
+                window.location.href = `/account/send?denom=${store.networks[store.currentNetwork].denom}&data=${data.data}`
+                // router.push({
+                //     path: '/account/send',
+                //     query: {
+                //         denom: store.networks[store.currentNetwork].denom,
+                //         data: data.data
+                //     }
+                // })
             })
         }
     })
