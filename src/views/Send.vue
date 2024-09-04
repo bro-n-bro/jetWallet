@@ -158,7 +158,7 @@
         emitter = inject('emitter'),
         i18n = inject('i18n'),
         notification = useNotification(),
-        balance = store.balances.find(balance => balance.denom === route.query.denom),
+        balance = ref(store.balances.find(balance => balance.denom === route.query.denom)),
         addressInput = ref(null),
         address = ref(''),
         amount = ref(''),
@@ -197,6 +197,35 @@
     })
 
 
+    watch(computed(() => route.query.data), () => {
+        // Update balance
+        if (route.query.denom) {
+            balance.value = store.balances.find(balance => balance.denom === route.query.denom)
+        }
+
+        // Parse query data
+        if (route.query.data) {
+            let parsedData = route.query.data.split('|')
+
+            if (parsedData[0] === 'send') {
+                // Set data
+                address.value = parsedData[1]
+                amount.value = parsedData[2]
+            }
+
+            // Validate address
+            if (address.value) {
+                validateAddress()
+            }
+
+            // Validate amount
+            if (amount.value) {
+                validateAmount()
+            }
+        }
+    })
+
+
     watch(computed(() => isFormValid.value), () => {
         if (isFormValid.value) {
             // Set messeges
@@ -206,8 +235,8 @@
                     fromAddress: store.currentAddress,
                     toAddress: address.value,
                     amount: [{
-                        denom: balance.denom,
-                        amount: `${parseFloat(amount.value.toString().replace(',', '.')).toFixed(balance.exponent) * Math.pow(10, balance.exponent)}`
+                        denom: balance.value.denom,
+                        amount: `${parseFloat(amount.value.toString().replace(',', '.')).toFixed(balance.value.exponent) * Math.pow(10, balance.value.exponent)}`
                     }]
                 }
             }]
@@ -228,7 +257,7 @@
             let { prefix, data } = fromBech32(address.value)
 
             // Check
-            if (prefix == balance.chain_info.bech32_prefix && data.length == store.networks[store.currentNetwork].address_length) {
+            if (prefix == balance.value.chain_info.bech32_prefix && data.length == store.networks[store.currentNetwork].address_length) {
                 // Toggle classes
                 addressInput.value.classList.remove('error')
 
@@ -250,7 +279,7 @@
 
         setTimeout(() => {
             // Set amount
-            amount.value = formatTokenAmount(balance.amount, balance.exponent)
+            amount.value = formatTokenAmount(balance.value.amount, balance.value.exponent)
 
             // Set amount status
             isAmountReady.value = true
@@ -271,13 +300,13 @@
             }
 
             // Acceptable value
-            if (amount.value.length && amount.value > 0 && amount.value < formatTokenAmount(balance.amount, balance.exponent)){
+            if (amount.value.length && amount.value > 0 && amount.value < formatTokenAmount(balance.value.amount, balance.value.exponent)){
                 // Set amount status
                 isAmountReady.value = true
             }
 
             // More than available balance
-            if (amount.value > formatTokenAmount(balance.amount, balance.exponent)) {
+            if (amount.value > formatTokenAmount(balance.value.amount, balance.value.exponent)) {
                 // Set MAX amount
                 setMaxAmount()
             }
