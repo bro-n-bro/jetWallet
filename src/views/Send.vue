@@ -208,6 +208,9 @@
             validateAddress()
         }
 
+        alert(amount.value)
+        alert(amount.value > formatTokenAmount(balance.amount, balance.exponent))
+
         // Validate amount
         if (amount.value.length) {
             validateAmount()
@@ -263,9 +266,9 @@
         // Set amount status
         isAmountReady.value = false
 
+        alert('Do it')
+
         setTimeout(() => {
-            alert(amount.value)
-            alert(amount.value > formatTokenAmount(balance.amount, balance.exponent))
             // Negative value
             if (amount.value.length && amount.value <= 0) {
                 // Set empty
