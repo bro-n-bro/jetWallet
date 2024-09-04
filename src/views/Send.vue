@@ -257,6 +257,7 @@
         isAmountReady.value = false
 
         setTimeout(() => {
+            alert(amount.value)
             // Negative value
             if (amount.value.length && amount.value <= 0) {
                 // Set empty
