@@ -138,7 +138,7 @@
 
 
 <script setup>
-    import { ref, inject, watch, onBeforeMount, computed, onUnmounted } from 'vue'
+    import { ref, inject, watch, onBeforeMount, onMounted, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -179,12 +179,6 @@
                 // Set data
                 address.value = parsedData[1]
                 amount.value = parsedData[2]
-
-                // Validate address
-                validateAddress()
-
-                // Validate amount
-                validateAmount()
             }
         }
     })
@@ -204,6 +198,19 @@
                     }]
                 }
             }]
+        }
+    })
+
+
+    onMounted(() => {
+        // Validate address
+        if (address.value.length) {
+            validateAddress()
+        }
+
+        // Validate amount
+        if (amount.value.length) {
+            validateAmount()
         }
     })
 
