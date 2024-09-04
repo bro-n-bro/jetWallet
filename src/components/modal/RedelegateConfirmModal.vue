@@ -1,32 +1,43 @@
 <template>
+    <!-- Redelegate confirm modal -->
     <section class="page_container inner_page_container redelegate_confirm">
+        <!-- Loader -->
         <Loader v-if="isProcess" />
 
         <div class="cont">
+            <!-- Redelegate confirm head -->
             <div class="head">
+                <!-- Back button -->
                 <button class="back_btn" @click="emitter.emit('close_redelegate_confirm_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
+                <!-- Redelegate confirm title -->
                 <div class="page_title">
                     {{ $t('message.redelegate_confirm_page_title') }}
                 </div>
             </div>
 
-
+            <!-- Redelegate confirm data -->
             <div class="data">
+                <!-- Redelegate confirm label -->
                 <div class="field_label">
                     {{ $t('message.details_label') }}
                 </div>
 
+                <!-- Redelegate confirm info -->
                 <div class="info_wrap">
                     <div class="info">
+                        <!-- Redelegate confirm features -->
                         <div class="features">
+                            <!-- Redelegate confirm feature -->
                             <div>
+                                <!-- Redelegate confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.redelegate_confirm_token_label') }}
                                 </div>
 
+                                <!-- Redelegate confirm feature value -->
                                 <div class="val">
                                     <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
 
@@ -34,11 +45,14 @@
                                 </div>
                             </div>
 
+                            <!-- Redelegate confirm feature -->
                             <div>
+                                <!-- Redelegate confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.redelegate_confirm_amount_label') }}
                                 </div>
 
+                                <!-- Redelegate confirm feature value -->
                                 <div class="val">
                                     {{ props.amount }}
 
@@ -50,11 +64,14 @@
                                 </div>
                             </div>
 
+                            <!-- Redelegate confirm feature -->
                             <div>
+                                <!-- Redelegate confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.redelegate_validator_from_label') }}
                                 </div>
 
+                                <!-- Redelegate confirm feature value -->
                                 <div class="val">
                                     <span class="moniker">{{ store.redelegateValidatorFrom.description.moniker }}</span>
 
@@ -66,11 +83,14 @@
                                 </div>
                             </div>
 
+                            <!-- Redelegate confirm feature -->
                             <div>
+                                <!-- Redelegate confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.redelegate_validator_to_label') }}
                                 </div>
 
+                                <!-- Redelegate confirm feature value -->
                                 <div class="val">
                                     <span class="moniker">{{ store.redelegateValidatorTo.description.moniker }}</span>
 
@@ -82,11 +102,14 @@
                                 </div>
                             </div>
 
+                            <!-- Redelegate confirm feature -->
                             <div>
+                                <!-- Redelegate confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_fee_label') }}
                                 </div>
 
+                                <!-- Redelegate confirm feature value -->
                                 <div class="val">
                                     {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
@@ -98,13 +121,15 @@
                 </div>
             </div>
 
-
+            <!-- Redelegate confirm memo -->
             <div class="memo">
+                <!-- Redelegate confirm memo label -->
                 <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
                 <div class="field">
+                    <!-- Redelegate confirm memo field -->
                     <input type="text" class="input big" v-model="memo"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')">
@@ -112,7 +137,9 @@
             </div>
 
 
+            <!-- Redelegate confirm button -->
             <div class="btns">
+                <!-- Confirm button -->
                 <button class="btn" @click.prevent="showSignTxModal = true">
                     <span>{{ $t('message.btn_confirm_redelegate') }}</span>
                 </button>

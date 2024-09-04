@@ -1,27 +1,37 @@
 <template>
+    <!-- Unstake confirm modal -->
     <section class="page_container inner_page_container unstake_confirm">
+        <!-- Loader -->
         <Loader v-if="isProcess" />
 
         <div class="cont">
+            <!-- Unstake confirm head -->
             <div class="head">
+                <!-- Back button -->
                 <button class="back_btn" @click="emitter.emit('close_unstake_confirm_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
+                <!-- Unstake confirm title -->
                 <div class="page_title">
                     {{ $t('message.unstake_confirm_page_title') }}
                 </div>
             </div>
 
 
+            <!-- Unstake confirm data -->
             <div class="data">
+                <!-- Unstake confirm label -->
                 <div class="field_label">
                     {{ $t('message.details_label') }}
                 </div>
 
+                <!-- Unstake confirm info -->
                 <div class="info_wrap">
                     <div class="info">
+                        <!-- Validator -->
                         <div class="validator">
+                            <!-- Validator logo -->
                             <div class="logo">
                                 <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.unstakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -29,10 +39,12 @@
                             </div>
 
                             <div>
+                                <!-- Validator moniker -->
                                 <div class="moniker">
                                     {{ store.unstakeCurrentValidator.description.moniker }}
                                 </div>
 
+                                <!-- Validator voting power -->
                                 <div class="voting_power">
                                     {{ (votingPower * 100).toFixed(2) }}% {{ $t('message.stake_confirm_voting_power') }}
                                 </div>
@@ -40,17 +52,28 @@
                         </div>
 
 
+                        <!-- Unstake confirm APR -->
                         <div class="apr">
-                            <span>{{ $t('message.stake_APR_label') }}<br> {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.unstakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%</span>
+                            <span>
+                                <!-- Unstake confirm APR label -->
+                                {{ $t('message.stake_APR_label') }}<br>
+
+                                <!-- Unstake confirm value -->
+                                {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.unstakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%
+                            </span>
                         </div>
 
 
+                        <!-- Unstake confirm features -->
                         <div class="features">
+                            <!-- Unstake confirm feature -->
                             <div>
+                                <!-- Unstake confirm features label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_token_label') }}
                                 </div>
 
+                                <!-- Unstake confirm features value -->
                                 <div class="val">
                                     <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
 
@@ -58,11 +81,14 @@
                                 </div>
                             </div>
 
+                            <!-- Unstake confirm feature -->
                             <div>
+                                <!-- Unstake confirm features label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_amount_label') }}
                                 </div>
 
+                                <!-- Unstake confirm features value -->
                                 <div class="val">
                                     {{ props.amount }}
 
@@ -74,21 +100,27 @@
                                 </div>
                             </div>
 
+                            <!-- Unstake confirm feature -->
                             <div>
+                                <!-- Unstake confirm features label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_commission_label') }}
                                 </div>
 
+                                <!-- Unstake confirm features value -->
                                 <div class="val">
                                     {{ (store.unstakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }).replace(',', '.') }}%
                                 </div>
                             </div>
 
+                            <!-- Unstake confirm feature -->
                             <div>
+                                <!-- Unstake confirm features label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_unbonding_period_label') }}
                                 </div>
 
+                                <!-- Unstake confirm features value -->
                                 <div class="val">
                                     {{ store.networks[store.currentNetwork].unbondingTime }}
 
@@ -96,11 +128,14 @@
                                 </div>
                             </div>
 
+                            <!-- Unstake confirm feature -->
                             <div>
+                                <!-- Unstake confirm features label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_fee_label') }}
                                 </div>
 
+                                <!-- Unstake confirm features value -->
                                 <div class="val">
                                     {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
@@ -113,12 +148,15 @@
             </div>
 
 
+            <!-- Unstake confirm memo -->
             <div class="memo">
+                <!-- Unstake confirm label -->
                 <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
                 <div class="field">
+                    <!-- Unstake confirm field -->
                     <input type="text" class="input big" v-model="memo"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')">
@@ -126,7 +164,9 @@
             </div>
 
 
+            <!-- Unstake confirm buttons -->
             <div class="btns">
+                <!-- Confirm button -->
                 <button class="btn" @click.prevent="showSignTxModal = true">
                     <span>{{ $t('message.btn_confirm_unstake') }}</span>
                 </button>

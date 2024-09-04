@@ -1,22 +1,29 @@
 <template>
+    <!-- Redelegate page -->
     <section class="page_container inner_page_container redelegate">
         <div class="cont">
+            <!-- Redelegate page head -->
             <div class="head">
+                <!-- Back button -->
                 <router-link to="/account?activeSlide=1" class="back_btn">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
+                <!-- Redelegate page title -->
                 <div class="page_title">
                     {{ $t('message.redelegate_page_title') }}
                 </div>
             </div>
 
 
+            <!-- Validator from -->
             <div class="validator_info from">
+                <!-- Validator label -->
                 <div class="field_label">
                     {{ $t('message.redelegate_validator_from_label') }}
                 </div>
 
+                <!-- Validator info -->
                 <div class="info_wrap" @click.prevent="showValidatorsFromModal = true" v-if="!store.redelegateValidatorFrom">
                     <div class="info">
                         <div class="placeholder">
@@ -27,8 +34,10 @@
                     </div>
                 </div>
 
+                <!-- Validator info -->
                 <div class="validator_wrap" @click.prevent="showValidatorsFromModal = true" v-else>
                     <div class="validator">
+                        <!-- Validator logo -->
                         <div class="logo">
                             <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.redelegateValidatorFrom.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -36,6 +45,7 @@
                         </div>
 
                         <div>
+                            <!-- Validator moniker -->
                             <div class="moniker">
                                 {{ store.redelegateValidatorFrom.description.moniker }}
                             </div>
@@ -45,17 +55,21 @@
                     </div>
                 </div>
 
+                <!-- Validator staked -->
                 <div class="staked">
+                    <!-- Validator staked label -->
                     <div class="label">
                         {{ $t('message.validatoes_staked_label') }}
                     </div>
 
+                    <!-- Validator staked amount -->
                     <div class="amount">
                         {{ formatTokenAmount(validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                         <span>{{ store.networks[store.currentNetwork].token_name }}</span>
                     </div>
 
+                    <!-- Validator staked cost -->
                     <div class="cost">
                         {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
 
@@ -65,6 +79,7 @@
             </div>
 
 
+            <!-- Redelegate page arrow -->
             <div class="arrow_wrap">
                 <div class="arrow">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_arrow_ver"></use></svg>
@@ -72,11 +87,14 @@
             </div>
 
 
+            <!-- Validator to -->
             <div class="validator_info to">
+                <!-- Validator label -->
                 <div class="field_label">
                     {{ $t('message.redelegate_validator_to_label') }}
                 </div>
 
+                <!-- Validator info -->
                 <div class="info_wrap" @click.prevent="showValidatorsToModal = true" v-if="!store.redelegateValidatorTo">
                     <div class="info">
                         <div class="placeholder">
@@ -87,8 +105,10 @@
                     </div>
                 </div>
 
+                <!-- Validator info -->
                 <div class="validator_wrap" @click.prevent="showValidatorsToModal = true" v-else>
                     <div class="validator">
+                        <!-- Validator logo -->
                         <div class="logo">
                             <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.redelegateValidatorTo.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -96,6 +116,7 @@
                         </div>
 
                         <div>
+                            <!-- Validator moniker -->
                             <div class="moniker">
                                 {{ store.redelegateValidatorTo.description.moniker }}
                             </div>
@@ -105,17 +126,21 @@
                     </div>
                 </div>
 
+                <!-- Validator staked -->
                 <div class="staked">
+                    <!-- Validator staked label -->
                     <div class="label">
                         {{ $t('message.validatoes_staked_label') }}
                     </div>
 
+                    <!-- Validator staked amount -->
                     <div class="amount">
                         {{ formatTokenAmount(validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                         <span>{{ store.networks[store.currentNetwork].token_name }}</span>
                     </div>
 
+                    <!-- Validator staked cost -->
                     <div class="cost">
                         {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
 
@@ -125,10 +150,13 @@
             </div>
 
 
+            <!-- Redelegate amount -->
             <div class="amount_field" :class="{ disabled: !store.redelegateValidatorFrom }">
+                <!-- Redelegate amount label -->
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
+                    <!-- Redelegate amount cost -->
                     <div class="cost">
                         {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
 
@@ -137,11 +165,13 @@
                 </div>
 
                 <div class="field">
+                     <!-- Redelegate amount field -->
                     <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
                         @input="validateAmount($event)">
 
+                    <!-- Redelegate amount max. nutton -->
                     <button type="button" class="max_btn" @click.prevent="setMaxAmount">
                         {{ $t('message.btn_MAX') }}
                     </button>
@@ -153,11 +183,14 @@
             <TxFee v-if="isFormValid" :msgAny txType="redelegate" />
 
 
+             <!-- Redelegate page buttons -->
             <div class="btns">
+                <!-- Redelegate button -->
                 <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showRedelegateConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_redelegate') }}</span>
                 </button>
 
+                <!-- Waiting button  -->
                 <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>

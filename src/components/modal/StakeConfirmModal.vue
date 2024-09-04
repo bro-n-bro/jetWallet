@@ -1,27 +1,36 @@
 <template>
+    <!-- Stake confirm modal -->
     <section class="page_container inner_page_container stake_confirm">
+        <!-- Loader -->
         <Loader v-if="isProcess" />
 
         <div class="cont">
+            <!-- Stake confirm head -->
             <div class="head">
+                <!-- Back button -->
                 <button class="back_btn" @click="emitter.emit('close_stake_confirm_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
+                <!-- Stake confirm title -->
                 <div class="page_title">
                     {{ $t('message.stake_confirm_page_title') }}
                 </div>
             </div>
 
-
+            <!-- Stake confirm data -->
             <div class="data">
+                <!-- Stake confirm label -->
                 <div class="field_label">
                     {{ $t('message.details_label') }}
                 </div>
 
+                <!-- Stake confirm info -->
                 <div class="info_wrap">
                     <div class="info">
+                        <!-- Validator -->
                         <div class="validator">
+                            <!-- Validator logo -->
                             <div class="logo">
                                 <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.stakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -29,28 +38,39 @@
                             </div>
 
                             <div>
+                                <!-- Validator moniker -->
                                 <div class="moniker">
                                     {{ store.stakeCurrentValidator.description.moniker }}
                                 </div>
 
+                                <!-- Validator voting power -->
                                 <div class="voting_power">
                                     {{ (votingPower * 100).toFixed(2) }}% {{ $t('message.stake_confirm_voting_power') }}
                                 </div>
                             </div>
                         </div>
 
-
+                        <!-- Validator APR -->
                         <div class="apr">
-                            <span>{{ $t('message.stake_APR_label') }}<br> {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.stakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%</span>
+                            <span>
+                                <!-- Validator APR label -->
+                                {{ $t('message.stake_APR_label') }}<br>
+
+                                <!-- Validator APR value -->
+                                {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.stakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%
+                            </span>
                         </div>
 
-
+                        <!-- Stake confirm features -->
                         <div class="features">
+                            <!-- Stake confirm feature -->
                             <div>
+                                <!-- Stake confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_token_label') }}
                                 </div>
 
+                                <!-- Stake confirm feature value -->
                                 <div class="val">
                                     <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
 
@@ -58,11 +78,14 @@
                                 </div>
                             </div>
 
+                            <!-- Stake confirm feature -->
                             <div>
+                                <!-- Stake confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_amount_label') }}
                                 </div>
 
+                                <!-- Stake confirm feature value -->
                                 <div class="val">
                                     {{ props.amount }}
 
@@ -74,11 +97,14 @@
                                 </div>
                             </div>
 
+                            <!-- Stake confirm feature -->
                             <div>
+                                <!-- Stake confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_daily_profit_label') }}
                                 </div>
 
+                                <!-- Stake confirm feature value -->
                                 <div class="val">
                                     ~{{ dailyProfit.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
@@ -88,21 +114,27 @@
                                 </div>
                             </div>
 
+                            <!-- Stake confirm feature -->
                             <div>
+                                <!-- Stake confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_commission_label') }}
                                 </div>
 
+                                <!-- Stake confirm feature value -->
                                 <div class="val">
                                     {{ (store.stakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }).replace(',', '.') }}%
                                 </div>
                             </div>
 
+                            <!-- Stake confirm feature -->
                             <div>
+                                <!-- Stake confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_unbonding_period_label') }}
                                 </div>
 
+                                <!-- Stake confirm feature value -->
                                 <div class="val">
                                     {{ store.networks[store.currentNetwork].unbondingTime }}
 
@@ -110,11 +142,14 @@
                                 </div>
                             </div>
 
+                            <!-- Stake confirm feature -->
                             <div>
+                                <!-- Stake confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_fee_label') }}
                                 </div>
 
+                                <!-- Stake confirm feature value -->
                                 <div class="val">
                                     {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
@@ -127,12 +162,15 @@
             </div>
 
 
+            <!-- Stake confirm memo -->
             <div class="memo">
+                <!-- Stake confirm memo label -->
                 <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
                 <div class="field">
+                    <!-- Stake confirm memo field -->
                     <input type="text" class="input big" v-model="memo"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')">
@@ -140,7 +178,9 @@
             </div>
 
 
+            <!-- Stake confirm buttons -->
             <div class="btns">
+                <!-- Confirm button -->
                 <button class="btn" @click.prevent="showSignTxModal = true">
                     <span>{{ $t('message.btn_confirm_stake') }}</span>
                 </button>

@@ -1,20 +1,27 @@
 <template>
+    <!-- Tx warning modal -->
     <section class="modal">
         <div class="modal_content">
+            <!-- Tx warning data -->
             <div class="data">
+                <!-- Close button -->
                 <button class="close_btn" @click.prevent="emitter.emit('close_tx_warning_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
+                <!-- Modal title -->
                 <div class="modal_title">
                     {{ $t('message.tx_warning_title') }}
                 </div>
 
+                <!-- Desc -->
                 <div class="desc">
                     {{ $t('message.tx_warning_desc') }}
                 </div>
 
+                <!-- Tx warning buttons -->
                 <div class="btns">
+                    <!-- Accept button -->
                     <button class="btn" @click.prevent="emitter.emit('close_tx_warning_modal')">
                         <span>{{ $t('message.btn_accept') }}</span>
                     </button>
@@ -22,6 +29,7 @@
             </div>
         </div>
 
+        <!-- Overlay -->
         <div class="overlay" @click.prevent="emitter.emit('close_tx_warning_modal')"></div>
     </section>
 </template>

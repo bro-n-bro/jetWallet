@@ -1,18 +1,21 @@
 <template>
     <!-- Tx fee -->
     <div class="tx_fee">
-        <!-- Tx fee value -->
-        <button class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
+        <div class="btn" :class="{ red: !store.TxFee.isEnough }" @click.prevent="showTxFeeModal = true">
+            <!-- Tx fee label -->
             {{ $t('message.tx_fee_label') }}
 
+            <!-- Tx fee value -->
             {{ cost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
+            <!-- Tx fee denom -->
             {{ store.networks[store.currentNetwork].token_name }}
 
+            <!-- Tx fee cost -->
             <div class="cost">
                 (~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$)
             </div>
-        </button>
+        </div>
     </div>
 
     <!-- Tx fee modal -->

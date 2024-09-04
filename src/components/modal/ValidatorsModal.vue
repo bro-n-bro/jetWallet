@@ -1,11 +1,15 @@
 <template>
+    <!-- Validators page -->
     <section class="page_container inner_page_container validators_page">
         <div class="cont">
+            <!-- Validators page head -->
             <div class="head">
+                <!-- Back button -->
                 <button class="back_btn" @click="emitter.emit('close_validators_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
+                <!-- Validators page title -->
                 <div class="page_title">
                     {{ $t('message.validators_page_title') }}
                 </div>
@@ -14,13 +18,19 @@
             <!-- Search -->
             <Search source="validators" />
 
+            <!-- Loader -->
             <Loader v-if="!isValidatorsGot" />
 
+            <!-- Validators -->
             <div class="validators" v-else>
+                <!-- Validators list -->
                 <div class="list" v-if="searchResult.length">
+                    <!-- Validators item -->
                     <div class="item" v-for="(validator, index) in searchResult" :key="index">
                         <div class="validator_wrap" @click.prevent="setValidator(validator)" :class="{ current: isCurrentValidator(validator.operator_address) }">
+                            <!-- Validator -->
                             <div class="validator">
+                                <!-- Validator logo -->
                                 <div class="logo">
                                     <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -28,29 +38,43 @@
                                 </div>
 
                                 <div>
+                                    <!-- Validator commission -->
                                     <div class="moniker">
                                         {{ validator.description.moniker }}
                                     </div>
 
+                                    <!-- Validator commission -->
                                     <div class="commission">
                                         {{ (validator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }).replace(',', '.') }}%
                                     </div>
 
+                                    <!-- Validator staked -->
                                     <div class="staked" v-if="item = isStakedValidator(validator.operator_address)">
+                                        <!-- Validator staked label -->
                                         {{ $t('message.validatoes_staked_label') }}
 
+                                        <!-- Validator staked amount -->
                                         {{ formatTokenAmount(item.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
+                                        <!-- Validator staked logo -->
                                         <div class="logo">
                                             <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
                                         </div>
                                     </div>
                                 </div>
 
+                                <!-- Validator APR -->
                                 <div class="apr">
-                                    <span>{{ $t('message.stake_APR_label') }}<br> {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * validator.commission.commission_rates.rate)).toFixed(2) }}%</span>
+                                    <span>
+                                        <!-- Validator APR label -->
+                                        {{ $t('message.stake_APR_label') }}<br>
+
+                                        <!-- Validator APR value -->
+                                        {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * validator.commission.commission_rates.rate)).toFixed(2) }}%
+                                    </span>
                                 </div>
 
+                                <!-- Validator check -->
                                 <div class="check">
                                     <svg v-if="isCurrentValidator(validator.operator_address)"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
                                 </div>
@@ -60,6 +84,7 @@
                 </div>
 
 
+                <!-- Empty search -->
                 <div class="empty" v-else>
                     {{ $t('message.search_empty_validator') }}
                 </div>

@@ -1,20 +1,27 @@
 <template>
+    <!-- Tx fee modal -->
     <section class="modal">
         <div class="modal_content">
+            <!-- Tx fee modal data -->
             <div class="data">
+                <!-- Back button -->
                 <button class="close_btn" @click.prevent="emitter.emit('close_tx_fee_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
+                <!-- Modal title -->
                 <div class="modal_title">
                     {{ $t('message.tx_fee_modal_title') }}
                 </div>
 
 
+                <!-- Fee tier -->
                 <div class="fee_tier">
                     <div class="label">
+                        <!-- Fee tier label -->
                         <span>{{ $t('message.tx_fee_fee_tier_label') }}</span>
 
+                        <!-- Fee tier toggle button -->
                         <button class="toggle_btn" :class="{ enabled: store.TxFee.isRemember }" @click.prevent="store.TxFee.isRemember = !store.TxFee.isRemember">
                             <span>{{ $t('message.tx_fee_remember_label') }}</span>
 
@@ -28,57 +35,73 @@
                         </button>
                     </div>
 
+                    <!-- Fee tier values -->
                     <div class="vals_wrap">
                         <div class="vals">
+                            <!-- Fee tier values button -->
                             <button class="btn" :class="{ active: store.TxFee.currentLevel === 'low' }" @click.prevent="store.TxFee.currentLevel = 'low'">
+                                <!-- Fee tier values name -->
                                 <div class="name">
                                     {{ $t('message.tx_fee_low_label') }}
                                 </div>
 
+                                <!-- Fee tier values cost -->
                                 <div class="cost">
                                     ~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee.lowPrice, store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$
                                 </div>
 
+                                <!-- Fee tier values amount -->
                                 <div class="amount">
                                     {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.lowPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
                                 </div>
 
+                                <!-- Fee tier values denom -->
                                 <div class="denom">
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
                             </button>
 
+                            <!-- Fee tier values button -->
                             <button class="btn" :class="{ active: store.TxFee.currentLevel === 'average' }" @click.prevent="store.TxFee.currentLevel = 'average'">
+                                <!-- Fee tier values name -->
                                 <div class="name">
                                     {{ $t('message.tx_fee_average_label') }}
                                 </div>
 
+                                <!-- Fee tier values cost -->
                                 <div class="cost">
                                     ~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee.averagePrice, store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$
                                 </div>
 
+                                <!-- Fee tier values amount -->
                                 <div class="amount">
                                     {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.averagePrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
                                 </div>
 
+                                <!-- Fee tier values denom -->
                                 <div class="denom">
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
                             </button>
 
+                            <!-- Fee tier values button -->
                             <button class="btn" :class="{ active: store.TxFee.currentLevel === 'high' }" @click.prevent="store.TxFee.currentLevel = 'high'">
+                                <!-- Fee tier values name -->
                                 <div class="name">
                                     {{ $t('message.tx_fee_high_label') }}
                                 </div>
 
+                                <!-- Fee tier values cost -->
                                 <div class="cost">
                                     ~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.TxFee.userGasAmount * store.TxFee.highPrice, store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$
                                 </div>
 
+                                <!-- Fee tier values amount -->
                                 <div class="amount">
                                     {{ formatTokenAmount(store.TxFee.userGasAmount * store.TxFee.highPrice, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
                                 </div>
 
+                                <!-- Fee tier values denom -->
                                 <div class="denom">
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
@@ -88,12 +111,15 @@
                 </div>
 
 
+                <!-- Fee token -->
                 <div class="fee_token">
+                    <!-- Fee token label -->
                     <div class="label">
                         {{ $t('message.tx_fee_fee_token_label') }}
                     </div>
 
                     <div class="field">
+                        <!-- Fee token field -->
                         <input type="text" class="input big" :value="store.networks[store.currentNetwork].token_name" readonly
                             @focus="emitter.emit('show_keyboard')"
                             @blur="emitter.emit('hide_keyboard')">
@@ -103,11 +129,14 @@
                 </div>
 
 
+                <!-- Gas adjustment -->
                 <div class="gas_adjustment">
                     <div class="label">
+                        <!-- Gas adjustment label -->
                         <span v-if="store.TxFee.isGasAdjustmentAuto">{{ $t('message.tx_fee_gas_adjustment_label') }}</span>
                         <span v-else>{{ $t('message.tx_fee_gas_amount_label') }}</span>
 
+                        <!-- Gas adjustment toggle button -->
                         <button class="toggle_btn" :class="{ enabled: store.TxFee.isGasAdjustmentAuto }" @click.prevent="store.TxFee.isGasAdjustmentAuto = !store.TxFee.isGasAdjustmentAuto">
                             <span>{{ $t('message.tx_fee_auto_label') }}</span>
 
@@ -122,12 +151,14 @@
                     </div>
 
                     <div class="field" v-if="store.TxFee.isGasAdjustmentAuto">
+                        <!-- Gas adjustment field -->
                         <input type="number" class="input big" :value="store.networks[store.currentNetwork].gas_adjustment" disabled
                             @focus="emitter.emit('show_keyboard')"
                             @blur="emitter.emit('hide_keyboard')">
                     </div>
 
                     <div class="field" v-else>
+                        <!-- Gas adjustment field -->
                         <input type="number" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10"
                             @focus="emitter.emit('show_keyboard')"
                             @blur="emitter.emit('hide_keyboard')"
@@ -136,7 +167,9 @@
                 </div>
 
 
+                <!-- Gas adjustment buttons -->
                 <div class="btns">
+                    <!-- Close button -->
                     <button class="btn" @click.prevent="emitter.emit('close_tx_fee_modal')">
                         <span>{{ $t('message.btn_close') }}</span>
                     </button>
@@ -144,6 +177,7 @@
             </div>
         </div>
 
+        <!-- Overlay -->
         <div class="overlay" @click.prevent="emitter.emit('close_tx_fee_modal')"></div>
     </section>
 </template>

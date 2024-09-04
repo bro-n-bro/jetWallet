@@ -1,20 +1,26 @@
 <template>
+    <!-- Receive amount modal -->
     <section class="modal">
         <div class="modal_content">
+            <!-- Receive amount data -->
             <div class="data">
+                <!-- Close button -->
                 <button class="close_btn" @click.prevent="emitter.emit('close_receive_amount_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
+                <!-- Modal title -->
                 <div class="modal_title">
                     {{ $t('message.receive_amount_title') }}
                 </div>
 
-
+                <!-- Amount -->
                 <div class="amount_field">
+                     <!-- Amount label -->
                     <div class="field_label">
                         {{ $t('message.receive_amount_label') }}
 
+                         <!-- Amount cost -->
                         <div class="cost">
                             {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
 
@@ -23,6 +29,7 @@
                     </div>
 
                     <div class="field">
+                         <!-- Amount field -->
                         <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
                             @focus="emitter.emit('show_keyboard')"
                             @blur="emitter.emit('hide_keyboard')"
@@ -32,6 +39,7 @@
             </div>
         </div>
 
+         <!-- Overlay -->
         <div class="overlay" @click.prevent="emitter.emit('close_receive_amount_modal')"></div>
     </section>
 </template>
