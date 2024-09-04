@@ -55,11 +55,11 @@
 
                 <!-- Send page recipient address field -->
                 <div class="field">
-                    <input type="text" class="input big" v-model="address"
+                    <input type="text" class="input big" v-model="address" ref="addressInput"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
-                        @input="validateAddress($event)"
-                        @paste="validateAddress($event)">
+                        @input="validateAddress()"
+                        @paste="validateAddress()">
 
                     <!-- QR code scanner -->
                     <QRCodeScanner class="in_field" />
@@ -86,7 +86,7 @@
                     <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
                         @focus="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
-                        @input="validateAmount($event)">
+                        @input="validateAmount()">
 
                     <!-- Send page amount max. button -->
                     <button type="button" class="max_btn" @click.prevent="setMaxAmount">
@@ -159,6 +159,7 @@
         i18n = inject('i18n'),
         notification = useNotification(),
         balance = store.balances.find(balance => balance.denom === route.query.denom),
+        addressInput = ref(null),
         address = ref(''),
         amount = ref(''),
         memo = ref(''),
@@ -166,17 +167,25 @@
         msgAny = ref([]),
         isProcess = ref(false),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && address.value.length))
+        isFormValid = ref(computed(() => isAmountReady.value && validateAddress()))
 
 
     onBeforeMount(() => {
         // Parse query data
-        let parsedData = route.query.data.split('|')
+        if (route.query.data) {
+            let parsedData = route.query.data.split('|')
 
-        if (parsedData[0] === 'send') {
-            // Set data
-            address.value = parsedData[1]
-            amount.value = parsedData[2]
+            if (parsedData[0] === 'send') {
+                // Set data
+                address.value = parsedData[1]
+                amount.value = parsedData[2]
+
+                // Validate address
+                validateAddress()
+
+                // Validate amount
+                validateAmount()
+            }
         }
     })
 
@@ -207,18 +216,20 @@
 
 
     // Validate address
-    function validateAddress(e) {
+    function validateAddress() {
         try {
             let { prefix, data } = fromBech32(address.value)
 
             // Check
             if (prefix == balance.chain_info.bech32_prefix && data.length == store.networks[store.currentNetwork].address_length) {
                 // Toggle classes
-                e.target.classList.remove('error')
+                addressInput.value.classList.remove('error')
+
+                return true
             }
         } catch (error) {
             // Toggle classes
-            e.target.classList.add('error')
+            addressInput.value.classList.add('error')
 
             return false
         }
@@ -241,25 +252,25 @@
 
 
     // Validate amount
-    function validateAmount(e) {
+    function validateAmount() {
         // Set amount status
         isAmountReady.value = false
 
         setTimeout(() => {
             // Negative value
-            if (e.target.value.length && e.target.value <= 0) {
+            if (amount.value.length && amount.value <= 0) {
                 // Set empty
                 amount.value = ''
             }
 
             // Acceptable value
-            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(balance.amount, balance.exponent)){
+            if (amount.value.length && amount.value > 0 && amount.value < formatTokenAmount(balance.amount, balance.exponent)){
                 // Set amount status
                 isAmountReady.value = true
             }
 
             // More than available balance
-            if (e.target.value > formatTokenAmount(balance.amount, balance.exponent)) {
+            if (amount.value > formatTokenAmount(balance.amount, balance.exponent)) {
                 // Set MAX amount
                 setMaxAmount()
             }
