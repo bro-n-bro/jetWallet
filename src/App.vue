@@ -150,14 +150,12 @@
     // Event "show_keyboard"
     emitter.on('show_keyboard', () => {
         setTimeout(() => {
-            if (viewportHeight.value > Telegram.WebApp.viewportStableHeight) {
-                // Overlay
-                let overlay = document.querySelector('.virtual_keybord_overlay')
+            // Overlay
+            let overlay = document.querySelector('.virtual_keybord_overlay')
 
-                if (overlay) {
-                    // Show overlay
-                    overlay.style.display = 'block'
-                }
+            if (overlay) {
+                // Show overlay
+                overlay.style.display = 'block'
             }
         })
     })
