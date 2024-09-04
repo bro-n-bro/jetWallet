@@ -184,6 +184,19 @@
     })
 
 
+    onMounted(() => {
+        // Validate address
+        if (address.value) {
+            validateAddress()
+        }
+
+        // Validate amount
+        if (amount.value) {
+            validateAmount()
+        }
+    })
+
+
     watch(computed(() => isFormValid.value), () => {
         if (isFormValid.value) {
             // Set messeges
@@ -198,22 +211,6 @@
                     }]
                 }
             }]
-        }
-    })
-
-
-    onMounted(() => {
-        // Validate address
-        if (address.value.length) {
-            validateAddress()
-        }
-
-        alert(amount.value)
-        alert(amount.value > formatTokenAmount(balance.amount, balance.exponent))
-
-        // Validate amount
-        if (amount.value.length) {
-            validateAmount()
         }
     })
 
@@ -265,8 +262,6 @@
     function validateAmount() {
         // Set amount status
         isAmountReady.value = false
-
-        alert('Do it')
 
         setTimeout(() => {
             // Negative value

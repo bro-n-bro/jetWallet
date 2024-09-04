@@ -12,7 +12,7 @@
             </div>
 
             <!-- QR code scanner -->
-            <QRCodeScanner />
+            <QRCodeScanner v-if="store.isInitialized" />
 
             <!-- Currency -->
             <CurrentCurrency />
