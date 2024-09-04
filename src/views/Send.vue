@@ -258,6 +258,7 @@
 
         setTimeout(() => {
             alert(amount.value)
+            alert(amount.value > formatTokenAmount(balance.amount, balance.exponent))
             // Negative value
             if (amount.value.length && amount.value <= 0) {
                 // Set empty
