@@ -10,9 +10,6 @@
             <!-- Index page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
-                    <!-- Loader -->
-                    <Loader v-if="loading" />
-
                     <!-- Index page image -->
                     <div class="image">
                         <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
@@ -21,14 +18,14 @@
                     <!-- Index page buttons -->
                     <div class="btns">
                         <!-- Create wallet button -->
-                        <button class="btn" @click="goTo('/create_wallet')">
+                        <router-link to="/create_wallet" class="btn">
                             <span>{{ $t('message.btn_create_wallet') }}</span>
-                        </button>
+                        </router-link>
 
                         <!-- Import wallet button -->
-                        <button class="btn purple_btn" @click="goTo('/import_wallet')">
+                        <router-link to="/import_wallet" class="btn purple_btn">
                             <span>{{ $t('message.btn_import_wallet') }}</span>
-                        </button>
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -38,31 +35,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount } from 'vue'
-    import { useRouter } from 'vue-router'
 
-    // Components
-    import Loader from '@/components/Loader.vue'
-
-
-    const router = useRouter(),
-        loading = ref(true)
-
-
-    onBeforeMount(() => {
-        // Hide loader
-        loading.value = false
-    })
-
-
-    // Go to route
-    function goTo(path) {
-        // Show loader
-        loading.value = true
-
-        // Redirect
-        router.push(path)
-    }
 </script>
 
 

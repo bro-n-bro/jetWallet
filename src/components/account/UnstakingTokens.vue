@@ -1,18 +1,25 @@
 <template>
+    <!-- Unstaking tokens -->
     <section class="unstaking_tokens" v-if="store.isUnstakingBalancesGot && store.unstakingBalances.length">
         <div class="cont">
+            <!-- Unstaking tokens title -->
             <div class="title">
                 {{ $t('message.unstaking_tokens_title') }}
             </div>
 
+            <!-- Unstaking tokens data -->
             <div class="data_wrap">
                 <div class="data">
+                    <!-- Loader -->
                     <Loader v-if="isProcess" />
 
+                    <!-- Unstaking tokens info -->
                     <div class="info">
+                        <!-- Unstaking tokens info label -->
                         <div class="label">
                             {{ $t('message.unstaking_tokens_label') }}
 
+                            <!-- Unstaking tokens countdown -->
                             <vue-countdown :time="dateCalc(getEarliestDate()) - new Date()" v-slot="{ days, hours, minutes }">
                                 <span v-if="days > 1">{{ days }} {{ $t('message.unstaking_tokens_finish_days') }}</span>
                                 <span v-if="days == 1">{{ days }} {{ $t('message.unstaking_tokens_finish_day') }}</span>
@@ -20,44 +27,63 @@
                             </vue-countdown>
                         </div>
 
+                        <!-- Unstaking token -->
                         <div class="token">
+                            <!-- Unstaking token logo -->
                             <div class="logo">
                                 <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
                             </div>
 
                             <div>
+                                <!-- Unstaking token denom -->
                                 <div class="denom">
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
+                                <!-- Unstaking token count -->
                                 <div class="count">
                                     {{ $t('message.unstaking_tokens_count_label') }} <b>{{ getUnstakingsCount() }}</b>
                                 </div>
                             </div>
 
+                            <!-- Unstaking token amount -->
                             <div class="amount">
+                                <!-- Unstaking token amount value -->
                                 <div class="val">
-                                    {{ formatTokenAmount(store.networks[store.currentNetwork].totalUnstakingTokens, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }} {{ store.networks[store.currentNetwork].token_name }}
+                                    {{ formatTokenAmount(store.networks[store.currentNetwork].totalUnstakingTokens, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+
+                                    {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
 
+                                <!-- Unstaking token amount cost -->
                                 <div class="cost">
-                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.networks[store.currentNetwork].totalUnstakingTokens, store.networks[store.currentNetwork].exponent)) }} {{ store.currentCurrencySymbol }}
+                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, store.networks[store.currentNetwork].totalUnstakingTokens, store.networks[store.currentNetwork].exponent)) }}
+
+                                    {{ store.currentCurrencySymbol }}
                                 </div>
                             </div>
                         </div>
                     </div>
 
+
+                    <!-- Unstaking tokens spoler button -->
                     <button class="spoler_btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver"></use></svg>
                     </button>
 
+
+                    <!-- Unstaking tokens dropdown -->
                     <div class="dropdown" v-show="showDropdown">
+                        <!-- Unstaking tokens list -->
                         <div class="list">
                             <div v-for="(item, index) in store.unstakingBalances" :key="index">
+                                <!-- Unstaking token -->
                                 <UnstakingTokensItem class="item" v-for="(entry, entryIndex) in item.entries" :key="entryIndex">
                                     <template #validator>
+                                    <!-- Unstaking token validator -->
                                     <div class="validator_wrap">
                                         <div class="validator">
+                                            <!-- Unstaking token validator logo -->
                                             <div class="logo">
                                                 <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${item.validator_info.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
@@ -65,13 +91,17 @@
                                             </div>
 
                                             <div>
+                                                <!-- Unstaking token validator moniker -->
                                                 <div class="moniker">
                                                     {{ item.validator_info.description.moniker }}
                                                 </div>
 
+                                                <!-- Unstaking token validator finish -->
                                                 <div class="finish">
+                                                    <!-- Unstaking token validator finish label -->
                                                     {{ $t('message.unstaking_tokens_finish_label') }}
 
+                                                    <!-- Unstaking token validator finish countdown -->
                                                     <vue-countdown :time="dateCalc(entry.completion_time) - new Date()" v-slot="{ days, hours, minutes }">
                                                         <span v-if="days > 1">{{ days }} {{ $t('message.unstaking_tokens_finish_days') }}</span>
                                                         <span v-if="days == 1">{{ days }} {{ $t('message.unstaking_tokens_finish_day') }}</span>
@@ -80,19 +110,27 @@
                                                 </div>
                                             </div>
 
+                                            <!-- Unstaking token validator amount -->
                                             <div class="amount">
+                                                <!-- Unstaking token validator amount value -->
                                                 <div class="val">
-                                                    {{ formatTokenAmount(entry.balance, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }} {{ store.networks[store.currentNetwork].token_name }}
+                                                    {{ formatTokenAmount(entry.balance, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
+
+                                                    {{ store.networks[store.currentNetwork].token_name }}
                                                 </div>
 
+                                                <!-- Unstaking token validator amoutn cost -->
                                                 <div class="cost">
-                                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, entry.balance, store.networks[store.currentNetwork].exponent)) }} {{ store.currentCurrencySymbol }}
+                                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, entry.balance, store.networks[store.currentNetwork].exponent)) }}
+
+                                                    {{ store.currentCurrencySymbol }}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     </template>
 
+                                    <!-- Unstaking token cancel button -->
                                     <template #cancel_btn v-if="store.networks[store.currentNetwork].isunstakingCancelSupport">
                                     <button class="cancel_btn" @click.prevent="cancelUnstaking(item.validator_info.operator_address, entry)">
                                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>

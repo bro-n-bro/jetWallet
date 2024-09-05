@@ -13,11 +13,6 @@
                     <!-- Loader -->
                     <Loader v-if="loading" />
 
-                    <!-- Back button -->
-                    <!-- <router-link class="back_btn" to="/create_wallet">
-                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
-                    </router-link> -->
-
                     <!-- Wallet name -->
                     <div class="wallet_name">
                         <!-- Wallet name label -->
@@ -192,9 +187,9 @@
                     <!-- Create pin page buttons -->
                     <div class="btns">
                         <!-- Next button -->
-                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save()">
+                        <div class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save()">
                             <span>{{ $t('message.btn_next') }}</span>
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>

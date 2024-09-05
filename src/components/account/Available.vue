@@ -1,13 +1,17 @@
 <template>
+    <!-- Available section -->
     <div class="available_section">
         <!-- Balance -->
         <div class="balance">
+            <!-- Balance label -->
             <div class="label">
                 {{ $t('message.current_balance_title') }}
             </div>
 
+            <!-- Loader -->
             <Loader v-if="!store.isInitialized || !store.isBalancesGot" />
 
+            <!-- Balance value -->
             <div v-else class="val">
                 <span @click.prevent="store.updateAllBalances()">
                     {{ formatTokenCost(calcBalancesCost()) }}
@@ -19,8 +23,9 @@
         </div>
 
 
-        <!-- Action -->
+        <!-- Actions -->
         <div class="actions">
+            <!-- Send button -->
             <button class="btn" @click.prevent="emitter.emit('search_focus')">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
@@ -29,6 +34,7 @@
                 <div>{{ $t('message.btn_send') }}</div>
             </button>
 
+            <!-- Receive button -->
             <router-link to="/account/receive" class="btn" :class="{ disabled: !store.currentAddress }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
@@ -37,6 +43,7 @@
                 <div>{{ $t('message.btn_receive') }}</div>
             </router-link>
 
+            <!-- Stake button -->
             <button class="btn" @click.prevent="emitter.emit('swiper_slideTo', { index: 1 })">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>

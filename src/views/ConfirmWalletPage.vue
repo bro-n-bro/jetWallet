@@ -69,14 +69,14 @@
                     <!-- Confirm create wallet page buttons -->
                     <div class="btns">
                         <!-- Next button -->
-                        <button class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save()">
+                        <div class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save()">
                             <span>{{ $t('message.btn_next') }}</span>
-                        </button>
+                        </div>
 
                         <!-- Next button -->
-                        <button class="btn" @click.prevent="save">
+                        <!-- <button class="btn" @click.prevent="save">
                             <span>{{ $t('message.btn_next') }}</span>
-                        </button>
+                        </button> -->
                     </div>
 
                     <!-- Confirm create wallet page text -->

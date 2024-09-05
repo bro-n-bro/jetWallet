@@ -1,42 +1,30 @@
 <template>
+    <!-- Available tokens -->
     <section class="available_tokens">
         <div class="cont">
             <!-- Search -->
             <Search source="availabels" />
 
+            <!-- Loader -->
             <Loader v-if="!store.isInitialized || !store.isBalancesGot" />
 
+            <!-- Tokens -->
             <div class="tokens" v-else>
+                <!-- Tokens count -->
                 <div class="count" v-if="searchResult.length === store.balances.length">
                     <b>{{ store.balances.length }}</b> {{ $t('message.available_tokens_title') }}
                 </div>
 
+                <!-- Tokens list -->
                 <div class="list" v-if="searchResult.length">
+                    <!-- Tokens item -->
                     <div class="item" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
-                        <router-link :to="`/account/send?denom=${balance.denom}`" class="token_wrap">
-                            <div class="token">
-                                <div class="logo">
-                                    <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
-                                </div>
-
-                                <div class="denom">
-                                    {{ balance.token_info.symbol }}
-                                </div>
-
-                                <div class="amount">
-                                    <div class="val">
-                                        {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
-                                    </div>
-
-                                    <div class="cost">
-                                        {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
-                                    </div>
-                                </div>
-                            </div>
-                        </router-link>
+                        <!-- Tokens token -->
+                        <AvailableTokensItem :balance />
                     </div>
                 </div>
 
+                <!-- Tokens empty -->
                 <div class="empty" v-else>
                     {{ $t('message.search_empty') }}
                 </div>
@@ -49,11 +37,12 @@
 <script setup>
     import { inject, watch, ref, computed, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenAmount, formatTokenCost, calcTokenCost } from '@/utils'
+    import { calcTokenCost } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
     import Search from '@/components/Search.vue'
+    import AvailableTokensItem from '@/components/account/AvailableTokensItem.vue'
 
 
     const store = useGlobalStore(),
@@ -182,91 +171,5 @@
     .tokens .list > *
     {
         margin-top: 8px;
-    }
-
-
-
-    .tokens .token_wrap
-    {
-        display: block;
-
-        padding: 1px;
-
-        text-decoration: none;
-
-        color: currentColor;
-        border-radius: 12px;
-        background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
-    }
-
-
-    .tokens .token
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-
-        padding-right: 9px;
-
-        border-radius: 11px;
-        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
-    }
-
-
-    .tokens .token .logo
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 55px;
-        height: 55px;
-        margin-right: 8px;
-        padding: 8px;
-
-        border-radius: 11px;
-    }
-
-
-    .tokens .token .logo img
-    {
-        display: block;
-
-        max-width: 100%;
-        max-height: 100%;
-    }
-
-
-    .tokens .token .denom
-    {
-        font-size: 16px;
-        font-weight: 500;
-
-        text-transform: uppercase;
-    }
-
-
-    .tokens .token .amount
-    {
-        font-size: 18px;
-        font-weight: 500;
-
-        margin-left: auto;
-
-        text-align: right;
-        white-space: nowrap;
-    }
-
-
-    .tokens .token .amount .cost
-    {
-        font-size: 16px;
-        font-weight: 400;
-
-        color: #836b9e;
     }
 </style>

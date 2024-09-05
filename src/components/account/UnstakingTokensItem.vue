@@ -1,7 +1,12 @@
 <template>
-    <div ref="swipeable" @touchstart="handleTouchStart" @touchmove="handleTouchMove" :class="{ swiped: isSwiped }">
+    <div ref="swipeable" :class="{ swiped: isSwiped }"
+        @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove"
+    >
+        <!-- Token validator -->
         <slot name="validator"></slot>
 
+        <!-- Token cancel button -->
         <slot name="cancel_btn"></slot>
     </div>
 </template>

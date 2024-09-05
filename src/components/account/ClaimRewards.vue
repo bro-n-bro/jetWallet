@@ -1,47 +1,48 @@
 <template>
+    <!-- Claim rewards -->
     <section class="claim_rewards">
         <div class="cont">
+            <!-- Claim rewards data -->
             <div class="data_wrap">
                 <div class="data">
+                    <!-- Loader -->
                     <Loader v-if="!store.isInitialized || !isReady" />
 
+
                     <template v-else>
+                    <!-- Claim rewards info -->
                     <div class="info">
+                        <!-- Claim rewards title -->
                         <div class="title">
                             {{ $t('message.claim_rewards_title') }}
                         </div>
 
+                        <!-- Claim rewards cost -->
                         <div class="cost">
                             ~ <div class="odometer" v-odometer="rewardsCost"></div> $
                         </div>
                     </div>
 
+
+                    <!-- Claim rewards button -->
                     <router-link to="/account/claim_confirm" class="btn" :class="{ disabled: !rewardsCost }">
                         <span>{{ $t('message.btn_claim') }}</span>
                     </router-link>
 
+
+                    <!-- Claim rewards spoler button -->
                     <button class="spoler_btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }" v-if="rewardsCost">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver"></use></svg>
                     </button>
 
+
+                    <!-- Claim rewards dropdown -->
                     <div class="dropdown" v-show="showDropdown">
+                        <!-- Claim rewards list -->
                         <div class="list">
                             <div class="token_wrap" v-for="(balance, index) in store.rewardsBalances" :key="index">
-                                <div class="token">
-                                    <div class="logo">
-                                        <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
-                                    </div>
-
-                                    <div>
-                                        <div class="denom">
-                                            {{ balance.token_info.symbol }}
-                                        </div>
-
-                                        <div class="cost">
-                                            ~ <div class="odometer" v-odometer="rewardsCost"></div> $
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- Claim rewards token -->
+                                <ClaimRewardsItem :balance :rewardsCost />
                             </div>
                         </div>
                     </div>
@@ -60,6 +61,7 @@
 
     // Components
     import Loader from '@/components/Loader.vue'
+    import ClaimRewardsItem from '@/components/account/ClaimRewardsItem.vue'
 
 
     const store = useGlobalStore(),
@@ -337,66 +339,5 @@
     {
         display: flex;
         flex-direction: column;
-    }
-
-
-
-    .token
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        width: 100%;
-    }
-
-
-    .token .logo
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 55px;
-        height: 55px;
-        margin-right: 8px;
-        padding: 8px;
-
-        border-radius: 11px;
-    }
-
-
-    .token .logo img
-    {
-        display: block;
-
-        max-width: 100%;
-        max-height: 100%;
-    }
-
-
-    .token .logo + *
-    {
-        width: calc(100% - 63px);
-    }
-
-
-    .token .denom
-    {
-        font-size: 16px;
-        font-weight: 500;
-
-        text-transform: uppercase;
-    }
-
-
-    .token .price
-    {
-        font-size: 16px;
-        font-weight: 500;
     }
 </style>

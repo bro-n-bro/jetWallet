@@ -1,60 +1,30 @@
 <template>
-    <section class="stake_tokens">
+    <!-- Staked tokens -->
+    <section class="staked_tokens">
         <div class="cont">
             <!-- Search -->
             <Search source="staked" />
 
+            <!-- Loader -->
             <Loader v-if="!store.isInitialized || !store.isStakedBalancesGot" />
 
+            <!-- Tokens -->
             <div class="tokens" v-else>
+                <!-- Tokens count -->
                 <div class="count" v-if="searchResult.length === store.stakedBalances.length">
                     <b>{{ store.stakedBalances.length }}</b> {{ $t('message.staked_tokens_title') }}
                 </div>
 
+                <!-- Tokens list -->
                 <div class="list" v-if="searchResult.length">
+                    <!-- Tokens item -->
                     <div class="item" v-for="(item, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(item.balance.token_info.symbol, item.balance.amount, item.balance.exponent) * -1000000)};`">
-                        <div class="token_wrap">
-                            <div class="token">
-                                <div class="logo">
-                                    <img :src="item.balance.token_info.logo_URIs.svg" alt="" loading="lazy">
-                                </div>
-
-                                <div>
-                                    <div class="denom">
-                                        {{ item.balance.token_info.symbol }}
-                                    </div>
-
-                                    <div class="validator">
-                                        <div class="label">
-                                            {{ $t('message.staked_tokens_validator_label') }}
-                                        </div>
-
-                                        <div class="moniker">
-                                            {{ item.validator_info.description.moniker }}
-                                        </div>
-
-                                        <div class="logo">
-                                            <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${item.validator_info.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
-
-                                            <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="amount">
-                                    <div class="val">
-                                        {{ formatTokenAmount(item.balance.amount, item.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
-                                    </div>
-
-                                    <div class="cost">
-                                        {{ formatTokenCost(calcTokenCost(item.balance.token_info.symbol, item.balance.amount, item.balance.exponent)) }} {{ store.currentCurrencySymbol }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Tokens token -->
+                        <StakedTokensItem :item />
                     </div>
                 </div>
 
+                <!-- Tokens empty -->
                 <div class="empty" v-else>
                     {{ $t('message.search_empty_validator') }}
                 </div>
@@ -67,11 +37,12 @@
 <script setup>
     import { inject, watch, ref, computed, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenAmount, formatTokenCost, calcTokenCost, imageLoadError } from '@/utils'
+    import { calcTokenCost } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
     import Search from '@/components/Search.vue'
+    import StakedTokensItem from '@/components/account/StakedTokensItem.vue'
 
 
     const store = useGlobalStore(),
@@ -124,7 +95,7 @@
     }
 
 
-    .stake_tokens
+    .staked_tokens
     {
         position: relative;
         z-index: 9;
@@ -135,7 +106,7 @@
     }
 
 
-    .searching .stake_tokens
+    .searching .staked_tokens
     {
         overflow: auto;
         flex: none;
@@ -200,167 +171,5 @@
     .tokens .list > *
     {
         margin-top: 8px;
-    }
-
-
-
-    .tokens .token_wrap
-    {
-        padding: 1px;
-
-        border-radius: 12px;
-        background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
-    }
-
-
-    .tokens .token
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        padding: 7px;
-
-        border-radius: 11px;
-        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
-    }
-
-
-    .tokens .token .logo
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 28px;
-        height: 28px;
-        margin-right: 8px;
-
-        border-radius: 50%;
-    }
-
-
-    .tokens .token .logo img
-    {
-        display: block;
-
-        width: 100%;
-        height: 100%;
-
-        border-radius: 50%;
-    }
-
-
-    .tokens .token .logo > *
-    {
-        width: calc(100% - 192px);
-    }
-
-
-    .tokens .token .denom
-    {
-        font-size: 16px;
-        font-weight: 500;
-
-        text-transform: uppercase;
-    }
-
-
-    .tokens .token .validator
-    {
-        font-size: 14px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-
-        color: rgba(183, 140, 230, .80);
-    }
-
-
-    .tokens .token .validator .label
-    {
-        margin-right: 2px;
-    }
-
-
-    .tokens .token .validator .logo
-    {
-        width: 18px;
-        min-width: 18px;
-        height: 18px;
-        margin-left: 4px;
-
-        border-radius: 50%;
-        background: #950fff;
-    }
-
-
-    .tokens .token .validator .logo img
-    {
-        display: block;
-
-        width: 100%;
-        height: 100%;
-
-        border-radius: inherit;
-    }
-
-
-    .tokens .token .validator .logo .icon
-    {
-        display: none;
-
-        width: 16px;
-        height: 16px;
-    }
-
-
-    .tokens .token .validator .logo img.hide
-    {
-        display: none;
-    }
-
-    .tokens .token .validator .logo img.hide + .icon
-    {
-        display: block;
-    }
-
-
-    .tokens .token .validator .moniker
-    {
-        overflow: hidden;
-
-        max-width: 100%;
-
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-
-    .tokens .token .amount
-    {
-        font-size: 18px;
-        font-weight: 500;
-
-        margin-left: auto;
-
-        text-align: right;
-        white-space: nowrap;
-    }
-
-
-    .tokens .token .amount .cost
-    {
-        font-size: 16px;
-        font-weight: 400;
-
-        color: #836b9e;
     }
 </style>

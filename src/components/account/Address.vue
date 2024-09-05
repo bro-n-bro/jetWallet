@@ -1,6 +1,6 @@
 <template>
     <!-- Current address -->
-    <div class="address" @click.prevent="copyHandler">
+    <div class="address" @click.prevent="copyHandler()">
         <!-- Current address icon -->
         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy2"></use></svg>
 
@@ -38,7 +38,7 @@
         notification.notify({
             group: 'default',
             speed: 200,
-            duration: 750,
+            duration: 1000,
             title: i18n.global.t('message.notification_copied_title'),
             type: 'copied'
         })

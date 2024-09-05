@@ -24,14 +24,19 @@
                     <div class="tabs_wrap">
                         <div class="tabs" :class="{ disabled: !agreed }">
                             <!-- Tab 12 words -->
-                            <button class="btn" @click.prevent="count = 12" :class="{ active: count === 12 }">
+                            <button class="btn" ref="tab1" @click.prevent="activeTab = 1; count = 12" :class="{ active: activeTab === 1 }">
                                 <span>{{ $t('message.mnemonic_tab1') }}</span>
                             </button>
 
                             <!-- Tab 24 words -->
-                            <button class="btn" @click.prevent="count = 24" :class="{ active: count === 24 }">
+                            <button class="btn" ref="tab2" @click.prevent="activeTab = 2; count = 24" :class="{ active: activeTab === 2 }">
                                 <span>{{ $t('message.mnemonic_tab2') }}</span>
                             </button>
+
+                            <!-- Tabs roller -->
+                            <div class="roller" :style="`width: ${rollerWidth}px; left: ${rollerOffsetLeft}px;`">
+                                <span></span>
+                            </div>
                         </div>
                     </div>
 
@@ -50,11 +55,10 @@
                         </div>
 
                         <!-- Mnemonic copy button -->
-                        <button class="copy_btn" :disabled="!agreed" @click.prevent="copy(wallet.secret.data)" v-if="isSupported" :class="{green: copied}">
+                        <button class="copy_btn" :disabled="!agreed"  @click.prevent="copyHandler()">
                             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy"></use></svg>
 
-                            <span v-if="!copied">{{ $t('message.btn_copy') }}</span>
-                            <span v-else>{{ $t('message.btn_copied') }}</span>
+                            <span>{{ $t('message.btn_copy') }}</span>
                         </button>
                     </div>
 
@@ -102,14 +106,14 @@
                     <!-- Create wallet page button -->
                     <div class="btns">
                         <!-- Show button -->
-                        <button class="btn" :class="{disabled: !agreeFirst || !agreeSecond}" @click.prevent="agreed = true" v-if="!agreed">
+                        <div class="btn" :class="{ disabled: !agreeFirst || !agreeSecond }" @click.prevent="agreed = true" v-if="!agreed">
                             <span>{{ $t('message.btn_show') }}</span>
-                        </button>
+                        </div>
 
                         <!-- Next button -->
-                        <button class="btn" v-if="agreed" @click.prevent="saveWallet">
+                        <div class="btn" v-else @click.prevent="saveWallet()">
                             <span>{{ $t('message.btn_next') }}</span>
-                        </button>
+                        </div>
                     </div>
                     </template>
                 </div>
@@ -120,9 +124,10 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, watch, computed } from 'vue'
+    import { onBeforeMount, ref, inject, watch, computed, nextTick } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
+    import { useNotification } from '@kyvg/vue3-notification'
     import { useClipboard } from '@vueuse/core'
     import { generateWallet } from '@/utils'
 
@@ -132,13 +137,21 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
+        i18n = inject('i18n'),
+        notification = useNotification(),
         loading = ref(true),
         count = ref(12),
         wallet = ref(null),
         agreeFirst = ref(false),
         agreeSecond = ref(false),
         agreed = ref(false),
-        { copy, copied, isSupported } = useClipboard()
+        activeTab = ref(1),
+        tab1 = ref(null),
+        tab2 = ref(null),
+        tabs = [tab1, tab2],
+        rollerWidth = ref(null),
+        rollerOffsetLeft = ref(null),
+        { copy } = useClipboard()
 
 
     onBeforeMount(async () => {
@@ -150,10 +163,48 @@
     })
 
 
-    watch(computed(() => count.value), async () => {
+    watch(computed(() => loading.value), async () => {
+        if (!loading.value) {
+            // Wait
+            await nextTick()
+
+            // Set roller params
+            rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+            rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+        }
+    })
+
+
+    watch(computed(() => activeTab.value), async () => {
+        // Update roller params
+        rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+        rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+
         // Generate wallet
         wallet.value = await generateWallet(count.value)
     })
+
+
+    // Copy handler
+    function copyHandler() {
+        // Copy
+        copy(wallet.value.secret.data)
+
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 750,
+            title: i18n.global.t('message.notification_copied_title'),
+            type: 'copied'
+        })
+    }
 
 
     // Save wallet

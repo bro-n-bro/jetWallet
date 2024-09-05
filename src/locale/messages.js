@@ -207,7 +207,6 @@ export default {
             'btn_next': 'Next',
             'btn_copy': 'Copy to clipboard',
             'btn_copy_small': 'Copy',
-            'btn_copied': 'Copied!',
             'btn_join': 'Join',
             'btn_biometric': 'Turn on biometric security',
             'btn_biometric2': 'Use biometric',

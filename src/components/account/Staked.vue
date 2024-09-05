@@ -1,15 +1,21 @@
 <template>
+    <!-- Staked section -->
     <div class="staked_section">
         <!-- Balance -->
         <div class="balance">
+            <!-- Balance label -->
             <div class="label">
                 {{ $t('message.stacked_balance_title') }}
             </div>
 
+            <!-- Loader -->
             <Loader v-if="!store.isInitialized || !store.isStakedBalancesGot" />
 
+            <!-- Balance value -->
             <div v-else class="val">
-                <span @click.prevent="store.updateAllBalances()">{{ formatTokenCost(calcStakedBalancesCost()) }}</span>
+                <span @click.prevent="store.updateAllBalances()">
+                    {{ formatTokenCost(calcStakedBalancesCost()) }}
+                </span>
             </div>
 
             <!-- Address -->
@@ -17,8 +23,9 @@
         </div>
 
 
-        <!-- Action -->
+        <!-- Actions -->
         <div class="actions">
+            <!-- Stake button -->
             <router-link to="/account/stake" class="btn stake_btn" :class="{ disabled: !store.isBalancesGot && !store.isStakedBalancesGot }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
@@ -27,6 +34,7 @@
                 <div>{{ $t('message.btn_stake') }}</div>
             </router-link>
 
+            <!-- Unstake button -->
             <router-link to="/account/unstake" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
@@ -35,6 +43,7 @@
                 <div>{{ $t('message.btn_unstake') }}</div>
             </router-link>
 
+            <!-- Redelegate button -->
             <router-link to="/account/redelegate" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>

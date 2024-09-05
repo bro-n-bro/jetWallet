@@ -23,19 +23,24 @@
                     <div class="tabs_wrap">
                         <div class="tabs">
                             <!-- Tab 12 words -->
-                            <button class="btn" @click.prevent="activeTab = 1" :class="{ active: activeTab === 1 }">
-                                <span>{{ $t('message.mnemonic_tab1') }}</span>
+                            <button class="btn" ref="tab1" @click.prevent="activeTab = 1" :class="{ active: activeTab === 1 }">
+                                {{ $t('message.mnemonic_tab1') }}
                             </button>
 
                             <!-- Tab 24 words -->
-                            <button class="btn" @click.prevent="activeTab = 2" :class="{ active: activeTab === 2 }">
-                                <span>{{ $t('message.mnemonic_tab2') }}</span>
+                            <button class="btn" ref="tab2" @click.prevent="activeTab = 2" :class="{ active: activeTab === 2 }">
+                                {{ $t('message.mnemonic_tab2') }}
                             </button>
 
                             <!-- Tab Private Key -->
-                            <button class="btn" @click.prevent="activeTab = 3" :class="{ active: activeTab === 3 }">
-                                <span>{{ $t('message.mnemonic_tab3') }}</span>
+                            <button class="btn" ref="tab3" @click.prevent="activeTab = 3" :class="{ active: activeTab === 3 }">
+                                {{ $t('message.mnemonic_tab3') }}
                             </button>
+
+                            <!-- Tabs roller -->
+                            <div class="roller" :style="`width: ${rollerWidth}px; left: ${rollerOffsetLeft}px;`">
+                                <span></span>
+                            </div>
                         </div>
                     </div>
 
@@ -275,7 +280,9 @@
                                     error: !idValidPrivateKey && isTouchedPrivateKey,
                                     success: idValidPrivateKey && isTouchedPrivateKey
                                 }"
-                                @input="validatePrivateKey">
+                                @input="validatePrivateKey()"
+                                @paste="validatePrivateKey()"
+                            >
                         </div>
 
                         <!-- Import private key exp -->
@@ -288,9 +295,9 @@
                     <!-- Import wallet page button -->
                     <div class="btns">
                         <!-- Next button -->
-                        <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save">
+                        <div class="btn" :class="{ disabled: !isFormValid }" @click.prevent="save()">
                             <span>{{ $t('message.btn_next') }}</span>
-                        </button>
+                        </div>
                     </div>
                     </template>
                 </div>
@@ -301,10 +308,12 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, watch, computed, inject } from 'vue'
+    import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
     import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils'
+    import { fromHex } from '@cosmjs/encoding'
+    import { Secp256k1 } from '@cosmjs/crypto'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -315,6 +324,12 @@
         emitter = inject('emitter'),
         loading = ref(true),
         activeTab = ref(1),
+        tab1 = ref(null),
+        tab2 = ref(null),
+        tab3 = ref(null),
+        tabs = [tab1, tab2, tab3],
+        rollerWidth = ref(null),
+        rollerOffsetLeft = ref(null),
         wallet = ref(null),
         secret = ref([]),
         validateAllWordsResult = ref([]),
@@ -329,12 +344,23 @@
     })
 
 
+    onMounted(() => {
+        // Set roller params
+        rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+        rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+    })
+
+
     watch(activeTab, () => {
         // Reset data
         secret.value = []
         validateAllWordsResult.value = []
         privateKey.value = ''
         isTouchedPrivateKey.value = false
+
+        // Update roller params
+        rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+        rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
     })
 
 
@@ -408,14 +434,45 @@
 
 
     // Validate private key
-    function validatePrivateKey() {
-        // Validate length
-        privateKey.value.trim().length
-            ? idValidPrivateKey.value = true
-            : idValidPrivateKey.value = false
+    async function validatePrivateKey() {
+        let result = true
 
-        // Touched status
-        isTouchedPrivateKey.value = true
+        try {
+            // Validate length
+            if (!privateKey.value.trim().length) {
+                result = result ? result = false : result
+            }
+
+            // Validate bytes length
+            let privateKeyParsed = fromHex(privateKey.value.trim())
+
+            if (privateKeyParsed.length !== 32) {
+                result = result ? result = false : result
+            }
+
+            // Try generate public key
+            let publicKey = await Secp256k1.makeKeypair(privateKeyParsed)
+
+            if (!publicKey) {
+                result = result ? result = false : result
+            }
+
+            // Valid status
+            idValidPrivateKey.value = result
+
+            // Touched status
+            isTouchedPrivateKey.value = true
+
+            return result
+        } catch (error) {
+            // Valid status
+            idValidPrivateKey.value = false
+
+            // Touched status
+            isTouchedPrivateKey.value = true
+
+            return false
+        }
     }
 
 

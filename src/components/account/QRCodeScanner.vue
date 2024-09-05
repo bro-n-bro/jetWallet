@@ -1,7 +1,6 @@
 <template>
     <!-- QR code button -->
     <button class="btn" @click.prevent="openScanner()">
-        <!-- QR code button icon -->
         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_scaner"></use></svg>
     </button>
 </template>

@@ -6,7 +6,7 @@
     <div class="virtual_keybord_overlay"></div>
 
     <!-- Notifications -->
-    <notifications position="top left" group="default" width="100%"
+    <notifications position="top left" group="default" width="100%" animation-type="velocity" :animation="animation"
         @start="notificationsOnStart($event)"
         @destroy="notificationsOnDestroy()"
     >
@@ -70,7 +70,11 @@
         title = useTitle(),
         layout = computed(() => route.meta.layout || 'default-layout'),
         notificationTimeout = ref(null),
-        viewportHeight = ref(0)
+        viewportHeight = ref(0),
+        animation = {
+            enter: { translateY: '0%' },
+            leave: { translateY: '-100%' }
+        }
 
 
     onBeforeMount(() => {

@@ -6,6 +6,7 @@ import router from './router'
 import i18n from './locale'
 import mitt from 'mitt'
 import Notifications from '@kyvg/vue3-notification'
+import velocity from 'velocity-animate'
 import { register } from 'swiper/element/bundle'
 import VueCountdown from '@chenfengyuan/vue-countdown'
 
@@ -30,7 +31,7 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 app.use(i18n)
-app.use(Notifications)
+app.use(Notifications, { velocity })
 
 
 // Vue provide
