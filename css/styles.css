@@ -342,6 +342,8 @@ button
 
 .tabs
 {
+    position: relative;
+
     display: flex;
     align-content: center;
     align-items: center;
@@ -367,32 +369,41 @@ button
 {
     font-size: 14px;
 
+    position: relative;
+    z-index: 2;
+
     display: block;
 
-    padding: 1px;
+    padding: 4px 15px;
 
     border-radius: 33px;
 }
 
 
-.tabs .btn span
+.tabs .roller
 {
-    display: block;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 2px;
 
-    padding: 3px 14px;
+    height: 26px;
+    margin: auto 0;
+    padding: 1px;
 
-    border-radius: 32px;
-}
+    transition: .2s linear;
 
-
-.tabs .btn.active
-{
+    border-radius: 33px;
     background: linear-gradient(to bottom,  #7544ff 0%,#1a0242 100%);
 }
 
 
-.tabs .btn.active span
+.tabs .roller span
 {
+    display: block;
+
+    border-radius: 32px;
     background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
 }
 
@@ -403,9 +414,24 @@ button
 ------------------*/
 .vue-notification-group
 {
+    overflow: visible;
+
     width: 100%;
 
     pointer-events: none;
+}
+
+
+.vue-notification-wrapper
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    overflow: visible !important;
+
+    transition: transform .2s linear;
+    transform: translateY(-100%);
 }
 
 
@@ -420,7 +446,6 @@ button
     justify-content: space-between;
 
     width: 100%;
-    margin: 0 auto;
     padding: 10px 15px;
 
     transition: .3s linear;
@@ -1011,6 +1036,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
     width: 100%;
     padding: 1px;
 
+    cursor: pointer;
     transition: opacity .2s linear;
     text-align: center;
     text-decoration: none;
@@ -1322,3 +1348,9 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
     margin-top: 32px;
 }
+
+
+
+/*-----------------
+    Transitions
+-----------------*/
