@@ -1,6 +1,6 @@
 <template>
     <!-- Networks chooser -->
-    <div class="choose_network" ref="target" :class="{ disabled: !store.isInitialized || !store.isBalancesGot || !store.isStakedBalancesGot || !store.isRewardsGot }">
+    <div class="choose_network" ref="target" :class="{ disabled: !store.forcedUnlock && (!store.isInitialized || !store.isBalancesGot || !store.isStakedBalancesGot || !store.isRewardsGot) }">
         <!-- Current chain -->
         <div class="btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
             <!-- Current chain logo -->

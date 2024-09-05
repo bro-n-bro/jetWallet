@@ -37,6 +37,7 @@ export const useGlobalStore = defineStore('global', {
         isUnstakingBalancesGot: false,
         isAuthorized: false,
 
+        forcedUnlock: false,
         authErrorLimit: 4,
 
         currentNetwork: '',
@@ -56,7 +57,7 @@ export const useGlobalStore = defineStore('global', {
 
         secret: null,
         privateKey: null,
-        notificationsPendingDelay: 2000,
+        notificationsCollapsingDelay: 2000,
 
         TxFee: {
             balance: {},
@@ -95,6 +96,9 @@ export const useGlobalStore = defineStore('global', {
             // Init status
             this.isInitialized = false
 
+            // Forced unlock
+            this.forcedUnlock = false
+
             // Reset data
             this.currentAddress = ''
 
@@ -109,47 +113,72 @@ export const useGlobalStore = defineStore('global', {
             this.TxFee.currentLevel = DBData.TxFeeCurrentLevel || 'average'
             this.TxFee.isRemember = DBData.TxFeeIsRemember || false
 
-            // Create singer
-            let signer = await createSinger()
+            try {
+                // Create singer
+                let signer = await createSinger()
 
-            this.currentAddress = signer.address
-            this.networks[this.currentNetwork].signingClient = signer.signingClient
+                this.currentAddress = signer.address
+                this.networks[this.currentNetwork].signingClient = signer.signingClient
 
-            // Set current currency symbol
-            switch (this.currentCurrency) {
-                case 'BTC':
-                    // Set current currency symbol
-                    this.currentCurrencySymbol = 'BTC'
-                    break
+                // Set current currency symbol
+                switch (this.currentCurrency) {
+                    case 'BTC':
+                        // Set current currency symbol
+                        this.currentCurrencySymbol = 'BTC'
+                        break
 
-                case 'ETH':
-                    // Set current currency symbol
-                    this.currentCurrencySymbol = 'ETH'
-                    break
+                    case 'ETH':
+                        // Set current currency symbol
+                        this.currentCurrencySymbol = 'ETH'
+                        break
 
-                default:
-                    // Set current currency symbol
-                    this.currentCurrencySymbol = '$'
-                    break
+                    default:
+                        // Set current currency symbol
+                        this.currentCurrencySymbol = '$'
+                        break
+                }
+
+                // Get currencies price
+                await this.getCurrenciesPrice()
+
+                // Get APR for current network
+                this.getCurrentNetworkAPR()
+
+                // Connect to websocket
+                this.connectWebsocket()
+
+                // Is cosmos SDK version support unstaking cancel
+                this.networks[this.currentNetwork].isUnstakingCancelSupport = await this.isUnstakingCancelSupport()
+
+                // Wait balances
+                Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
+                    // Init status
+                    this.isInitialized = true
+                })
+            } catch(error) {
+                console.log(error)
+
+                // Clean notifications
+                notification.notify({
+                    group: 'default',
+                    clean: true
+                })
+
+                // Show notification
+                notification.notify({
+                    group: 'default',
+                    speed: 200,
+                    duration: -100,
+                    title: i18n.global.t('message.notification_error_title'),
+                    type: 'error',
+                    data: {
+                        isCollapsible: true
+                    }
+                })
+
+                // Forced unlock
+                this.forcedUnlock = true
             }
-
-            // Get currencies price
-            await this.getCurrenciesPrice()
-
-            // Get APR for current network
-            this.getCurrentNetworkAPR()
-
-            // Connect to websocket
-            this.connectWebsocket()
-
-            // Is cosmos SDK version support unstaking cancel
-            this.networks[this.currentNetwork].isUnstakingCancelSupport = await this.isUnstakingCancelSupport()
-
-            // Wait balances
-            Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
-                // Init status
-                this.isInitialized = true
-            })
         },
 
 

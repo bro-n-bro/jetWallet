@@ -195,6 +195,7 @@ export default {
             'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Success',
             'notification_tx_error_title': 'Error:',
+            'notification_error_title': 'Something went wrong, try again later',
 
             'notification_explorer_link': 'Explorer',
 

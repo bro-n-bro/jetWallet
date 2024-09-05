@@ -152,7 +152,7 @@
 
 
     watch(computed(() => store.currentNetwork), async () => {
-        if (store.isInitialized) {
+        if (store.isInitialized || store.forcedUnlock) {
             // Clean notifications
             notification.notify({
                 group: 'default',
@@ -177,9 +177,9 @@
 
     // Handle touch move
     function handleTouchMove(e) {
-        if (isPulling.value && store.networks[store.currentNetwork].currentTxHash) {
-            // Event "show_pending_notification"
-            emitter.emit('show_pending_notification')
+        if (isPulling.value && (store.networks[store.currentNetwork].currentTxHash || store.forcedUnlock)) {
+            // Event "show_collapsible_notification"
+            emitter.emit('show_collapsible_notification')
 
             return
         }

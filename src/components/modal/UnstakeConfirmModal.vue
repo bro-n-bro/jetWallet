@@ -256,6 +256,7 @@
                 title: i18n.global.t('message.notification_tx_pending_title'),
                 type: 'pending',
                 data: {
+                    isCollapsible: true,
                     explorer_link: getExplorerLink(store.currentNetwork)
                 }
             })

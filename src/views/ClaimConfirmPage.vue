@@ -93,7 +93,7 @@
                 </button>
 
                 <!-- Waiting button -->
-                <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_pending_notification')">
+                <button v-else class="btn waiting_btn" @click.prevent="emitter.emit('show_collapsible_notification')">
                     <span>{{ $t('message.btn_waiting_tx') }}</span>
                 </button>
             </div>
@@ -189,6 +189,7 @@
                 title: i18n.global.t('message.notification_tx_pending_title'),
                 type: 'pending',
                 data: {
+                    isCollapsible: true,
                     explorer_link: getExplorerLink(store.currentNetwork)
                 }
             })

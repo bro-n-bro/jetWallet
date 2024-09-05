@@ -14,7 +14,8 @@
             <div class="notification" :class="{
                 pending: props.item.type == 'pending',
                 success: props.item.type == 'success',
-                error: props.item.type == 'error'
+                error: props.item.type == 'error',
+                collapsible: props.item.data.isCollapsible
             }">
                 <!-- Notifications icon -->
                 <div class="icon" v-if="props.item.type == 'copied'">
@@ -126,11 +127,11 @@
 
     // Notifications start event
     function notificationsOnStart(params) {
-        // Pending type
-        if (params.type === 'pending') {
+        // Is collapsible
+        if (params.data.isCollapsible) {
             notificationTimeout.value = setTimeout(() => {
-                // Show pending notification
-                let notification = document.querySelector('.notification.pending')
+                // Show collapsible notification
+                let notification = document.querySelector('.notification.collapsible')
 
                 if (notification) {
                     // Add notification class
@@ -139,7 +140,7 @@
 
                 // Clear timeout
                 notificationTimeout.value = null
-            }, store.notificationsPendingDelay)
+            }, store.notificationsCollapsingDelay)
         }
     }
 
@@ -179,16 +180,16 @@
     })
 
 
-    // Event "show_pending_notification"
-    emitter.on('show_pending_notification', () => {
+    // Event "show_collapsible_notification"
+    emitter.on('show_collapsible_notification', () => {
         if (!notificationTimeout.value) {
-            let notification = document.querySelector('.notification.pending')
+            let notification = document.querySelector('.notification.collapsible')
 
             if (notification) {
-                // Show pending notification
+                // Show collapsible notification
                 notification.classList.remove('small')
 
-                // Hide pending notification
+                // Hide collapsible notification
                 notificationTimeout.value = setTimeout(() => {
                     if (notification) {
                         // Add notification class
@@ -197,7 +198,7 @@
 
                     // Clear timeout
                     notificationTimeout.value = null
-                }, store.notificationsPendingDelay)
+                }, store.notificationsCollapsingDelay)
             }
         }
     })
