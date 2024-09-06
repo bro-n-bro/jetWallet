@@ -265,9 +265,7 @@
                         </div>
 
                         <!-- Import wallet page exp -->
-                        <div class="exp">
-                            {{ $t('message.import_wallet_exp') }}
-                        </div>
+                        <div class="exp" v-html="$t('message.import_wallet_exp')"></div>
                     </div>
 
 
@@ -286,9 +284,7 @@
                         </div>
 
                         <!-- Import private key exp -->
-                        <div class="exp">
-                            {{ $t('message.import_wallet_exp') }}
-                        </div>
+                        <div class="exp" v-html="$t('message.import_wallet_exp2')"></div>
                     </div>
 
 

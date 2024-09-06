@@ -60,17 +60,71 @@
 
 
 
+    .page_data_wrap
+    {
+        overflow: hidden;
+
+        padding: 0;
+
+        background: #00001d;
+    }
+
+
+    .page_data
+    {
+        border-radius: 0;
+        background: none;
+    }
+
+
+
     .image
     {
-        margin-top: auto;
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        pointer-events: none;
+    }
+
+
+    .image:after
+    {
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        content: '';
+
+        box-shadow: inset 0 0 24px #00001d;
     }
 
 
     .image img
     {
+        position: relative;
+        z-index: 1;
+
         display: block;
 
-        max-width: 100%;
-        margin: 0 auto;
+        width: 100%;
+    }
+
+
+
+    .btns
+    {
+        position: relative;
+        z-index: 2;
     }
 </style>

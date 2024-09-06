@@ -124,4 +124,15 @@
 
         color: #836b9e;
     }
+
+
+    .token_wrap:active
+    {
+        background: linear-gradient(180deg, #dc92fe 0%, #310446 100%);
+    }
+
+    .token_wrap:active .token
+    {
+        background: linear-gradient(180deg, #af60d3 0%, #56007e 100%);
+    }
 </style>

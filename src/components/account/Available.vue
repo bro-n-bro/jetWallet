@@ -46,7 +46,7 @@
             <!-- Stake button -->
             <button class="btn" @click.prevent="emitter.emit('swiper_slideTo', { index: 1 })">
                 <div class="icon">
-                    <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
+                    <svg><use xlink:href="@/assets/sprite.svg#ic_stake"></use></svg>
                 </div>
 
                 <div>{{ $t('message.btn_stake') }}</div>

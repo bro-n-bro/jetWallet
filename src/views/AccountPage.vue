@@ -490,4 +490,11 @@
 
         opacity: .4;
     }
+
+
+    .top_block .actions .btn:active .icon:hover
+    {
+        color: #170232;
+        background: url(@/assets/bg_action_btn_a.svg) 0 0/100% 100% no-repeat;
+    }
 </style>

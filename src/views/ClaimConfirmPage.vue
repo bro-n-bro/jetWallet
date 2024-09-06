@@ -138,7 +138,7 @@
 
     onBeforeMount(() => {
         // Tx warning modal
-        showTxWarningModal.value = !store.hasNativeToken()
+        // showTxWarningModal.value = !store.hasNativeToken()
 
         // Set messeges
         store.stakedBalances.forEach(balance => {

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, getPriceByDenom, getExplorerLink } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
+import { DBaddData, DBgetData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
 import i18n from '@/locale'
 
@@ -407,6 +407,13 @@ export const useGlobalStore = defineStore('global', {
             } catch (error) {
                 console.error(error)
             }
+        },
+
+
+        // Get secret from DB
+        async getSecret() {
+            // Get from DB and save in store
+            this.secret = await DBgetData('wallet', 'secret')
         },
 
 

@@ -13,11 +13,11 @@ export default {
 
 
             // Create page
-            'create_wallet_agree_label1': 'Do not share your recovery phrase with ANYMORE.',
+            'create_wallet_agree_label1': 'Do not share your recovery phrase with ANYONE.',
             'create_wallet_agree_label2': 'Back up the phrase safely.',
 
-            'create_wallet_agree_checkbox1': 'Anymone withyour recovery phrases can have full control over your assets. Plese stay vigilant against phishing attacks at all times.',
-            'create_wallet_agree_checkbox2': 'You will never be able to restore your account without your recovery phrase.',
+            'create_wallet_agree_checkbox1': "I understand that I have access to my wallet solely because I possess the recovery phrase. If this phrase falls into someone else's hands, I will lose my funds.",
+            'create_wallet_agree_checkbox2': 'I also understand that if I lose my recovery phrase, I will lose all the funds in this wallet.',
 
 
             // Confirm page
@@ -39,7 +39,7 @@ export default {
             'auth_error_warning': 'You have {count} attempts left',
 
             'auth_error_title': 'Incorrect pin!',
-            'auth_error_desc': 'Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat',
+            'auth_error_desc': 'The PIN code was entered incorrectly the maximum number of times. For security reasons, the current wallet will be deleted. You can restore it the next time you log into the app using your saved seed phrase or private key',
 
 
             // Mnemonic
@@ -49,7 +49,8 @@ export default {
 
 
             // Import page
-            'import_wallet_exp': 'Enter your recovery phrase here to restore your wallet. Or click on any blank and paste the entire phrase.',
+            'import_wallet_exp': 'Enter your recovery phrase here to restore your wallet.<br> Or click on any blank and paste the entire phrase.',
+            'import_wallet_exp2': 'Enter your private key here to restore your wallet.<br> Or click on any blank and paste the entire phrase.',
 
 
             // Account page
@@ -125,7 +126,7 @@ export default {
 
 
             // Redelegate
-            'redelegate_page_title': 'Restake',
+            'redelegate_page_title': 'Change validator',
             'redelegate_confirm_page_title': 'Confirm',
             'redelegate_validator_from_label': 'From:',
             'redelegate_validator_to_label': 'To:',
@@ -135,7 +136,7 @@ export default {
 
             // Tx warning
             'tx_warning_title': 'Warning',
-            'tx_warning_desc': 'Ti mojesh sdelat tranzakciu, no mi ne otvechaem za posledstvija! Ti mojesh sdelat tranzakciu, no mi ne otvechaem za posledstvija!',
+            'tx_warning_desc': "You can still try to make the transaction, but since you don't have enough tokens for gas, it may fail, or it might still go through",
 
 
             // Validators
@@ -214,12 +215,12 @@ export default {
             'btn_login': 'Log in',
             'btn_send': 'Send',
             'btn_receive': 'Receive',
-            'btn_stake': 'Stake',
+            'btn_stake': 'Earn',
             'btn_confirm_stake': 'Confirm Staking',
             'btn_confirm_unstake': 'Confirm Unstake',
             'btn_confirm_redelegate': 'Confirm Restake',
             'btn_unstake': 'Unstake',
-            'btn_redelegate': 'Restake',
+            'btn_redelegate': 'Switch',
             'btn_claim': 'Claim',
             'btn_approve': 'Approve',
             'btn_json': 'View JSON',

@@ -28,7 +28,7 @@
             <!-- Stake button -->
             <router-link to="/account/stake" class="btn stake_btn" :class="{ disabled: !store.isBalancesGot && !store.isStakedBalancesGot }">
                 <div class="icon">
-                    <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
+                    <svg><use xlink:href="@/assets/sprite.svg#ic_stake"></use></svg>
                 </div>
 
                 <div>{{ $t('message.btn_stake') }}</div>
@@ -37,7 +37,7 @@
             <!-- Unstake button -->
             <router-link to="/account/unstake" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
-                    <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
+                    <svg><use xlink:href="@/assets/sprite.svg#ic_unstake"></use></svg>
                 </div>
 
                 <div>{{ $t('message.btn_unstake') }}</div>
@@ -46,7 +46,7 @@
             <!-- Redelegate button -->
             <router-link to="/account/redelegate" class="btn" :class="{ disabled: !store.stakedBalances.length }">
                 <div class="icon">
-                    <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
+                    <svg><use xlink:href="@/assets/sprite.svg#ic_redelegate"></use></svg>
                 </div>
 
                 <div>{{ $t('message.btn_redelegate') }}</div>

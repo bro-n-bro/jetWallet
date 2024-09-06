@@ -63,7 +63,7 @@
 
                     <!-- Confirm create wallet page image -->
                     <div class="image">
-                        <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
+                        <img src="@/assets/confirm_wallet_page_img.svg" alt="" loading="lazy">
                     </div>
 
                     <!-- Confirm create wallet page buttons -->
@@ -114,23 +114,39 @@
 
 
     onBeforeMount(async () => {
-        // Get secret from DB
-        if (store.secret != 'undefined') {
-            let min = 1,
-                max = store.secret.split(' ').length
+        // Get secret
+        if (store.secret != null) {
+            // Get random words
+            getRandomWords()
 
-            // Generate the first random number
-            wordOneNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
+            // Hide loader
+            loading.value = false
+        }  else {
+            // Get secret from DB
+            await store.getSecret()
 
-            // Generate the second random number
-            do {
-                wordTwoNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
-            } while (wordOneNumber.value === wordTwoNumber.value)
+            // Get random words
+            getRandomWords()
 
             // Hide loader
             loading.value = false
         }
     })
+
+
+    // Get random words
+    function getRandomWords() {
+        let min = 1,
+            max = store.secret.split(' ').length
+
+        // Generate the first random number
+        wordOneNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
+
+        // Generate the second random number
+        do {
+            wordTwoNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
+        } while (wordOneNumber.value === wordTwoNumber.value)
+    }
 
 
     // Validate first word
@@ -158,7 +174,7 @@
         // Show loader
         loading.value = true
 
-        // Set router
+        // Redirect
         router.push('/create_pin')
     }
 </script>
@@ -233,6 +249,8 @@
 
         max-width: 100%;
         margin: 0 auto;
+
+        filter: drop-shadow(0px 0px 146.2px 0px rgba(24, 0, 54, .55));
     }
 
 
