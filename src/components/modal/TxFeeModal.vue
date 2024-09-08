@@ -39,7 +39,7 @@
                     <div class="vals_wrap">
                         <div class="vals">
                             <!-- Fee tier values button -->
-                            <button class="btn" :class="{ active: store.TxFee.currentLevel === 'low' }" @click.prevent="store.TxFee.currentLevel = 'low'">
+                            <button class="btn" ref="level_low" :class="{ active: store.TxFee.currentLevel === 'low' }" @click.prevent="store.TxFee.currentLevel = 'low'">
                                 <!-- Fee tier values name -->
                                 <div class="name">
                                     {{ $t('message.tx_fee_low_label') }}
@@ -62,7 +62,7 @@
                             </button>
 
                             <!-- Fee tier values button -->
-                            <button class="btn" :class="{ active: store.TxFee.currentLevel === 'average' }" @click.prevent="store.TxFee.currentLevel = 'average'">
+                            <button class="btn" ref="level_average" :class="{ active: store.TxFee.currentLevel === 'average' }" @click.prevent="store.TxFee.currentLevel = 'average'">
                                 <!-- Fee tier values name -->
                                 <div class="name">
                                     {{ $t('message.tx_fee_average_label') }}
@@ -85,7 +85,7 @@
                             </button>
 
                             <!-- Fee tier values button -->
-                            <button class="btn" :class="{ active: store.TxFee.currentLevel === 'high' }" @click.prevent="store.TxFee.currentLevel = 'high'">
+                            <button class="btn" ref="level_high" :class="{ active: store.TxFee.currentLevel === 'high' }" @click.prevent="store.TxFee.currentLevel = 'high'">
                                 <!-- Fee tier values name -->
                                 <div class="name">
                                     {{ $t('message.tx_fee_high_label') }}
@@ -106,6 +106,11 @@
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
                             </button>
+
+                            <!-- Roller -->
+                            <div class="roller" :style="`width: ${rollerWidth}px; left: ${rollerOffsetLeft}px;`">
+                                <span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -176,21 +181,42 @@
                 </div>
             </div>
         </div>
-
-        <!-- Overlay -->
-        <div class="overlay" @click.prevent="emitter.emit('close_tx_fee_modal')"></div>
     </section>
 </template>
 
 
 <script setup>
-    import { inject, watch, computed } from 'vue'
+    import { ref, inject, watch, computed, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { calcTokenCost, formatTokenCost, formatTokenAmount } from '@/utils'
 
 
     const store = useGlobalStore(),
-        emitter = inject('emitter')
+        emitter = inject('emitter'),
+        level_low = ref(null),
+        level_average = ref(null),
+        level_high = ref(null),
+        levels = {
+            low: level_low,
+            average: level_average,
+            high: level_high
+        },
+        rollerWidth = ref(null),
+        rollerOffsetLeft = ref(null)
+
+
+    onMounted(() => {
+        // Set roller params
+        rollerWidth.value = levels[store.TxFee.currentLevel].value.offsetWidth
+        rollerOffsetLeft.value = levels[store.TxFee.currentLevel].value.offsetLeft
+    })
+
+
+    watch(computed(() => store.TxFee.currentLevel), () => {
+        // Update roller params
+        rollerWidth.value = levels[store.TxFee.currentLevel].value.offsetWidth
+        rollerOffsetLeft.value = levels[store.TxFee.currentLevel].value.offsetLeft
+    })
 
 
     watch(computed(() => store.TxFee.isGasAdjustmentAuto), () => {
@@ -256,6 +282,8 @@
 
     .fee_tier .vals
     {
+        position: relative;
+
         display: flex;
         align-content: stretch;
         align-items: stretch;
@@ -271,6 +299,9 @@
 
     .fee_tier .vals .btn
     {
+        position: relative;
+        z-index: 2;
+
         display: flex;
         align-content: center;
         align-items: center;
@@ -325,8 +356,33 @@
     }
 
 
-    .fee_tier .vals .btn.active
+    .fee_tier .roller
     {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        bottom: 0;
+        left: 6px;
+
+        height: calc(100% - 12px);
+        margin: auto 0;
+        padding: 1px;
+
+        transition: .2s linear;
+
+        border-radius: 4px;
+        background: linear-gradient(to bottom,  #7544ff 0%,#1a0242 100%);
+    }
+
+
+    .fee_tier .roller span
+    {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 3px;
         background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
     }
 

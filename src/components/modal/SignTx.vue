@@ -1,6 +1,6 @@
 <template>
     <!-- Sign Tx modal -->
-    <section class="modal" v-if="!showErrorSignTxModal">
+    <section class="modal">
         <div class="modal_content">
             <div class="data">
                 <!-- Close button -->
@@ -8,6 +8,7 @@
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
+                <template v-if="!showErrorSignTxModal">
                 <!-- Modal title -->
                 <div class="modal_title">
                     {{ $t('message.sign_tx_title') }}
@@ -17,16 +18,31 @@
                 <div class="auth_wrap">
                     <Auth />
                 </div>
+                </template>
+
+
+                <template v-else>
+                <!-- Modal title -->
+                <div class="modal_title">
+                    {{ $t('message.sign_tx_error_title') }}
+                </div>
+
+                <!-- Modal desc -->
+                <div class="modal_desc">
+                    {{ $t('message.sign_tx_error_desc') }}
+                </div>
+
+                <!-- Sign Tx error modal buttons -->
+                <div class="btns">
+                    <!-- Understood button -->
+                    <button class="btn" @click.prevent="emitter.emit('close_sign_tx_modal')">
+                        <span>{{ $t('message.btn_understood') }}</span>
+                    </button>
+                </div>
+                </template>
             </div>
         </div>
-
-        <!-- Overlay -->
-        <div class="overlay" @click.prevent="emitter.emit('close_sign_tx_modal')"></div>
     </section>
-
-
-    <!-- Sign tx error modal -->
-    <SignTxErrorModal v-if="showErrorSignTxModal" />
 </template>
 
 
@@ -35,7 +51,6 @@
 
     // Components
     import Auth from '@/components/Auth.vue'
-    import SignTxErrorModal from '@/components/modal/SignTxErrorModal.vue'
 
 
     const emitter = inject('emitter'),

@@ -303,6 +303,12 @@
     }
 
 
+    .btn:active span
+    {
+        background: linear-gradient(to bottom,  #195fa8 0%,#66baf7 100%);
+    }
+
+
 
     .spoler_btn
     {

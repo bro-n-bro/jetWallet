@@ -89,7 +89,7 @@
                 </div>
 
                 <!-- Unstake page validator info -->
-                <div class="info_wrap" @click.prevent="showValidatorsModal = true" v-if="!store.unstakeCurrentValidator">
+                <div class="info_wrap" @click.prevent="openValidatorsModal()" v-if="!store.unstakeCurrentValidator">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -100,7 +100,7 @@
                 </div>
 
                 <!-- Unstake page validator info -->
-                <div class="validator_wrap" @click.prevent="showValidatorsModal = true" v-else>
+                <div class="validator_wrap" @click.prevent="openValidatorsModal()" v-else>
                     <div class="validator">
                         <!-- Unstake page validator logo -->
                         <div class="logo">
@@ -183,10 +183,14 @@
 
 
     <!-- Validators modal -->
+    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsModal" unstake="true" />
+    </transition>
 
     <!-- Unstake confirm modal -->
+    <transition name="from_right">
     <UnstakeConfirmModal v-if="showUnstakeConfirmModal" :amount :msgAny />
+    </transition>
 </template>
 
 
@@ -301,6 +305,13 @@
     // Is staked validator
     function isStakedValidator(address) {
         return store.stakedBalances.find(balance => balance.validator_info.operator_address === address)
+    }
+
+
+    // Open validators modal
+    function openValidatorsModal() {
+        // Show validators modal
+        showValidatorsModal.value = true
     }
 
 

@@ -38,9 +38,6 @@
                 </div>
             </div>
         </div>
-
-         <!-- Overlay -->
-        <div class="overlay" @click.prevent="emitter.emit('close_receive_amount_modal')"></div>
     </section>
 </template>
 

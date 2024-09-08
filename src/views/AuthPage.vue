@@ -21,7 +21,14 @@
 
 
     <!-- Auth error modal -->
+    <transition name="modal">
     <AuthErrorModal v-if="showErrorAuthModal" />
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showErrorAuthModal"></div>
+    </transition>
 </template>
 
 
@@ -48,6 +55,15 @@
     })
 
 
+    async function deleteAll() {
+        // Clear data
+        await store.clearAllData()
+
+        // Redirect
+        router.push('/')
+    }
+
+
     // Event "auth"
     emitter.on('auth', () => {
         // Сhange auth limit
@@ -66,13 +82,4 @@
         // Show error auth modal
         showErrorAuthModal.value = true
     })
-
-
-    async function deleteAll() {
-        // Clear data
-        await store.clearAllData()
-
-        // Redirect
-        router.push('/')
-    }
 </script>

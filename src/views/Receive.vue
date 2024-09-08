@@ -30,11 +30,6 @@
                             errorCorrectionLevel: 'H'
                         }"
                         :value="`send|${store.currentAddress}|${amount}`"
-                        :image="`/qrcode_logo_cosmoshub.png`"
-                        :imageOptions="{
-                            mageSize: 0.4,
-                            margin: 0
-                        }"
                         :dotsOptions="{
                             type: 'square',
                             color: '#000000',
@@ -51,6 +46,14 @@
                             color: '#000000'
                         }"
                     />
+
+                    <div class="network">
+                        <div class="logo">
+                            <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
+                        </div>
+
+                        <div>{{ store.networks[store.currentNetwork].token_name }}</div>
+                    </div>
                 </div>
 
                 <!-- Address -->
@@ -91,7 +94,7 @@
                 </div>
 
                 <!-- Amount button -->
-                <div class="btn" @click.prevent="showAmountModal = true">
+                <div class="btn" @click.prevent="openAmountModal()">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
@@ -113,7 +116,14 @@
 
 
     <!-- Amount modal -->
+    <transition name="modal">
     <AmountModal v-if="showAmountModal" :amount />
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showAmountModal"></div>
+    </transition>
 </template>
 
 
@@ -122,7 +132,7 @@
     import { useClipboard } from '@vueuse/core'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
-    import { calcTokenCost, formatTokenCost } from '@/utils'
+    import { calcTokenCost, formatTokenCost, getNetworkLogo } from '@/utils'
 
     // Components
     import QRCodeVue3 from 'qrcode-vue3'
@@ -145,6 +155,7 @@
 
     onUnmounted(() => {
         // Unlisten events
+        emitter.off('close_any_modal')
         emitter.off('close_receive_amount_modal')
     })
 
@@ -194,6 +205,16 @@
     }
 
 
+    // Open amount modal
+    function openAmountModal() {
+        // Show amount modal
+        showAmountModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Event "change_receive_amount"
     emitter.on('change_receive_amount', ({ new_amount }) => {
         // Set amount
@@ -205,6 +226,19 @@
     emitter.on('close_receive_amount_modal', () => {
         // Hide amount modal
         showAmountModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Hide amount modal
+        showAmountModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
     })
 </script>
 
@@ -224,8 +258,72 @@
 
     .qr_code .code
     {
+        position: relative;
+
         width: 200px;
         height: 200px;
+    }
+
+
+    .qr_code .code .network
+    {
+        font-size: 12px;
+        font-weight: 700;
+
+        position: absolute;
+        z-index: 3;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 56px;
+        height: 56px;
+        margin: auto;
+        padding: 4px;
+
+        text-align: center;
+
+        color: #000;
+        border-radius: 6px;
+        background: #fff;
+
+        gap: 4px;
+        inset: 0;
+    }
+
+
+    .qr_code .code .network .logo
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 28px;
+        height: 28px;
+
+        border-radius: 50%;
+    }
+
+
+    .qr_code .code .network .logo img
+    {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50%;
+    }
+
+
+    .qr_code .code .network .logo + *
+    {
+        width: 100%;
     }
 
 

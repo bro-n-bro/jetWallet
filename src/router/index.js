@@ -3,6 +3,7 @@ import { DBgetData } from '@/utils/db'
 import { useGlobalStore } from '@/store'
 
 import defaultLayout from '@/layouts/Default.vue'
+import accountLayout from '@/layouts/Account.vue'
 
 
 const routes = [
@@ -52,15 +53,6 @@ const routes = [
 		}
 	},
 	{
-		path: '/account',
-		name: 'Account',
-		component: () => import('../views/AccountPage.vue'),
-		meta: {
-			layout: defaultLayout,
-			accessDenied: ['not_authorized']
-		}
-	},
-	{
 		path: '/import_wallet',
 		name: 'ImportWallet',
 		component: () => import('../views/ImportWalletPage.vue'),
@@ -79,11 +71,20 @@ const routes = [
 		}
 	},
 	{
+		path: '/account',
+		name: 'Account',
+		component: () => import('../views/AccountPage.vue'),
+		meta: {
+			layout: accountLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
+	{
 		path: '/account/claim_confirm',
 		name: 'ClaimConfirm',
 		component: () => import('../views/ClaimConfirmPage.vue'),
 		meta: {
-			layout: defaultLayout,
+			layout: accountLayout,
 			accessDenied: ['not_authorized']
 		}
 	},
@@ -92,7 +93,7 @@ const routes = [
 		name: 'Stake',
 		component: () => import('../views/Stake.vue'),
 		meta: {
-			layout: defaultLayout,
+			layout: accountLayout,
 			accessDenied: ['not_authorized']
 		}
 	},
@@ -101,7 +102,7 @@ const routes = [
 		name: 'Unstake',
 		component: () => import('../views/Unstake.vue'),
 		meta: {
-			layout: defaultLayout,
+			layout: accountLayout,
 			accessDenied: ['not_authorized']
 		}
 	},
@@ -110,7 +111,7 @@ const routes = [
 		name: 'Redelegate',
 		component: () => import('../views/Redelegate.vue'),
 		meta: {
-			layout: defaultLayout,
+			layout: accountLayout,
 			accessDenied: ['not_authorized']
 		}
 	},
@@ -119,7 +120,7 @@ const routes = [
 		name: 'Receive',
 		component: () => import('../views/Receive.vue'),
 		meta: {
-			layout: defaultLayout,
+			layout: accountLayout,
 			accessDenied: ['not_authorized']
 		}
 	},
@@ -128,7 +129,7 @@ const routes = [
 		name: 'Send',
 		component: () => import('../views/Send.vue'),
 		meta: {
-			layout: defaultLayout,
+			layout: accountLayout,
 			accessDenied: ['not_authorized']
 		}
 	},

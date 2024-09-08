@@ -32,9 +32,6 @@
                 </template>
             </div>
         </div>
-
-        <!-- Overlay -->
-        <div class="overlay"></div>
     </section>
 </template>
 

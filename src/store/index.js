@@ -36,6 +36,7 @@ export const useGlobalStore = defineStore('global', {
         isRewardsGot: false,
         isUnstakingBalancesGot: false,
         isAuthorized: false,
+        isAnyModalOpen: false,
 
         forcedUnlock: false,
         authErrorLimit: 4,

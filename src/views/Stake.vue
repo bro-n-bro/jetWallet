@@ -113,7 +113,7 @@
                 </div>
 
                 <!-- Stake page validator info -->
-                <div class="info_wrap" @click.prevent="showValidatorsModal = true" v-if="!store.stakeCurrentValidator">
+                <div class="info_wrap" @click.prevent="openValidatorsModal()" v-if="!store.stakeCurrentValidator">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -124,7 +124,7 @@
                 </div>
 
                 <!-- Stake page validator info -->
-                <div class="validator_wrap" @click.prevent="showValidatorsModal = true" v-else>
+                <div class="validator_wrap" @click.prevent="openValidatorsModal()" v-else>
                     <div class="validator">
                         <!-- Stake page validator logo -->
                         <div class="logo">
@@ -208,10 +208,14 @@
 
 
     <!-- Validators modal -->
+    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsModal" />
+    </transition>
 
     <!-- Stake confirm modal -->
+    <transition name="from_right">
     <StakeConfirmModal v-if="showStakeConfirmModal" :amount :msgAny />
+    </transition>
 </template>
 
 
@@ -317,6 +321,13 @@
     // Is staked validator
     function isStakedValidator(address) {
         return store.stakedBalances.find(balance => balance.validator_info.operator_address === address)
+    }
+
+
+    // Open validators modal
+    function openValidatorsModal() {
+        // Show validators modal
+        showValidatorsModal.value = true
     }
 
 

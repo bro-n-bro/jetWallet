@@ -24,7 +24,7 @@
                 </div>
 
                 <!-- Validator info -->
-                <div class="info_wrap" @click.prevent="showValidatorsFromModal = true" v-if="!store.redelegateValidatorFrom">
+                <div class="info_wrap" @click.prevent="openValidatorsFromModal()" v-if="!store.redelegateValidatorFrom">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -35,7 +35,7 @@
                 </div>
 
                 <!-- Validator info -->
-                <div class="validator_wrap" @click.prevent="showValidatorsFromModal = true" v-else>
+                <div class="validator_wrap" @click.prevent="openValidatorsFromModal()" v-else>
                     <div class="validator">
                         <!-- Validator logo -->
                         <div class="logo">
@@ -95,7 +95,7 @@
                 </div>
 
                 <!-- Validator info -->
-                <div class="info_wrap" @click.prevent="showValidatorsToModal = true" v-if="!store.redelegateValidatorTo">
+                <div class="info_wrap" @click.prevent="openValidatorsToModal()" v-if="!store.redelegateValidatorTo">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.stake_validator_placeholder') }}
@@ -106,7 +106,7 @@
                 </div>
 
                 <!-- Validator info -->
-                <div class="validator_wrap" @click.prevent="showValidatorsToModal = true" v-else>
+                <div class="validator_wrap" @click.prevent="openValidatorsToModal()" v-else>
                     <div class="validator">
                         <!-- Validator logo -->
                         <div class="logo">
@@ -200,11 +200,18 @@
 
 
     <!-- Validators modal -->
+    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsFromModal" redelegate="from" />
+    </transition>
+
+    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsToModal" redelegate="to" />
+    </transition>
 
     <!-- Redelegate confirm modal -->
+    <transition name="from_right">
     <RedelegateConfirmModal v-if="showRedelegateConfirmModal" :amount :msgAny />
+    </transition>
 </template>
 
 
@@ -338,6 +345,20 @@
     // Is staked validator
     function isStakedValidator(address) {
         return store.stakedBalances.find(balance => balance.validator_info.operator_address === address)
+    }
+
+
+    // Open validators from modal
+    function openValidatorsFromModal() {
+        // Show validators modal
+        showValidatorsFromModal.value = true
+    }
+
+
+    // Open validators to modal
+    function openValidatorsToModal() {
+        // Show validators modal
+        showValidatorsToModal.value = true
     }
 
 

@@ -7,7 +7,7 @@
             <!-- Network selection -->
             <NetworkChooser v-if="store.currentNetwork" />
 
-            <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized" @click.prevent="showStatsModal = true">
+            <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized" @click.prevent="openStatsModal()">
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
             </div>
 
@@ -52,7 +52,14 @@
     </section>
 
     <!-- Stats modal -->
+    <transition name="modal">
     <StatsModal v-if="showStatsModal" />
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showStatsModal"></div>
+    </transition>
 </template>
 
 
@@ -86,8 +93,7 @@
         showStatsModal = ref(false),
         swiperEl = ref(null),
         swiperActiveIndex = ref(params.activeSlide || 0),
-        swiperInjectStyles = [
-            `
+        swiperInjectStyles = [`
             .swiper-horizontal > .swiper-pagination-bullets,
             .swiper-pagination-bullets.swiper-pagination-horizontal,
             .swiper-pagination-custom,
@@ -112,12 +118,7 @@
             {
                 width: 20px;
             }
-            `
-        ],
-        startY = ref(0),
-        isPulling = ref(false),
-        threshold = 70,
-        hasUpdated = ref(false)
+        `]
 
 
     onBeforeMount(async () => {
@@ -136,18 +137,6 @@
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
-
-        // Overscroll
-        window.addEventListener('touchstart', handleTouchStart, { passive: false })
-        window.addEventListener('touchmove', handleTouchMove, { passive: false })
-        window.addEventListener('touchend', handleTouchEnd, { passive: false })
-    })
-
-
-    onUnmounted(() => {
-        window.removeEventListener('touchstart', handleTouchStart, { passive: false })
-        window.removeEventListener('touchmove', handleTouchMove, { passive: false })
-        window.removeEventListener('touchend', handleTouchEnd, { passive: false })
     })
 
 
@@ -165,54 +154,12 @@
     })
 
 
-    // Handle touch start
-    function handleTouchStart(e) {
-        if (window.scrollY === 0) {
-            startY.value = e.touches[0].pageY
-            isPulling.value = true
-            hasUpdated.value = false
-        }
-    }
+    // Open stats modal
+    function openStatsModal() {
+        // Show Stats modal
+        showStatsModal.value = true
 
-
-    // Handle touch move
-    function handleTouchMove(e) {
-        if (isPulling.value && (store.networks[store.currentNetwork].currentTxHash || store.forcedUnlock)) {
-            // Event "show_collapsible_notification"
-            emitter.emit('show_collapsible_notification')
-
-            return
-        }
-
-        if (!isPulling.value || hasUpdated.value) return
-
-        let currentY = e.touches[0].pageY,
-            distance = currentY - startY.value
-
-        if (distance > 0 && distance >= threshold) {
-            e.preventDefault()
-            e.stopPropagation()
-
-            // Updating flag
-            hasUpdated.value = true
-
-            // Top loader
-            let account = document.querySelector('.account_page')
-
-            if (account) {
-                account.classList.add('updating')
-                setTimeout(() => account.classList.remove('updating'), 500)
-            }
-
-            // Update all balances
-            store.updateAllBalances()
-        }
-    }
-
-
-    // Handle touch end
-    function handleTouchEnd(e) {
-        isPulling.value = false
+        store.isAnyModalOpen = true
     }
 
 
@@ -249,6 +196,19 @@
     emitter.on('close_stats_modal', () => {
         // Hide Stats modal
         showStatsModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Hide Stats modal
+        showStatsModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
     })
 </script>
 
@@ -385,6 +345,8 @@
         width: 28px;
         height: 28px;
 
+        transition: .2s linear;
+
         background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
     }
 
@@ -463,6 +425,8 @@
         width: 44px;
         height: 44px;
         margin: 0 auto 4px;
+
+        transition: .2s linear;
 
         background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
     }

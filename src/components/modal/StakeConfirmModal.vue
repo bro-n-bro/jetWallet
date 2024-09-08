@@ -181,7 +181,7 @@
             <!-- Stake confirm buttons -->
             <div class="btns">
                 <!-- Confirm button -->
-                <button class="btn" @click.prevent="showSignTxModal = true">
+                <button class="btn" @click.prevent="openSignTxModal()">
                     <span>{{ $t('message.btn_confirm_stake') }}</span>
                 </button>
             </div>
@@ -189,8 +189,15 @@
     </section>
 
 
-    <!-- Sign transaction -->
-    <SignTx v-if="showSignTxModal"/>
+    <!-- Sign transaction modal -->
+    <transition name="modal">
+    <SignTxModal v-if="showSignTxModal"/>
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showSignTxModal"></div>
+    </transition>
 </template>
 
 
@@ -203,7 +210,7 @@
 
     // Components
     import Loader from '@/components/Loader.vue'
-    import SignTx from '@/components/modal/SignTx.vue'
+    import SignTxModal from '@/components/modal/SignTx.vue'
 
 
     const props = defineProps(['amount', 'msgAny']),
@@ -232,6 +239,7 @@
     onUnmounted(() => {
         // Unlisten events
         emitter.off('auth')
+        emitter.off('close_any_modal')
         emitter.off('close_sign_tx_modal')
     })
 
@@ -345,10 +353,23 @@
     }
 
 
+    // Open SignTx modal
+    function openSignTxModal() {
+        // Show SignTx modal
+        showSignTxModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Event "auth"
     emitter.on('auth', () => {
         // Hide SignTx modal
         showSignTxModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
 
         // Delegate tokens
         delegate()
@@ -359,6 +380,19 @@
     emitter.on('close_sign_tx_modal', () => {
         // Hide SignTx modal
         showSignTxModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Hide SignTx modal
+        showSignTxModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
     })
 </script>
 

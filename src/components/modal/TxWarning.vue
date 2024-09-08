@@ -28,9 +28,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Overlay -->
-        <div class="overlay" @click.prevent="emitter.emit('close_tx_warning_modal')"></div>
     </section>
 </template>
 

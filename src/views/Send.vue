@@ -119,7 +119,7 @@
             <!-- Send page button -->
             <div class="btns">
                 <!-- Send button -->
-                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSignTxModal = true" :class="{ disabled: !store.TxFee.isEnough }">
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="openSignTxModal()" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_send') }}</span>
                 </button>
 
@@ -132,8 +132,15 @@
     </section>
 
 
-    <!-- Sign transaction -->
-    <SignTx v-if="showSignTxModal"/>
+    <!-- Sign transaction modal -->
+    <transition name="modal">
+    <SignTxModal v-if="showSignTxModal"/>
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showSignTxModal"></div>
+    </transition>
 </template>
 
 
@@ -148,7 +155,7 @@
     // Components
     import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
-    import SignTx from '@/components/modal/SignTx.vue'
+    import SignTxModal from '@/components/modal/SignTx.vue'
     import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
 
 
@@ -197,6 +204,14 @@
     })
 
 
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('auth')
+        emitter.off('close_any_modal')
+        emitter.off('close_sign_tx_modal')
+    })
+
+
     watch(computed(() => route.query.data), () => {
         // Update balance
         if (route.query.denom) {
@@ -241,13 +256,6 @@
                 }
             }]
         }
-    })
-
-
-    onUnmounted(() => {
-        // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_sign_tx_modal')
     })
 
 
@@ -406,10 +414,23 @@
     }
 
 
+    // Open SignTx modal
+    function openSignTxModal() {
+        // Show SignTx modal
+        showSignTxModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Event "auth"
     emitter.on('auth', () => {
         // Hide SignTx modal
         showSignTxModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
 
         // Send tokens
         send()
@@ -420,6 +441,19 @@
     emitter.on('close_sign_tx_modal', () => {
         // Hide SignTx modal
         showSignTxModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Hide SignTx modal
+        showSignTxModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
     })
 </script>
 

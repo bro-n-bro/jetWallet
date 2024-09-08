@@ -99,9 +99,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Overlay -->
-        <div class="overlay" @click.prevent="emitter.emit('close_stats_modal')"></div>
     </section>
 </template>
 
