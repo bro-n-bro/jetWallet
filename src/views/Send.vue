@@ -84,7 +84,7 @@
                 <!-- Send page amount field -->
                 <div class="field">
                     <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
-                        @focus="emitter.emit('show_keyboard')"
+                        @focus="emitter.emit('show_keyboard', $event.target)"
                         @blur="emitter.emit('hide_keyboard')"
                         @input="validateAmount()">
 
@@ -106,7 +106,7 @@
                 <!-- Send page memo field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="memo"
-                        @focus="emitter.emit('show_keyboard')"
+                        @focus="emitter.emit('show_keyboard', $event.target)"
                         @blur="emitter.emit('hide_keyboard')">
                 </div>
             </div>

@@ -63,6 +63,11 @@
 
                     <!-- Confirm create wallet page image -->
                     <div class="image">
+                        <div class="icon" :class="{
+                            success: (validWordOne && isValidWordOne) && (validWordTwo && isValidWordTwo),
+                            error: (validWordOne && !isValidWordOne) || (validWordTwo && !isValidWordTwo)
+                        }"></div>
+
                         <img src="@/assets/confirm_wallet_page_img.svg" alt="" loading="lazy">
                     </div>
 
@@ -72,11 +77,6 @@
                         <div class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save()">
                             <span>{{ $t('message.btn_next') }}</span>
                         </div>
-
-                        <!-- Next button -->
-                        <!-- <button class="btn" @click.prevent="save">
-                            <span>{{ $t('message.btn_next') }}</span>
-                        </button> -->
                     </div>
 
                     <!-- Confirm create wallet page text -->
@@ -238,7 +238,12 @@
 
     .image
     {
-        margin-top: auto;
+        position: relative;
+
+        width: 173px;
+        max-width: 100%;
+        height: 183px;
+        margin: auto auto 0;
         padding-top: 24px;
     }
 
@@ -251,6 +256,93 @@
         margin: 0 auto;
 
         filter: drop-shadow(0px 0px 146.2px 0px rgba(24, 0, 54, .55));
+    }
+
+
+    .image .icon
+    {
+        position: absolute;
+        z-index: 2;
+        right: 19px;
+        bottom: 26px;
+
+        width: 50px;
+        height: 50px;
+
+        transition: opacity .2s linear;
+        pointer-events: none;
+
+        opacity: 0;
+
+        filter: drop-shadow(0px 4px 0px #350393);
+    }
+
+
+    .image .icon.success,
+    .image .icon.error
+    {
+        opacity: 1;
+    }
+
+
+    .image .icon:before,
+    .image .icon:after
+    {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        display: block;
+
+        width: 8px;
+        height: 40px;
+        margin: auto;
+
+        content: '';
+        transition: .25s linear;
+
+        border-radius: 4px;
+        background: #bfe3fc;
+    }
+
+
+    .image .icon.success:before
+    {
+        bottom: -10px;
+        left: -24px;
+
+        height: 20px;
+
+        transform: rotate(140deg);
+    }
+
+    .image .icon.success:after
+    {
+        left: 10px;
+
+        transform: rotate(45deg);
+    }
+
+
+    .image .icon.error:before,
+    .image .icon.error:after
+    {
+        background: #ba3030;
+    }
+
+
+    .image .icon.error:before
+    {
+        height: 40px;
+
+        transform: rotate(130deg);
+    }
+
+    .image .icon.error:after
+    {
+        transform: rotate(45deg);
     }
 
 

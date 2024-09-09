@@ -153,8 +153,13 @@
 
 
     // Event "show_keyboard"
-    emitter.on('show_keyboard', () => {
+    emitter.on('show_keyboard', (field = null) => {
         setTimeout(() => {
+            if (field) {
+                // Scroll to field
+                field.scrollIntoView({ behavior: 'smooth' })
+            }
+
             // Overlay
             let overlay = document.querySelector('.virtual_keybord_overlay')
 
