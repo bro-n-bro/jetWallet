@@ -1387,7 +1387,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .modal-enter-active,
 .modal-leave-active
 {
-    transition: transform .5s linear;
+    transition: transform .4s linear;
 }
 
 
