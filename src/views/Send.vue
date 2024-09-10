@@ -145,7 +145,7 @@
 
 
 <script setup>
-    import { ref, inject, watch, onBeforeMount, onMounted, computed, onUnmounted } from 'vue'
+    import { ref, inject, watch, onMounted, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -167,28 +167,14 @@
         notification = useNotification(),
         balance = ref(store.balances.find(balance => balance.denom === route.query.denom)),
         addressInput = ref(null),
-        address = ref(''),
-        amount = ref(''),
+        address = ref(route.query.address || ''),
+        amount = ref(route.query.amount || ''),
         memo = ref(''),
         showSignTxModal = ref(false),
         msgAny = ref([]),
         isProcess = ref(false),
         isAmountReady = ref(false),
         isFormValid = ref(computed(() => isAmountReady.value && validateAddress()))
-
-
-    onBeforeMount(() => {
-        // Parse query data
-        if (route.query.data) {
-            let parsedData = route.query.data.split('|')
-
-            if (parsedData[0] === 'send') {
-                // Set data
-                address.value = parsedData[1]
-                amount.value = parsedData[2]
-            }
-        }
-    })
 
 
     onMounted(() => {

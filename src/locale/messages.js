@@ -126,7 +126,7 @@ export default {
 
 
             // Redelegate
-            'redelegate_page_title': 'Change validator',
+            'redelegate_page_title': 'Switch validator',
             'redelegate_confirm_page_title': 'Confirm',
             'redelegate_validator_from_label': 'From:',
             'redelegate_validator_to_label': 'To:',
@@ -142,6 +142,7 @@ export default {
             // Validators
             'validators_page_title': 'Validators:',
             'validatoes_staked_label': 'Staked:',
+            'validatoes_availabel_label': 'Availabel:',
 
 
             // Stats
@@ -218,9 +219,9 @@ export default {
             'btn_stake': 'Earn',
             'btn_confirm_stake': 'Confirm Staking',
             'btn_confirm_unstake': 'Confirm Unstake',
-            'btn_confirm_redelegate': 'Confirm Restake',
+            'btn_confirm_redelegate': 'Confirm',
             'btn_unstake': 'Unstake',
-            'btn_redelegate': 'Switch',
+            'btn_redelegate': 'Switch validator',
             'btn_claim': 'Claim',
             'btn_approve': 'Approve',
             'btn_json': 'View JSON',

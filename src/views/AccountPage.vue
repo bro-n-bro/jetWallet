@@ -99,17 +99,21 @@
             .swiper-pagination-custom,
             .swiper-pagination-fraction
             {
+                top: auto;
                 bottom: 8px;
+
+                height: 4px;
             }
 
             .swiper-pagination-bullet
             {
                 width: 8px;
-                opacity: 1;
                 height: 4px;
 
                 transition: .2s linear;
+                vertical-align: top;
 
+                opacity: 1;
                 border-radius: 2px;
                 background: #fff;
             }
@@ -242,7 +246,7 @@
         display: flex;
         flex-direction: column;
 
-        padding-top: 265px;
+        padding-top: 266px;
 
         transition: .2s linear;
 
@@ -385,6 +389,9 @@
         font-size: 12px;
 
         position: relative;
+
+        width: 50px;
+        max-width: 100%;
 
         transition: opacity .2s linear;
         text-align: center;

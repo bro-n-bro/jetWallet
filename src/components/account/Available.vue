@@ -77,8 +77,8 @@
         position: relative;
         z-index: 3;
 
-        height: 265px;
-        padding: 75px 22px 25px;
+        height: 266px;
+        padding: 67px 22px 19px;
     }
 
 

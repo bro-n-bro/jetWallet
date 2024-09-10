@@ -29,7 +29,7 @@
                             mode: 'Byte',
                             errorCorrectionLevel: 'H'
                         }"
-                        :value="`send|${store.currentAddress}|${amount}`"
+                        :value="`send|${store.currentNetwork}|${store.currentAddress}|${amount}`"
                         :dotsOptions="{
                             type: 'square',
                             color: '#000000',

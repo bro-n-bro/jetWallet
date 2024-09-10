@@ -49,6 +49,8 @@
                             <div class="moniker">
                                 {{ store.redelegateValidatorFrom.description.moniker }}
                             </div>
+
+                            <div class="notice" v-if="store.redelegateValidatorFrom.redelegation">!</div>
                         </div>
 
                         <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg>
@@ -56,24 +58,47 @@
                 </div>
 
                 <!-- Validator staked -->
-                <div class="staked">
-                    <!-- Validator staked label -->
-                    <div class="label">
-                        {{ $t('message.validatoes_staked_label') }}
+                <div class="balances">
+                    <div class="staked">
+                        <!-- Validator staked label -->
+                        <div class="label">
+                            {{ $t('message.validatoes_staked_label') }}
+                        </div>
+
+                        <!-- Validator staked amount -->
+                        <div class="amount">
+                            {{ formatTokenAmount(validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+
+                            <span>{{ store.networks[store.currentNetwork].token_name }}</span>
+                        </div>
+
+                        <!-- Validator staked cost -->
+                        <div class="cost">
+                            {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
+
+                            {{ store.currentCurrencySymbol }}
+                        </div>
                     </div>
 
-                    <!-- Validator staked amount -->
-                    <div class="amount">
-                        {{ formatTokenAmount(validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+                    <div class="availabel">
+                        <!-- Validator availabel label -->
+                        <div class="label">
+                            {{ $t('message.validatoes_availabel_label') }}
+                        </div>
 
-                        <span>{{ store.networks[store.currentNetwork].token_name }}</span>
-                    </div>
+                        <!-- Validator availabel amount -->
+                        <div class="amount">
+                            {{ formatTokenAmount(maxAmount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
-                    <!-- Validator staked cost -->
-                    <div class="cost">
-                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorFromStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
+                            <span>{{ store.networks[store.currentNetwork].token_name }}</span>
+                        </div>
 
-                        {{ store.currentCurrencySymbol }}
+                        <!-- Validator availabel cost -->
+                        <div class="cost">
+                            {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, maxAmount, store.networks[store.currentNetwork].exponent)) }}
+
+                            {{ store.currentCurrencySymbol }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -127,24 +152,26 @@
                 </div>
 
                 <!-- Validator staked -->
-                <div class="staked">
-                    <!-- Validator staked label -->
-                    <div class="label">
-                        {{ $t('message.validatoes_staked_label') }}
-                    </div>
+                <div class="balances">
+                    <div class="staked">
+                        <!-- Validator staked label -->
+                        <div class="label">
+                            {{ $t('message.validatoes_staked_label') }}
+                        </div>
 
-                    <!-- Validator staked amount -->
-                    <div class="amount">
-                        {{ formatTokenAmount(validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+                        <!-- Validator staked amount -->
+                        <div class="amount">
+                            {{ formatTokenAmount(validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
-                        <span>{{ store.networks[store.currentNetwork].token_name }}</span>
-                    </div>
+                            <span>{{ store.networks[store.currentNetwork].token_name }}</span>
+                        </div>
 
-                    <!-- Validator staked cost -->
-                    <div class="cost">
-                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
+                        <!-- Validator staked cost -->
+                        <div class="cost">
+                            {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, validatorToStaked.balance.amount, store.networks[store.currentNetwork].exponent)) }}
 
-                        {{ store.currentCurrencySymbol }}
+                            {{ store.currentCurrencySymbol }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -172,7 +199,7 @@
                         @input="validateAmount($event)">
 
                     <!-- Redelegate amount max. nutton -->
-                    <button type="button" class="max_btn" @click.prevent="setMaxAmount">
+                    <button type="button" class="max_btn" @click.prevent="setMaxAmount()">
                         {{ $t('message.btn_MAX') }}
                     </button>
                 </div>
@@ -236,7 +263,7 @@
         amount = ref(''),
         maxAmount = ref(0),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && !!store.redelegateValidatorFrom && !!store.redelegateValidatorTo)),
+        isFormValid = ref(computed(() => amount.value > 0 && isAmountReady.value && !!store.redelegateValidatorFrom && !!store.redelegateValidatorTo)),
         validatorFromStaked = computed(() => {
             let result = isStakedValidator(store.redelegateValidatorFrom?.operator_address)
 
@@ -257,10 +284,13 @@
         })
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
         // Reset data
         store.redelegateValidatorFrom = null
         store.redelegateValidatorTo = null
+
+        // Get redelegations
+        await store.getRedelegations()
     })
 
 
@@ -276,8 +306,20 @@
 
 
     watch(computed(() => store.redelegateValidatorFrom), () => {
+        // Find validator in redelegations
+        store.redelegateValidatorFrom.redelegation = store.redelagations.find(el => el.redelegation.validator_dst_address === store.redelegateValidatorFrom.operator_address) || null
+
+        // Sum redelegations
+        store.redelegateValidatorFrom.redelegationsSum = 0
+
+        if (store.redelegateValidatorFrom.redelegation) {
+            store.redelegateValidatorFrom.redelegation.entries.forEach(el => {
+                store.redelegateValidatorFrom.redelegationsSum += parseFloat(el.redelegation_entry.initial_balance)
+            })
+        }
+
         // Get max amount
-        maxAmount.value = (isStakedValidator(store.redelegateValidatorFrom.operator_address)).balance.amount
+        maxAmount.value = (isStakedValidator(store.redelegateValidatorFrom.operator_address)).balance.amount - store.redelegateValidatorFrom.redelegationsSum
     })
 
 
@@ -572,6 +614,12 @@
 
     .validator_info .validator .logo + *
     {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
         width: calc(100% - 100px);
     }
 
@@ -587,6 +635,20 @@
 
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+
+
+    .validator_info .validator .notice
+    {
+        line-height: 18px;
+
+        width: 20px;
+        height: 20px;
+
+        text-align: center;
+
+        border: 1px solid;
+        border-radius: 50%;
     }
 
 
@@ -632,10 +694,16 @@
     }
 
 
-    .validator_info .staked
+    .validator_info .balances
     {
         position: relative;
         z-index: 2;
+
+        display: flex;
+        align-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: space-between;
 
         margin-top: 6px;
         padding: 4px 7px 5px;
@@ -645,7 +713,7 @@
     }
 
 
-    .validator_info.from .staked:before
+    .validator_info .balances:before
     {
         position: absolute;
         right: 0;
@@ -661,29 +729,41 @@
         content: '';
         pointer-events: none;
 
-        background: url(@/assets/bg_redelegate_validator_from_staked.png) 0 0 no-repeat;
+        background: url(@/assets/bg_redelegate_validator_from_balances.png) 0 0 no-repeat;
     }
 
 
-    .validator_info .staked .label
+    .validator_info.to .balances:before
+    {
+        display: none;
+    }
+
+
+    .validator_info .balances .availabel
+    {
+        text-align: right;
+    }
+
+
+    .validator_info .balances .label
     {
         font-weight: 500;
     }
 
 
-    .validator_info .staked .amount
+    .validator_info .balances .amount
     {
         font-weight: 300;
     }
 
 
-    .validator_info .staked .amount span
+    .validator_info .balances .amount span
     {
         font-weight: 400;
     }
 
 
-    .validator_info .staked .cost
+    .validator_info .balances .cost
     {
         font-weight: 300;
 

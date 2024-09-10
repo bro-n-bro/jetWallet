@@ -55,6 +55,7 @@ export const useGlobalStore = defineStore('global', {
         stakedBalances: [],
         rewardsBalances: [],
         unstakingBalances: [],
+        redelagations: [],
 
         secret: null,
         privateKey: null,
@@ -338,6 +339,22 @@ export const useGlobalStore = defineStore('global', {
 
                 // Unstaking balances status
                 this.isUnstakingBalancesGot = true
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
+        // Get redelegations
+        async getRedelegations() {
+            // Request
+            try {
+                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/redelegations`)
+                    .then(response => response.json())
+                    .then(async data => {
+                        // Set data
+                        this.redelagations = data.redelegation_responses
+                    })
             } catch (error) {
                 console.error(error)
             }

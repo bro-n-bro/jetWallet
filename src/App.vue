@@ -75,7 +75,8 @@
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
         },
-        viewportHeight = ref(0)
+        viewportHeight = ref(0),
+        isTouchDevice = !!('ontouchstart' in window)
 
 
     onBeforeMount(() => {
@@ -112,14 +113,26 @@
                 // Close QR popup
                 Telegram.WebApp.closeScanQrPopup()
 
+                // Parse data
+                let parsedData = data.split('|')
+
+                // Change network
+                if (store.currentNetwork !== parsedData[1]) {
+                    // Set new current network
+                    store.setCurrentNetwork(parsedData[1])
+                }
+
                 // Redirect
-                router.push({
-                    path: '/account/send',
-                    query: {
-                        denom: store.networks[store.currentNetwork].denom,
-                        data: data.data
-                    }
-                })
+                if (parsedData[0] === 'send') {
+                    router.push({
+                        path: '/account/send',
+                        query: {
+                            denom: store.networks[store.currentNetwork].denom,
+                            address: parsedData[2],
+                            amount: parsedData[3]
+                        }
+                    })
+                }
             })
         }
     })
@@ -154,34 +167,38 @@
 
     // Event "show_keyboard"
     emitter.on('show_keyboard', (field = null) => {
-        setTimeout(() => {
-            if (field) {
-                // Scroll to field
-                field.scrollIntoView({ behavior: 'smooth' })
-            }
+        if (isTouchDevice) {
+            setTimeout(() => {
+                if (field) {
+                    // Scroll to field
+                    field.scrollIntoView({ behavior: 'smooth' })
+                }
 
-            // Overlay
-            let overlay = document.querySelector('.virtual_keybord_overlay')
+                // Overlay
+                let overlay = document.querySelector('.virtual_keybord_overlay')
 
-            if (overlay) {
-                // Show overlay
-                overlay.style.display = 'block'
-            }
-        })
+                if (overlay) {
+                    // Show overlay
+                    overlay.style.display = 'block'
+                }
+            })
+        }
     })
 
 
     // Event "hide_keyboard"
     emitter.on('hide_keyboard', () => {
-        setTimeout(() => {
-            // Overlay
-            let overlay = document.querySelector('.virtual_keybord_overlay')
+        if (isTouchDevice) {
+            setTimeout(() => {
+                // Overlay
+                let overlay = document.querySelector('.virtual_keybord_overlay')
 
-            if (overlay) {
-                // Hide overlay
-                overlay.style.display = 'none'
-            }
-        })
+                if (overlay) {
+                    // Hide overlay
+                    overlay.style.display = 'none'
+                }
+            })
+        }
     })
 
 

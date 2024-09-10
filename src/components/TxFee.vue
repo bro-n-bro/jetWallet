@@ -48,6 +48,9 @@
 
 
     onBeforeMount(async () => {
+        // Reset data
+        await store.resetTxFee()
+
         // Set current balance
         store.TxFeeGetCurrentBalance(store.networks[store.currentNetwork].denom)
 
@@ -86,9 +89,6 @@
 
 
     onUnmounted(() => {
-        // Reset data
-        store.resetTxFee()
-
         // Unlisten events
         emitter.off('close_any_modal')
         emitter.off('close_tx_fee_modal')

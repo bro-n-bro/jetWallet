@@ -21,7 +21,7 @@
 
         position: absolute;
         z-index: 9;
-        top: 75px;
+        top: 65px;
         right: 12px;
 
         min-width: 32px;
