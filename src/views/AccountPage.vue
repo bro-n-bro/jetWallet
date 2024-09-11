@@ -64,7 +64,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, onMounted, watch, computed, inject, onUnmounted } from 'vue'
+    import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useUrlSearchParams } from '@vueuse/core'
     import { useNotification } from '@kyvg/vue3-notification'

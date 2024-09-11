@@ -186,14 +186,14 @@
     // Check biometric access
     function checkBiometricAccess() {
         !Telegram.WebApp.isAccessGranted
-            ? Telegram.WebApp.BiometricManager.requestAccess({ reason: 'Наш текст' }, () => biometricAuthenticate())
+            ? Telegram.WebApp.BiometricManager.requestAccess({ reason: '' }, () => biometricAuthenticate())
             : biometricAuthenticate()
     }
 
 
     // Biometric authenticate
     function biometricAuthenticate() {
-        Telegram.WebApp.BiometricManager.authenticate({ reason: 'Наш текст' }, res => {
+        Telegram.WebApp.BiometricManager.authenticate({ reason: '' }, res => {
             if (res) {
                 // Set event auth
                 emitter.emit('auth')

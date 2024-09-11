@@ -9,7 +9,7 @@
 <script setup>
     // Open QR popup
     function openScanner() {
-        Telegram.WebApp.showScanQrPopup({ text: 'Наш текст' })
+        Telegram.WebApp.showScanQrPopup({ text: '' })
     }
 </script>
 
