@@ -124,12 +124,16 @@
 
                 // Redirect
                 if (parsedData[0] === 'send') {
-                    router.push({
-                        path: '/account/send',
-                        query: {
-                            denom: store.networks[store.currentNetwork].denom,
-                            address: parsedData[2],
-                            amount: parsedData[3]
+                    watch(computed(() => store.isInitialized), () => {
+                        if (store.isInitialized) {
+                            router.push({
+                                path: '/account/send',
+                                query: {
+                                    denom: store.networks[store.currentNetwork].denom,
+                                    address: parsedData[2],
+                                    amount: parsedData[3]
+                                }
+                            })
                         }
                     })
                 }
