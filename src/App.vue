@@ -118,8 +118,6 @@
                 // Parse data
                 let parsedData = data.split('|')
 
-                alert(parsedData)
-
                 // Change network
                 if (store.currentNetwork !== parsedData[1]) {
                     // Set new current network
