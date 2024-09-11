@@ -113,10 +113,8 @@
                 // Close QR popup
                 Telegram.WebApp.closeScanQrPopup()
 
-                alert(data.data)
-
                 // Parse data
-                let parsedData = data.split('|')
+                let parsedData = data.data.split('|')
 
                 // Change network
                 if (store.currentNetwork !== parsedData[1]) {
