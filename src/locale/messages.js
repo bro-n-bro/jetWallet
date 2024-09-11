@@ -154,6 +154,13 @@ export default {
             'stats_daily_profit_label': 'Est. daily profit:',
 
 
+            // Redelegations
+            'redelegations_title': 'Active redelegations',
+
+            'redelegations_finish_days': 'Days',
+            'redelegations_finish_day': 'Day',
+
+
             // Tx fee
             'tx_fee_label': 'Tx Fee:',
 

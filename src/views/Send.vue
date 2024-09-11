@@ -155,7 +155,7 @@
     // Components
     import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
-    import SignTxModal from '@/components/modal/SignTx.vue'
+    import SignTxModal from '@/components/modal/SignTxModal.vue'
     import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
 
 

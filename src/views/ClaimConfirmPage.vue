@@ -107,9 +107,9 @@
     </transition>
 
     <!-- Tx warning modal -->
-    <transition name="modal">
+    <!-- <transition name="modal">
     <TxWarningModal v-if="showTxWarningModal"/>
-    </transition>
+    </transition> -->
 
     <!-- Overlay -->
     <transition name="fade">
@@ -129,8 +129,8 @@
     // Components
     import Loader from '@/components/Loader.vue'
     import TxFee from '@/components/TxFee.vue'
-    import SignTxModal from '@/components/modal/SignTx.vue'
-    import TxWarningModal from '@/components/modal/TxWarning.vue'
+    import SignTxModal from '@/components/modal/SignTxModal.vue'
+    // import TxWarningModal from '@/components/modal/TxWarningModal.vue'
 
 
     const store = useGlobalStore(),
@@ -299,7 +299,7 @@
     // Event "close_tx_warning_modal"
     emitter.on('close_tx_warning_modal', () => {
         // Hide Tx warning modal
-        showTxWarningModal.value = false
+        // showTxWarningModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
@@ -312,7 +312,7 @@
         showSignTxModal.value = false
 
         // Hide Tx warning modal
-        showTxWarningModal.value = false
+        // showTxWarningModal.value = false
 
         // Update status
         store.isAnyModalOpen = false

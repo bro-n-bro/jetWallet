@@ -55,7 +55,7 @@ export const useGlobalStore = defineStore('global', {
         stakedBalances: [],
         rewardsBalances: [],
         unstakingBalances: [],
-        redelagations: [],
+        redelegations: [],
 
         secret: null,
         privateKey: null,
@@ -353,7 +353,7 @@ export const useGlobalStore = defineStore('global', {
                     .then(response => response.json())
                     .then(async data => {
                         // Set data
-                        this.redelagations = data.redelegation_responses
+                        this.redelegations = data.redelegation_responses
                     })
             } catch (error) {
                 console.error(error)

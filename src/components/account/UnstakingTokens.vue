@@ -119,7 +119,7 @@
                                                     {{ store.networks[store.currentNetwork].token_name }}
                                                 </div>
 
-                                                <!-- Unstaking token validator amoutn cost -->
+                                                <!-- Unstaking token validator amount cost -->
                                                 <div class="cost">
                                                     {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, entry.balance, store.networks[store.currentNetwork].exponent)) }}
 

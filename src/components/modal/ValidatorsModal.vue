@@ -35,6 +35,11 @@
                                     <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
+
+                                    <!-- Validator check -->
+                                    <div class="check" v-if="isCurrentValidator(validator.operator_address)">
+                                        <svg><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -72,11 +77,6 @@
                                         <!-- Validator APR value -->
                                         {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * validator.commission.commission_rates.rate)).toFixed(2) }}%
                                     </span>
-                                </div>
-
-                                <!-- Validator check -->
-                                <div class="check">
-                                    <svg v-if="isCurrentValidator(validator.operator_address)"><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
                                 </div>
                             </div>
                         </div>
@@ -313,7 +313,7 @@
         align-content: center;
         align-items: center;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: space-between;
 
         padding: 5px 7px;
 
@@ -324,6 +324,8 @@
 
     .validators .validator .logo
     {
+        position: relative;
+
         display: flex;
         align-content: center;
         align-items: center;
@@ -371,6 +373,35 @@
     }
 
 
+    .validators .validator .check
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 50%;
+        background: rgba(53, 12, 107, .65);
+    }
+
+
+    .validators .validator .check svg
+    {
+        display: block;
+
+        width: 20px;
+        height: 20px;
+    }
+
+
     .validators .validator .logo + *
     {
         display: flex;
@@ -379,7 +410,7 @@
         flex-wrap: wrap;
         justify-content: flex-start;
 
-        width: calc(100% - 160px);
+        width: calc(100% - 124px);
     }
 
 
@@ -455,29 +486,6 @@
                 background-clip: text;
 
         -webkit-text-fill-color: transparent;
-    }
-
-
-    .validators .validator .check
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 44px;
-        height: 44px;
-        margin-left: 6px;
-    }
-
-
-    .validators .validator .check svg
-    {
-        display: block;
-
-        width: 20px;
-        height: 20px;
     }
 
 

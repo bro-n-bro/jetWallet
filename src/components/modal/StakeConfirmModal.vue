@@ -210,7 +210,7 @@
 
     // Components
     import Loader from '@/components/Loader.vue'
-    import SignTxModal from '@/components/modal/SignTx.vue'
+    import SignTxModal from '@/components/modal/SignTxModal.vue'
 
 
     const props = defineProps(['amount', 'msgAny']),

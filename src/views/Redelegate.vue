@@ -50,7 +50,7 @@
                                 {{ store.redelegateValidatorFrom.description.moniker }}
                             </div>
 
-                            <div class="notice" v-if="store.redelegateValidatorFrom.redelegation">!</div>
+                            <div class="notice" v-if="store.redelegateValidatorFrom?.redelegations" @click.stop.prevent="openRedelegationsModal()">!</div>
                         </div>
 
                         <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg>
@@ -183,6 +183,9 @@
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
 
+                    <!-- Redelegate amount notice -->
+                    <div class="notice" v-if="store.redelegateValidatorFrom?.redelegations" @click.stop.prevent="openRedelegationsModal()">!</div>
+
                     <!-- Redelegate amount cost -->
                     <div class="cost">
                         {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
@@ -235,9 +238,19 @@
     <ValidatorsModal v-if="showValidatorsToModal" redelegate="to" />
     </transition>
 
+    <!-- Redelegations modal -->
+    <transition name="modal">
+    <RedelegationsModal v-if="showRedelegationsModal" :redelegations="store.redelegateValidatorFrom?.redelegations" />
+    </transition>
+
     <!-- Redelegate confirm modal -->
     <transition name="from_right">
     <RedelegateConfirmModal v-if="showRedelegateConfirmModal" :amount :msgAny />
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showRedelegationsModal"></div>
     </transition>
 </template>
 
@@ -252,10 +265,12 @@
     import TxFee from '@/components/TxFee.vue'
     import ValidatorsModal from '@/components/modal/ValidatorsModal.vue'
     import RedelegateConfirmModal from '@/components/modal/RedelegateConfirmModal.vue'
+    import RedelegationsModal from '@/components/modal/RedelegationsModal.vue'
 
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
+        showRedelegationsModal = ref(false),
         showValidatorsFromModal = ref(false),
         showValidatorsToModal = ref(false),
         showRedelegateConfirmModal = ref(false),
@@ -300,6 +315,8 @@
         store.redelegateValidatorTo = null
 
         // Unlisten events
+        emitter.off('close_any_modal')
+        emitter.off('close_redelegations_modal')
         emitter.off('close_redelegate_confirm_modal')
         emitter.off('close_validators_modal')
     })
@@ -307,13 +324,13 @@
 
     watch(computed(() => store.redelegateValidatorFrom), () => {
         // Find validator in redelegations
-        store.redelegateValidatorFrom.redelegation = store.redelagations.find(el => el.redelegation.validator_dst_address === store.redelegateValidatorFrom.operator_address) || null
+        store.redelegateValidatorFrom.redelegations = store.redelegations.find(el => el.redelegation.validator_dst_address === store.redelegateValidatorFrom.operator_address) || null
 
         // Sum redelegations
         store.redelegateValidatorFrom.redelegationsSum = 0
 
-        if (store.redelegateValidatorFrom.redelegation) {
-            store.redelegateValidatorFrom.redelegation.entries.forEach(el => {
+        if (store.redelegateValidatorFrom.redelegations) {
+            store.redelegateValidatorFrom.redelegations.entries.forEach(el => {
                 store.redelegateValidatorFrom.redelegationsSum += parseFloat(el.redelegation_entry.initial_balance)
             })
         }
@@ -397,6 +414,16 @@
     }
 
 
+    // Open redelegations modal
+    function openRedelegationsModal() {
+        // Show redelegations modal
+        showRedelegationsModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Open validators to modal
     function openValidatorsToModal() {
         // Show validators modal
@@ -416,6 +443,26 @@
     emitter.on('close_redelegate_confirm_modal', () => {
         // Hide redelegate confirm modal
         showRedelegateConfirmModal.value = false
+    })
+
+
+    // Event "close_redelegations_modal"
+    emitter.on('close_redelegations_modal', () => {
+        // Hide redelegations modal
+        showRedelegateConfirmModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Hide redelegations modal
+        showRedelegationsModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
     })
 </script>
 
@@ -818,6 +865,22 @@
         margin-top: 12px;
         margin-bottom: auto;
         padding-bottom: 20px;
+    }
+
+
+    .amount_field .notice
+    {
+        font-size: 10px;
+        line-height: 10px;
+
+        width: 12px;
+        height: 12px;
+        margin-left: 8px;
+
+        text-align: center;
+
+        border: 1px solid;
+        border-radius: 50%;
     }
 
 
