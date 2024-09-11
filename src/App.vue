@@ -113,6 +113,8 @@
                 // Close QR popup
                 Telegram.WebApp.closeScanQrPopup()
 
+                alert(data)
+
                 // Parse data
                 let parsedData = data.split('|')
 
