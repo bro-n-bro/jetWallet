@@ -66,6 +66,7 @@
 <script setup>
     import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useRoute, useRouter } from 'vue-router'
     import { useUrlSearchParams } from '@vueuse/core'
     import { useNotification } from '@kyvg/vue3-notification'
 
@@ -87,6 +88,7 @@
 
     const store = useGlobalStore(),
         params = useUrlSearchParams('history'),
+        router = useRouter(),
         emitter = inject('emitter'),
         notification = useNotification(),
         searchingClass = ref(''),
@@ -141,6 +143,51 @@
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
+
+
+
+        // setTimeout(() => {
+        //     let data = {
+        //         data: `send|bostrom|bostrom1p4hc20yrucx4hk4lf68wmuzvsa0rrxkum3re8f|`
+        //     }
+
+        //     // Parse data
+        //     let parsedData = data.data.split('|')
+
+        //     // Check network
+        //     if (store.currentNetwork !== parsedData[1]) {
+        //         // Set new current network
+        //         store.setCurrentNetwork(parsedData[1])
+
+        //         // Redirect
+        //         if (parsedData[0] === 'send') {
+        //             watch(computed(() => store.isInitialized), () => {
+        //                 if (store.isInitialized) {
+        //                     router.push({
+        //                         path: '/account/send',
+        //                         query: {
+        //                             denom: store.networks[store.currentNetwork].denom,
+        //                             address: parsedData[2],
+        //                             amount: parsedData[3]
+        //                         }
+        //                     })
+        //                 }
+        //             })
+        //         }
+        //     } else {
+        //         // Redirect
+        //         if (parsedData[0] === 'send') {
+        //             router.push({
+        //                 path: '/account/send',
+        //                 query: {
+        //                     denom: store.networks[store.currentNetwork].denom,
+        //                     address: parsedData[2],
+        //                     amount: parsedData[3]
+        //                 }
+        //             })
+        //         }
+        //     }
+        // }, 10000)
     })
 
 

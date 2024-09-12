@@ -74,8 +74,7 @@
         notificationAnimation = {
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
-        },
-        viewportHeight = ref(0)
+        }
 
 
     onBeforeMount(() => {
@@ -103,9 +102,6 @@
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
-
-            // Viewport height
-            viewportHeight.value = Telegram.WebApp.viewportHeight
 
             // Qr code received
             Telegram.WebApp.onEvent('qrTextReceived', data => {

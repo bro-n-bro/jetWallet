@@ -19,12 +19,15 @@
             </div>
 
 
+            <!-- <pre>{{ balance }}</pre> -->
+
+
             <!-- Send page token -->
-            <div class="token_wrap" @click.prevent="openTokensModal()">
+            <div class="token_wrap" @click.prevent="openTokensModal()" v-if="balance">
                 <div class="token">
                     <!-- Send page token logo -->
                     <div class="logo">
-                        <img :src="balance.token_info.logo_URIs.svg" :alt="balance.token_info.name" loading="lazy">
+                        <img :src="balance.token_info.logo_URIs.svg" alt="" loading="lazy">
                     </div>
 
                     <!-- Send page token denom -->
@@ -34,6 +37,33 @@
 
                     <!-- Send page token amount -->
                     <div class="amount">
+                        <div class="val">
+                            {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+                        </div>
+
+                        <div class="cost">
+                            {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Send page default token -->
+            <div class="token_wrap" @click.prevent="openTokensModal()" v-else>
+                <div class="token">
+                    <!-- Send page token logo -->
+                    <div class="logo">
+                        <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
+                    </div>
+
+                    <!-- Send page token denom -->
+                    <div class="denom">
+                        {{ store.networks[store.currentNetwork].token_name }}
+                    </div>
+
+                    <!-- Send page token amount -->
+                    <div class="amount" v-if="balance">
                         <div class="val">
                             {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
                         </div>
@@ -618,6 +648,7 @@
     {
         margin-top: 10px;
         margin-bottom: auto;
+        padding-bottom: 40px;
     }
 
 

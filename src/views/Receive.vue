@@ -64,8 +64,8 @@
 
 
             <!-- Receive page amount info -->
-            <div class="amount" v-if="amount">
-                <div @click.prevent="showAmountModal = true">
+            <!-- <div class="amount" v-if="amount"> -->
+                <!-- <div @click.prevent="showAmountModal = true">
                     {{ amount.toLocaleString('ru-RU', { maximumFractionDigits: 7 }) }}
 
                     {{ store.networks[store.currentNetwork].token_name }}
@@ -73,13 +73,13 @@
                     <div class="cost">
                         (~ {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent, 'USD'), 'USD') }}$)
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Reset button -->
-                <div class="reset_btn" @click.prevent="amount = ''">
+                <!-- <div class="reset_btn" @click.prevent="amount = ''">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_reset"></use></svg>
-                </div>
-            </div>
+                </div> -->
+            <!-- </div> -->
 
 
             <!-- Action -->
@@ -94,13 +94,13 @@
                 </div>
 
                 <!-- Amount button -->
-                <div class="btn" @click.prevent="openAmountModal()">
+                <!-- <div class="btn" @click.prevent="openAmountModal()">
                     <div class="icon">
                         <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
                     </div>
 
                     <div>{{ $t('message.btn_amount') }}</div>
-                </div>
+                </div> -->
 
                 <!-- Share button -->
                 <div class="btn" @click.prevent="share()" v-if="isShareSupported">
@@ -116,9 +116,9 @@
 
 
     <!-- Amount modal -->
-    <transition name="modal">
+    <!-- <transition name="modal">
     <AmountModal v-if="showAmountModal" :amount />
-    </transition>
+    </transition> -->
 
     <!-- Overlay -->
     <transition name="fade">
@@ -136,7 +136,7 @@
 
     // Components
     import QRCodeVue3 from 'qrcode-vue3'
-    import AmountModal from '@/components/modal/ReceiveAmountModal.vue'
+    // import AmountModal from '@/components/modal/ReceiveAmountModal.vue'
 
 
     const store = useGlobalStore(),
@@ -144,7 +144,7 @@
         emitter = inject('emitter'),
         notification = useNotification(),
         { copy } = useClipboard(),
-        showAmountModal = ref(false),
+        // showAmountModal = ref(false),
         amount = ref(''),
         qrKey = ref(0),
         isShareSupported = ref(false)
@@ -162,12 +162,6 @@
 
     // Update qr code
     watch(computed(() => amount.value), () => qrKey.value += 1)
-
-
-    function onDecodeQR (result) {
-        alert(result)
-      console.log(result)
-    }
 
 
     // Copy handler
@@ -206,13 +200,13 @@
 
 
     // Open amount modal
-    function openAmountModal() {
-        // Show amount modal
-        showAmountModal.value = true
+    // function openAmountModal() {
+    //     // Show amount modal
+    //     showAmountModal.value = true
 
-        // Update status
-        store.isAnyModalOpen = true
-    }
+    //     // Update status
+    //     store.isAnyModalOpen = true
+    // }
 
 
     // Event "change_receive_amount"
@@ -225,7 +219,7 @@
     // Event "close_receive_amount_modal"
     emitter.on('close_receive_amount_modal', () => {
         // Hide amount modal
-        showAmountModal.value = false
+        // showAmountModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
@@ -235,7 +229,7 @@
     // Event "close_any_modal"
     emitter.on('close_any_modal', () => {
         // Hide amount modal
-        showAmountModal.value = false
+        // showAmountModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
@@ -246,7 +240,7 @@
 <style scoped>
     .qr_code
     {
-        width: 220px;
+        width: 224px;
         max-width: 100%;
         margin: 10px auto auto;
         padding: 10px;

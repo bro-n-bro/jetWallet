@@ -129,9 +129,11 @@ input[type=number]
 
 html
 {
-    height: var(--tg-viewport-stable-height);
-
-    transition: height .2s linear;
+    height: 100%;
+    min-height: -moz-available;
+    min-height: -webkit-fill-available;
+    min-height:         fill-available;
+    /* height: var(--tg-viewport-stable-height); */
 }
 
 
@@ -139,9 +141,12 @@ body
 {
     font: var(--font_size) var(--font_family);
 
-    height: var(--tg-viewport-stable-height);
+    height: 100%;
+    min-height: -moz-available;
+    min-height: -webkit-fill-available;
+    min-height:         fill-available;
 
-    transition: height .2s linear;
+/* height: var(--tg-viewport-stable-height); */
 
     color: var(--text_color);
 }
@@ -1298,8 +1303,8 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .modal_content .close_btn
 {
     position: absolute;
-    top: 12px;
     z-index: 9;
+    top: 12px;
     right: 10px;
 
     display: flex;
