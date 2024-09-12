@@ -118,6 +118,8 @@
 
                     // Redirect
                     watch(computed(() => store.isInitialized), () => {
+                        alert(store.isInitialized)
+
                         if (store.isInitialized && parsedData[0] === 'send') {
                             router.push({
                                 path: '/account/send',
