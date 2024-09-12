@@ -141,7 +141,7 @@
     {
         to
         {
-            bottom: 50%;
+            bottom: 40%;
 
             transform: rotate(13.784deg);
         }
