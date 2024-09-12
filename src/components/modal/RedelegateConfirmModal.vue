@@ -131,7 +131,7 @@
                 <div class="field">
                     <!-- Redelegate confirm memo field -->
                     <input type="text" class="input big" v-model="memo"
-                        @focus="emitter.emit('show_keyboard')"
+                        @touchend="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')">
                 </div>
             </div>

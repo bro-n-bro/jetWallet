@@ -206,8 +206,6 @@ button
     flex-direction: column;
 
     width: 100%;
-    max-width: 414px;
-    margin: 0 auto;
     padding: 0 16px;
 }
 
@@ -1301,6 +1299,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 {
     position: absolute;
     top: 12px;
+    z-index: 9;
     right: 10px;
 
     display: flex;

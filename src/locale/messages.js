@@ -161,6 +161,10 @@ export default {
             'redelegations_finish_day': 'Day',
 
 
+            // Tokens
+            'tokens_page_title': 'Tokens:',
+
+
             // Tx fee
             'tx_fee_label': 'Tx Fee:',
 

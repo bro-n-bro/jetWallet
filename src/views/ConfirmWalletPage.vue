@@ -32,7 +32,7 @@
                                 <!-- Confirm word field -->
                                 <input type="text" class="input" v-model="wordOne"
                                     @keyup="validateFirstWord()"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     :class="{
                                         success: validWordOne && isValidWordOne,
@@ -51,7 +51,7 @@
                                 <!-- Confirm word field -->
                                 <input type="text" class="input" v-model="wordTwo"
                                     @keyup="validateSecondWord()"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     :class="{
                                         success: validWordTwo && isValidWordTwo,

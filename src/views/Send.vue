@@ -20,7 +20,7 @@
 
 
             <!-- Send page token -->
-            <div class="token_wrap">
+            <div class="token_wrap" @click.prevent="openTokensModal()">
                 <div class="token">
                     <!-- Send page token logo -->
                     <div class="logo">
@@ -56,7 +56,7 @@
                 <!-- Send page recipient address field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="address" ref="addressInput"
-                        @focus="emitter.emit('show_keyboard')"
+                        @touchend="emitter.emit('show_keyboard')"
                         @blur="emitter.emit('hide_keyboard')"
                         @input="validateAddress()"
                         @paste="validateAddress()">
@@ -132,6 +132,11 @@
     </section>
 
 
+    <!-- Validators modal -->
+    <transition name="from_right">
+    <TokensModal v-if="showTokensModal" :currentToken="balance" />
+    </transition>
+
     <!-- Sign transaction modal -->
     <transition name="modal">
     <SignTxModal v-if="showSignTxModal"/>
@@ -154,6 +159,7 @@
 
     // Components
     import Loader from '@/components/Loader.vue'
+    import TokensModal from '@/components/modal/TokensModal.vue'
     import TxFee from '@/components/TxFee.vue'
     import SignTxModal from '@/components/modal/SignTxModal.vue'
     import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
@@ -170,11 +176,13 @@
         address = ref(route.query.address || ''),
         amount = ref(route.query.amount || ''),
         memo = ref(''),
+        showTokensModal = ref(false),
         showSignTxModal = ref(false),
         msgAny = ref([]),
         isProcess = ref(false),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && validateAddress()))
+        isAddressValid = ref(false),
+        isFormValid = ref(computed(() => isAmountReady.value && isAddressValid.value))
 
 
     onMounted(() => {
@@ -198,32 +206,15 @@
     })
 
 
+    watch(computed(() => route.query.denom), () => {
+        // Update data
+        updateData()
+    })
+
+
     watch(computed(() => route.query.data), () => {
-        // Update balance
-        if (route.query.denom) {
-            balance.value = store.balances.find(balance => balance.denom === route.query.denom)
-        }
-
-        // Parse query data
-        if (route.query.data) {
-            let parsedData = route.query.data.split('|')
-
-            if (parsedData[0] === 'send') {
-                // Set data
-                address.value = parsedData[1]
-                amount.value = parsedData[2]
-            }
-
-            // Validate address
-            if (address.value) {
-                validateAddress()
-            }
-
-            // Validate amount
-            if (amount.value) {
-                validateAmount()
-            }
-        }
+        // Update data
+        updateData()
     })
 
 
@@ -245,6 +236,48 @@
     })
 
 
+    // Update data
+    function updateData() {
+        // Reset data
+        address.value = ''
+        amount.value = ''
+        memo.value = ''
+        isProcess.value = false
+        isAmountReady.value = false
+        isAddressValid.value = false
+
+        // Remove error classes
+        addressInput.value.classList.remove('error')
+
+        // Update balance
+        balance.value = store.balances.find(balance => balance.denom === route.query.denom)
+
+        // Close any modals
+        emitter.emit('close_any_modal')
+
+        // Parse query data
+        if (route.query.data) {
+            let parsedData = route.query.data.split('|')
+
+            if (parsedData[0] === 'send') {
+                // Set data
+                address.value = parsedData[1]
+                amount.value = parsedData[2]
+            }
+
+            // Validate address
+            if (address.value) {
+                validateAddress()
+            }
+
+            // Validate amount
+            if (amount.value) {
+                validateAmount()
+            }
+        }
+    }
+
+
     // Validate address
     function validateAddress() {
         try {
@@ -255,13 +288,15 @@
                 // Toggle classes
                 addressInput.value.classList.remove('error')
 
-                return true
+                // Address status
+                isAddressValid.value = true
             }
         } catch (error) {
             // Toggle classes
             addressInput.value.classList.add('error')
 
-            return false
+            // Address status
+            isAddressValid.value = false
         }
     }
 
@@ -294,7 +329,7 @@
             }
 
             // Acceptable value
-            if (amount.value.length && amount.value > 0 && amount.value < formatTokenAmount(balance.value.amount, balance.value.exponent)){
+            if (amount.value && amount.value > 0 && amount.value < formatTokenAmount(balance.value.amount, balance.value.exponent)){
                 // Set amount status
                 isAmountReady.value = true
             }
@@ -400,6 +435,13 @@
     }
 
 
+    // Open tokens modal
+    function openTokensModal() {
+        // Show tokens modal
+        showTokensModal.value = true
+    }
+
+
     // Open SignTx modal
     function openSignTxModal() {
         // Show SignTx modal
@@ -423,6 +465,13 @@
     })
 
 
+    // Event "close_tokens_modal"
+    emitter.on('close_tokens_modal', () => {
+        // Hide tokens modal
+        showTokensModal.value = false
+    })
+
+
     // Event "close_sign_tx_modal"
     emitter.on('close_sign_tx_modal', () => {
         // Hide SignTx modal
@@ -435,6 +484,9 @@
 
     // Event "close_any_modal"
     emitter.on('close_any_modal', () => {
+        // Hide tokens modal
+        showTokensModal.value = false
+
         // Hide SignTx modal
         showSignTxModal.value = false
 

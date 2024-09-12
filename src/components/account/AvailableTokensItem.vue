@@ -1,9 +1,14 @@
 <template>
-    <router-link :to="`/account/send?denom=${props.balance.denom}`" class="token_wrap">
+    <router-link :to="`/account/send?denom=${props.balance.denom}`" class="token_wrap" :class="{ current: isCurrentToken(props.balance.denom) }">
         <div class="token">
             <!-- Token logo -->
             <div class="logo">
                 <img :src="props.balance.token_info.logo_URIs.svg" alt="" loading="lazy">
+
+                <!-- Token check -->
+                <div class="check" v-if="isCurrentToken(props.balance.denom)">
+                    <svg><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
+                </div>
             </div>
 
             <!-- Token denom -->
@@ -35,8 +40,25 @@
     import { formatTokenAmount, formatTokenCost, calcTokenCost } from '@/utils'
 
 
-    const props = defineProps(['balance']),
+    const props = defineProps({
+        balance: {
+            type: Object,
+            default: () => ({})
+        },
+        currentToken: {
+            type: Object,
+            default: () => ({
+                denom: ''
+            })
+        }
+    }),
         store = useGlobalStore()
+
+
+    // Is current token
+    function isCurrentToken(denom) {
+        return denom === props.currentToken.denom
+    }
 </script>
 
 
@@ -72,6 +94,8 @@
 
     .token .logo
     {
+        position: relative;
+
         display: flex;
         align-content: center;
         align-items: center;
@@ -93,6 +117,36 @@
 
         max-width: 100%;
         max-height: 100%;
+    }
+
+
+    .token .check
+    {
+        position: absolute;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: calc(100% - 8px);
+        height: calc(100% - 8px);
+        margin: auto;
+
+        border-radius: 50%;
+        background: rgba(53, 12, 107, .65);
+
+        inset: 0;
+    }
+
+
+    .token .check svg
+    {
+        display: block;
+
+        width: 20px;
+        height: 20px;
     }
 
 
@@ -126,12 +180,14 @@
     }
 
 
-    .token_wrap:active
+    .token_wrap:active,
+    .token_wrap.current
     {
         background: linear-gradient(180deg, #dc92fe 0%, #310446 100%);
     }
 
-    .token_wrap:active .token
+    .token_wrap:active .token,
+    .token_wrap.current .token
     {
         background: linear-gradient(180deg, #af60d3 0%, #56007e 100%);
     }

@@ -449,7 +449,7 @@
     // Event "close_redelegations_modal"
     emitter.on('close_redelegations_modal', () => {
         // Hide redelegations modal
-        showRedelegateConfirmModal.value = false
+        showRedelegationsModal.value = false
 
         // Update status
         store.isAnyModalOpen = false

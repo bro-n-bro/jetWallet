@@ -20,7 +20,7 @@
                     <!-- Tokens item -->
                     <div class="item" v-for="(balance, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent) * -1000000)};`">
                         <!-- Tokens token -->
-                        <AvailableTokensItem :balance />
+                        <AvailableTokensItem :balance :currentToken="props.currentToken" />
                     </div>
                 </div>
 
@@ -45,7 +45,8 @@
     import AvailableTokensItem from '@/components/account/AvailableTokensItem.vue'
 
 
-    const store = useGlobalStore(),
+    const props = defineProps(['currentToken']),
+        store = useGlobalStore(),
         emitter = inject('emitter'),
         searchResult = ref([])
 
@@ -171,5 +172,18 @@
     .tokens .list > *
     {
         margin-top: 8px;
+    }
+
+
+
+    .inside_modal .cont
+    {
+        padding: 0;
+    }
+
+
+    .inside_modal .tokens .count
+    {
+        display: none;
     }
 </style>

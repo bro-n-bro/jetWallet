@@ -89,6 +89,9 @@
 
 
     onUnmounted(() => {
+        // Reset data
+        store.TxFee.isEnough = false
+
         // Unlisten events
         emitter.off('close_any_modal')
         emitter.off('close_tx_fee_modal')

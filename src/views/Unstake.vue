@@ -134,7 +134,7 @@
 
 
             <!-- Unstake page amount -->
-            <div class="amount" :class="{ disabled: !store.unstakeCurrentValidator }">
+            <div class="amount_field" :class="{ disabled: !store.unstakeCurrentValidator }">
                 <!-- Unstake page amount label -->
                 <div class="field_label">
                     {{ $t('message.stake_amount_label') }}
@@ -685,7 +685,7 @@
 
 
 
-    .amount
+    .amount_field
     {
         margin-top: 12px;
         margin-bottom: auto;
@@ -693,7 +693,7 @@
     }
 
 
-    .amount .cost
+    .amount_field .cost
     {
         margin-left: auto;
 
@@ -701,7 +701,7 @@
     }
 
 
-    .amount.disabled
+    .amount_field.disabled
     {
         pointer-events: none;
     }

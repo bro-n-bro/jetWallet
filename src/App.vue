@@ -3,7 +3,7 @@
     <component :is="layout" />
 
     <!-- Virtual keybord overlay -->
-    <div class="virtual_keybord_overlay"></div>
+    <div class="virtual_keybord_overlay" @click.prevent="emitter.emit('hide_keyboard')"></div>
 
     <!-- Notifications -->
     <notifications position="top left" group="default" width="100%" animation-type="velocity" :animation="notificationAnimation"
@@ -75,8 +75,7 @@
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
         },
-        viewportHeight = ref(0),
-        isTouchDevice = !!('ontouchstart' in window)
+        viewportHeight = ref(0)
 
 
     onBeforeMount(() => {
@@ -171,38 +170,34 @@
 
     // Event "show_keyboard"
     emitter.on('show_keyboard', (field = null) => {
-        if (isTouchDevice) {
-            setTimeout(() => {
-                if (field) {
-                    // Scroll to field
-                    field.scrollIntoView({ behavior: 'smooth' })
-                }
+        setTimeout(() => {
+            if (field) {
+                // Scroll to field
+                field.scrollIntoView({ behavior: 'smooth' })
+            }
 
-                // Overlay
-                let overlay = document.querySelector('.virtual_keybord_overlay')
+            // Overlay
+            let overlay = document.querySelector('.virtual_keybord_overlay')
 
-                if (overlay) {
-                    // Show overlay
-                    overlay.style.display = 'block'
-                }
-            })
-        }
+            if (overlay) {
+                // Show overlay
+                overlay.style.display = 'block'
+            }
+        }, 50)
     })
 
 
     // Event "hide_keyboard"
     emitter.on('hide_keyboard', () => {
-        if (isTouchDevice) {
-            setTimeout(() => {
-                // Overlay
-                let overlay = document.querySelector('.virtual_keybord_overlay')
+        setTimeout(() => {
+            // Overlay
+            let overlay = document.querySelector('.virtual_keybord_overlay')
 
-                if (overlay) {
-                    // Hide overlay
-                    overlay.style.display = 'none'
-                }
-            })
-        }
+            if (overlay) {
+                // Hide overlay
+                overlay.style.display = 'none'
+            }
+        }, 10)
     })
 
 

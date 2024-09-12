@@ -50,7 +50,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[0]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 0)"
                                     @paste="handlePaste" :class="getValidationClass(0)">
@@ -59,7 +59,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[1]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 1)"
                                     @paste="handlePaste" :class="getValidationClass(1)">
@@ -68,7 +68,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[2]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 2)"
                                     @paste="handlePaste" :class="getValidationClass(2)">
@@ -77,7 +77,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[3]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 3)"
                                     @paste="handlePaste" :class="getValidationClass(3)">
@@ -86,7 +86,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[4]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 4)"
                                     @paste="handlePaste" :class="getValidationClass(4)">
@@ -95,7 +95,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[5]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 5)"
                                     @paste="handlePaste" :class="getValidationClass(5)">
@@ -104,7 +104,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[6]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 6)"
                                     @paste="handlePaste" :class="getValidationClass(6)">
@@ -113,7 +113,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[7]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 7)"
                                     @paste="handlePaste" :class="getValidationClass(7)">
@@ -122,7 +122,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[8]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 8)"
                                     @paste="handlePaste" :class="getValidationClass(8)">
@@ -131,7 +131,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[9]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 9)"
                                     @paste="handlePaste" :class="getValidationClass(9)">
@@ -140,7 +140,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[10]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 10)"
                                     @paste="handlePaste" :class="getValidationClass(10)">
@@ -149,7 +149,7 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[11]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 11)"
                                     @paste="handlePaste" :class="getValidationClass(11)">
@@ -158,7 +158,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[12]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 12)"
                                     @paste="handlePaste" :class="getValidationClass(12)">
@@ -167,7 +167,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[13]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 13)"
                                     @paste="handlePaste" :class="getValidationClass(13)">
@@ -176,7 +176,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[14]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 14)"
                                     @paste="handlePaste" :class="getValidationClass(14)">
@@ -185,7 +185,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[15]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 15)"
                                     @paste="handlePaste" :class="getValidationClass(15)">
@@ -194,7 +194,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[16]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 16)"
                                     @paste="handlePaste" :class="getValidationClass(16)">
@@ -203,7 +203,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[17]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 17)"
                                     @paste="handlePaste" :class="getValidationClass(17)">
@@ -212,7 +212,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[18]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 18)"
                                     @paste="handlePaste" :class="getValidationClass(18)">
@@ -221,7 +221,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[19]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 19)"
                                     @paste="handlePaste" :class="getValidationClass(19)">
@@ -230,7 +230,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[20]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 20)"
                                     @paste="handlePaste" :class="getValidationClass(20)">
@@ -239,7 +239,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[21]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 21)"
                                     @paste="handlePaste" :class="getValidationClass(21)">
@@ -248,7 +248,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[22]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 22)"
                                     @paste="handlePaste" :class="getValidationClass(22)">
@@ -257,7 +257,7 @@
                             <!-- Mnemonic word -->
                             <div class="word" v-if="activeTab === 2">
                                 <input type="text" class="input" v-model="secret[23]"
-                                    @focus="emitter.emit('show_keyboard')"
+                                    @touchend="emitter.emit('show_keyboard')"
                                     @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 23)"
                                     @paste="handlePaste" :class="getValidationClass(23)">
