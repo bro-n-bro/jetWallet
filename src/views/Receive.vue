@@ -87,7 +87,7 @@
                 <!-- Copy button -->
                 <div class="btn" @click.prevent="copyHandler">
                     <div class="icon">
-                        <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
+                        <svg><use xlink:href="@/assets/sprite.svg#ic_copy3"></use></svg>
                     </div>
 
                     <div>{{ $t('message.btn_copy_small') }}</div>
@@ -96,7 +96,7 @@
                 <!-- Amount button -->
                 <!-- <div class="btn" @click.prevent="openAmountModal()">
                     <div class="icon">
-                        <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
+                        <svg><use xlink:href="@/assets/sprite.svg#ic_send"></use></svg>
                     </div>
 
                     <div>{{ $t('message.btn_amount') }}</div>
@@ -105,7 +105,7 @@
                 <!-- Share button -->
                 <div class="btn" @click.prevent="share()" v-if="isShareSupported">
                     <div class="icon">
-                        <svg><use xlink:href="@/assets/sprite.svg#ic_receive"></use></svg>
+                        <svg><use xlink:href="@/assets/sprite.svg#ic_share"></use></svg>
                     </div>
 
                     <div>{{ $t('message.btn_share') }}</div>
@@ -121,9 +121,9 @@
     </transition> -->
 
     <!-- Overlay -->
-    <transition name="fade">
+    <!-- <transition name="fade">
     <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showAmountModal"></div>
-    </transition>
+    </transition> -->
 </template>
 
 
