@@ -292,9 +292,7 @@
             address.value = route.query.address
 
             // Validate address
-            if (address.value) {
-                validateAddress()
-            }
+            validateAddress()
         }
 
         // if (route.query.amount) {
@@ -302,9 +300,7 @@
         //     amount.value = route.query.amount
 
         //     // Validate amount
-        //     if (amount.value) {
-        //         validateAmount()
-        //     }
+        //     validateAmount()
         // }
 
         // Close any modals
@@ -324,6 +320,12 @@
 
                 // Address status
                 isAddressValid.value = true
+            } else {
+                // Toggle classes
+                addressInput.value.classList.add('error')
+
+                // Address status
+                isAddressValid.value = false
             }
         } catch (error) {
             // Toggle classes

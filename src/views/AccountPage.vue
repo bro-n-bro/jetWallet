@@ -145,46 +145,46 @@
         })
 
 
-        setTimeout(() => {
-            let data = {
-                data: `send|cosmoshub|bostrom1p4hc20yrucx4hk4lf68wmuzvsa0rrxkum3re8f|`
-            }
+        // setTimeout(() => {
+        //     let data = {
+        //         data: `send|cosmoshub|bostrom1p4hc20yrucx4hk4lf68wmuzvsa0rrxkum3re8f|`
+        //     }
 
-            // Parse data
-            let parsedData = data.data.split('|')
+        //     // Parse data
+        //     let parsedData = data.data.split('|')
 
-            // Check network
-            if (store.currentNetwork !== parsedData[1]) {
-                // Set new current network
-                store.setCurrentNetwork(parsedData[1])
+        //     // Check network
+        //     if (store.currentNetwork !== parsedData[1]) {
+        //         // Set new current network
+        //         store.setCurrentNetwork(parsedData[1])
 
-                // Redirect
-                watch(computed(() => store.isInitialized), () => {
-                    if (store.isInitialized && parsedData[0] === 'send') {
-                        router.push({
-                            path: '/account/send',
-                            query: {
-                                denom: store.networks[store.currentNetwork].denom,
-                                address: parsedData[2],
-                                amount: parsedData[3]
-                            }
-                        })
-                    }
-                })
-            } else {
-                // Redirect
-                if (parsedData[0] === 'send') {
-                    router.push({
-                        path: '/account/send',
-                        query: {
-                            denom: store.networks[store.currentNetwork].denom,
-                            address: parsedData[2],
-                            amount: parsedData[3]
-                        }
-                    })
-                }
-            }
-        }, 10000)
+        //         // Redirect
+        //         watch(computed(() => store.isInitialized), () => {
+        //             if (store.isInitialized && parsedData[0] === 'send') {
+        //                 router.push({
+        //                     path: '/account/send',
+        //                     query: {
+        //                         denom: store.networks[store.currentNetwork].denom,
+        //                         address: parsedData[2],
+        //                         amount: parsedData[3]
+        //                     }
+        //                 })
+        //             }
+        //         })
+        //     } else {
+        //         // Redirect
+        //         if (parsedData[0] === 'send') {
+        //             router.push({
+        //                 path: '/account/send',
+        //                 query: {
+        //                     denom: store.networks[store.currentNetwork].denom,
+        //                     address: parsedData[2],
+        //                     amount: parsedData[3]
+        //                 }
+        //             })
+        //         }
+        //     }
+        // }, 10000)
     })
 
 

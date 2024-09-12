@@ -117,20 +117,18 @@
                     store.setCurrentNetwork(parsedData[1])
 
                     // Redirect
-                    if (parsedData[0] === 'send') {
-                        watch(computed(() => store.isInitialized), () => {
-                            if (store.isInitialized) {
-                                router.push({
-                                    path: '/account/send',
-                                    query: {
-                                        denom: store.networks[store.currentNetwork].denom,
-                                        address: parsedData[2],
-                                        amount: parsedData[3]
-                                    }
-                                })
-                            }
-                        })
-                    }
+                    watch(computed(() => store.isInitialized), () => {
+                        if (store.isInitialized && parsedData[0] === 'send') {
+                            router.push({
+                                path: '/account/send',
+                                query: {
+                                    denom: store.networks[store.currentNetwork].denom,
+                                    address: parsedData[2],
+                                    amount: parsedData[3]
+                                }
+                            })
+                        }
+                    })
                 } else {
                     // Redirect
                     if (parsedData[0] === 'send') {
