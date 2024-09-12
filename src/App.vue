@@ -122,29 +122,27 @@
     function redirectToSend(parsedData) {
         // Change network
         if (store.currentNetwork !== parsedData[1]) {
-            alert(1111111111)
-            alert(store.isInitialized)
-
-            // Redirect
-            watch(computed(() => store.isInitialized), () => {
-                alert(2222222)
-                if (store.isInitialized && parsedData[0] === 'send') {
-                    router.push({
-                        path: '/account/send',
-                        query: {
-                            denom: store.networks[store.currentNetwork].denom,
-                            address: parsedData[2],
-                            amount: parsedData[3]
-                        }
-                    })
-                }
-            })
-
             // Set new current network
             store.setCurrentNetwork(parsedData[1])
+
+            // Redirect
+            setTimeout(() => {
+                watch(computed(() => store.isInitialized), () => {
+                    if (store.isInitialized && parsedData[0] == 'send') {
+                        router.push({
+                            path: '/account/send',
+                            query: {
+                                denom: store.networks[store.currentNetwork].denom,
+                                address: parsedData[2],
+                                amount: parsedData[3]
+                            }
+                        })
+                    }
+                })
+            })
         } else {
             // Redirect
-            if (parsedData[0] === 'send') {
+            if (parsedData[0] == 'send') {
                 router.push({
                     path: '/account/send',
                     query: {
