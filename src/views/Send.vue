@@ -84,6 +84,8 @@
                 <!-- Send page recipient address field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="address" ref="addressInput"
+                        @touchend="emitter.emit('show_keyboard')"
+                        @blur="emitter.emit('hide_keyboard')"
                         @input="validateAddress()"
                         @paste="validateAddress()">
 

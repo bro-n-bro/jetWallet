@@ -12,11 +12,11 @@
                 <div class="page_data">
                     <!-- Index page image -->
                     <div class="image" :style="{ '--animation_offset': `${animationOffset}px` }" ref="imageRef" :class="{ animate: animationOffset }">
-                        <img src="@/assets/wallet_created_page_front_mountains.svg" alt="" loading="lazy" class="front_mountains">
+                        <img src="@/assets/wallet_created_page_front_mountains.svg" alt="" class="front_mountains">
 
-                        <img src="@/assets/wallet_created_page_rocket.svg" alt="" loading="lazy" class="rocket">
+                        <img src="@/assets/wallet_created_page_rocket.svg" alt="" class="rocket">
 
-                        <img src="@/assets/wallet_created_page_bg.svg" alt="" loading="lazy" class="bg" ref="imageBgRef" @load="onImageLoad()">
+                        <img src="@/assets/wallet_created_page_bg.svg" alt="" class="bg" ref="imageBgRef" @load="onImageLoad()">
                     </div>
 
                     <!-- Wallet created page buttons -->
@@ -85,6 +85,8 @@
         display: block;
 
         width: 100%;
+
+        transition: 2s ease-in-out .2s;
     }
 
 
@@ -100,6 +102,8 @@
 
         width: 16%;
         margin: 0 auto;
+
+        transition: 2s ease-in-out .2s;
     }
 
 
@@ -113,18 +117,22 @@
         display: block;
 
         width: 100%;
+
+        transition: 2s ease-in-out .2s;
     }
 
 
     .image.animate .front_mountains,
     .image.animate .bg
     {
-        animation: bg 2s ease-in-out forwards;
+        transform: translateY(var(--animation_offset));
     }
 
     .image.animate .rocket
     {
-        animation: rocket 2s ease-in-out forwards;
+        bottom: 40%;
+
+        transform: rotate(13.784deg);
     }
 
 
@@ -133,26 +141,5 @@
     {
         position: relative;
         z-index: 2;
-    }
-
-
-
-    @keyframes rocket
-    {
-        to
-        {
-            bottom: 40%;
-
-            transform: rotate(13.784deg);
-        }
-    }
-
-
-    @keyframes bg
-    {
-        to
-        {
-            transform: translateY(var(--animation_offset));
-        }
     }
 </style>
