@@ -50,8 +50,6 @@
                             <!-- Mnemonic word -->
                             <div class="word">
                                 <input type="text" class="input" v-model="secret[0]"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="validateWord($event.target.value, 0)"
                                     @paste="handlePaste" :class="getValidationClass(0)">
                             </div>
