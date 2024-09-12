@@ -11,8 +11,12 @@
             <div class="page_data_wrap">
                 <div class="page_data">
                     <!-- Index page image -->
-                    <div class="image">
-                        <img src="@/assets/wallet_created_page_img.jpg" alt="" loading="lazy">
+                    <div class="image" :style="{ '--animation_offset': `${animationOffset}px` }" ref="imageRef" :class="{ animate: animationOffset }">
+                        <img src="@/assets/wallet_created_page_front_mountains.svg" alt="" loading="lazy" class="front_mountains">
+
+                        <img src="@/assets/wallet_created_page_rocket.svg" alt="" loading="lazy" class="rocket">
+
+                        <img src="@/assets/wallet_created_page_bg.svg" alt="" loading="lazy" class="bg" ref="imageBgRef" @load="onImageLoad()">
                     </div>
 
                     <!-- Wallet created page buttons -->
@@ -30,7 +34,24 @@
 
 
 <script setup>
+    import { ref } from 'vue'
 
+
+    const animationOffset = ref(0),
+        imageRef = ref(null),
+        imageBgRef = ref(null)
+
+
+    function onImageLoad() {
+        // Get image height
+        let imageHeight = imageRef.value.getBoundingClientRect().height
+
+        // Get bg image height
+        let bgImageHeight = imageBgRef.value.getBoundingClientRect().height
+
+        // Set offset
+        animationOffset.value = bgImageHeight - imageHeight
+    }
 </script>
 
 
@@ -42,47 +63,68 @@
         top: 0;
         left: 0;
 
+        overflow: hidden;
+
         width: 100%;
         height: 100%;
 
         pointer-events: none;
 
         border-radius: inherit;
+        background: linear-gradient(to bottom,  #000 0%,#000116 100%);
     }
 
 
-    .image:before
+    .image .front_mountains
     {
         position: absolute;
-        z-index: 2;
+        z-index: 3;
         bottom: 0;
         left: 0;
 
         display: block;
 
         width: 100%;
-        height: 130px;
-        max-height: 100%;
-
-        content: '';
-
-        border-radius: inherit;
-        background: linear-gradient(180deg, rgba(56, 12, 150, .00) 0%, #36006c 100%);
-
-        mix-blend-mode: multiply;
     }
 
 
-    .image img
+    .image .rocket
     {
+        position: absolute;
+        z-index: 2;
+        right: 0;
+        bottom: 19.5%;
+        left: 0;
+
+        display: block;
+
+        width: 16%;
+        margin: 0 auto;
+    }
+
+
+    .image .bg
+    {
+        position: absolute;
+        z-index: 1;
+        bottom: 0;
+        left: 0;
+
         display: block;
 
         width: 100%;
-        height: 100%;
+    }
 
-        border-radius: inherit;
 
-        object-fit: cover;
+    .image.animate .front_mountains,
+    .image.animate .bg
+    {
+        animation: bg 2s ease-in-out forwards;
+    }
+
+    .image.animate .rocket
+    {
+        animation: rocket 2s ease-in-out forwards;
     }
 
 
@@ -91,5 +133,26 @@
     {
         position: relative;
         z-index: 2;
+    }
+
+
+
+    @keyframes rocket
+    {
+        to
+        {
+            bottom: 50%;
+
+            transform: rotate(13.784deg);
+        }
+    }
+
+
+    @keyframes bg
+    {
+        to
+        {
+            transform: translateY(var(--animation_offset));
+        }
     }
 </style>

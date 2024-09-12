@@ -232,6 +232,8 @@
                     }]
                 }
             }]
+
+            console.log(msgAny.value)
         }
     })
 
