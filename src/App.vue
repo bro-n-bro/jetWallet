@@ -111,42 +111,47 @@
                 // Parse data
                 let parsedData = data.data.split('|')
 
-                // Change network
-                if (store.currentNetwork !== parsedData[1]) {
-                    // Set new current network
-                    store.setCurrentNetwork(parsedData[1])
-
-                    // Redirect
-                    watch(computed(() => store.isInitialized), () => {
-                        alert(store.isInitialized)
-
-                        if (store.isInitialized && parsedData[0] === 'send') {
-                            router.push({
-                                path: '/account/send',
-                                query: {
-                                    denom: store.networks[store.currentNetwork].denom,
-                                    address: parsedData[2],
-                                    amount: parsedData[3]
-                                }
-                            })
-                        }
-                    })
-                } else {
-                    // Redirect
-                    if (parsedData[0] === 'send') {
-                        router.push({
-                            path: '/account/send',
-                            query: {
-                                denom: store.networks[store.currentNetwork].denom,
-                                address: parsedData[2],
-                                amount: parsedData[3]
-                            }
-                        })
-                    }
-                }
+                // Redirect to send
+                redirectToSend(parsedData)
             })
         }
     })
+
+
+    // Redirect to send
+    function redirectToSend(parsedData) {
+        // Change network
+        if (store.currentNetwork !== parsedData[1]) {
+            // Set new current network
+            store.setCurrentNetwork(parsedData[1])
+
+            // Redirect
+            watch(computed(() => store.isInitialized), () => {
+                if (store.isInitialized && parsedData[0] === 'send') {
+                    router.push({
+                        path: '/account/send',
+                        query: {
+                            denom: store.networks[store.currentNetwork].denom,
+                            address: parsedData[2],
+                            amount: parsedData[3]
+                        }
+                    })
+                }
+            })
+        } else {
+            // Redirect
+            if (parsedData[0] === 'send') {
+                router.push({
+                    path: '/account/send',
+                    query: {
+                        denom: store.networks[store.currentNetwork].denom,
+                        address: parsedData[2],
+                        amount: parsedData[3]
+                    }
+                })
+            }
+        }
+    }
 
 
     // Notifications start event
