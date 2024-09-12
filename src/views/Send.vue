@@ -64,12 +64,10 @@
 
                     <!-- Send page token amount -->
                     <div class="amount" v-if="balance">
-                        <div class="val">
-                            {{ formatTokenAmount(balance.amount, balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
-                        </div>
+                        <div class="val">0</div>
 
                         <div class="cost">
-                            {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                            0.00 {{ store.currentCurrencySymbol }}
                         </div>
                     </div>
                 </div>
@@ -86,8 +84,6 @@
                 <!-- Send page recipient address field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="address" ref="addressInput"
-                        @touchend="emitter.emit('show_keyboard')"
-                        @blur="emitter.emit('hide_keyboard')"
                         @input="validateAddress()"
                         @paste="validateAddress()">
 
@@ -225,6 +221,12 @@
         if (amount.value) {
             validateAmount()
         }
+
+        // Qr code received
+        Telegram.WebApp.onEvent('qrTextReceived', () => {
+            // Update data
+            updateData()
+        })
     })
 
 
@@ -233,6 +235,8 @@
         emitter.off('auth')
         emitter.off('close_any_modal')
         emitter.off('close_sign_tx_modal')
+
+        Telegram.WebApp.offEvent('qrTextReceived')
     })
 
 
@@ -242,7 +246,7 @@
     })
 
 
-    watch(computed(() => route.query.data), () => {
+    watch(computed(() => route.query.address), () => {
         // Update data
         updateData()
     })
@@ -262,8 +266,6 @@
                     }]
                 }
             }]
-
-            console.log(msgAny.value)
         }
     })
 
@@ -284,29 +286,29 @@
         // Update balance
         balance.value = store.balances.find(balance => balance.denom === route.query.denom)
 
-        // Close any modals
-        emitter.emit('close_any_modal')
-
         // Parse query data
-        if (route.query.data) {
-            let parsedData = route.query.data.split('|')
-
-            if (parsedData[0] === 'send') {
-                // Set data
-                address.value = parsedData[1]
-                amount.value = parsedData[2]
-            }
+        if (route.query.address) {
+            // Set data
+            address.value = route.query.address
 
             // Validate address
             if (address.value) {
                 validateAddress()
             }
-
-            // Validate amount
-            if (amount.value) {
-                validateAmount()
-            }
         }
+
+        // if (route.query.amount) {
+        //     // Set data
+        //     amount.value = route.query.amount
+
+        //     // Validate amount
+        //     if (amount.value) {
+        //         validateAmount()
+        //     }
+        // }
+
+        // Close any modals
+        emitter.emit('close_any_modal')
     }
 
 
