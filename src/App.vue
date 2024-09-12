@@ -122,11 +122,12 @@
     function redirectToSend(parsedData) {
         // Change network
         if (store.currentNetwork !== parsedData[1]) {
-            // Set new current network
-            store.setCurrentNetwork(parsedData[1])
+            alert(1111111111)
+            alert(store.isInitialized)
 
             // Redirect
             watch(computed(() => store.isInitialized), () => {
+                alert(2222222)
                 if (store.isInitialized && parsedData[0] === 'send') {
                     router.push({
                         path: '/account/send',
@@ -138,6 +139,9 @@
                     })
                 }
             })
+
+            // Set new current network
+            store.setCurrentNetwork(parsedData[1])
         } else {
             // Redirect
             if (parsedData[0] === 'send') {
