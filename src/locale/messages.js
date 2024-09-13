@@ -209,6 +209,7 @@ export default {
             'notification_tx_success_title': 'Success',
             'notification_tx_error_title': 'Error:',
             'notification_error_title': 'Something went wrong, try again later',
+            'notification_error_invalid_paste_title': 'Incorrect address in the clipboard',
 
             'notification_explorer_link': 'Explorer',
 
@@ -245,6 +246,7 @@ export default {
             'btn_amount': 'Amount',
             'btn_share': 'Share',
             'btn_accept': 'Accept',
+            'btn_paste': 'Paste',
 
 
             'notification_tx_error_2': "tx parse error",

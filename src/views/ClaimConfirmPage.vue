@@ -165,7 +165,6 @@
     onUnmounted(() => {
         // Unlisten events
         emitter.off('auth')
-        emitter.off('close_any_modal')
         emitter.off('close_sign_tx_modal')
         emitter.off('close_tx_warning_modal')
     })

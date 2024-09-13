@@ -315,7 +315,6 @@
         store.redelegateValidatorTo = null
 
         // Unlisten events
-        emitter.off('close_any_modal')
         emitter.off('close_redelegations_modal')
         emitter.off('close_redelegate_confirm_modal')
         emitter.off('close_validators_modal')
