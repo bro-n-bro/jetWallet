@@ -251,8 +251,11 @@
         padding-top: 266px;
 
         transition: .2s linear;
+        transform: translateY(0%);
 
         background: #170232;
+
+        will-change: transform, padding;
     }
 
 
@@ -280,6 +283,8 @@
 
         transition: opacity .2s linear;
 
+        will-change: opacity;
+        opacity: 1;
         border-radius: 0 0 20px 20px;
     }
 
