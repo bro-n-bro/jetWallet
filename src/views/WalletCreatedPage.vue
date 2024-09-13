@@ -56,96 +56,95 @@
 
 
 <style scoped>
-.image
-{
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
+    .image
+    {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
 
-    overflow: hidden;
+        overflow: hidden;
 
-    width: 100%;
-    height: 100%;
+        width: 100%;
+        height: 100%;
 
-    pointer-events: none;
+        pointer-events: none;
 
-    border-radius: inherit;
-    background: linear-gradient(to bottom,  #000 0%,#000116 100%);
-}
-
-
-.image .front_mountains
-{
-    position: absolute;
-    z-index: 3;
-    bottom: 0;
-    left: 0;
-
-    display: block;
-
-    width: 100%;
-
-    transition: 2s ease-in-out .2s;
-
-    will-change: transform;
-}
+        border-radius: inherit;
+        background: linear-gradient(to bottom,  #000 0%,#000116 100%);
+    }
 
 
-.image .rocket
-{
-    position: absolute;
-    z-index: 2;
-    right: 0;
-    bottom: 19.5%;
-    left: 0;
+    .image .front_mountains
+    {
+        position: absolute;
+        z-index: 3;
+        bottom: 0;
+        left: 0;
 
-    display: block;
+        display: block;
 
-    width: 16%;
-    margin: 0 auto;
+        width: 100%;
 
-    transition: 2s ease-in-out .2s;
+        transition: 2s ease-in-out .2s;
 
-    will-change: transform, bottom;
-}
+        will-change: transform;
+    }
 
 
-.image .bg
-{
-    position: absolute;
-    z-index: 1;
-    bottom: 0;
-    left: 0;
+    .image .rocket
+    {
+        position: absolute;
+        z-index: 2;
+        right: 0;
+        bottom: 19.5%;
+        left: 0;
 
-    display: block;
+        display: block;
 
-    width: 100%;
+        width: 16%;
+        margin: 0 auto;
 
-    transition: 2s ease-in-out .2s;
+        transition: 2s ease-in-out .2s;
 
-    will-change: transform;
-}
-
-
-.image.animate .front_mountains
-{
-    transform: translateY(var(--animation_offset));
-}
-
-.image.animate .rocket
-{
-    bottom: 40%;
-
-    transform: rotate(13.784deg);
-}
+        will-change: transform, bottom;
+    }
 
 
+    .image .bg
+    {
+        position: absolute;
+        z-index: 1;
+        bottom: 0;
+        left: 0;
 
-.btns
-{
-    position: relative;
-    z-index: 2;
-}
+        display: block;
 
+        width: 100%;
+
+        transition: 2s ease-in-out .2s;
+
+        will-change: transform;
+    }
+
+
+    .image.animate .front_mountains
+    {
+        transform: translateY(var(--animation_offset));
+    }
+
+    .image.animate .rocket
+    {
+        bottom: 50%;
+
+        /* transform: rotate(13.784deg); */
+    }
+
+
+
+    .btns
+    {
+        position: relative;
+        z-index: 2;
+    }
 </style>

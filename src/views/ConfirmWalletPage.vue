@@ -353,6 +353,12 @@
 
         margin-top: 6px;
     }
+
+
+    .input
+    {
+        text-transform: uppercase;
+    }
 </style>
 
 
