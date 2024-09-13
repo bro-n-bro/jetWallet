@@ -133,7 +133,6 @@ html
     min-height: -moz-available;
     min-height: -webkit-fill-available;
     min-height:         fill-available;
-    /* height: var(--tg-viewport-stable-height); */
 }
 
 
@@ -145,8 +144,6 @@ body
     min-height: -moz-available;
     min-height: -webkit-fill-available;
     min-height:         fill-available;
-
-/* height: var(--tg-viewport-stable-height); */
 
     color: var(--text_color);
 }

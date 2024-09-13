@@ -64,11 +64,9 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
+    import { ref, onBeforeMount, onMounted, inject } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRoute, useRouter } from 'vue-router'
     import { useUrlSearchParams } from '@vueuse/core'
-    import { useNotification } from '@kyvg/vue3-notification'
 
     // Components
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
@@ -88,9 +86,7 @@
 
     const store = useGlobalStore(),
         params = useUrlSearchParams('history'),
-        router = useRouter(),
         emitter = inject('emitter'),
-        notification = useNotification(),
         searchingClass = ref(''),
         showStatsModal = ref(false),
         swiperEl = ref(null),
@@ -143,20 +139,6 @@
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
-    })
-
-
-    watch(computed(() => store.currentNetwork), async () => {
-        if (store.isInitialized || store.forcedUnlock) {
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
-
-            // Reinit APP
-            await store.initApp()
-        }
     })
 
 

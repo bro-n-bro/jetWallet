@@ -59,6 +59,7 @@
 <script setup>
     import { ref, onBeforeMount, inject, watch, computed, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
     import { useTitle } from '@vueuse/core'
 
@@ -70,6 +71,7 @@
         emitter = inject('emitter'),
         title = useTitle(),
         layout = computed(() => route.meta.layout || 'default-layout'),
+        notification = useNotification(),
         notificationTimeout = ref(null),
         notificationAnimation = {
             enter: { translateY: '0%' },
@@ -118,6 +120,20 @@
     })
 
 
+    watch(computed(() => store.currentNetwork), async () => {
+        if (store.isInitialized || store.forcedUnlock) {
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
+            // Reinit APP
+            await store.initApp()
+        }
+    })
+
+
     // Redirect to send
     function redirectToSend(parsedData) {
         // Change network
@@ -125,9 +141,13 @@
             // Set new current network
             store.setCurrentNetwork(parsedData[1])
 
-            // Redirect
-            watch(computed(() => store.isInitialized), () => {
+            // Wait isInitialized
+            const stopWatch = watch(computed(() => store.isInitialized), () => {
                 if (store.isInitialized && parsedData[0] == 'send') {
+                    // Stop watch
+                    stopWatch()
+
+                    // Redirect
                     router.push({
                         path: '/account/send',
                         query: {
