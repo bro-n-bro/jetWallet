@@ -138,6 +138,9 @@
     function redirectToSend(parsedData) {
         // Change network
         if (store.currentNetwork !== parsedData[1]) {
+            // Redirect
+            router.push({ path: '/account' })
+
             // Set new current network
             store.setCurrentNetwork(parsedData[1])
 
