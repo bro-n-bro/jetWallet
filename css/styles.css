@@ -1392,6 +1392,9 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .modal-leave-active
 {
     transition: transform .4s linear;
+    transform: translateY(0%);
+
+    will-change: transform;
 }
 
 
@@ -1407,6 +1410,10 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .fade-leave-active
 {
     transition: opacity .25s linear;
+
+    opacity: 1;
+
+    will-change: opacity;
 }
 
 
@@ -1422,6 +1429,9 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .from_right-leave-active
 {
     transition: transform .25s linear;
+    transform: translateY(0%);
+
+    will-change: transform;
 }
 
 
