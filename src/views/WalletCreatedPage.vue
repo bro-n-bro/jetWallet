@@ -97,7 +97,7 @@
         position: absolute;
         z-index: 2;
         right: 0;
-        bottom: 19.5%;
+        bottom: 0;
         left: 0;
 
         display: block;
@@ -106,8 +106,9 @@
         margin: 0 auto;
 
         transition: 2s ease-in-out .2s;
+        transform: translateY(19.5%);
 
-        will-change: transform, bottom;
+        will-change: transform;
     }
 
 
@@ -128,16 +129,16 @@
     }
 
 
-    .image.animate .front_mountains
+    .image.animate .front_mountains,
+    .image.animate .bg
     {
         transform: translateY(var(--animation_offset));
     }
 
+
     .image.animate .rocket
     {
-        bottom: 50%;
-
-        /* transform: rotate(13.784deg); */
+        transform: translateY(69.5%) rotate(13.784deg);
     }
 
 

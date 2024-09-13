@@ -525,6 +525,13 @@
 
 
 
+    .input
+    {
+        text-transform: lowercase;
+    }
+
+
+
     .exp
     {
         font-size: 12px;
