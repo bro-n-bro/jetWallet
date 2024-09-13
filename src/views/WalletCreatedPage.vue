@@ -87,6 +87,7 @@
         width: 100%;
 
         transition: 2s ease-in-out .2s;
+        transform: translateY(0%);
 
         will-change: transform;
     }
@@ -106,7 +107,7 @@
         margin: 0 auto;
 
         transition: 2s ease-in-out .2s;
-        transform: translateY(0%);
+        transform: translateY(0%) rotate(0deg);
 
         will-change: transform;
     }
@@ -124,6 +125,7 @@
         width: 100%;
 
         transition: 2s ease-in-out .2s;
+        transform: translateY(0%);
 
         will-change: transform;
     }
@@ -138,7 +140,7 @@
 
     .image.animate .rocket
     {
-        transform: translateY(-169.5%) rotate(13.784deg);
+        transform: translateY(-169.5%) rotate(14deg);
     }
 
 
