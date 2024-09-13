@@ -97,8 +97,8 @@
     {
         position: absolute;
         z-index: 2;
+        top: 70%;
         right: 0;
-        bottom: 19.5%;
         left: 0;
 
         display: block;
@@ -107,9 +107,9 @@
         margin: 0 auto;
 
         transition: 2s ease-in .2s;
-        transform: translateY(0%) rotate(0deg);
+        transform: translateY(-50%) rotate(0deg);
 
-        will-change: transform;
+        will-change: transform, top;
     }
 
 
@@ -140,7 +140,9 @@
 
     .image.animate .rocket
     {
-        transform: translateY(-145%) rotate(14deg);
+        top: 35%;
+
+        transform: translateY(-50%) rotate(14deg);
     }
 
 

@@ -357,7 +357,7 @@
 
     .input
     {
-        text-transform: uppercase;
+        text-transform: lowercase
     }
 </style>
 
