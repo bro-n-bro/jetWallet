@@ -63,7 +63,7 @@
                     </div>
 
                     <!-- Send page token amount -->
-                    <div class="amount" v-if="balance">
+                    <div class="amount">
                         <div class="val">0</div>
 
                         <div class="cost">
@@ -183,7 +183,7 @@
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
     import { fromBech32 } from '@cosmjs/encoding'
-    import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink } from '@/utils'
+    import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink, getNetworkLogo } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
