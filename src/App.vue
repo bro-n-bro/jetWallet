@@ -219,7 +219,7 @@
                 // Show overlay
                 overlay.style.display = 'block'
             }
-        }, 50)
+        }, 200)
     })
 
 
@@ -233,7 +233,7 @@
                 // Hide overlay
                 overlay.style.display = 'none'
             }
-        }, 10)
+        })
     })
 
 

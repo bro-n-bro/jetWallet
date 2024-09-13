@@ -86,7 +86,7 @@
 
         width: 100%;
 
-        transition: 2s ease-in .2s;
+        transition: 2s ease-in .5s;
         transform: translateY(0%);
 
         will-change: transform;
@@ -106,7 +106,7 @@
         width: 16%;
         margin: 0 auto;
 
-        transition: 2s ease-in .2s;
+        transition: 2s ease-in .5s;
         transform: translateY(-50%) rotate(0deg);
 
         will-change: transform, top;
@@ -124,7 +124,7 @@
 
         width: 100%;
 
-        transition: 2s ease-in .2s;
+        transition: 2s ease-in .5s;
         transform: translateY(0%);
 
         will-change: transform;
