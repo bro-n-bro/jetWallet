@@ -140,7 +140,7 @@
 
     .image.animate .rocket
     {
-        transform: translateY(-150%) rotate(14deg);
+        transform: translateY(-145%) rotate(14deg);
     }
 
 
