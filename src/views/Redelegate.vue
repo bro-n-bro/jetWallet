@@ -80,20 +80,20 @@
                         </div>
                     </div>
 
-                    <div class="availabel">
-                        <!-- Validator availabel label -->
+                    <div class="available">
+                        <!-- Validator available label -->
                         <div class="label">
-                            {{ $t('message.validatoes_availabel_label') }}
+                            {{ $t('message.validatoes_available_label') }}
                         </div>
 
-                        <!-- Validator availabel amount -->
+                        <!-- Validator available amount -->
                         <div class="amount">
                             {{ formatTokenAmount(maxAmount, store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                             <span>{{ store.networks[store.currentNetwork].token_name }}</span>
                         </div>
 
-                        <!-- Validator availabel cost -->
+                        <!-- Validator available cost -->
                         <div class="cost">
                             {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, maxAmount, store.networks[store.currentNetwork].exponent)) }}
 
@@ -785,7 +785,7 @@
     }
 
 
-    .validator_info .balances .availabel
+    .validator_info .balances .available
     {
         text-align: right;
     }

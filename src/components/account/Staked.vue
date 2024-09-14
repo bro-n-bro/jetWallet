@@ -52,6 +52,10 @@
                 <div>{{ $t('message.btn_redelegate') }}</div>
             </router-link>
         </div>
+
+
+        <!-- Animation -->
+        <Animation v-if="store.isStakedBalancesGot && props.swiperActiveIndex" />
     </div>
 </template>
 
@@ -63,9 +67,11 @@
     // Components
     import Loader from '@/components/Loader.vue'
     import Address from '@/components/account/Address.vue'
+    import Animation from '@/components/account/Animation.vue'
 
 
-    const store = useGlobalStore()
+    const props = defineProps(['swiperActiveIndex']),
+        store = useGlobalStore()
 </script>
 
 
@@ -76,7 +82,9 @@
         z-index: 3;
 
         height: 266px;
+        overflow: hidden;
         padding: 67px 22px 19px;
+        border-radius: 0 0 20px 20px;
     }
 
 

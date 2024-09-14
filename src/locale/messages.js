@@ -142,13 +142,13 @@ export default {
             // Validators
             'validators_page_title': 'Validators:',
             'validatoes_staked_label': 'Staked:',
-            'validatoes_availabel_label': 'Availabel:',
+            'validatoes_available_label': 'Available:',
 
 
             // Stats
             'stats_title': 'Stats',
             'stats_token_label': 'Token:',
-            'stats_availabel_label': 'Availabel:',
+            'stats_available_label': 'Available:',
             'stats_staked_label': 'Staked:',
             'stats_personal_apr_label': 'Personal APR:',
             'stats_daily_profit_label': 'Est. daily profit:',

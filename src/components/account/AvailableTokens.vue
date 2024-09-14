@@ -3,7 +3,7 @@
     <section class="available_tokens">
         <div class="cont">
             <!-- Search -->
-            <Search source="availabels" />
+            <Search source="availables" />
 
             <!-- Loader -->
             <Loader v-if="!store.isInitialized || !store.isBalancesGot" />
@@ -69,7 +69,7 @@
 
     // Event "search"
     emitter.on('search', ({ query, source }) => {
-        if (source === 'availabels') {
+        if (source === 'availables') {
             // Clear search result
             searchResult.value = []
 

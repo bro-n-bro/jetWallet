@@ -25,14 +25,12 @@
             }">
                 <!-- Main section -->
                 <swiper-slide>
-                    <!-- <AvailableSection v-if="swiperActiveIndex == 0" /> -->
                     <AvailableSection />
                 </swiper-slide>
 
                 <!-- Stacked section -->
                 <swiper-slide>
-                    <!-- <StackedSection v-if="swiperActiveIndex == 1" /> -->
-                    <StakedSection />
+                    <StakedSection :swiperActiveIndex />
                 </swiper-slide>
             </swiper-container>
         </section>
@@ -265,9 +263,10 @@
 
         transition: opacity .2s linear;
 
-        will-change: opacity;
         opacity: 1;
         border-radius: 0 0 20px 20px;
+
+        will-change: opacity;
     }
 
 
@@ -363,6 +362,9 @@
 
     .top_block .actions
     {
+        position: relative;
+        z-index: 3;
+
         display: flex;
         align-content: flex-start;
         align-items: flex-start;

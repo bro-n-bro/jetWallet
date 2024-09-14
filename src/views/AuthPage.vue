@@ -13,7 +13,7 @@
                     <!-- Auth -->
                     <Auth />
 
-                    <button @click.prevent="deleteAll" style="margin: 20px auto 0; width: 70px;">Удалить всё</button>
+                    <button @click.prevent="deleteAll" style="margin: 20px auto 0; width: 70px;">Delete all</button>
                 </div>
             </div>
         </div>

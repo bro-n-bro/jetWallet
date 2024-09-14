@@ -227,8 +227,8 @@ export const calcRewardsBalancesCost = (currency = null) => {
 }
 
 
-// Calc stake availabel amount
-export const calcAvailabelAmount = () => {
+// Calc stake available amount
+export const calcavailableAmount = () => {
     let store = useGlobalStore(),
         balance = store.balances.find(balance => balance.denom === store.networks[store.currentNetwork].denom)
 
