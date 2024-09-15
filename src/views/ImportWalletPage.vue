@@ -407,7 +407,7 @@
         }
 
         // Validate symbols
-        let regex = /^[a-z]+$/
+        let regex = /^[a-z]+$/i
 
         if (!regex.test(str.trim())) {
             result = false
