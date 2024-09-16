@@ -84,8 +84,6 @@
                 <!-- Send page recipient address field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="address" ref="addressInput"
-                        @touchend="emitter.emit('show_keyboard')"
-                        @blur="emitter.emit('hide_keyboard')"
                         @input="validateAddress()"
                         @paste="validateAddress()">
 
@@ -117,8 +115,6 @@
                 <!-- Send page amount field -->
                 <div class="field">
                     <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
-                        @focus="emitter.emit('show_keyboard', $event.target)"
-                        @blur="emitter.emit('hide_keyboard')"
                         @input="validateAmount()">
 
                     <!-- Send page amount max. button -->
@@ -138,9 +134,7 @@
 
                 <!-- Send page memo field -->
                 <div class="field">
-                    <input type="text" class="input big" v-model="memo"
-                        @focus="emitter.emit('show_keyboard', $event.target)"
-                        @blur="emitter.emit('hide_keyboard')">
+                    <input type="text" class="input big" v-model="memo">
                 </div>
             </div>
 

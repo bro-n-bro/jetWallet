@@ -32,7 +32,6 @@
             container.value.insertBefore(randomizedBall(), topBar.value)
         }
 
-
         // Show
         setTimeout(() => loading.value = false, 750)
     })
@@ -82,7 +81,7 @@
 
     .animation.show
     {
-        opacity: .075;
+        opacity: .1;
     }
 
 

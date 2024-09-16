@@ -5,17 +5,23 @@
     <section class="page_container account_page" :class="{ searching: searchingClass }">
         <section class="top_block" v-parallax>
             <!-- Network selection -->
+            <KeepAlive>
             <NetworkChooser v-if="store.currentNetwork" />
+            </KeepAlive>
 
             <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized" @click.prevent="openStatsModal()">
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
             </div>
 
             <!-- QR code scanner -->
+            <KeepAlive>
             <QRCodeScanner v-if="store.isInitialized" />
+            </KeepAlive>
 
             <!-- Currency -->
+            <KeepAlive>
             <CurrentCurrency />
+            </KeepAlive>
 
             <!-- Swiper -->
             <swiper-container :initial-slide="swiperActiveIndex" :injectStyles="swiperInjectStyles" speed="500" touchMoveStopPropagation="true" :pagination="{

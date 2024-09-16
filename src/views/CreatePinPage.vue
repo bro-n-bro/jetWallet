@@ -25,9 +25,7 @@
                             <input type="text" class="input big" v-model="walletName"
                                 :placeholder="$t('message.create_pin_wallet_name_placeholder')"
                                 :class="{ error: !idValidWalletName && isTouchedWalletName, success: idValidWalletName && isTouchedWalletName }"
-                                @input="validateWalletName"
-                                @touchend="emitter.emit('show_keyboard')"
-                                @blur="emitter.emit('hide_keyboard')">
+                                @input="validateWalletName">
                         </div>
                     </div>
 
@@ -42,8 +40,6 @@
                             <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 1)"
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
@@ -51,8 +47,6 @@
                             <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" inputmode="numeric" :disabled="!pinCode[0].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 2)"
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
@@ -60,8 +54,6 @@
                             <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" inputmode="numeric" :disabled="!pinCode[1].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 3)"
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
@@ -69,8 +61,6 @@
                             <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" inputmode="numeric" :disabled="!pinCode[2].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
@@ -78,8 +68,6 @@
                             <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[4]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 5)"
                                     @keydown.backspace="moveBack($event, 4)">
                             </div>
@@ -87,8 +75,6 @@
                             <!-- Pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="pinCode[5]" maxlength="1" inputmode="numeric" :disabled="!pinCode[4].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 6)"
                                     @keydown.backspace="moveBack($event, 5)">
                             </div>
@@ -106,8 +92,6 @@
                             <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[0]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 1)"
                                     @keydown.backspace="moveBack($event, 0)">
                             </div>
@@ -115,8 +99,6 @@
                             <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[1]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[0].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 2)"
                                     @keydown.backspace="moveBack($event, 1)">
                             </div>
@@ -124,8 +106,6 @@
                             <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[2]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[1].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 3)"
                                     @keydown.backspace="moveBack($event, 2)">
                             </div>
@@ -133,8 +113,6 @@
                             <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[3]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[2].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 4)"
                                     @keydown.backspace="moveBack($event, 3)">
                             </div>
@@ -142,8 +120,6 @@
                             <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[4]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[3].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 5)"
                                     @keydown.backspace="moveBack($event, 4)">
                             </div>
@@ -151,8 +127,6 @@
                             <!-- Confirm pin code field -->
                             <div class="field">
                                 <input type="password" class="input big" v-model="confirmPinCode[5]" maxlength="1" inputmode="numeric" :disabled="!confirmPinCode[4].length"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     @input="moveFocus($event, 6)"
                                     @keydown.backspace="moveBack($event, 5)">
                             </div>

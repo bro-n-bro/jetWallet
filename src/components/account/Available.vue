@@ -19,7 +19,9 @@
             </div>
 
             <!-- Address -->
+            <KeepAlive>
             <Address />
+            </KeepAlive>
         </div>
 
 

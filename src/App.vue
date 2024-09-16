@@ -2,9 +2,6 @@
     <!-- Main component -->
     <component :is="layout" />
 
-    <!-- Virtual keybord overlay -->
-    <div class="virtual_keybord_overlay" @click.prevent="emitter.emit('hide_keyboard')"></div>
-
     <!-- Notifications -->
     <notifications position="top left" group="default" width="100%" animation-type="velocity" :animation="notificationAnimation"
         @start="notificationsOnStart($event)"
@@ -202,39 +199,6 @@
         // Clear timeout
         notificationTimeout.value = null
     }
-
-
-    // Event "show_keyboard"
-    emitter.on('show_keyboard', (field = null) => {
-        setTimeout(() => {
-            if (field) {
-                // Scroll to field
-                field.scrollIntoView({ behavior: 'smooth' })
-            }
-
-            // Overlay
-            let overlay = document.querySelector('.virtual_keybord_overlay')
-
-            if (overlay) {
-                // Show overlay
-                overlay.style.display = 'block'
-            }
-        }, 200)
-    })
-
-
-    // Event "hide_keyboard"
-    emitter.on('hide_keyboard', () => {
-        setTimeout(() => {
-            // Overlay
-            let overlay = document.querySelector('.virtual_keybord_overlay')
-
-            if (overlay) {
-                // Hide overlay
-                overlay.style.display = 'none'
-            }
-        })
-    })
 
 
     // Event "show_collapsible_notification"

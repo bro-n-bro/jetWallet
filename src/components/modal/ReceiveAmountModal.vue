@@ -31,8 +31,6 @@
                     <div class="field">
                          <!-- Amount field -->
                         <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
-                            @touchend="emitter.emit('show_keyboard')"
-                            @blur="emitter.emit('hide_keyboard')"
                             @input="validateAmount($event)">
                     </div>
                 </div>

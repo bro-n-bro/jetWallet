@@ -11,8 +11,6 @@
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[0]" maxlength="1" inputmode="numeric" ref="inputRef"
                     :class="{ active: pinCode[0].length }"
-                    @touchend="emitter.emit('show_keyboard')"
-                    @blur="emitter.emit('hide_keyboard')"
                     @input="moveFocus($event, 1)"
                     @keydown.backspace="moveBack($event, 0)">
             </div>
@@ -21,8 +19,6 @@
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[1]" maxlength="1" inputmode="numeric" :disabled="!pinCode[0].length"
                     :class="{ active: pinCode[1].length }"
-                    @touchend="emitter.emit('show_keyboard')"
-                    @blur="emitter.emit('hide_keyboard')"
                     @input="moveFocus($event, 2)"
                     @keydown.backspace="moveBack($event, 1)">
             </div>
@@ -31,8 +27,6 @@
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[2]" maxlength="1" inputmode="numeric" :disabled="!pinCode[1].length"
                     :class="{ active: pinCode[2].length }"
-                    @touchend="emitter.emit('show_keyboard')"
-                    @blur="emitter.emit('hide_keyboard')"
                     @input="moveFocus($event, 3)"
                     @keydown.backspace="moveBack($event, 2)">
             </div>
@@ -41,8 +35,6 @@
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[3]" maxlength="1" inputmode="numeric" :disabled="!pinCode[2].length"
                     :class="{ active: pinCode[3].length }"
-                    @touchend="emitter.emit('show_keyboard')"
-                    @blur="emitter.emit('hide_keyboard')"
                     @input="moveFocus($event, 4)"
                     @keydown.backspace="moveBack($event, 3)">
             </div>
@@ -51,8 +43,6 @@
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[4]" maxlength="1" inputmode="numeric" :disabled="!pinCode[3].length"
                     :class="{ active: pinCode[4].length }"
-                    @touchend="emitter.emit('show_keyboard')"
-                    @blur="emitter.emit('hide_keyboard')"
                     @input="moveFocus($event, 5)"
                     @keydown.backspace="moveBack($event, 4)">
             </div>
@@ -61,8 +51,6 @@
             <div class="field">
                 <input type="password" class="input big" v-model="pinCode[5]" maxlength="1" inputmode="numeric" :disabled="!pinCode[4].length"
                     :class="{ active: pinCode[5].length }"
-                    @touchend="emitter.emit('show_keyboard')"
-                    @blur="emitter.emit('hide_keyboard')"
                     @input="moveFocus($event, 6)"
                     @keydown.backspace="moveBack($event, 5)">
             </div>

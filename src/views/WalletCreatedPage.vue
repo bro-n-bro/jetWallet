@@ -43,14 +43,16 @@
 
 
     function onImageLoad() {
-        // Get image height
-        let imageHeight = imageRef.value.getBoundingClientRect().height
+        setTimeout(() => {
+            // Get image height
+            let imageHeight = imageRef.value.getBoundingClientRect().height
 
-        // Get bg image height
-        let bgImageHeight = imageBgRef.value.getBoundingClientRect().height
+            // Get bg image height
+            let bgImageHeight = imageBgRef.value.getBoundingClientRect().height
 
-        // Set offset
-        animationOffset.value = bgImageHeight - imageHeight
+            // Set offset
+            animationOffset.value = bgImageHeight - imageHeight
+        }, 500)
     }
 </script>
 
@@ -86,7 +88,7 @@
 
         width: 100%;
 
-        transition: 2s ease-in .5s;
+        transition: 2s ease-in;
         transform: translateY(0%);
 
         will-change: transform;
@@ -106,7 +108,7 @@
         width: 16%;
         margin: 0 auto;
 
-        transition: 2s ease-in .5s;
+        transition: 2s ease-in;
         transform: translateY(-50%) rotate(0deg);
 
         will-change: transform, top;
@@ -124,7 +126,7 @@
 
         width: 100%;
 
-        transition: 2s ease-in .5s;
+        transition: 2s ease-in;
         transform: translateY(0%);
 
         will-change: transform;

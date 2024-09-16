@@ -125,9 +125,7 @@
 
                     <div class="field">
                         <!-- Fee token field -->
-                        <input type="text" class="input big" :value="store.networks[store.currentNetwork].token_name" readonly
-                            @touchend="emitter.emit('show_keyboard')"
-                            @blur="emitter.emit('hide_keyboard')">
+                        <input type="text" class="input big" :value="store.networks[store.currentNetwork].token_name" readonly>
 
                         <!-- <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg> -->
                     </div>
@@ -157,16 +155,12 @@
 
                     <div class="field" v-if="store.TxFee.isGasAdjustmentAuto">
                         <!-- Gas adjustment field -->
-                        <input type="number" class="input big" :value="store.networks[store.currentNetwork].gas_adjustment" disabled
-                            @touchend="emitter.emit('show_keyboard')"
-                            @blur="emitter.emit('hide_keyboard')">
+                        <input type="number" class="input big" :value="store.networks[store.currentNetwork].gas_adjustment" disabled>
                     </div>
 
                     <div class="field" v-else>
                         <!-- Gas adjustment field -->
                         <input type="number" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10"
-                            @touchend="emitter.emit('show_keyboard')"
-                            @blur="emitter.emit('hide_keyboard')"
                             @input="validateUserGasAmount($event)">
                     </div>
                 </div>

@@ -32,8 +32,6 @@
                                 <!-- Confirm word field -->
                                 <input type="text" class="input" v-model="wordOne"
                                     @keyup="validateFirstWord()"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     :class="{
                                         success: validWordOne && isValidWordOne,
                                         error: validWordOne && !isValidWordOne
@@ -51,8 +49,6 @@
                                 <!-- Confirm word field -->
                                 <input type="text" class="input" v-model="wordTwo"
                                     @keyup="validateSecondWord()"
-                                    @touchend="emitter.emit('show_keyboard')"
-                                    @blur="emitter.emit('hide_keyboard')"
                                     :class="{
                                         success: validWordTwo && isValidWordTwo,
                                         error: validWordTwo && !isValidWordTwo
@@ -153,7 +149,7 @@
     function validateFirstWord() {
         validWordOne.value = true
 
-        wordOne.value === store.secret.split(' ')[wordOneNumber.value - 1]
+        wordOne.value.toLocaleLowerCase() === store.secret.split(' ')[wordOneNumber.value - 1]
             ? isValidWordOne.value = true
             : isValidWordOne.value = false
     }
@@ -163,7 +159,7 @@
     function validateSecondWord() {
         validWordTwo.value = true
 
-        wordTwo.value === store.secret.split(' ')[wordTwoNumber.value - 1]
+        wordTwo.value.toLocaleLowerCase() === store.secret.split(' ')[wordTwoNumber.value - 1]
             ? isValidWordTwo.value = true
             : isValidWordTwo.value = false
     }
