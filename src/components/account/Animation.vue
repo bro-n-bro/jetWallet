@@ -1,8 +1,8 @@
 <template>
     <div class="animation" ref="container" :class="{ show: !loading }">
-        <div class="top" ref="top"></div>
+        <div class="top" ref="top" :style="`height: ${topHeight}px;`"></div>
 
-        <div class="bottom"></div>
+        <div class="bottom" :style="`height: ${bottomHeight}px;`"></div>
 
         <svg>
             <filter id="gooey">
@@ -18,22 +18,53 @@
 
 
 <script setup>
-    import { ref, onMounted } from 'vue'
+    import { ref, watch, computed, onMounted, onBeforeMount } from 'vue'
+    import { useGlobalStore } from '@/store'
+    import { calcAvailableAmount, calcStakedAmount } from '@/utils'
 
 
-    const count = 10,
+    const store = useGlobalStore(),
+        count = 10,
         topBar = ref(null),
         container = ref(null),
-        loading = ref(true)
+        loading = ref(true),
+        topHeight = ref(0),
+        bottomHeight = ref(0),
+        availableAmount = calcAvailableAmount(),
+        stakedAmount = calcStakedAmount()
+
+
+    onBeforeMount(() => {
+        // Total tokens
+        let sumAmounts = parseInt(availableAmount) + parseInt(stakedAmount),
+            totalHeight = 266
+
+        // Get heights
+        topHeight.value = Math.floor(totalHeight * 0.25 * (stakedAmount / sumAmounts))
+        bottomHeight.value = Math.floor(totalHeight * 0.25 * (availableAmount / sumAmounts))
+    })
 
 
     onMounted(() => {
-        for(let i = 0; i < count; i++) {
-            container.value.insertBefore(randomizedBall(), topBar.value)
+        if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
+            // Generate balls
+            for(let i = 0; i < count; i++) {
+                container.value.insertBefore(randomizedBall(), topBar.value)
+            }
         }
 
-        // Show
+        // Show animation
         setTimeout(() => loading.value = false, 750)
+    })
+
+
+    watch(computed(() => store.isUnstakingBalancesGot), () => {
+        if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
+            // Generate balls
+            for(let i = 0; i < count; i++) {
+                container.value.insertBefore(randomizedBall(), topBar.value)
+            }
+        }
     })
 
 
@@ -44,10 +75,10 @@
 
         ball.classList.add('ball')
 
-        ball.style.setProperty("--anim-delay", `${getRandomBetween(9, 0, 3)}s`)
-        ball.style.setProperty("--transform-start", `translateX(${translate}px) translateY(-${randomSize}px)`)
-        ball.style.setProperty("--transform-x", `translateX(${translate}px)`)
-        ball.style.setProperty("--size", `${randomSize}px`)
+        ball.style.setProperty('--anim-delay', `${getRandomBetween(9, 0, 3)}s`)
+        ball.style.setProperty('--transform-start', `translateX(${translate}px) translateY(-${randomSize}px)`)
+        ball.style.setProperty('--transform-x', `translateX(${translate}px)`)
+        ball.style.setProperty('--size', `${randomSize}px`)
 
         return ball
     }
@@ -93,7 +124,6 @@
         left: 0;
 
         width: 100%;
-        height: 40px;
 
         background: #fff;
     }
@@ -103,8 +133,6 @@
     {
         top: auto;
         bottom: 0;
-
-        height: 30px;
     }
 
 
@@ -133,13 +161,9 @@
         {
             transform: var(--transform-start);
         }
-        80%
-        {
-            transform: var(--transform-x) translateY(calc(266px * .86));
-        }
         100%
         {
-            transform: var(--transform-x) translateY(calc(266px * 1));
+            transform: var(--transform-x) translateY(306px);
         }
     }
 

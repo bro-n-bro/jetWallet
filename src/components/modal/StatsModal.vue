@@ -38,12 +38,12 @@
 
                             <!-- Stats modal value -->
                             <div class="val">
-                                {{ formatTokenAmount(calcavailableAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
+                                {{ formatTokenAmount(calcAvailableAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
                                 {{ store.networks[store.currentNetwork].token_name }}
 
                                 <div class="cost">
-                                    ({{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcavailableAmount(), store.networks[store.currentNetwork].exponent)) }}{{ store.currentCurrencySymbol }})
+                                    ({{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcAvailableAmount(), store.networks[store.currentNetwork].exponent)) }}{{ store.currentCurrencySymbol }})
                                 </div>
                             </div>
                         </div>
@@ -106,7 +106,7 @@
 <script setup>
     import { ref, inject, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { formatTokenAmount, formatTokenCost, calcTokenCost, calcStakedAmount, getNetworkLogo, calcavailableAmount } from '@/utils'
+    import { formatTokenAmount, formatTokenCost, calcTokenCost, calcStakedAmount, getNetworkLogo, calcAvailableAmount } from '@/utils'
 
 
     const store = useGlobalStore(),

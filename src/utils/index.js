@@ -49,6 +49,21 @@ export const hashDataWithKey = async (data, key) => {
 }
 
 
+// Generate AES key
+export const generateAESKey = async () => {
+    let key = await crypto.subtle.generateKey(
+        {
+            name: 'AES-GCM',
+            length: 256
+        },
+        true,
+        ['encrypt', 'decrypt']
+    )
+
+    return key
+}
+
+
 // Generate HMAC key
 export const generateHMACKey = async () => {
     // Key params
@@ -69,6 +84,45 @@ export const generateHMACKey = async () => {
 }
 
 
+// Encryption
+export const encryptData = async (text, key) => {
+    let iv = crypto.getRandomValues(new Uint8Array(12)),
+        encoder = new TextEncoder(),
+        encodedText = encoder.encode(text)
+
+    let ciphertext = await crypto.subtle.encrypt(
+        {
+            name: "AES-GCM",
+            iv: iv,
+        },
+        key,
+        encodedText
+    );
+
+    return {
+        ciphertext: new Uint8Array(ciphertext),
+        iv: iv
+    }
+}
+
+
+// Decryption
+export const decryptData = async (ciphertext, iv, key) => {
+    let decrypted = await crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: iv,
+        },
+        key,
+        ciphertext
+    )
+
+    let decoder = new TextDecoder()
+
+    return decoder.decode(decrypted)
+}
+
+
 // Create singer
 export const createSinger = async () => {
     let store = useGlobalStore(),
@@ -76,11 +130,19 @@ export const createSinger = async () => {
 
     // Wallet
     if (store.secret) {
-        wallet = await importWalletFromMnemonic(store.secret, store.networks[store.currentNetwork].prefix)
+        // Decryption
+        let decryptedData = await decryptData(store.secret, store.secretIV, store.aesKey)
+
+        // Get wallet
+        wallet = await importWalletFromMnemonic(decryptedData, store.networks[store.currentNetwork].prefix)
     }
 
     if (store.privateKey) {
-        wallet = await importWalletFromPrivateKey(store.privateKey, store.networks[store.currentNetwork].prefix)
+        // Decryption
+        let decryptedData = await decryptData(store.privateKey, store.secretIV, store.aesKey)
+
+        // Get wallet
+        wallet = await importWalletFromPrivateKey(decryptedData, store.networks[store.currentNetwork].prefix)
     }
 
     // Current address
@@ -228,7 +290,7 @@ export const calcRewardsBalancesCost = (currency = null) => {
 
 
 // Calc stake available amount
-export const calcavailableAmount = () => {
+export const calcAvailableAmount = () => {
     let store = useGlobalStore(),
         balance = store.balances.find(balance => balance.denom === store.networks[store.currentNetwork].denom)
 

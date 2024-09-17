@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, getPriceByDenom, getExplorerLink } from '@/utils'
+import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
 import { DBaddData, DBgetData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
@@ -58,6 +58,8 @@ export const useGlobalStore = defineStore('global', {
         redelegations: [],
 
         secret: null,
+        secretIV: null,
+        aesKey: null,
         privateKey: null,
         notificationsCollapsingDelay: 2000,
 
@@ -105,10 +107,12 @@ export const useGlobalStore = defineStore('global', {
             this.currentAddress = ''
 
             // Get DB data
-            let DBData = await this.getMultipleData(['secret', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
+            let DBData = await this.getMultipleData(['secret', 'secretIV', 'aesKey', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
 
             // Set data from DB
             this.secret = DBData.secret
+            this.secretIV = DBData.secretIV
+            this.aesKey = DBData.aesKey
             this.privateKey = DBData.privateKey
             this.currentCurrency = DBData.currentCurrency
             this.currentNetwork = DBData.currentNetwork
@@ -430,31 +434,59 @@ export const useGlobalStore = defineStore('global', {
 
         // Get secret from DB
         async getSecret() {
-            // Get from DB and save in store
-            this.secret = await DBgetData('wallet', 'secret')
+            // Get from DB
+            let DBData = await this.getMultipleData(['secret', 'secretIV', 'aesKey'])
+
+            // Save in store
+            this.secret = DBData.secret
+            this.secretIV = DBData.secretIV
+            this.aesKey = DBData.aesKey
+
+            // Return memo
+            return await decryptData(this.secret, this.secretIV, this.aesKey)
         },
 
 
         // Set secret
         async setSecret(secret) {
+            // Generate AES key
+            let aesKey = await generateAESKey()
+
+            // Encryption
+            let { ciphertext, iv } = await encryptData(secret, aesKey)
+
             // Save in store
-            this.secret = secret
+            this.secret = ciphertext
+            this.secretIV = iv
+            this.aesKey = aesKey
 
             // Save in DB
             await DBaddData('wallet', [
-                ['secret', secret]
+                ['aesKey', aesKey],
+                ['secret', ciphertext],
+                ['secretIV', iv]
             ])
         },
 
 
         // Set private key
         async setPrivateKey(privateKey) {
+            // Generate AES key
+            let aesKey = await generateAESKey()
+
+            // Encryption
+            let { ciphertext, iv } = await encryptData(privateKey, aesKey)
+
             // Save in store
-            this.privateKey = privateKey
+            this.privateKey = ciphertext
+            this.secretIV = iv
+            this.aesKey = aesKey
 
             // Save in DB
             await DBaddData('wallet', [
-                ['privateKey', privateKey]
+                ['aesKey', aesKey],
+                ['privateKey', ciphertext],
+                ['secretIV', iv]
             ])
         },
 

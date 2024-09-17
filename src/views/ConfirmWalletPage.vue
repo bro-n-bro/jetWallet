@@ -87,7 +87,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, inject } from 'vue'
+    import { ref, onBeforeMount } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
 
@@ -97,8 +97,8 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
-        emitter = inject('emitter'),
         loading = ref(true),
+        memo = ref(''),
         wordOneNumber = ref(0),
         wordTwoNumber = ref(0),
         wordOne = ref(''),
@@ -110,30 +110,21 @@
 
 
     onBeforeMount(async () => {
-        // Get secret
-        if (store.secret != null) {
-            // Get random words
-            getRandomWords()
+        // Get memo
+        memo.value = await store.getSecret()
 
-            // Hide loader
-            loading.value = false
-        }  else {
-            // Get secret from DB
-            await store.getSecret()
+        // Get random words
+        getRandomWords()
 
-            // Get random words
-            getRandomWords()
-
-            // Hide loader
-            loading.value = false
-        }
+        // Hide loader
+        loading.value = false
     })
 
 
     // Get random words
     function getRandomWords() {
         let min = 1,
-            max = store.secret.split(' ').length
+            max = memo.value.split(' ').length
 
         // Generate the first random number
         wordOneNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
@@ -149,7 +140,7 @@
     function validateFirstWord() {
         validWordOne.value = true
 
-        wordOne.value.toLocaleLowerCase() === store.secret.split(' ')[wordOneNumber.value - 1]
+        wordOne.value.toLocaleLowerCase() === memo.value.split(' ')[wordOneNumber.value - 1]
             ? isValidWordOne.value = true
             : isValidWordOne.value = false
     }
@@ -159,7 +150,7 @@
     function validateSecondWord() {
         validWordTwo.value = true
 
-        wordTwo.value.toLocaleLowerCase() === store.secret.split(' ')[wordTwoNumber.value - 1]
+        wordTwo.value.toLocaleLowerCase() === memo.value.split(' ')[wordTwoNumber.value - 1]
             ? isValidWordTwo.value = true
             : isValidWordTwo.value = false
     }

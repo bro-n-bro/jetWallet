@@ -57,7 +57,7 @@
 
 
         <!-- Animation -->
-        <Animation v-if="store.isStakedBalancesGot && props.swiperActiveIndex" />
+        <Animation v-if="store.isInitialized && props.swiperActiveIndex == 1" />
     </div>
 </template>
 

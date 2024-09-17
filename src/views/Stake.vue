@@ -68,7 +68,7 @@
 
                                 <!-- Current staked balances amount -->
                                 <div class="amount">
-                                    {{ formatTokenAmount(calcavailableAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+                                    {{ formatTokenAmount(calcAvailableAmount(), store.networks[store.currentNetwork].exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
 
                                     {{ store.networks[store.currentNetwork].token_name }}
                                 </div>
@@ -77,7 +77,7 @@
                                 <div class="cost">
                                     {{ store.currentCurrencySymbol }}
 
-                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcavailableAmount(), store.networks[store.currentNetwork].exponent)) }}
+                                    {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, calcAvailableAmount(), store.networks[store.currentNetwork].exponent)) }}
                                 </div>
                             </div>
 
@@ -220,7 +220,7 @@
 <script setup>
     import { ref, inject, onUnmounted, onBeforeMount, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcavailableAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
+    import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcAvailableAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
     import { MsgDelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
 
     // Components
@@ -237,7 +237,7 @@
         msgAny = ref([]),
         amount = ref(''),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcavailableAmount()))
+        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcAvailableAmount()))
 
 
     onBeforeMount(() => {
@@ -281,7 +281,7 @@
 
         setTimeout(() => {
             // Set amount
-            amount.value = formatTokenAmount(calcavailableAmount(), store.networks[store.currentNetwork].exponent)
+            amount.value = formatTokenAmount(calcAvailableAmount(), store.networks[store.currentNetwork].exponent)
 
             // Set amount status
             isAmountReady.value = true
@@ -302,13 +302,13 @@
             }
 
             // Acceptable value
-            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(calcavailableAmount(), store.networks[store.currentNetwork].exponent)){
+            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(calcAvailableAmount(), store.networks[store.currentNetwork].exponent)){
                 // Set amount status
                 isAmountReady.value = true
             }
 
             // More than available balance
-            if (e.target.value > formatTokenAmount(calcavailableAmount(), store.networks[store.currentNetwork].exponent)) {
+            if (e.target.value > formatTokenAmount(calcAvailableAmount(), store.networks[store.currentNetwork].exponent)) {
                 // Set MAX amount
                 setMaxAmount()
             }
