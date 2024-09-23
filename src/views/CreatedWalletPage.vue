@@ -133,7 +133,7 @@
     {
         z-index: 4;
 
-        transition: transform 2s ease-in, opacity .3s linear 1.15s;
+        transition: transform 2s ease-in, opacity .25s linear 1.1s;
 
         will-change: transform, opacity;
     }
@@ -174,7 +174,7 @@
 
         display: block;
 
-        max-width: 28%;
+        max-width: 33.333%;
         margin: 0 auto;
 
         transition: transform .35s ease-in 2.75s;
