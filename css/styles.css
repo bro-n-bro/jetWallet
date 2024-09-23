@@ -720,6 +720,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 {
     font-family: var(--font_family);
     font-size: 14px;
+    line-height: 26px;
 
     display: block;
 
@@ -742,6 +743,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 {
     font-size: 16px;
     font-weight: 500;
+    line-height: normal;
 
     height: 48px;
     padding: 0 15px;
