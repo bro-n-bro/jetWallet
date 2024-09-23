@@ -112,7 +112,7 @@
     {
         position: absolute;
         z-index: 3;
-        top: 83%;
+        top: 82%;
         right: 0;
         left: 0;
 
@@ -178,7 +178,7 @@
         margin: 0 auto;
 
         transition: transform .35s ease-in 2.75s;
-        transform: scale(0.01);
+        transform: scale(0.05);
         pointer-events: none;
 
         will-change: transform;
@@ -213,18 +213,14 @@
     .image.animate .rocket,
     .image.animate .fire
     {
-        /* top: 49%; */
-        transform: translate3d(0, -135%, 0);
+        transform: translate3d(0, -125%, 0);
     }
 
 
     .image.animate .rocket.fly_away
     {
-        top: 0;
-
-        transition: .2s linear;
-        transition-property: top, transform;
-        transform: translate3d(0, -100%, 0);
+        transition: transform .3s linear;
+        transform: translate3d(0, -300%, 0);
     }
 
 
