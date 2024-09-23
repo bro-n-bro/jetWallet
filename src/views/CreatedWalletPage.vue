@@ -178,7 +178,7 @@
         margin: 0 auto;
 
         transition: transform .35s ease-in 2.75s;
-        transform: scale(0);
+        transform: scale(0.01);
         pointer-events: none;
 
         will-change: transform;
