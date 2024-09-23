@@ -1,6 +1,6 @@
 <template>
-    <div class="animation" ref="container" :class="{ show: !loading }">
-        <div class="top" ref="top" :style="`height: ${topHeight}px;`"></div>
+    <div class="android_animation" ref="container" :class="{ show: !loading }">
+        <div class="top" ref="topBar" :style="`height: ${topHeight}px;`"></div>
 
         <div class="bottom" :style="`height: ${bottomHeight}px;`"></div>
 
@@ -20,18 +20,19 @@
 <script setup>
     import { ref, watch, computed, onMounted, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { calcAvailableAmount, calcStakedAmount } from '@/utils'
+    import { calcAvailableAmount, calcStakedAmount, calcUnstakingAmount } from '@/utils'
 
 
     const store = useGlobalStore(),
-        count = 10,
+        count = ref(10),
         topBar = ref(null),
         container = ref(null),
         loading = ref(true),
         topHeight = ref(0),
         bottomHeight = ref(0),
         availableAmount = calcAvailableAmount(),
-        stakedAmount = calcStakedAmount()
+        stakedAmount = calcStakedAmount(),
+        unstakingAmount = calcUnstakingAmount()
 
 
     onBeforeMount(() => {
@@ -47,23 +48,32 @@
 
     onMounted(() => {
         if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
+            // Change count
+            count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
+
             // Generate balls
-            for(let i = 0; i < count; i++) {
+            for(let i = 0; i < count.value; i++) {
                 container.value.insertBefore(randomizedBall(), topBar.value)
             }
-        }
 
-        // Show animation
-        setTimeout(() => loading.value = false, 750)
+            // Show animation
+            setTimeout(() => loading.value = false, 750)
+        }
     })
 
 
     watch(computed(() => store.isUnstakingBalancesGot), () => {
         if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
+            // Change count
+            count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
+
             // Generate balls
-            for(let i = 0; i < count; i++) {
+            for(let i = 0; i < count.value; i++) {
                 container.value.insertBefore(randomizedBall(), topBar.value)
             }
+
+            // Show animation
+            setTimeout(() => loading.value = false, 750)
         }
     })
 
@@ -91,7 +101,7 @@
 
 
 <style>
-    .animation
+    .android_animation
     {
         position: absolute;
         z-index: 1;
@@ -110,33 +120,36 @@
     }
 
 
-    .animation.show
+    .android_animation.show
     {
         opacity: .1;
     }
 
 
-    .animation .top,
-    .animation .bottom
+    .android_animation .top,
+    .android_animation .bottom
     {
         position: absolute;
         top: 0;
         left: 0;
 
         width: 100%;
+        min-height: 14px;
 
         background: #fff;
     }
 
 
-    .animation .bottom
+    .android_animation .bottom
     {
         top: auto;
         bottom: 0;
+
+        background: url(@/assets/bg_wave.svg) 0 100%/cover no-repeat;
     }
 
 
-    .animation .ball
+    .android_animation .ball
     {
         position: absolute;
         top: 0;
@@ -168,7 +181,7 @@
     }
 
 
-    .animation svg
+    .android_animation svg
     {
         position: absolute !important;
 

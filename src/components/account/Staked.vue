@@ -56,8 +56,11 @@
         </div>
 
 
-        <!-- Animation -->
-        <Animation v-if="store.isInitialized && props.swiperActiveIndex == 1" />
+        <!-- Android Animation -->
+        <AndroidAnimation v-if="store.isInitialized && props.swiperActiveIndex == 1 && device.vendor !== 'Apple'" />
+
+        <!-- IOS Animation -->
+        <IOSAnimation v-if="store.isInitialized && props.swiperActiveIndex == 1 && device.vendor === 'Apple'" />
     </div>
 </template>
 
@@ -65,15 +68,19 @@
 <script setup>
     import { formatTokenCost, calcStakedBalancesCost } from '@/utils'
     import { useGlobalStore } from '@/store'
+    import UAParser from 'ua-parser-js'
 
     // Components
     import Loader from '@/components/Loader.vue'
     import Address from '@/components/account/Address.vue'
-    import Animation from '@/components/account/Animation.vue'
+    import AndroidAnimation from '@/components/account/AndroidAnimation.vue'
+    import IOSAnimation from '@/components/account/IOSAnimation.vue'
 
 
     const props = defineProps(['swiperActiveIndex']),
-        store = useGlobalStore()
+        store = useGlobalStore(),
+        parser = new UAParser(),
+        device = parser.getDevice()
 </script>
 
 
