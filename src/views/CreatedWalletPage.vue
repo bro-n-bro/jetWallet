@@ -122,11 +122,10 @@
         max-width: 163px;
         margin: 0 auto;
 
-        transition: 2s ease-in;
-        transition-property: transform, top;
+        transition: transform 2s ease-in;
         transform: translate3d(0, -50%, 0);
 
-        will-change: transform, top;
+        will-change: transform;
     }
 
 
@@ -134,10 +133,9 @@
     {
         z-index: 4;
 
-        transition: transform 2s ease-in, top 2s ease-in, opacity .3s linear 1.25s;
-        transition-property: transform, top, opacity;
+        transition: transform 2s ease-in, opacity .3s linear 1.15s;
 
-        will-change: transform, top, opacity;
+        will-change: transform, opacity;
     }
 
 
@@ -215,7 +213,8 @@
     .image.animate .rocket,
     .image.animate .fire
     {
-        top: 49%;
+        /* top: 49%; */
+        transform: translate3d(0, -135%, 0);
     }
 
 
