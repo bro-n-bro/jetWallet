@@ -13,7 +13,13 @@
                     <!-- Auth -->
                     <Auth />
 
-                    <button @click.prevent="deleteAll" style="margin: 20px auto 0; width: 70px;">Delete all</button>
+                    <!-- Buttons -->
+                    <div class="btns">
+                        <!-- Login button -->
+                        <button class="btn" @click.prevent="deleteAll()">
+                            <span>Delete address</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,3 +89,11 @@
         showErrorAuthModal.value = true
     })
 </script>
+
+
+<style scoped>
+    .btns
+    {
+        margin-top: 0;
+    }
+</style>

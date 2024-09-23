@@ -45,8 +45,8 @@ const routes = [
 	},
 	{
 		path: '/wallet_created',
-		name: 'WalletCreated',
-		component: () => import('../views/WalletCreatedPage.vue'),
+		name: 'CreatedWallet',
+		component: () => import('../views/CreatedWalletPage.vue'),
 		meta: {
 			layout: defaultLayout,
 			accessDenied: ['not_register']

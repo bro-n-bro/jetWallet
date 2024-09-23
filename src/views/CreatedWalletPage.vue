@@ -14,7 +14,15 @@
                     <div class="image" :style="{ '--animation_offset': `${animationOffset}px` }" ref="imageRef" :class="{ animate: animationOffset }">
                         <img src="@/assets/wallet_created_page_front_mountains.svg" alt="" class="front_mountains">
 
-                        <img src="@/assets/wallet_created_page_rocket.svg" alt="" class="rocket">
+                        <img src="@/assets/wallet_created_page_rocket.svg" alt="" class="rocket" ref="rocket">
+
+                        <img src="@/assets/wallet_created_page_rocket_fire.svg" alt="" class="fire">
+
+                        <img src="@/assets/wallet_created_page_comet.svg" alt="" class="comet">
+
+                        <img src="@/assets/wallet_created_page_comet2.svg" alt="" class="comet2">
+
+                        <img src="@/assets/logo.svg" alt="" class="logo">
 
                         <img src="@/assets/wallet_created_page_bg.svg" alt="" class="bg" ref="imageBgRef" @load="onImageLoad()">
                     </div>
@@ -39,7 +47,8 @@
 
     const animationOffset = ref(0),
         imageRef = ref(null),
-        imageBgRef = ref(null)
+        imageBgRef = ref(null),
+        rocket = ref(null)
 
 
     function onImageLoad() {
@@ -52,6 +61,9 @@
 
             // Set offset
             animationOffset.value = bgImageHeight - imageHeight
+
+            // Rocket fly away
+            setTimeout(() => rocket.value.classList.add('fly_away'), 2700)
         }, 500)
     }
 </script>
@@ -80,7 +92,7 @@
     .image .front_mountains
     {
         position: absolute;
-        z-index: 3;
+        z-index: 5;
         bottom: 0;
         left: 0;
 
@@ -95,23 +107,78 @@
     }
 
 
-    .image .rocket
+    .image .rocket,
+    .image .fire
     {
         position: absolute;
-        z-index: 2;
-        top: 70%;
+        z-index: 3;
+        top: 83%;
         right: 0;
         left: 0;
 
         display: block;
 
-        width: 16%;
+        width: 40%;
+        max-width: 163px;
         margin: 0 auto;
 
         transition: 2s ease-in;
-        transform: translateY(-50%) rotate(0deg);
+        transform: translateY(-50%);
 
-        will-change: transform, top;
+        will-change: transform, top, opacity;
+    }
+
+
+    .image .fire
+    {
+        z-index: 4;
+
+        transition: transform 2s ease-in, top 2s ease-in, opacity .3s linear 1.25s;
+    }
+
+
+    .image .comet,
+    .image .comet2
+    {
+        position: absolute;
+        z-index: 2;
+        top: -268px;
+        left: 100%;
+
+        display: block;
+
+        transition: .2s ease-in 2.3s;
+        transform: translateY(0);
+        pointer-events: none;
+
+        will-change: transform;
+    }
+
+    .image .comet2
+    {
+        top: -68px;
+
+        transition-delay: 2.4s;
+    }
+
+
+    .image .logo
+    {
+        position: absolute;
+        z-index: 3;
+        top: 30%;
+        right: 0;
+        left: 0;
+
+        display: block;
+
+        margin: 0 auto;
+
+        transition: .35s ease-in 2.75s;
+        transform: scale(0);
+        pointer-events: none;
+
+        will-change: transform;
     }
 
 
@@ -140,11 +207,45 @@
     }
 
 
-    .image.animate .rocket
+    .image.animate .rocket,
+    .image.animate .fire
     {
-        top: 35%;
+        top: 49%;
+    }
 
-        transform: translateY(-50%) rotate(14deg);
+
+    .image.animate .rocket.fly_away
+    {
+        top: 0;
+
+        transition: .2s linear;
+        transform: translateY(-100%);
+    }
+
+
+    .image.animate .fire
+    {
+        opacity: 0;
+    }
+
+
+    .image.animate .comet,
+    .image.animate .comet2
+    {
+        left: -150%;
+
+        transform: translateY(480px);
+    }
+
+    .image.animate .comet2
+    {
+        left: -200%;
+    }
+
+
+    .image.animate .logo
+    {
+        transform: scale(1);
     }
 
 
