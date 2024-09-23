@@ -124,7 +124,7 @@
 
         transition: 2s ease-in;
         transition-property: transform, top;
-        transform: translateY(-50%);
+        transform: translate3d(0, -50%, 0);
 
         will-change: transform, top;
     }
@@ -152,7 +152,7 @@
         display: block;
 
         transition: transform .2s ease-in 2.3s;
-        transform: translate(0, 0);
+        transform: translate3d(0, 0, 0);
         pointer-events: none;
 
         will-change: transform;
@@ -208,7 +208,7 @@
     .image.animate .front_mountains,
     .image.animate .bg
     {
-        transform: translateY(var(--animation_offset));
+        transform: translate3d(0, var(--animation_offset), 0);
     }
 
 
@@ -224,7 +224,8 @@
         top: 0;
 
         transition: .2s linear;
-        transform: translateY(-100%);
+        transition-property: top, transform;
+        transform: translate3d(0, -100%, 0);
     }
 
 
@@ -237,7 +238,7 @@
     .image.animate .comet,
     .image.animate .comet2
     {
-        transform: translate(-200%, 480px);
+        transform: translate3d(-200%, 480px, 0);
     }
 
 
