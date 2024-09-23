@@ -61,10 +61,10 @@
 
             // Set offset
             animationOffset.value = bgImageHeight - imageHeight
-
-            // Rocket fly away
-            setTimeout(() => rocket.value.classList.add('fly_away'), 2700)
         }, 500)
+
+        // Rocket fly away
+        setTimeout(() => rocket.value.classList.add('fly_away'), 3200)
     }
 </script>
 
@@ -100,7 +100,7 @@
 
         width: 100%;
 
-        transition: 2s ease-in;
+        transition: transform 2s ease-in;
         transform: translateY(0%);
 
         will-change: transform;
@@ -123,9 +123,10 @@
         margin: 0 auto;
 
         transition: 2s ease-in;
+        transition-property: transform, top;
         transform: translateY(-50%);
 
-        will-change: transform, top, opacity;
+        will-change: transform, top;
     }
 
 
@@ -134,6 +135,9 @@
         z-index: 4;
 
         transition: transform 2s ease-in, top 2s ease-in, opacity .3s linear 1.25s;
+        transition-property: transform, top, opacity;
+
+        will-change: transform, top, opacity;
     }
 
 
@@ -147,8 +151,8 @@
 
         display: block;
 
-        transition: .2s ease-in 2.3s;
-        transform: translateY(0);
+        transition: transform .2s ease-in 2.3s;
+        transform: translate(0, 0);
         pointer-events: none;
 
         will-change: transform;
@@ -172,9 +176,10 @@
 
         display: block;
 
+        max-width: 28%;
         margin: 0 auto;
 
-        transition: .35s ease-in 2.75s;
+        transition: transform .35s ease-in 2.75s;
         transform: scale(0);
         pointer-events: none;
 
@@ -193,7 +198,7 @@
 
         width: 100%;
 
-        transition: 2s ease-in;
+        transition: transform 2s ease-in;
         transform: translateY(0%);
 
         will-change: transform;
@@ -232,14 +237,7 @@
     .image.animate .comet,
     .image.animate .comet2
     {
-        left: -150%;
-
-        transform: translateY(480px);
-    }
-
-    .image.animate .comet2
-    {
-        left: -200%;
+        transform: translate(-200%, 480px);
     }
 
 
