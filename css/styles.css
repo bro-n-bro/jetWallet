@@ -960,12 +960,6 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 .mnemonic .input
 {
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-
     padding-left: 27px;
 }
 
