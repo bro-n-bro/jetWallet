@@ -30,6 +30,7 @@
         topBar = ref(null),
         container = ref(null),
         loading = ref(true),
+        isProcess = ref(false),
         topHeight = ref(0),
         bottomHeight = ref(0),
         availableAmount = calcAvailableAmount(),
@@ -49,23 +50,22 @@
 
 
     onMounted(() => {
-        if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
-            // Change count
-            count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
-
-            // Generate balls
-            for(let i = 0; i < count.value; i++) {
-                container.value.insertBefore(randomizedBall(), topBar.value)
-            }
-
-            // Show animation
-            setTimeout(() => loading.value = false, 750)
-        }
+        // Init animation
+        initAnim()
     })
 
 
     watch(computed(() => store.isUnstakingBalancesGot), () => {
-        if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
+        // Init animation
+        initAnim()
+    })
+
+
+    // Init animation
+    function initAnim() {
+        if (store.isUnstakingBalancesGot && store.unstakingBalances.length && !isProcess.value) {
+            isProcess.value = true
+
             // Change count
             count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
 
@@ -75,9 +75,12 @@
             }
 
             // Show animation
-            setTimeout(() => loading.value = false, 750)
+            setTimeout(() => {
+                loading.value = false
+                isProcess.value = false
+            }, 750)
         }
-    })
+    }
 
 
     function randomizedBall() {
@@ -107,14 +110,14 @@
     {
         position: absolute;
         z-index: 1;
-        top: 0;
+        top: -4px;
         left: 0;
 
         display: block;
 
         width: 100%;
 
-        transition: .35s linear;
+        transition: transform .35s linear .1s;
         transform: translate3d(0, -100%, 0);
         pointer-events: none;
 
@@ -157,7 +160,7 @@
         left: 0;
 
         width: 100%;
-        min-height: 12px;
+        min-height: 14px;
 
         transition: transform .35s linear .1s;
         transform: translate3d(0, -100%, 0);

@@ -57,10 +57,10 @@
 
 
         <!-- Android Animation -->
-        <AndroidAnimation v-if="store.isInitialized && props.swiperActiveIndex == 1 && device.vendor !== 'Apple'" />
+        <AndroidAnimation v-if="store.isBalancesGot && store.isStakedBalancesGot && props.swiperActiveIndex == 1 && device.vendor !== 'Apple'" />
 
         <!-- IOS Animation -->
-        <IOSAnimation v-if="store.isInitialized && props.swiperActiveIndex == 1 && device.vendor === 'Apple'" />
+        <IOSAnimation v-if="store.isBalancesGot && store.isStakedBalancesGot && props.swiperActiveIndex == 1 && device.vendor === 'Apple'" />
     </div>
 </template>
 

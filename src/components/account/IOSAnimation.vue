@@ -200,7 +200,7 @@
 
         width: 100%;
 
-        transition: .35s linear;
+        transition: transform .35s linear .1s;
         transform: translate3d(0, -100%, 0);
         pointer-events: none;
 
