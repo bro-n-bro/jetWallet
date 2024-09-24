@@ -1,5 +1,7 @@
 # JetWallet for Telegram
 
+![logo](https://github.com/bro-n-bro/jetWallet/blob/d002203201ec2ce826f1dd35fe9af6b762a9957f/logo.png)
+
 ## Description
 JetWallet is a Telegram mini-app designed to manage a cryptocurrency wallet within the Cosmos ecosystem. This application allows users to create and import wallets, manage addresses, execute transactions, and participate in staking and redelegation.
 
