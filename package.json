@@ -1,0 +1,39 @@
+{
+    "name": "cosmos-telegram-signer",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build"
+    },
+    "dependencies": {
+        "@chenfengyuan/vue-countdown": "^2.1.2",
+        "@cosmjs/stargate": "^0.32.4",
+        "@kyvg/vue3-notification": "^3.2.1",
+        "@vueuse/core": "^10.11.0",
+        "chain-registry": "^1.63.26",
+        "core-js": "^3.8.3",
+        "idb": "^8.0.0",
+        "mitt": "^3.0.1",
+        "pinia": "^2.1.7",
+        "qrcode-vue3": "^1.6.8",
+        "swiper": "^11.1.5",
+        "ua-parser-js": "^1.0.39",
+        "velocity-animate": "^1.5.2",
+        "vue": "^3.2.13",
+        "vue-i18n": "^9.13.1",
+        "vue-router": "^4.0.3"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "~5.0.0",
+        "@vue/cli-plugin-router": "~5.0.0",
+        "@vue/cli-service": "~5.0.0",
+        "node-polyfill-webpack-plugin": "^4.0.0"
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead",
+        "not ie 11"
+    ]
+}
