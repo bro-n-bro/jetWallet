@@ -1,5 +1,5 @@
 <template>
-    <div class="ace" :style="`height: ${topHeight}px;`" :class="{ show: !loading }"></div>
+    <div class="android_ace" :style="`height: ${topHeight}px;`" :class="{ show: !loading }"></div>
 
     <div class="android_animation" ref="container" :class="{ show: !loading }">
         <div class="top" ref="topBar" :style="`height: ${topHeight}px;`"></div>
@@ -103,7 +103,7 @@
 
 
 <style>
-    .ace
+    .android_ace
     {
         position: absolute;
         z-index: 1;
@@ -113,7 +113,6 @@
         display: block;
 
         width: 100%;
-        min-height: 6px;
 
         transition: .35s linear;
         transform: translate3d(0, -100%, 0);
@@ -123,7 +122,7 @@
         background: url(@/assets/bg_ace.svg) 0 0/cover no-repeat;
     }
 
-    .ace.show
+    .android_ace.show
     {
         transform: translate3d(0, 0, 0);
 
@@ -158,7 +157,7 @@
         left: 0;
 
         width: 100%;
-        min-height: 14px;
+        min-height: 12px;
 
         transition: transform .35s linear .1s;
         transform: translate3d(0, -100%, 0);
