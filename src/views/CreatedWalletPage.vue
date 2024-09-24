@@ -42,7 +42,7 @@
 
 
 <script setup>
-    import { ref } from 'vue'
+    import { ref, onUnmounted } from 'vue'
 
 
     const animationOffset = ref(0),
