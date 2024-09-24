@@ -1,6 +1,7 @@
 # JetWallet for Telegram
 
 ![build_dev](https://github.com/bro-n-bro/jetWallet/workflows/build_dev/badge.svg)
+![Last Commit](https://img.shields.io/github/last-commit/bro-n-bro/jetWallet.svg)
 ![GitHub stars](https://img.shields.io/github/stars/bro-n-bro/jetWallet.svg?style=social&label=Star)
 
 ![logo](logo.png)
