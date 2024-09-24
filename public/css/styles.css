@@ -720,12 +720,11 @@ input[type='password']::-webkit-credentials-auto-fill-button
 {
     font-family: var(--font_family);
     font-size: 14px;
-    line-height: 26px;
 
     display: block;
 
     width: 100%;
-    height: 26px;
+    height: 28px;
     padding: 0 7px;
 
     transition: .2s linear;
