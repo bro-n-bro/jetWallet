@@ -222,6 +222,17 @@
 
 
 <style scoped>
+    .mnemonic .input
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+
+
     .agree
     {
         margin-top: auto;
