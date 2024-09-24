@@ -1,4 +1,6 @@
 <template>
+    <div class="ace" :style="`height: ${topHeight}px;`" :class="{ show: !loading }"></div>
+
     <div class="android_animation" ref="container" :class="{ show: !loading }">
         <div class="top" ref="topBar" :style="`height: ${topHeight}px;`"></div>
 
@@ -101,10 +103,38 @@
 
 
 <style>
-    .android_animation
+    .ace
     {
         position: absolute;
         z-index: 1;
+        top: 0;
+        left: 0;
+
+        display: block;
+
+        width: 100%;
+        min-height: 6px;
+
+        transition: .35s linear;
+        transform: translate3d(0, -100%, 0);
+        pointer-events: none;
+
+        opacity: 0;
+        background: url(@/assets/bg_ace.svg) 0 0/cover no-repeat;
+    }
+
+    .ace.show
+    {
+        transform: translate3d(0, 0, 0);
+
+        opacity: .2;
+    }
+
+
+    .android_animation
+    {
+        position: absolute;
+        z-index: 2;
         top: -4px;
         left: -12%;
 
@@ -120,12 +150,6 @@
     }
 
 
-    .android_animation.show
-    {
-        opacity: .1;
-    }
-
-
     .android_animation .top,
     .android_animation .bottom
     {
@@ -136,6 +160,9 @@
         width: 100%;
         min-height: 14px;
 
+        transition: transform .35s linear .1s;
+        transform: translate3d(0, -100%, 0);
+
         background: #fff;
     }
 
@@ -145,7 +172,9 @@
         top: auto;
         bottom: 0;
 
-        background: url(@/assets/bg_wave.svg) 0 100%/cover no-repeat;
+        transform: translate3d(0, 100%, 0);
+
+        background: url(@/assets/bg_wave.svg) 0 0/cover no-repeat;
     }
 
 
@@ -193,5 +222,18 @@
         height: 1px;
 
         white-space: nowrap;
+    }
+
+
+    .android_animation.show
+    {
+        opacity: .1;
+    }
+
+
+    .android_animation.show .top,
+    .android_animation.show .bottom
+    {
+        transform: translate3d(0, 0, 0);
     }
 </style>
