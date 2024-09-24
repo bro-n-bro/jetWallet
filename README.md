@@ -1,5 +1,8 @@
 # JetWallet for Telegram
 
+![build_dev](https://github.com/bro-n-bro/jetWallet/workflows/build_dev/badge.svg)
+![GitHub stars](https://img.shields.io/github/stars/bro-n-bro/jetWallet.svg?style=social&label=Star)
+
 ![logo](logo.png)
 
 Please be aware that this version of our digital wallet is still under development and should be used with caution. As this is a beta product, we strongly advise against storing large amounts of funds in this wallet. Consider using JetWallet as a hot wallet for small, everyday transactions. For securing larger amounts of your assets, we recommend using a more established and fully tested wallet solution.
