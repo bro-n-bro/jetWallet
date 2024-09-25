@@ -1,0 +1,46 @@
+name: build_prod
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build_wallet:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.10.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check if the release commit is in the main branch
+        run: |
+          TAG_COMMIT_SHA=$(git rev-list -n 1 ${{ github.ref }})
+          if git merge-base --is-ancestor $TAG_COMMIT_SHA origin/main; then
+            echo "The release commit is in the main branch."
+          else
+            echo "The release commit is not in the main branch."
+            exit 1
+          fi
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build wallet
+        run: npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.6.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: production
+          FOLDER: dist
+          CLEAN: true
