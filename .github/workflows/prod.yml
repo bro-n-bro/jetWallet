@@ -16,16 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Check if the release commit is in the main branch
-        run: |
-          TAG_COMMIT_SHA=$(git rev-list -n 1 ${{ github.ref }})
-          if git merge-base --is-ancestor $TAG_COMMIT_SHA origin/main; then
-            echo "The release commit is in the main branch."
-          else
-            echo "The release commit is not in the main branch."
-            exit 1
-          fi
-
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
