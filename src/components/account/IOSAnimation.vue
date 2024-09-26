@@ -205,7 +205,7 @@
         pointer-events: none;
 
         opacity: 0;
-        background: url(@/assets/bg_ace.svg) 0 0/cover no-repeat;
+        background: url(@/assets/bg_ace.png) 50%/cover no-repeat;
     }
 
     .IOS_ace.show
