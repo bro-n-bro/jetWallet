@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { DBaddData, DBgetData, DBclearData, DBgetMultipleData } from '@/utils/db'
+import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
 import i18n from '@/locale'
 
@@ -9,7 +9,11 @@ import i18n from '@/locale'
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
-import localbostrom from '@/store/networks/localbostrom'
+import neutron from '@/store/networks/neutron'
+import omniflix from '@/store/networks/omniflix'
+import dymension from '@/store/networks/dymension'
+import stride from '@/store/networks/stride'
+// import localbostrom from '@/store/networks/localbostrom'
 
 
 // Networks additional options
@@ -76,7 +80,11 @@ export const useGlobalStore = defineStore('global', {
         networks: {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
             bostrom: Object.assign(bostrom, networksAdditionalOptions),
-            localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
+            neutron: Object.assign(neutron, networksAdditionalOptions),
+            omniflix: Object.assign(omniflix, networksAdditionalOptions),
+            dymension: Object.assign(dymension, networksAdditionalOptions),
+            stride: Object.assign(stride, networksAdditionalOptions),
+            // localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
         },
 
         formatableTokens: [
@@ -157,10 +165,17 @@ export const useGlobalStore = defineStore('global', {
                 this.networks[this.currentNetwork].isUnstakingCancelSupport = await this.isUnstakingCancelSupport()
 
                 // Wait balances
-                Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
-                    // Init status
-                    this.isInitialized = true
-                })
+                if (this.networks[this.currentNetwork].is_staking_available) {
+                    Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
+                        // Init status
+                        this.isInitialized = true
+                    })
+                } else {
+                    Promise.all([await this.getBalances()]).then(() => {
+                        // Init status
+                        this.isInitialized = true
+                    })
+                }
             } catch(error) {
                 console.log(error)
 

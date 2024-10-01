@@ -9,7 +9,7 @@
             <NetworkChooser v-if="store.currentNetwork" />
             </KeepAlive>
 
-            <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized" @click.prevent="openStatsModal()">
+            <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized && store.networks[store.currentNetwork].is_staking_available" @click.prevent="openStatsModal()">
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
             </div>
 
@@ -35,7 +35,7 @@
                 </swiper-slide>
 
                 <!-- Stacked section -->
-                <swiper-slide>
+                <swiper-slide v-if="store.networks[store.currentNetwork]?.is_staking_available">
                     <StakedSection :swiperActiveIndex />
                 </swiper-slide>
             </swiper-container>
@@ -46,18 +46,18 @@
         <AvailableTokens v-show="swiperActiveIndex == 0" />
 
         <!-- Claim rewards -->
-        <ClaimRewards v-show="swiperActiveIndex == 1" />
+        <ClaimRewards v-show="swiperActiveIndex == 1" v-if="store.networks[store.currentNetwork]?.is_staking_available" />
 
         <!-- Unstaking tokens -->
-        <UnstakingTokens v-show="swiperActiveIndex == 1" v-if="store.isInitialized" />
+        <UnstakingTokens v-show="swiperActiveIndex == 1" v-if="store.isInitialized && store.networks[store.currentNetwork]?.is_staking_available" />
 
         <!-- Stacked tokens -->
-        <StakedTokens v-show="swiperActiveIndex == 1" />
+        <StakedTokens v-show="swiperActiveIndex == 1" v-if="store.networks[store.currentNetwork]?.is_staking_available" />
     </section>
 
     <!-- Stats modal -->
     <transition name="modal">
-    <StatsModal v-if="showStatsModal" />
+    <StatsModal v-if="showStatsModal && store.networks[store.currentNetwork]?.is_staking_available" />
     </transition>
 
     <!-- Overlay -->
@@ -139,7 +139,7 @@
         // Get swiper instance
         swiperEl.value = document.querySelector('swiper-container')
 
-        swiperEl.value.addEventListener('swiperslidechangetransitionstart', async e => {
+        swiperEl.value.addEventListener('swiperslidechangetransitionstart', async () => {
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })

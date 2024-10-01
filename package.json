@@ -11,7 +11,7 @@
         "@cosmjs/stargate": "^0.32.4",
         "@kyvg/vue3-notification": "^3.2.1",
         "@vueuse/core": "^10.11.0",
-        "chain-registry": "^1.63.26",
+        "chain-registry": "^1.64.4",
         "core-js": "^3.8.3",
         "idb": "^8.0.0",
         "mitt": "^3.0.1",
