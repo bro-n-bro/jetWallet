@@ -4,7 +4,7 @@
         <div class="cont">
             <!-- JetPack - Get address page title -->
             <div class="page_title">
-                Request for address
+                {{ $t('message.jp_get_address_title') }}
             </div>
 
             <!-- JetPack - Get address page data -->
@@ -12,18 +12,18 @@
                 <div class="page_data">
                     <!-- JetPack - Get address desc -->
                     <div class="desc">
-                        Some application requests data on your address, if you do not know who is requesting, do not allow it.
+                        {{ $t('message.jp_get_address_desc') }}
                     </div>
 
                     <!-- Buttons -->
                     <div class="btns">
                         <!-- Approve button -->
-                        <button class="btn">
+                        <button class="btn" @click="approve()">
                             <span>{{ $t('message.btn_approve') }}</span>
                         </button>
 
                         <!-- Reject button -->
-                        <button class="btn purple_btn">
+                        <button class="btn purple_btn" @click="reject()">
                             <span>{{ $t('message.btn_reject') }}</span>
                         </button>
                     </div>
@@ -35,7 +35,35 @@
 
 
 <script setup>
+    import { useRouter } from 'vue-router'
+    import { useNotification } from '@kyvg/vue3-notification'
 
+
+    const router = useRouter(),
+        notification = useNotification()
+
+
+    // Approve request
+    function reject() {
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 1000,
+            title: i18n.global.t('message.notification_jp_get_address_title'),
+            type: 'success'
+        })
+
+        // Redirect
+        router.push('/account')
+    }
+
+
+    // Reject request
+    function reject() {
+        // Redirect
+        router.push('/account')
+    }
 </script>
 
 

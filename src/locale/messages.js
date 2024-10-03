@@ -203,6 +203,11 @@ export default {
             'search_empty_validator': 'Validator not found...',
 
 
+            // Jet Pack
+            'jp_get_address_title': 'Request for address',
+            'jp_get_address_desc': 'Some application requests data on your address, if you do not know who is requesting, do not allow it.',
+
+
             // Notifications
             'notification_copied_title': 'Copied to clipboard',
             'notification_tx_pending_title': 'Transaction is pending',
@@ -212,6 +217,8 @@ export default {
             'notification_error_invalid_paste_title': 'Incorrect address in the clipboard',
 
             'notification_explorer_link': 'Explorer',
+
+            'notification_jp_get_address_title': 'You have successfully submitted your data.',
 
 
             // Buttons
