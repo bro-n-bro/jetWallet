@@ -35,12 +35,14 @@
 
 
 <script setup>
+    import { inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
 
 
     const router = useRouter(),
-        notification = useNotification()
+        notification = useNotification(),
+        i18n = inject('i18n')
 
 
     // Approve request
