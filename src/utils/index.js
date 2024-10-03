@@ -335,8 +335,6 @@ export const getNetworkLogo = chainId => {
     if (chainId) {
         let chain = chains.find(el => el.chain_id === chainId)
 
-        console.log(chain)
-
         if (chain) {
             chain.logo_URIs
                 ? logos = chain.logo_URIs.svg || chain.logo_URIs.png
