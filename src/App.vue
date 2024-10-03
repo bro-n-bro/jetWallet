@@ -1,7 +1,4 @@
 <template>
-    <pre>{{ initData }}</pre>
-    <pre>{{ route }}</pre>
-
     <!-- Main component -->
     <component :is="layout" />
 
@@ -73,7 +70,6 @@
         layout = computed(() => route.meta.layout || 'default-layout'),
         notification = useNotification(),
         notificationTimeout = ref(null),
-        initData = ref(),
         notificationAnimation = {
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
@@ -94,7 +90,8 @@
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
 
-            initData.value = Telegram.WebApp.start_param
+            alert(Telegram.WebApp.start_param)
+            alert(route)
 
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
