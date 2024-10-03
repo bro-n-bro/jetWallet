@@ -59,7 +59,6 @@
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
     import { useTitle } from '@vueuse/core'
-    import { decodeFromBase64 } from '@/utils'
 
 
     const store = useGlobalStore(),
@@ -114,11 +113,6 @@
                 // Redirect to send
                 redirectToSend(parsedData)
             })
-
-            // Parse start params
-            if ('tgWebAppStartParam' in route.query) {
-                store.startParams = decodeFromBase64(route.query.tgWebAppStartParam)
-            }
         }
     })
 

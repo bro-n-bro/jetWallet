@@ -18,12 +18,12 @@
                     <!-- Buttons -->
                     <div class="btns">
                         <!-- Approve button -->
-                        <button class="btn" @click="approve()">
+                        <button class="btn" @click="approveRequest()">
                             <span>{{ $t('message.btn_approve') }}</span>
                         </button>
 
                         <!-- Reject button -->
-                        <button class="btn purple_btn" @click="reject()">
+                        <button class="btn purple_btn" @click="rejectRequest()">
                             <span>{{ $t('message.btn_reject') }}</span>
                         </button>
                     </div>
@@ -44,7 +44,7 @@
 
 
     // Approve request
-    function reject() {
+    function approveRequest() {
         // Show notification
         notification.notify({
             group: 'default',
@@ -60,7 +60,7 @@
 
 
     // Reject request
-    function reject() {
+    function rejectRequest() {
         // Redirect
         router.push('/account')
     }

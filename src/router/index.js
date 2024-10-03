@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { DBgetData } from '@/utils/db'
+import { decodeFromBase64 } from '@/utils'
 import { useGlobalStore } from '@/store'
 
 import defaultLayout from '@/layouts/Default.vue'
@@ -154,6 +155,11 @@ const router = createRouter({
 router.beforeResolve(async (to, from, next) => {
 	let store = useGlobalStore(),
 		isRegister = await DBgetData('wallet', 'isRegister')
+
+	// Parse start params
+	if (to.query.tgWebAppStartParam) {
+		store.startParams = decodeFromBase64(to.query.tgWebAppStartParam)
+	}
 
 	// Check access
 	to.matched.some(record => {
