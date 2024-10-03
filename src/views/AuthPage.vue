@@ -79,6 +79,7 @@
         store.isAuthorized = true
 
         // Redirect
+        alert(store.startParams)
         if (store.startParams) {
             // Get address
             if (store.startParams.method === 'getAddress') {
