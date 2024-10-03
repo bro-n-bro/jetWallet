@@ -36,24 +36,53 @@
 
 <script setup>
     import { inject } from 'vue'
+    import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
 
 
-    const router = useRouter(),
+    const store = useGlobalStore(),
+        router = useRouter(),
         notification = useNotification(),
-        i18n = inject('i18n')
+        i18n = inject('i18n'),
+        url = `https://api.telegram.org/bot${store.tgBotToken}/sendMessage`
 
 
     // Approve request
-    function approveRequest() {
-        // Show notification
-        notification.notify({
-            group: 'default',
-            speed: 200,
-            duration: 1000,
-            title: i18n.global.t('message.notification_jp_get_address_title'),
-            type: 'success'
+    async function approveRequest() {
+        // Send response
+        await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+                body: JSON.stringify({
+                chat_id: store.tgChatId,
+                text: `Address: ${store.currentAddress}`
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 1000,
+                title: i18n.global.t('message.notification_jp_get_address_title'),
+                type: 'success'
+            })
+        })
+        .catch(error => {
+            console.error(error)
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 1000,
+                title: i18n.global.t('message.notification_error_title'),
+                type: 'error'
+            })
         })
 
         // Redirect

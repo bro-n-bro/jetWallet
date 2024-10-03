@@ -218,7 +218,7 @@ export default {
 
             'notification_explorer_link': 'Explorer',
 
-            'notification_jp_get_address_title': 'You have successfully submitted your data.',
+            'notification_jp_get_address_title': 'You have successfully submitted your address.',
 
 
             // Buttons
