@@ -1,4 +1,7 @@
 <template>
+                <pre>{{ store.start_param }}</pre>
+                <pre>{{ store.query }}</pre>
+
     <!-- Main component -->
     <component :is="layout" />
 

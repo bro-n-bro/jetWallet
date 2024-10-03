@@ -7,9 +7,6 @@
                 {{ $t('message.auth_title') }}
             </div>
 
-            <pre>{{ store.start_param }}</pre>
-            <pre>{{ store.query }}</pre>
-
             <!-- Auth page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
