@@ -79,6 +79,8 @@
     onBeforeMount(() => {
         // Set page title
         title.value = i18n.global.t('message.page_title')
+
+        store.query = route.query
     })
 
 
@@ -90,8 +92,7 @@
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
 
-            alert(Telegram.WebApp.start_param)
-            alert(route)
+            store.start_param = Telegram.WebApp.start_param
 
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
