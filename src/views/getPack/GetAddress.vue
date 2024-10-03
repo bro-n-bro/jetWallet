@@ -7,9 +7,6 @@
                 {{ $t('message.jp_get_address_title') }}
             </div>
 
-
-            {{ initdata }}
-
             <!-- JetPack - Get address page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
@@ -38,7 +35,7 @@
 
 
 <script setup>
-    import { inject, ref, onBeforeMount, onMounted } from 'vue'
+    import { inject, onBeforeMount, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -47,8 +44,7 @@
     const store = useGlobalStore(),
         router = useRouter(),
         notification = useNotification(),
-        i18n = inject('i18n'),
-        initdata = ref(null)
+        i18n = inject('i18n')
 
 
     onBeforeMount(async () => {
@@ -61,7 +57,14 @@
 
     onMounted(() => {
         if (window.Telegram && window.Telegram.WebApp) {
-            initdata.value = Telegram.WebApp.initData
+            // Decode data
+            const decodedString = decodeURIComponent(Telegram.WebApp.initData)
+
+            // Get user params
+            const userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
+
+            // Set data
+            store.tgChatId = userParams.id
         }
     })
 
