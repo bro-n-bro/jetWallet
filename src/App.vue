@@ -1,6 +1,6 @@
 <template>
     <pre>{{ initData }}</pre>
-    <pre>{{ route.query }}</pre>
+    <pre>{{ route }}</pre>
 
     <!-- Main component -->
     <component :is="layout" />
