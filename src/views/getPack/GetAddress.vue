@@ -7,6 +7,9 @@
                 {{ $t('message.jp_get_address_title') }}
             </div>
 
+
+            {{ initdata }}
+
             <!-- JetPack - Get address page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
