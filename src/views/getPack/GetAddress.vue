@@ -35,7 +35,7 @@
 
 
 <script setup>
-    import { inject } from 'vue'
+    import { inject, ref, onBeforeMount, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -45,19 +45,36 @@
         router = useRouter(),
         notification = useNotification(),
         i18n = inject('i18n'),
-        url = `https://api.telegram.org/bot${store.tgBotToken}/sendMessage`
+        initdata = ref(null)
+
+
+    onBeforeMount(async () => {
+        if (!store.isInitialized) {
+            // Init app
+            await store.initApp()
+        }
+    })
+
+
+    onMounted(() => {
+        if (window.Telegram && window.Telegram.WebApp) {
+            initdata.value = Telegram.WebApp.initData
+        }
+    })
 
 
     // Approve request
     async function approveRequest() {
         // Send response
-        await fetch(url, {
+        await fetch(`https://api.telegram.org/bot${store.tgBotToken}/sendMessage`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
                 body: JSON.stringify({
                 chat_id: store.tgChatId,
+                protect_content: true,
+                disable_notification: true,
                 text: `Address: ${store.currentAddress}`
             })
         })
