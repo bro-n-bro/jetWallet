@@ -1,6 +1,6 @@
 <template>
                 <pre>{{ store.start_param }}</pre>
-                <pre>{{ store }}</pre>
+                <pre>{{ route }}</pre>
                 <pre>{{ store.initData }}</pre>
 
     <!-- Main component -->
