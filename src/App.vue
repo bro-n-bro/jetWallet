@@ -1,5 +1,6 @@
 <template>
     <pre>{{ initData }}</pre>
+    <pre>{{ route.query }}</pre>
 
     <!-- Main component -->
     <component :is="layout" />
@@ -93,7 +94,7 @@
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
 
-            initData.value = Telegram.WebApp.initData
+            initData.value = Telegram.WebApp.start_param
 
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
