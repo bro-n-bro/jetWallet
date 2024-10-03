@@ -1,8 +1,4 @@
 <template>
-                <pre>{{ store.start_param }}</pre>
-                <pre>{{ route }}</pre>
-                <pre>{{ store.initData }}</pre>
-
     <!-- Main component -->
     <component :is="layout" />
 
@@ -83,8 +79,6 @@
     onBeforeMount(() => {
         // Set page title
         title.value = i18n.global.t('message.page_title')
-
-        store.query = route.query
     })
 
 
@@ -95,11 +89,6 @@
 
             // Call the expand method to open to full height
             Telegram.WebApp.expand()
-
-            console.log(Telegram.WebApp)
-
-            store.start_param = Telegram.WebApp.start_param
-            store.initData = Telegram.WebApp.initData
 
             // Set header color
             Telegram.WebApp.setHeaderColor('#5b3895')
