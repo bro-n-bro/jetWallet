@@ -133,6 +133,15 @@ const routes = [
 			accessDenied: ['not_authorized']
 		}
 	},
+	{
+		path: '/jet_pack/get_address',
+		name: 'JetPackGetAddress',
+		component: () => import('../views/getPack/GetAddress.vue'),
+		meta: {
+			layout: accountLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
 ]
 
 

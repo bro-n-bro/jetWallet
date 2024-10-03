@@ -42,6 +42,7 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
         isAnyModalOpen: false,
 
+        startParams: null,
         forcedUnlock: false,
         authErrorLimit: 4,
 

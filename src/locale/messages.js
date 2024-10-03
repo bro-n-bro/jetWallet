@@ -236,6 +236,7 @@ export default {
             'btn_redelegate': 'Switch validator',
             'btn_claim': 'Claim',
             'btn_approve': 'Approve',
+            'btn_reject': 'Reject',
             'btn_json': 'View JSON',
             'btn_close': 'Close',
             'btn_sign': 'Sign',

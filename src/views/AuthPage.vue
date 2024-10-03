@@ -79,7 +79,14 @@
         store.isAuthorized = true
 
         // Redirect
-        router.push('/account')
+        if (store.startParams) {
+            // Get address
+            if (store.startParams.method === 'getAddress') {
+                router.push('/jet_pack/get_address')
+            }
+        } else {
+            router.push('/account')
+        }
     })
 
 
