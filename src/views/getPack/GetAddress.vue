@@ -58,10 +58,10 @@
     onMounted(() => {
         if (window.Telegram && window.Telegram.WebApp) {
             // Decode data
-            const decodedString = decodeURIComponent(Telegram.WebApp.initData)
+            let decodedString = decodeURIComponent(Telegram.WebApp.initData)
 
             // Get user params
-            const userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
+            let userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
 
             // Set data
             store.tgChatId = userParams.id
@@ -91,8 +91,8 @@
                 group: 'default',
                 speed: 200,
                 duration: 1000,
-                title: i18n.global.t('message.notification_jp_get_address_title'),
-                type: 'success'
+                title: i18n.global.t('message.notification_jp_get_address_success'),
+                type: 'default'
             })
         })
         .catch(error => {
@@ -108,6 +108,9 @@
             })
         })
 
+        // Reset start params
+        store.startParams = null
+
         // Redirect
         router.push('/account')
     }
@@ -115,6 +118,18 @@
 
     // Reject request
     function rejectRequest() {
+        // Reset start params
+        store.startParams = null
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 1000,
+            title: i18n.global.t('message.notification_jp_get_address_reject'),
+            type: 'default'
+        })
+
         // Redirect
         router.push('/account')
     }

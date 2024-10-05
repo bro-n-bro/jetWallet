@@ -68,8 +68,9 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, onMounted, inject } from 'vue'
+    import { ref, onBeforeMount, onMounted, inject, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useRouter } from 'vue-router'
     import { useUrlSearchParams } from '@vueuse/core'
 
     // Components
@@ -91,6 +92,7 @@
     const store = useGlobalStore(),
         params = useUrlSearchParams('history'),
         emitter = inject('emitter'),
+        router = useRouter(),
         searchingClass = ref(''),
         showStatsModal = ref(false),
         swiperEl = ref(null),
@@ -143,6 +145,17 @@
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
+    })
+
+
+    // Update qr code
+    watch(computed(() => store.currentAddress), () => {
+        if (store.startParams) {
+            // Get address
+            if (store.startParams.method === 'getAddress') {
+                router.push('/jet_pack/get_address')
+            }
+        }
     })
 
 
