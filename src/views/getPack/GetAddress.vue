@@ -81,7 +81,7 @@
             },
             body: JSON.stringify({
                 chat_id: store.tgChatId,
-                text: `/Address: ${store.currentAddress}`
+                text: `@cosmos_wallet_bot Address: ${store.currentAddress}`
             })
         })
         .then(response => response.json())
