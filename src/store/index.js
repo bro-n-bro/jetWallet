@@ -34,6 +34,7 @@ const notification = useNotification()
 
 export const useGlobalStore = defineStore('global', {
     state: () => ({
+        isInitializing: false,
         isInitialized: false,
         isBalancesGot: false,
         isStakedBalancesGot: false,
@@ -110,6 +111,7 @@ export const useGlobalStore = defineStore('global', {
         // Init APP
         async initApp() {
             // Init status
+            this.isInitializing = true
             this.isInitialized = false
 
             // Forced unlock
@@ -222,6 +224,7 @@ export const useGlobalStore = defineStore('global', {
                 } else {
                     Promise.all([await this.getBalances()]).then(() => {
                         // Init status
+                        this.isInitializing = false
                         this.isInitialized = true
                     })
                 }

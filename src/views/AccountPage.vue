@@ -130,7 +130,7 @@
 
 
     onBeforeMount(async () => {
-        if (!store.isInitialized) {
+        if (!store.isInitializing) {
             // Init app
             await store.initApp()
         }

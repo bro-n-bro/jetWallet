@@ -35,7 +35,7 @@
 
 
 <script setup>
-    import { inject, onBeforeMount, onMounted } from 'vue'
+    import { inject, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -45,14 +45,6 @@
         router = useRouter(),
         notification = useNotification(),
         i18n = inject('i18n')
-
-
-    onBeforeMount(async () => {
-        if (!store.isInitialized) {
-            // Init app
-            await store.initApp()
-        }
-    })
 
 
     onMounted(() => {
@@ -81,7 +73,7 @@
             },
             body: JSON.stringify({
                 chat_id: store.tgChatId,
-                text: `@cosmos_wallet_bot Address: ${store.currentAddress}`
+                text: `Address: ${store.currentAddress}`
             })
         })
         .then(response => response.json())
