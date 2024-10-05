@@ -79,9 +79,9 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-                body: JSON.stringify({
+            body: JSON.stringify({
                 chat_id: store.tgChatId,
-                text: `Address: ${store.currentAddress}`
+                text: `/Address: ${store.currentAddress}`
             })
         })
         .then(response => response.json())
