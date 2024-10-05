@@ -64,7 +64,9 @@
             let userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
 
             // Set data
-            store.tgChatId = userParams.id
+            if (userParams) {
+                store.tgChatId = userParams.id
+            }
         }
     })
 

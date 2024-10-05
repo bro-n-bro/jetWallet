@@ -218,6 +218,7 @@ export default {
 
             'notification_explorer_link': 'Explorer',
 
+            'notification_jp_chain_id_not_passed': 'Parameter "chain_id" not passed.',
             'notification_jp_chain_not_supported': 'Chain {chain_id} not supported.',
             'notification_jp_get_address_success': 'You have successfully submitted your address.',
             'notification_jp_get_address_reject': 'You have rejected the request to provide your address.',

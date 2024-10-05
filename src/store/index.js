@@ -132,19 +132,13 @@ export const useGlobalStore = defineStore('global', {
 
             // Set current network
             if (this.startParams) {
-                // Checking for network availability
-                let chain = Object.values(this.networks).find(network => network.chain_id === this.startParams.data.chain_id)
-
-                if (chain) {
-                    // Set data
-                    this.currentNetwork = chain.alias
-                } else {
-                    // Show notification - Network not supported
+                if (!this.startParams.data || !this.startParams.data?.chain_id) {
+                    // Show notification - Param chain_id not passed
                     notification.notify({
                         group: 'default',
                         speed: 200,
                         duration: 1000,
-                        title: i18n.global.t('message.notification_jp_chain_not_supported'),
+                        title: i18n.global.t('message.notification_jp_chain_id_not_passed'),
                         type: 'error'
                     })
 
@@ -153,6 +147,29 @@ export const useGlobalStore = defineStore('global', {
 
                     // Set data from DB
                     this.currentNetwork = DBData.currentNetwork
+                } else {
+                    // Checking for network availability
+                    let chain = Object.values(this.networks).find(network => network.chain_id === this.startParams.data.chain_id)
+
+                    if (chain) {
+                        // Set data
+                        this.currentNetwork = chain.alias
+                    } else {
+                        // Show notification - Network not supported
+                        notification.notify({
+                            group: 'default',
+                            speed: 200,
+                            duration: 1000,
+                            title: i18n.global.t('message.notification_jp_chain_not_supported'),
+                            type: 'error'
+                        })
+
+                        // Reset start params
+                        this.startParams = null
+
+                        // Set data from DB
+                        this.currentNetwork = DBData.currentNetwork
+                    }
                 }
             } else {
                 // Set data from DB
