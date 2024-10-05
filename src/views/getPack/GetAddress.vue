@@ -81,8 +81,6 @@
             },
                 body: JSON.stringify({
                 chat_id: store.tgChatId,
-                protect_content: true,
-                disable_notification: true,
                 text: `Address: ${store.currentAddress}`
             })
         })
