@@ -89,9 +89,9 @@
             console.log('Connected to the first client!');
 
             // Получение данных от первого клиента
-            conn.on('data', (data) => {
-                alert('Received data from the first client: ', data)
-            })
+            // conn.on('data', (data) => {
+            //     alert('Received data from the first client: ', data)
+            // })
 
             // Отправка данных первому клиенту
             setTimeout(() => conn.send('Hello from the second client!'), 10000)
