@@ -83,18 +83,31 @@
 
 
     onMounted(async () => {
-        var peer = new Peer('7437812149-808958531')
+        if (window.Telegram && window.Telegram.WebApp) {
+            // Decode data
+            let decodedString = decodeURIComponent(Telegram.WebApp.initData)
 
-        peer.on('connection', (conn) => {
-            console.log('Connected to the first client!');
+            // Get user params
+            let userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
 
+            // Set data
+            if (userParams) {
+                store.tgUserId = userParams.id
+            }
+        }
+
+        // Create peer
+        const peer = new Peer(`jw-${store.tgBotId}-${store.tgUserId}`)
+
+        // New connection
+        peer.on('connection', conn => {
             // Получение данных от первого клиента
             // conn.on('data', (data) => {
             //     alert('Received data from the first client: ', data)
             // })
 
-            // Отправка данных первому клиенту
-            setTimeout(() => conn.send('Hello from the second client!'), 10000)
+            // Save connection
+            store.RTCConnections[conn.peer] = conn
         })
 
 

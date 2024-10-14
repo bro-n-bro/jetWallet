@@ -47,57 +47,57 @@
         i18n = inject('i18n')
 
 
-    onMounted(() => {
-        if (window.Telegram && window.Telegram.WebApp) {
-            // Decode data
-            let decodedString = decodeURIComponent(Telegram.WebApp.initData)
-
-            // Get user params
-            let userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
-
-            // Set data
-            if (userParams) {
-                store.tgChatId = userParams.id
-            }
-        }
-    })
-
-
     // Approve request
     async function approveRequest() {
         // Send response
-        await fetch(`https://api.telegram.org/bot${store.tgBotToken}/sendMessage`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                chat_id: store.tgChatId,
-                text: `Address: ${store.currentAddress}`
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: 1000,
-                title: i18n.global.t('message.notification_jp_get_address_success'),
-                type: 'default'
-            })
-        })
-        .catch(error => {
-            console.error(error)
+        // await fetch(`https://api.telegram.org/bot${store.tgBotToken}/sendMessage`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         chat_id: store.tgChatId,
+        //         text: `Address: ${store.currentAddress}`
+        //     })
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     // Show notification
+        //     notification.notify({
+        //         group: 'default',
+        //         speed: 200,
+        //         duration: 1000,
+        //         title: i18n.global.t('message.notification_jp_get_address_success'),
+        //         type: 'default'
+        //     })
+        // })
+        // .catch(error => {
+        //     console.error(error)
 
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: 1000,
-                title: i18n.global.t('message.notification_error_title'),
-                type: 'error'
-            })
+        //     // Show notification
+        //     notification.notify({
+        //         group: 'default',
+        //         speed: 200,
+        //         duration: 1000,
+        //         title: i18n.global.t('message.notification_error_title'),
+        //         type: 'error'
+        //     })
+        // })
+
+        // Send response
+        store.RTCConnections[store.startParams.peer].send({
+            type: 'address',
+            address: store.currentAddress,
+            pubKey: null
+        })
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 1000,
+            title: i18n.global.t('message.notification_jp_get_address_success'),
+            type: 'default'
         })
 
         // Reset start params
@@ -110,6 +110,12 @@
 
     // Reject request
     function rejectRequest() {
+        // Send response
+        store.RTCConnections[store.startParams.peer].send({
+            type: 'error',
+            message: 'The user rejected the request.'
+        })
+
         // Reset start params
         store.startParams = null
 
