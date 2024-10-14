@@ -2,17 +2,17 @@
     <!-- JetPack - Get address page -->
     <section class="page_container get_address">
         <div class="cont">
-            <!-- JetPack - Get address page title -->
+            <!-- JetPack - Connection page title -->
             <div class="page_title">
-                {{ $t('message.jp_get_address_title') }}
+                {{ $t('message.jp_connection_title') }}
             </div>
 
-            <!-- JetPack - Get address page data -->
+            <!-- JetPack - Connection page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
-                    <!-- JetPack - Get address desc -->
+                    <!-- JetPack - Connection desc -->
                     <div class="desc">
-                        {{ $t('message.jp_get_address_desc') }}
+                        {{ $t('message.jp_connection_desc') }}
                     </div>
 
                     <!-- Buttons -->
@@ -35,7 +35,7 @@
 
 
 <script setup>
-    import { inject, onMounted } from 'vue'
+    import { inject } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'

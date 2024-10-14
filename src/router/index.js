@@ -135,9 +135,9 @@ const routes = [
 		}
 	},
 	{
-		path: '/jet_pack/get_address',
-		name: 'JetPackGetAddress',
-		component: () => import('../views/getPack/GetAddress.vue'),
+		path: '/jet_pack/connect_wallet',
+		name: 'JetPackConnectWallet',
+		component: () => import('../views/getPack/ConnectWallet.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized']

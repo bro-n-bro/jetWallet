@@ -152,8 +152,8 @@
     watch(computed(() => store.currentAddress), () => {
         if (store.startParams) {
             // Get address
-            if (store.startParams.method === 'getAddress') {
-                router.push('/jet_pack/get_address')
+            if (store.startParams.method === 'connectWallet') {
+                router.push('/jet_pack/connect_wallet')
             }
         }
     })

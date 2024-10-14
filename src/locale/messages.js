@@ -204,8 +204,8 @@ export default {
 
 
             // Jet Pack
-            'jp_get_address_title': 'Request for address',
-            'jp_get_address_desc': 'Some application requests data on your address, if you do not know who is requesting, do not allow it.',
+            'jp_connection_title': 'Request for connection',
+            'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
 
 
             // Notifications
