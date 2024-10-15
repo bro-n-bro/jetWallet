@@ -194,7 +194,7 @@ export default {
             'sign_tx_title': 'Sign transaction',
 
             'sign_tx_error_title': 'Incorrect pin!',
-            'sign_tx_error_desc': 'Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat',
+            'sign_tx_error_desc': 'You have entered an incorrect PIN 4 times. For security reasons, you will be returned to the main screen to protect your account and prevent unauthorized access.',
 
 
             // Search
@@ -206,6 +206,8 @@ export default {
             // Jet Pack
             'jp_connection_title': 'Request for connection',
             'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
+
+            'jp_message_rejected': 'The user rejected the request.',
 
 
             // Notifications

@@ -79,10 +79,7 @@
     onBeforeMount(() => {
         // Set page title
         title.value = i18n.global.t('message.page_title')
-    })
 
-
-    onMounted(async () => {
         if (window.Telegram && window.Telegram.WebApp) {
             // Decode data
             let decodedString = decodeURIComponent(Telegram.WebApp.initData)
@@ -97,20 +94,17 @@
         }
 
         // Create peer
-        const peer = new Peer(`jw-${store.tgBotId}-${store.tgUserId}`)
+        store.RTCPeer = new Peer(`jw-${store.tgBotId}-${store.tgUserId}`)
 
         // New connection
-        peer.on('connection', conn => {
-            // Получение данных от первого клиента
-            // conn.on('data', (data) => {
-            //     alert('Received data from the first client: ', data)
-            // })
-
+        store.RTCPeer.on('connection', conn => {
             // Save connection
             store.RTCConnections[conn.peer] = conn
         })
+    })
 
 
+    onMounted(async () => {
         if (window.Telegram && window.Telegram.WebApp) {
             // Initialize the mini-application
             await Telegram.WebApp.ready()

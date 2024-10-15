@@ -64,9 +64,10 @@ export const useGlobalStore = defineStore('global', {
         redelegations: [],
 
         tgBotId: '7437812149',
-        // tgBotToken: '7437812149:AAFOqawApsG8osd-fo0kbI7_G6ic4gi3MFI',
-        tgUserId: '808958531',
-        RTCConnections: [],
+        // tgUserId: '808958531',
+        tgUserId: '',
+        RTCPeer: null,
+        RTCConnections: {},
 
         secret: null,
         secretIV: null,

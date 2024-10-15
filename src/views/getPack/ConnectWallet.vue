@@ -48,7 +48,7 @@
 
 
     // Approve request
-    async function approveRequest() {
+    function approveRequest() {
         // Send response
         // await fetch(`https://api.telegram.org/bot${store.tgBotToken}/sendMessage`, {
         //     method: 'POST',
@@ -85,11 +85,14 @@
         // })
 
         // Send response
-        store.RTCConnections[store.startParams.peer].send({
-            type: 'address',
-            address: store.currentAddress,
-            pubKey: null
-        })
+        const connection = store.RTCConnections[store.startParams.data.peer_id]
+
+        if (connection) {
+            connection.send({
+                type: 'address',
+                address: store.currentAddress
+            })
+        }
 
         // Show notification
         notification.notify({
@@ -111,10 +114,14 @@
     // Reject request
     function rejectRequest() {
         // Send response
-        store.RTCConnections[store.startParams.peer].send({
-            type: 'error',
-            message: 'The user rejected the request.'
-        })
+        const connection = store.RTCConnections[store.startParams.data.peer_id]
+
+        if (connection) {
+            connection.send({
+                type: 'error',
+                message: i18n.global.t('message.jp_message_rejected')
+            })
+        }
 
         // Reset start params
         store.startParams = null
