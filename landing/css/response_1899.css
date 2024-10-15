@@ -50,6 +50,12 @@
     }
 
 
+    .first_section .image
+    {
+        bottom: 0;
+    }
+
+
     .first_section .bg
     {
         top: 0;
