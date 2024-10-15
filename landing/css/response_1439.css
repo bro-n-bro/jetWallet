@@ -1,0 +1,103 @@
+@media print,
+(max-width: 1439px)
+{
+    /*-------------------
+        Global styles
+    -------------------*/
+    :root
+    {
+        --font_size: 18px;
+        --font_size_title: 44px;
+    }
+
+
+    .cont
+    {
+        padding: 0 48px;
+    }
+
+
+
+    /*------------
+        Header
+    ------------*/
+    header .cont
+    {
+        padding-right: 27px;
+        padding-left: 27px;
+    }
+
+
+
+    /*-------------------
+        First section
+    -------------------*/
+    .first_section .image
+    {
+        width: 560px;
+        height: 518px;
+    }
+
+
+    .first_section .image:before
+    {
+        top: 20px;
+        right: 0;
+        bottom: 0;
+
+        width: 500px;
+        height: 500px;
+    }
+
+
+
+    .first_section .bg
+    {
+        top: -80px;
+    }
+
+
+
+    /*------------
+        Chains
+    ------------*/
+    .chains
+    {
+        margin-bottom: 124px;
+    }
+
+
+
+    /*--------------
+        Features
+    --------------*/
+    .features
+    {
+        margin-bottom: 148px;
+    }
+
+
+    .features .row
+    {
+        margin-bottom: -24px;
+        margin-left: -24px;
+    }
+
+
+    .features .row > *
+    {
+        width: calc(25% - 24px);
+        margin-bottom: 24px;
+        margin-left: 24px;
+    }
+
+
+
+    /*------------
+        Footer
+    ------------*/
+    footer .title
+    {
+        font-size: 26px;
+    }
+}

@@ -1,0 +1,107 @@
+@media print,
+(max-width: 1899px)
+{
+    /*-------------------
+        Global styles
+    -------------------*/
+    :root
+    {
+        --font_size: 18px;
+        --font_size_title: 48px;
+    }
+
+
+    .cont
+    {
+        padding: 0 68px;
+    }
+
+
+
+    /*------------
+        Header
+    ------------*/
+    header .data
+    {
+        padding: 15px 0;
+    }
+
+
+    header .cont
+    {
+        padding-right: 49px;
+        padding-left: 49px;
+    }
+
+
+    header .anchors
+    {
+        gap: 60px;
+    }
+
+
+
+    /*-------------------
+        First section
+    -------------------*/
+    .first_section
+    {
+        margin: -98px 0 -72px;
+    }
+
+
+    .first_section .bg
+    {
+        top: 0;
+    }
+
+
+    .first_section .cont
+    {
+        padding-top: 158px;
+        padding-bottom: 132px;
+    }
+
+
+    .first_section .title
+    {
+        line-height: 100%;
+    }
+
+
+
+    /*------------
+        Chains
+    ------------*/
+    .chains
+    {
+        margin-bottom: 140px;
+        padding: 16px 0;
+    }
+
+
+
+    /*--------------
+        Features
+    --------------*/
+    .features
+    {
+        margin-bottom: 160px;
+    }
+
+
+    .features .item .name
+    {
+        font-size: 26px;
+    }
+
+
+
+    /*------------
+        Footer
+    ------------*/
+    footer .title
+    {
+        font-size: 28px;
+    }
+}

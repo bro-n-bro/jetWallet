@@ -1,0 +1,132 @@
+@media print,
+(max-width: 1023px)
+{
+    /*-------------------
+        Global styles
+    -------------------*/
+    :root
+    {
+        --font_size: 16px;
+        --font_size_title: 40px;
+    }
+
+
+
+    /*------------
+        Header
+    ------------*/
+    header .anchors
+    {
+        gap: 30px;
+    }
+
+
+    header .link a
+    {
+        padding: 11px 19px;
+    }
+
+
+    header .link svg
+    {
+        width: 14px;
+        height: 14px;
+    }
+
+
+
+    /*----------------
+        Block head
+    ----------------*/
+    .block_head
+    {
+        margin-bottom: 40px;
+    }
+
+
+
+    /*-------------------
+        First section
+    -------------------*/
+    .first_section .data
+    {
+        width: 58%;
+    }
+
+
+    .first_section .title br
+    {
+        display: none;
+    }
+
+
+    .first_section .image
+    {
+        right: -48px;
+
+        width: 480px;
+        height: 444px;
+    }
+
+
+    .first_section .image:before
+    {
+        width: 420px;
+        height: 420px;
+    }
+
+
+    .first_section .cont
+    {
+        height: auto;
+    }
+
+
+    .first_section .bg
+    {
+        width: 1040px;
+    }
+
+
+
+    /*--------------
+        Features
+    --------------*/
+    .features .row > *
+    {
+        width: calc(50% - 24px);
+    }
+
+
+    .features .item
+    {
+        padding: 31px 23px 23px;
+    }
+
+
+
+    /*--------------
+        Features
+    --------------*/
+    .our_mission .swiper-slide br
+    {
+        display: none;
+    }
+
+
+
+    /*------------
+        Footer
+    ------------*/
+    footer .title
+    {
+        font-size: 22px;
+    }
+
+
+    footer .socials svg
+    {
+        width: 30px;
+        height: 31px;
+    }
+}

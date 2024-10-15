@@ -1,0 +1,136 @@
+@media print,
+(max-width: 1279px)
+{
+    /*-------------------
+        Global styles
+    -------------------*/
+    :root
+    {
+        --font_size: 17px;
+        --font_size_title: 40px;
+    }
+
+
+    html.custom_scroll ::-webkit-scrollbar
+    {
+        width: 5px;
+        height: 5px;
+    }
+
+
+    .cont
+    {
+        padding: 0 24px;
+    }
+
+
+
+    /*------------
+        Header
+    ------------*/
+    header .cont
+    {
+        padding-right: 23px;
+        padding-left: 23px;
+    }
+
+
+    header .anchors
+    {
+        gap: 48px;
+    }
+
+
+    header .link a
+    {
+        padding: 11px 23px;
+    }
+
+
+
+    /*-------------------
+        First section
+    -------------------*/
+    .first_section .image
+    {
+        width: 540px;
+        height: 500px;
+    }
+
+
+    .first_section .image:before
+    {
+        width: 480px;
+        height: 480px;
+    }
+
+
+    .first_section .bg
+    {
+        top: 0;
+        left: 50%;
+
+        width: 1150px;
+
+        transform: translateX(-50%);
+    }
+
+
+
+    /*------------
+        Chains
+    ------------*/
+    .chains
+    {
+        font-size: 16px;
+
+        margin-bottom: 120px;
+    }
+
+
+    .chains .chain
+    {
+        gap: 12px;
+    }
+
+
+
+    /*--------------
+        Features
+    --------------*/
+    .features
+    {
+        margin-bottom: 120px;
+    }
+
+
+
+    .features .item
+    {
+        padding: 31px 15px 23px;
+    }
+
+
+    .features .item .thumb
+    {
+        width: 140px;
+        height: 140px;
+        padding: 24px;
+    }
+
+
+    .features .item .name
+    {
+        font-size: 22px;
+    }
+
+
+
+    /*------------
+        Footer
+    ------------*/
+    footer .title
+    {
+        font-size: 24px;
+    }
+}

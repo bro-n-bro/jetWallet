@@ -1,0 +1,141 @@
+@media print,
+(max-width: 767px)
+{
+    /*-------------------
+        Global styles
+    -------------------*/
+    :root
+    {
+        --font_size: 16px;
+        --font_size_title: 36px;
+    }
+
+
+
+    /*------------
+        Header
+    ------------*/
+    header
+    {
+        padding: 10px;
+    }
+
+
+    header .anchors
+    {
+        display: none;
+    }
+
+
+
+    /*-------------------
+        First section
+    -------------------*/
+    .first_section
+    {
+        margin-bottom: 0;
+    }
+
+
+    .first_section .image
+    {
+        right: -40px;
+        bottom: -40px;
+
+        width: 400px;
+        height: 370px;
+    }
+
+
+    .first_section .image:before
+    {
+        width: 320px;
+        height: 320px;
+    }
+
+
+    .first_section .cont
+    {
+        min-height: 0;
+        padding-bottom: 200px;
+    }
+
+
+    .first_section .data
+    {
+        width: 100%;
+    }
+
+
+
+    /*------------
+        Chains
+    ------------*/
+    .chains
+    {
+        font-size: 15px;
+
+        margin-bottom: 100px;
+    }
+
+
+    .chains .chain .logo
+    {
+        width: 36px;
+        height: 36px;
+    }
+
+
+
+    /*--------------
+        Features
+    --------------*/
+    .features
+    {
+        margin-bottom: 100px;
+    }
+
+
+    .features .row
+    {
+        margin-left: 0;
+    }
+
+
+    .features .row > *
+    {
+        width: 100%;
+        margin-left: 0;
+    }
+
+
+    .features .item
+    {
+        padding: 31px 23px 23px;
+
+        text-align: center;
+    }
+
+
+
+    /*------------
+        Footer
+    ------------*/
+    footer .title
+    {
+        font-size: 20px;
+
+        width: 100%;
+        margin-bottom: 16px;
+
+        text-align: center;
+    }
+
+
+    footer .socials
+    {
+        justify-content: center;
+
+        width: 100%;
+    }
+}

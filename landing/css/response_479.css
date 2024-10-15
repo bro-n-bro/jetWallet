@@ -1,0 +1,98 @@
+@media (max-width: 479px)
+{
+    /*-------------------
+        Global styles
+    -------------------*/
+
+
+
+    /*------------
+        Header
+    ------------*/
+    header .logo img
+    {
+        width: auto;
+        height: 40px;
+    }
+
+
+    header .link a
+    {
+        padding: 10px 16px;
+
+        gap: 12px;
+    }
+
+
+    header .link svg
+    {
+        width: 10px;
+        height: 10px;
+    }
+
+
+
+    /*-------------------
+        First section
+    -------------------*/
+    .first_section .image
+    {
+        right: -60px;
+        bottom: -20px;
+
+        width: 360px;
+        height: 333px;
+    }
+
+
+    .first_section .image:before
+    {
+        width: 280px;
+        height: 280px;
+    }
+
+
+    .first_section .bg
+    {
+        width: 1110px;
+    }
+
+
+
+    /*------------
+        Chains
+    ------------*/
+    .chains
+    {
+        margin-bottom: 80px;
+    }
+
+
+
+    /*--------------
+        Features
+    --------------*/
+    .features
+    {
+        margin-bottom: 80px;
+    }
+
+
+
+    /*------------
+        Footer
+    ------------*/
+    footer .title
+    {
+        font-size: 18px;
+
+        margin-bottom: 12px;
+    }
+
+
+    footer .socials svg
+    {
+        width: 28px;
+        height: 29px;
+    }
+}
