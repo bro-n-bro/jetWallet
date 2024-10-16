@@ -205,6 +205,8 @@ export default {
 
             // Jet Pack
             'jp_connection_title': 'Request for connection',
+            'jp_send_tx_title': 'Request for send transaction',
+
             'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
 
             'jp_message_rejected': 'The user rejected the request.',
@@ -224,6 +226,7 @@ export default {
             'notification_jp_chain_not_supported': 'Chain {chain_id} not supported.',
             'notification_jp_get_address_success': 'You have successfully submitted your address.',
             'notification_jp_get_address_reject': 'You have rejected the request to provide your address.',
+            'notification_jp_send_reject': 'You have rejected the request to send.',
 
 
             // Buttons

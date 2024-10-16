@@ -137,7 +137,16 @@ const routes = [
 	{
 		path: '/jet_pack/connect_wallet',
 		name: 'JetPackConnectWallet',
-		component: () => import('../views/getPack/ConnectWallet.vue'),
+		component: () => import('../views/jetPack/ConnectWallet.vue'),
+		meta: {
+			layout: accountLayout,
+			accessDenied: ['not_authorized']
+		}
+	},
+	{
+		path: '/jet_pack/send_tx',
+		name: 'JetPackSendTx',
+		component: () => import('../views/jetPack/SendTx.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized']

@@ -50,41 +50,6 @@
     // Approve request
     function approveRequest() {
         // Send response
-        // await fetch(`https://api.telegram.org/bot${store.tgBotToken}/sendMessage`, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         chat_id: store.tgChatId,
-        //         text: `Address: ${store.currentAddress}`
-        //     })
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     // Show notification
-        //     notification.notify({
-        //         group: 'default',
-        //         speed: 200,
-        //         duration: 1000,
-        //         title: i18n.global.t('message.notification_jp_get_address_success'),
-        //         type: 'default'
-        //     })
-        // })
-        // .catch(error => {
-        //     console.error(error)
-
-        //     // Show notification
-        //     notification.notify({
-        //         group: 'default',
-        //         speed: 200,
-        //         duration: 1000,
-        //         title: i18n.global.t('message.notification_error_title'),
-        //         type: 'error'
-        //     })
-        // })
-
-        // Send response
         const connection = store.RTCConnections[store.startParams.data.peer_id]
 
         if (connection) {

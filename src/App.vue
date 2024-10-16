@@ -100,6 +100,18 @@
         store.RTCPeer.on('connection', conn => {
             // Save connection
             store.RTCConnections[conn.peer] = conn
+
+            // Processing data receipt
+            conn.on('data', data => {
+                // Send Tx
+                if (data.method === 'sendTx') {
+                    // Save messages
+                    store.jetPackRequest = data
+
+                    // Redirect
+                    router.push('/jet_pack/send_tx')
+                }
+            })
         })
     })
 
