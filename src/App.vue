@@ -79,10 +79,59 @@
     onBeforeMount(() => {
         // Set page title
         title.value = i18n.global.t('message.page_title')
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            // Decode data
+            let decodedString = decodeURIComponent(Telegram.WebApp.initData)
+
+            // Get user params
+            let userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
+
+            // Set data
+            if (userParams) {
+                store.tgUserId = userParams.id
+            }
+        }
+
+        // Create peer
+        store.RTCPeer = new Peer(`jw-${store.tgBotId}-${store.tgUserId}`)
+
+        // New connection
+        store.RTCPeer.on('connection', conn => {
+            // Save connection
+            store.RTCConnections[conn.peer] = conn
+
+            // Processing data receipt
+            conn.on('data', data => {
+                // Send Tx
+                if (data.method === 'sendTx') {
+                    // Save messages
+                    store.jetPackRequest = data
+
+                    // Redirect
+                    router.push('/jet_pack/send_tx')
+                }
+            })
+        })
     })
 
 
     onMounted(async () => {
+        if (process.env.VUE_APP_IS_PRODUCTION === 'true') {
+            var _paq = window._paq = window._paq || [];
+			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+			_paq.push(['trackPageView']);
+			_paq.push(['enableLinkTracking']);
+			(function() {
+			var u="//metrics.jetwallet.app/";
+			_paq.push(['setTrackerUrl', u+'matomo.php']);
+			_paq.push(['setSiteId', '1']);
+			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+			g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+			})();
+        }
+
+
         if (window.Telegram && window.Telegram.WebApp) {
             // Initialize the mini-application
             await Telegram.WebApp.ready()

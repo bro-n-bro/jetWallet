@@ -1,4 +1,6 @@
 <template>
+    <div class="android_ace" :style="`height: ${topHeight}px;`" :class="{ show: !loading }"></div>
+
     <div class="android_animation" ref="container" :class="{ show: !loading }">
         <div class="top" ref="topBar" :style="`height: ${topHeight}px;`"></div>
 
@@ -28,6 +30,7 @@
         topBar = ref(null),
         container = ref(null),
         loading = ref(true),
+        isProcess = ref(false),
         topHeight = ref(0),
         bottomHeight = ref(0),
         availableAmount = calcAvailableAmount(),
@@ -47,23 +50,22 @@
 
 
     onMounted(() => {
-        if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
-            // Change count
-            count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
-
-            // Generate balls
-            for(let i = 0; i < count.value; i++) {
-                container.value.insertBefore(randomizedBall(), topBar.value)
-            }
-
-            // Show animation
-            setTimeout(() => loading.value = false, 750)
-        }
+        // Init animation
+        initAnim()
     })
 
 
     watch(computed(() => store.isUnstakingBalancesGot), () => {
-        if (store.isUnstakingBalancesGot && store.unstakingBalances.length) {
+        // Init animation
+        initAnim()
+    })
+
+
+    // Init animation
+    function initAnim() {
+        if (store.isUnstakingBalancesGot && store.unstakingBalances.length && !isProcess.value) {
+            isProcess.value = true
+
             // Change count
             count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
 
@@ -73,9 +75,12 @@
             }
 
             // Show animation
-            setTimeout(() => loading.value = false, 750)
+            setTimeout(() => {
+                loading.value = false
+                isProcess.value = false
+            }, 750)
         }
-    })
+    }
 
 
     function randomizedBall() {
@@ -101,10 +106,38 @@
 
 
 <style>
-    .android_animation
+    .android_ace
     {
         position: absolute;
         z-index: 1;
+        top: -4px;
+        left: 0;
+
+        display: block;
+
+        width: 100%;
+        min-height: 8px;
+
+        transition: transform .35s linear .1s;
+        transform: translate3d(0, -100%, 0);
+        pointer-events: none;
+
+        opacity: 0;
+        background: url(@/assets/bg_ace.png) 50%/cover no-repeat;
+    }
+
+    .android_ace.show
+    {
+        transform: translate3d(0, 0, 0);
+
+        opacity: .2;
+    }
+
+
+    .android_animation
+    {
+        position: absolute;
+        z-index: 2;
         top: -4px;
         left: -12%;
 
@@ -120,12 +153,6 @@
     }
 
 
-    .android_animation.show
-    {
-        opacity: .1;
-    }
-
-
     .android_animation .top,
     .android_animation .bottom
     {
@@ -136,6 +163,9 @@
         width: 100%;
         min-height: 14px;
 
+        transition: transform .35s linear .1s;
+        transform: translate3d(0, -100%, 0);
+
         background: #fff;
     }
 
@@ -145,7 +175,9 @@
         top: auto;
         bottom: 0;
 
-        background: url(@/assets/bg_wave.svg) 0 100%/cover no-repeat;
+        transform: translate3d(0, 100%, 0);
+
+        background: url(@/assets/bg_wave.svg) 0 0/cover no-repeat;
     }
 
 
@@ -193,5 +225,18 @@
         height: 1px;
 
         white-space: nowrap;
+    }
+
+
+    .android_animation.show
+    {
+        opacity: .1;
+    }
+
+
+    .android_animation.show .top,
+    .android_animation.show .bottom
+    {
+        transform: translate3d(0, 0, 0);
     }
 </style>

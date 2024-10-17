@@ -46,7 +46,7 @@
             </router-link>
 
             <!-- Stake button -->
-            <button class="btn" @click.prevent="emitter.emit('swiper_slideTo', { index: 1 })">
+            <button class="btn" @click.prevent="emitter.emit('swiper_slideTo', { index: 1 })" :class="{ disabled: !store.networks[store.currentNetwork]?.is_staking_available }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_stake"></use></svg>
                 </div>

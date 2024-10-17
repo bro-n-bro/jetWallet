@@ -42,17 +42,26 @@
 
 
 <script setup>
-    import { ref } from 'vue'
+    import { ref, onUnmounted } from 'vue'
 
 
     const animationOffset = ref(0),
         imageRef = ref(null),
         imageBgRef = ref(null),
-        rocket = ref(null)
+        rocket = ref(null),
+        rocketTimeout = ref(null),
+        imageTimeout = ref(null)
+
+
+    onUnmounted(() => {
+        // Clear timeouts
+        clearTimeout(imageTimeout.value)
+        clearTimeout(rocketTimeout.value)
+    })
 
 
     function onImageLoad() {
-        setTimeout(() => {
+        imageTimeout.value = setTimeout(() => {
             // Get image height
             let imageHeight = imageRef.value.getBoundingClientRect().height
 
@@ -64,7 +73,7 @@
         }, 500)
 
         // Rocket fly away
-        setTimeout(() => rocket.value.classList.add('fly_away'), 3200)
+        rocketTimeout.value = setTimeout(() => rocket.value.classList.add('fly_away'), 3200)
     }
 </script>
 

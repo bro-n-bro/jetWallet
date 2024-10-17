@@ -720,7 +720,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 {
     font-family: var(--font_family);
     font-size: 14px;
-    line-height: 26px;
+    line-height: normal;
 
     display: block;
 
@@ -960,12 +960,6 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 .mnemonic .input
 {
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-
     padding-left: 27px;
 }
 

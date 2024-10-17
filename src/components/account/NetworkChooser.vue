@@ -1,6 +1,6 @@
 <template>
     <!-- Networks chooser -->
-    <div class="choose_network" ref="target" :class="{ disabled: !store.forcedUnlock && (!store.isInitialized || !store.isBalancesGot || !store.isStakedBalancesGot || !store.isRewardsGot) }">
+    <div class="choose_network" ref="target" :class="{ disabled: !store.forcedUnlock && (!store.isInitialized || !store.isBalancesGot || (store.networks[store.currentNetwork]?.is_staking_available && !store.isStakedBalancesGot) || (store.networks[store.currentNetwork]?.is_staking_available && !store.isRewardsGot)) }">
         <!-- Current chain -->
         <div class="btn" @click.prevent="showDropdown = !showDropdown" :class="{ active: showDropdown }">
             <!-- Current chain logo -->
@@ -23,7 +23,7 @@
             <div class="scroll">
                 <!-- Chain -->
                 <div v-for="(network, index) in store.networks" :key="index">
-                    <div class="network" :class="{ active: store.currentNetwork == network.alias }" @click.prevent="changeNetwork(network.alias)">
+                    <div class="network" :class="{ active: store.currentNetwork == network.alias }" @click.prevent="changeNetwork(network.alias)" v-if="store.currentNetwork != network.alias">
                         <!-- Chain logo -->
                         <div class="logo">
                             <img :src="getNetworkLogo(network.chain_id)" alt="">
@@ -180,10 +180,14 @@
 
     .choose_network .scroll
     {
+        display: flex;
         overflow: auto;
+        flex-direction: column;
 
         max-height: 345px;
+        padding-top: 4px;
 
+        gap: 8px;
         overscroll-behavior-y: contain;
     }
 
@@ -192,12 +196,6 @@
     {
         width: 4px;
         height: 4px;
-    }
-
-
-    .choose_network .scroll > *
-    {
-        margin-top: 12px;
     }
 
 
@@ -256,7 +254,7 @@
     }
 
 
-    .choose_network .network.active
+    .choose_network .scroll > *:empty
     {
         display: none;
     }

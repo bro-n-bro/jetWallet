@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { DBaddData, DBgetData, DBclearData, DBgetMultipleData } from '@/utils/db'
+import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
 import i18n from '@/locale'
 
@@ -9,7 +9,11 @@ import i18n from '@/locale'
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
-import localbostrom from '@/store/networks/localbostrom'
+import neutron from '@/store/networks/neutron'
+import omniflix from '@/store/networks/omniflix'
+import dymension from '@/store/networks/dymension'
+import stride from '@/store/networks/stride'
+// import localbostrom from '@/store/networks/localbostrom'
 
 
 // Networks additional options
@@ -30,6 +34,7 @@ const notification = useNotification()
 
 export const useGlobalStore = defineStore('global', {
     state: () => ({
+        isInitializing: false,
         isInitialized: false,
         isBalancesGot: false,
         isStakedBalancesGot: false,
@@ -38,6 +43,7 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
         isAnyModalOpen: false,
 
+        startParams: null,
         forcedUnlock: false,
         authErrorLimit: 4,
 
@@ -56,6 +62,13 @@ export const useGlobalStore = defineStore('global', {
         rewardsBalances: [],
         unstakingBalances: [],
         redelegations: [],
+
+        tgBotId: '7437812149',
+        // tgUserId: '808958531',
+        tgUserId: '',
+        jetPackRequest: null,
+        RTCPeer: null,
+        RTCConnections: {},
 
         secret: null,
         secretIV: null,
@@ -76,7 +89,11 @@ export const useGlobalStore = defineStore('global', {
         networks: {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
             bostrom: Object.assign(bostrom, networksAdditionalOptions),
-            localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
+            neutron: Object.assign(neutron, networksAdditionalOptions),
+            omniflix: Object.assign(omniflix, networksAdditionalOptions),
+            dymension: Object.assign(dymension, networksAdditionalOptions),
+            stride: Object.assign(stride, networksAdditionalOptions),
+            // localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
         },
 
         formatableTokens: [
@@ -98,6 +115,7 @@ export const useGlobalStore = defineStore('global', {
         // Init APP
         async initApp() {
             // Init status
+            this.isInitializing = true
             this.isInitialized = false
 
             // Forced unlock
@@ -115,9 +133,54 @@ export const useGlobalStore = defineStore('global', {
             this.aesKey = DBData.aesKey
             this.privateKey = DBData.privateKey
             this.currentCurrency = DBData.currentCurrency
-            this.currentNetwork = DBData.currentNetwork
             this.TxFee.currentLevel = DBData.TxFeeCurrentLevel || 'average'
             this.TxFee.isRemember = DBData.TxFeeIsRemember || false
+
+            // Set current network
+            if (this.startParams) {
+                if (!this.startParams.data || !this.startParams.data?.chain_id) {
+                    // Show notification - Param chain_id not passed
+                    notification.notify({
+                        group: 'default',
+                        speed: 200,
+                        duration: 1000,
+                        title: i18n.global.t('message.notification_jp_chain_id_not_passed'),
+                        type: 'error'
+                    })
+
+                    // Reset start params
+                    this.startParams = null
+
+                    // Set data from DB
+                    this.currentNetwork = DBData.currentNetwork
+                } else {
+                    // Checking for network availability
+                    let chain = Object.values(this.networks).find(network => network.chain_id === this.startParams.data.chain_id)
+
+                    if (chain) {
+                        // Set data
+                        this.currentNetwork = chain.alias
+                    } else {
+                        // Show notification - Network not supported
+                        notification.notify({
+                            group: 'default',
+                            speed: 200,
+                            duration: 1000,
+                            title: i18n.global.t('message.notification_jp_chain_not_supported'),
+                            type: 'error'
+                        })
+
+                        // Reset start params
+                        this.startParams = null
+
+                        // Set data from DB
+                        this.currentNetwork = DBData.currentNetwork
+                    }
+                }
+            } else {
+                // Set data from DB
+                this.currentNetwork = DBData.currentNetwork
+            }
 
             try {
                 // Create singer
@@ -157,10 +220,18 @@ export const useGlobalStore = defineStore('global', {
                 this.networks[this.currentNetwork].isUnstakingCancelSupport = await this.isUnstakingCancelSupport()
 
                 // Wait balances
-                Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
-                    // Init status
-                    this.isInitialized = true
-                })
+                if (this.networks[this.currentNetwork].is_staking_available) {
+                    Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
+                        // Init status
+                        this.isInitialized = true
+                    })
+                } else {
+                    Promise.all([await this.getBalances()]).then(() => {
+                        // Init status
+                        this.isInitializing = false
+                        this.isInitialized = true
+                    })
+                }
             } catch(error) {
                 console.log(error)
 
