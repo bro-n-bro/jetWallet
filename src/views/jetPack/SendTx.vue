@@ -11,9 +11,9 @@
             <div class="page_data_wrap">
                 <div class="page_data">
                     <!-- JetPack - Send Tx messages -->
-                    <pre>
+                    <code>
                         {{ store.jetPackRequest?.data?.msg }}
-                    </pre>
+                    </code>
 
 
                     <!-- JetPack - Send Tx page memo -->
