@@ -62,8 +62,8 @@ export const useGlobalStore = defineStore('global', {
         unstakingBalances: [],
         redelegations: [],
 
-        tgBotId: '7437812149',
-        // tgUserId: '808958531',
+        tgBotId: 7437812149,
+        // tgUserId: 808958531,
         tgUserId: '',
         jetPackRequest: null,
 
