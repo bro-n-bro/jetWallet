@@ -985,7 +985,16 @@ export const useGlobalStore = defineStore('global', {
 
         // Get age confirmed
         async getAgeConfirmed() {
-            return await DBgetData('ageConfirmed')
+            let result = false
+
+            try {
+                // Get from DB
+                result = await DBgetData('ageConfirmed')
+            } catch (error) {
+                console.log(error)
+            }
+
+            return result
         },
 
 
