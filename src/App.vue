@@ -1,8 +1,4 @@
 <template>
-    {{ store.tgBotId }}
-    {{ store.tgUserId }}
-
-
     <!-- Main component -->
     <component :is="layout" />
 
