@@ -160,17 +160,11 @@
 
             Telegram.WebApp.showPopup({
                 title: 'Are you 18 years old?'
-            }, result => {
-                alert(result)
             })
 
-            Telegram.WebApp.showAlert('Are you 18 years old?', result => {
-                alert(result)
-            })
+            Telegram.WebApp.showAlert('Are you 18 years old?')
 
-            Telegram.WebApp.showConfirm({ text: 'Are you 18 years old?' }, result => {
-                alert(result)
-            })
+            Telegram.WebApp.showConfirm('Are you 18 years old?')
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
