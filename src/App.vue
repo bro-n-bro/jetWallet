@@ -166,6 +166,9 @@
                     if (result) {
                         // Set age confirmed
                         await store.setAgeConfirmed()
+                    } else {
+                        // Close App
+                        Telegram.WebApp.close()
                     }
                 })
             }
