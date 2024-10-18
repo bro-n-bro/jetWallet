@@ -985,11 +985,11 @@ export const useGlobalStore = defineStore('global', {
         async getAgeConfirmed() {
             try {
                 // Get from DB
-                result = await this.getMultipleData(['ageConfirmed'])
+                let result = await this.getMultipleData(['ageConfirmed'])
 
-                if (result) {
+                if (result.ageConfirmed) {
                     // Set result
-                    this.isAgeConfirmed = result
+                    this.isAgeConfirmed = result.ageConfirmed
                 }
             } catch (error) {
                 console.log(error)
