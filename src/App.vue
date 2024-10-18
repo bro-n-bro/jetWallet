@@ -159,9 +159,9 @@
             Telegram.WebApp.disableVerticalSwipes()
 
             // Age modal
-            Telegram.WebApp.showConfirm(i18n.global.t('message.age_modal_text'), result => {
-                alert(result)
-            })
+            if (!await store.getAgeConfirmed()) {
+                Telegram.WebApp.showConfirm(i18n.global.t('message.age_modal_text'), result => store.setAgeConfirmed(result))
+            }
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()

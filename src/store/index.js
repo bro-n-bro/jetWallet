@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
+import { DBaddData, DBgetData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
 import i18n from '@/locale'
 
@@ -42,6 +42,7 @@ export const useGlobalStore = defineStore('global', {
         isUnstakingBalancesGot: false,
         isAuthorized: false,
         isAnyModalOpen: false,
+        iaAgeConfirm: false,
 
         forcedUnlock: false,
         authErrorLimit: 4,
@@ -973,6 +974,18 @@ export const useGlobalStore = defineStore('global', {
 
                 return false
             }
+        },
+
+
+        // Set age confirmed
+        async setAgeConfirmed(result) {
+            await DBaddData('ageConfirmed', result)
+        },
+
+
+        // Get age confirmed
+        async getAgeConfirmed() {
+            return await DBgetData('ageConfirmed')
         },
 
 
