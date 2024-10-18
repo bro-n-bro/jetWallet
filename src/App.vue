@@ -91,10 +91,6 @@
             if (userParams) {
                 store.tgUserId = userParams.id
             }
-
-            Telegram.WebApp.showConfirm('Are you 18 years old?', result => {
-                alert(result)
-            })
         }
 
         // Create peer
@@ -161,6 +157,10 @@
 
             // Disable vertical swipes
             Telegram.WebApp.disableVerticalSwipes()
+
+            Telegram.WebApp.showConfirm('Are you 18 years old?', result => {
+                alert(result)
+            })
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
