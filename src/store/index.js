@@ -976,8 +976,8 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Set age confirmed
-        async setAgeConfirmed(result) {
-            await DBaddData('wallet', [['ageConfirmed', result]])
+        async setAgeConfirmed() {
+            await DBaddData('wallet', [['ageConfirmed', true]])
         },
 
 

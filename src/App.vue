@@ -162,7 +162,12 @@
             await store.getAgeConfirmed()
 
             if (!store.isAgeConfirmed) {
-                Telegram.WebApp.showConfirm(i18n.global.t('message.age_modal_text'), result => store.setAgeConfirmed(result))
+                Telegram.WebApp.showConfirm(i18n.global.t('message.age_modal_text'), async result => {
+                    if (result) {
+                        // Set age confirmed
+                        await store.setAgeConfirmed()
+                    }
+                })
             }
 
             // Init biometric
