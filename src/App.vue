@@ -91,6 +91,10 @@
             if (userParams) {
                 store.tgUserId = userParams.id
             }
+
+            Telegram.WebApp.showConfirm('Are you 18 years old?', result => {
+                alert(result)
+            })
         }
 
         // Create peer
