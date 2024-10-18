@@ -8,12 +8,12 @@ import i18n from '@/locale'
 
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
-import bostrom from '@/store/networks/bostrom'
+// import bostrom from '@/store/networks/bostrom'
 import neutron from '@/store/networks/neutron'
 import omniflix from '@/store/networks/omniflix'
 import dymension from '@/store/networks/dymension'
 import stride from '@/store/networks/stride'
-// import localbostrom from '@/store/networks/localbostrom'
+import localbostrom from '@/store/networks/localbostrom'
 
 
 // Networks additional options
@@ -43,7 +43,6 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
         isAnyModalOpen: false,
 
-        startParams: null,
         forcedUnlock: false,
         authErrorLimit: 4,
 
@@ -67,6 +66,7 @@ export const useGlobalStore = defineStore('global', {
         // tgUserId: '808958531',
         tgUserId: '',
         jetPackRequest: null,
+
         RTCPeer: null,
         RTCConnections: {},
 
@@ -88,12 +88,12 @@ export const useGlobalStore = defineStore('global', {
 
         networks: {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
-            bostrom: Object.assign(bostrom, networksAdditionalOptions),
+            // bostrom: Object.assign(bostrom, networksAdditionalOptions),
             neutron: Object.assign(neutron, networksAdditionalOptions),
             omniflix: Object.assign(omniflix, networksAdditionalOptions),
             dymension: Object.assign(dymension, networksAdditionalOptions),
             stride: Object.assign(stride, networksAdditionalOptions),
-            // localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
+            localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
         },
 
         formatableTokens: [
@@ -790,6 +790,18 @@ export const useGlobalStore = defineStore('global', {
                             explorer_link: getExplorerLink(this.currentNetwork)
                         }
                     })
+
+                    // Send response
+                    const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                    if (connection) {
+                        connection.send({
+                            type: 'tx',
+                            requestId: this.jetPackRequest.data.request_id,
+                            status: 'success',
+                            hash: this.networks[this.currentNetwork].currentTxHash
+                        })
+                    }
                 } else {
                     // Get error code
                     let errorText = ''
@@ -808,10 +820,26 @@ export const useGlobalStore = defineStore('global', {
                         text: errorText,
                         type: 'error'
                     })
+
+                    // Send response
+                    const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                    if (connection) {
+                        connection.send({
+                            type: 'error',
+                            requestId: this.jetPackRequest.data.request_id,
+                            status: 'error',
+                            hash: this.networks[this.currentNetwork].currentTxHash,
+                            message: errorText
+                        })
+                    }
                 }
 
                 // Clear tx hash
                 this.networks[this.currentNetwork].currentTxHash = null
+
+                // Reset jetPack request
+                this.jetPackRequest = null
 
                 // Update all balances
                 this.updateAllBalances()

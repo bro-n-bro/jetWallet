@@ -50,11 +50,12 @@
     // Approve request
     function approveRequest() {
         // Send response
-        const connection = store.RTCConnections[store.startParams.data.peer_id]
+        const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
 
         if (connection) {
             connection.send({
                 type: 'address',
+                requestId: store.jetPackRequest.data.request_id,
                 address: store.currentAddress
             })
         }
@@ -68,8 +69,8 @@
             type: 'default'
         })
 
-        // Reset start params
-        store.startParams = null
+        // Reset jetPack request
+        store.jetPackRequest = null
 
         // Redirect
         router.push('/account')
@@ -79,17 +80,18 @@
     // Reject request
     function rejectRequest() {
         // Send response
-        const connection = store.RTCConnections[store.startParams.data.peer_id]
+        const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
 
         if (connection) {
             connection.send({
                 type: 'error',
+                requestId: store.jetPackRequest.data.request_id,
                 message: i18n.global.t('message.jp_message_rejected')
             })
         }
 
-        // Reset start params
-        store.startParams = null
+        // Reset jetPack request
+        store.jetPackRequest = null
 
         // Show notification
         notification.notify({

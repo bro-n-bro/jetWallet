@@ -1,4 +1,8 @@
 <template>
+    {{ store.tgBotId }}
+    {{ store.tgUserId }}
+
+
     <!-- Main component -->
     <component :is="layout" />
 
@@ -104,6 +108,15 @@
             // Processing data receipt
             conn.on('data', data => {
                 // Send Tx
+                if (data.method === 'connectWallet') {
+                    // Save messages
+                    store.jetPackRequest = data
+
+                    // Redirect
+                    router.push('/jet_pack/connect_wallet')
+                }
+
+                // Send Tx
                 if (data.method === 'sendTx') {
                     // Save messages
                     store.jetPackRequest = data
@@ -117,6 +130,7 @@
 
 
     onMounted(async () => {
+        // Analytics
         if (process.env.VUE_APP_IS_PRODUCTION === 'true') {
             var _paq = window._paq = window._paq || [];
 			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */

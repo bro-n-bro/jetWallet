@@ -205,7 +205,7 @@ export default {
 
             // Jet Pack
             'jp_connection_title': 'Request for connection',
-            'jp_send_tx_title': 'Request for send transaction',
+            'jp_send_tx_title': 'Request for transaction',
 
             'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
 

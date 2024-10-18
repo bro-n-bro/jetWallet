@@ -165,9 +165,9 @@ router.beforeResolve(async (to, from, next) => {
 	let store = useGlobalStore(),
 		isRegister = await DBgetData('wallet', 'isRegister')
 
-	// Parse start params
+	// Parse jetPack request
 	if (to.query.tgWebAppStartParam) {
-		store.startParams = decodeFromBase64(to.query.tgWebAppStartParam)
+		store.jetPackRequest = decodeFromBase64(to.query.tgWebAppStartParam)
 	}
 
 	// Check access

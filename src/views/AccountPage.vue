@@ -150,9 +150,10 @@
 
     // Update qr code
     watch(computed(() => store.currentAddress), () => {
-        if (store.startParams) {
+        if (store.jetPackRequest) {
             // Get address
-            if (store.startParams.method === 'connectWallet') {
+            if (store.jetPackRequest.method === 'connectWallet') {
+                // Redirect
                 router.push('/jet_pack/connect_wallet')
             }
         }
@@ -274,7 +275,7 @@
     .top_block
     {
         position: fixed;
-        z-index: 3;
+        z-index: 10;
         top: 0;
         left: 0;
 
