@@ -158,7 +158,17 @@
             // Disable vertical swipes
             Telegram.WebApp.disableVerticalSwipes()
 
-            Telegram.WebApp.showConfirm('Are you 18 years old?', result => {
+            Telegram.WebApp.showPopup({
+                title: 'Are you 18 years old?'
+            }, result => {
+                alert(result)
+            })
+
+            Telegram.WebApp.showAlert('Are you 18 years old?', result => {
+                alert(result)
+            })
+
+            Telegram.WebApp.showConfirm({ text: 'Are you 18 years old?' }, result => {
                 alert(result)
             })
 
