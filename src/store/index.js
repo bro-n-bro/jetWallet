@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { DBaddData, DBgetData, DBclearData, DBgetMultipleData } from '@/utils/db'
+import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
 import i18n from '@/locale'
 
@@ -566,9 +566,7 @@ export const useGlobalStore = defineStore('global', {
         // Set current network
         setCurrentNetwork(chain) {
             // Save in DB
-            DBaddData('wallet', [
-                ['currentNetwork', chain]
-            ])
+            DBaddData('wallet', [['currentNetwork', chain]])
 
             // Update current network
             this.currentNetwork = chain
@@ -979,7 +977,7 @@ export const useGlobalStore = defineStore('global', {
 
         // Set age confirmed
         async setAgeConfirmed(result) {
-            await DBaddData('ageConfirmed', result)
+            await DBaddData('wallet', [['ageConfirmed', result]])
         },
 
 
@@ -987,7 +985,7 @@ export const useGlobalStore = defineStore('global', {
         async getAgeConfirmed() {
             try {
                 // Get from DB
-                this.iaAgeConfirmed = await DBgetData('ageConfirmed')
+                this.iaAgeConfirmed = await this.getMultipleData(['ageConfirmed'])
             } catch (error) {
                 console.log(error)
             }
