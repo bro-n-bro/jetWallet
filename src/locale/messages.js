@@ -12,6 +12,10 @@ export default {
             'import_wallet_title': 'Import Existing Wallet',
 
 
+            // Age modal
+            'age_modal_text': 'Are you 18 years old?',
+
+
             // Create page
             'create_wallet_agree_label1': 'Do not share your recovery phrase with ANYONE.',
             'create_wallet_agree_label2': 'Back up the phrase safely.',
