@@ -42,7 +42,7 @@ export const useGlobalStore = defineStore('global', {
         isUnstakingBalancesGot: false,
         isAuthorized: false,
         isAnyModalOpen: false,
-        iaAgeConfirmed: false,
+        isAgeConfirmed: false,
 
         forcedUnlock: false,
         authErrorLimit: 4,
@@ -985,13 +985,10 @@ export const useGlobalStore = defineStore('global', {
         async getAgeConfirmed() {
             try {
                 // Get from DB
-                this.iaAgeConfirmed = await this.getMultipleData(['ageConfirmed'])
+                this.isAgeConfirmed = await this.getMultipleData(['ageConfirmed'])
             } catch (error) {
                 console.log(error)
             }
-
-            // Return result
-            return this.iaAgeConfirmed
         },
 
 
