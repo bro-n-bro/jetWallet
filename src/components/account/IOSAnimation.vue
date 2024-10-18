@@ -1,4 +1,6 @@
 <template>
+    <div class="IOS_ace" :style="`height: ${topHeight}px;`" :class="{ show: !loading }"></div>
+
     <div class="IOS_animation" :class="{ show: !loading }">
         <div class="top" :style="`height: ${topHeight}px;`"></div>
 
@@ -187,6 +189,33 @@
 
 
 <style>
+    .IOS_ace
+    {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+
+        display: block;
+
+        width: 100%;
+
+        transition: transform .35s linear .1s;
+        transform: translate3d(0, -100%, 0);
+        pointer-events: none;
+
+        opacity: 0;
+        background: url(@/assets/bg_ace.png) 50%/cover no-repeat;
+    }
+
+    .IOS_ace.show
+    {
+        transform: translate3d(0, 0, 0);
+
+        opacity: .2;
+    }
+
+
     .IOS_animation
     {
         position: absolute;
@@ -204,20 +233,18 @@
     }
 
 
-    .IOS_animation.show
-    {
-        opacity: .1;
-    }
-
-
     .IOS_animation .top,
     .IOS_animation .bottom
     {
         position: absolute;
+        z-index: 2;
         top: 0;
         left: 0;
 
         width: 100%;
+
+        transition: transform .35s linear .1s;
+        transform: translate3d(0, -100%, 0);
 
         background: #fff;
     }
@@ -227,5 +254,36 @@
     {
         top: auto;
         bottom: 0;
+
+        transform: translate3d(0, 100%, 0);
+
+        background: url(@/assets/bg_wave.svg) 0 0/cover no-repeat;
+    }
+
+
+    /* .IOS_animation canvas
+    {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+
+        display: block;
+
+        width: 100%;
+        height: 100%;
+    } */
+
+
+    .IOS_animation.show
+    {
+        opacity: .1;
+    }
+
+
+    .IOS_animation.show .top,
+    .IOS_animation.show .bottom
+    {
+        transform: translate3d(0, 0, 0);
     }
 </style>

@@ -336,7 +336,9 @@ export const getNetworkLogo = chainId => {
         let chain = chains.find(el => el.chain_id === chainId)
 
         if (chain) {
-            logos = chain.images[chain.images.length - 1].svg || chain.images[chain.images.length - 1].png
+            chain.logo_URIs
+                ? logos = chain.logo_URIs.svg || chain.logo_URIs.png
+                : logos = chain.images[chain.images.length - 1].svg || chain.images[chain.images.length - 1].png
         }
     }
 
@@ -418,4 +420,14 @@ export const dateCalc = date => {
         userTimeZone = new Date().getTimezoneOffset() / 60 * -1
 
     return new Date(currentDate.setHours(currentDate.getHours() + userTimeZone))
+}
+
+
+// Decode from base64
+export const decodeFromBase64 = base64String => {
+    // Decode the Base64 string back to a JSON string
+    const jsonString = atob(base64String)
+
+    // Convert the JSON string back to an object
+    return JSON.parse(jsonString)
 }

@@ -570,168 +570,164 @@
 
 
 <style scoped>
-.send
-{
-    background: none;
-}
+    .send
+    {
+        background: #170232;
+    }
 
 
-.token_wrap
-{
-    display: block;
+    .token_wrap
+    {
+        display: block;
 
-    margin-bottom: 20px;
-    padding: 1px;
+        margin-bottom: 20px;
+        padding: 1px;
 
-    text-decoration: none;
+        text-decoration: none;
 
-    color: currentColor;
-    border-radius: 12px;
-    background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
-}
-
-
-.token
-{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-
-    padding-right: 9px;
-
-    border-radius: 11px;
-    background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
-}
+        color: currentColor;
+        border-radius: 12px;
+        background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
+    }
 
 
-.token .logo
-{
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
+    .token
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
 
-    width: 55px;
-    height: 55px;
-    margin-right: 8px;
-    padding: 8px;
+        padding-right: 9px;
 
-    border-radius: 11px;
-}
+        border-radius: 11px;
+        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+    }
 
 
-.token .logo img
-{
-    display: block;
+    .token .logo
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
 
-    max-width: 100%;
-    max-height: 100%;
-}
+        width: 55px;
+        height: 55px;
+        margin-right: 8px;
+        padding: 8px;
 
-
-.token .denom
-{
-    font-size: 16px;
-    font-weight: 500;
-
-    text-transform: uppercase;
-}
-
-
-.token .amount
-{
-    font-size: 18px;
-    font-weight: 500;
-
-    margin-left: auto;
-
-    text-align: right;
-    white-space: nowrap;
-}
+        border-radius: 11px;
+    }
 
 
-.token .amount .cost
-{
-    font-size: 16px;
-    font-weight: 400;
+    .token .logo img
+    {
+        display: block;
 
-    color: #836b9e;
-}
-
-
-
-.address .input.big
-{
-    padding-right: 119px;
-}
+        max-width: 100%;
+        max-height: 100%;
+    }
 
 
-.address .paste_btn
-{
-    font-size: 16px;
-    font-weight: 500;
+    .token .denom
+    {
+        font-size: 16px;
+        font-weight: 500;
 
-    position: absolute;
-    z-index: 3;
-    top: 0;
-    right: 54px;
+        text-transform: uppercase;
+    }
 
-    height: 100%;
-}
+
+    .token .amount
+    {
+        font-size: 18px;
+        font-weight: 500;
+
+        margin-left: auto;
+
+        text-align: right;
+        white-space: nowrap;
+    }
+
+
+    .token .amount .cost
+    {
+        font-size: 16px;
+        font-weight: 400;
+
+        color: #836b9e;
+    }
 
 
 
-.amount_field
-{
-    margin-top: 10px;
-}
+    .address .input.big
+    {
+        padding-right: 119px;
+    }
 
 
-.amount_field .cost
-{
-    margin-left: auto;
+    .address .paste_btn
+    {
+        font-size: 16px;
+        font-weight: 500;
 
-    color: rgba(255, 255, 255, .70);
-}
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        right: 54px;
 
-
-
-.memo_field
-{
-    margin-top: 10px;
-    margin-bottom: auto;
-    padding-bottom: 40px;
-}
-
-
-.field
-{
-    position: relative;
-
-    padding: 1px;
-
-    border-radius: 10px;
-    background: linear-gradient(to bottom,  #5d33ce 0%,#200750 100%);
-}
-
-
-.input
-{
-    border-radius: 9px;
-    background: #170232;
-}
-
-
-.btns
-{
-    margin-top: 0;
-    padding: 0;
-}
+        height: 100%;
+    }
 
 
 
+    .amount_field
+    {
+        margin-top: 10px;
+    }
 
+
+    .amount_field .cost
+    {
+        margin-left: auto;
+
+        color: rgba(255, 255, 255, .70);
+    }
+
+
+
+    .memo_field
+    {
+        margin-top: 10px;
+        margin-bottom: auto;
+        padding-bottom: 40px;
+    }
+
+
+    .field
+    {
+        position: relative;
+
+        padding: 1px;
+
+        border-radius: 10px;
+        background: linear-gradient(to bottom,  #5d33ce 0%,#200750 100%);
+    }
+
+
+    .input
+    {
+        border-radius: 9px;
+        background: #06000e;
+    }
+
+
+    .btns
+    {
+        margin-top: 0;
+        padding: 0;
+    }
 </style>

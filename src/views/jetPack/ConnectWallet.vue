@@ -1,0 +1,116 @@
+<template>
+    <!-- JetPack - Get address page -->
+    <section class="page_container get_address">
+        <div class="cont">
+            <!-- JetPack - Connection page title -->
+            <div class="page_title">
+                {{ $t('message.jp_connection_title') }}
+            </div>
+
+            <!-- JetPack - Connection page data -->
+            <div class="page_data_wrap">
+                <div class="page_data">
+                    <!-- JetPack - Connection desc -->
+                    <div class="desc">
+                        {{ $t('message.jp_connection_desc') }}
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="btns">
+                        <!-- Approve button -->
+                        <button class="btn" @click="approveRequest()">
+                            <span>{{ $t('message.btn_approve') }}</span>
+                        </button>
+
+                        <!-- Reject button -->
+                        <button class="btn purple_btn" @click="rejectRequest()">
+                            <span>{{ $t('message.btn_reject') }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</template>
+
+
+<script setup>
+    import { inject } from 'vue'
+    import { useGlobalStore } from '@/store'
+    import { useRouter } from 'vue-router'
+    import { useNotification } from '@kyvg/vue3-notification'
+
+
+    const store = useGlobalStore(),
+        router = useRouter(),
+        notification = useNotification(),
+        i18n = inject('i18n')
+
+
+    // Approve request
+    function approveRequest() {
+        // Send response
+        const connection = store.RTCConnections[store.startParams.data.peer_id]
+
+        if (connection) {
+            connection.send({
+                type: 'address',
+                address: store.currentAddress
+            })
+        }
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 1000,
+            title: i18n.global.t('message.notification_jp_get_address_success'),
+            type: 'default'
+        })
+
+        // Reset start params
+        store.startParams = null
+
+        // Redirect
+        router.push('/account')
+    }
+
+
+    // Reject request
+    function rejectRequest() {
+        // Send response
+        const connection = store.RTCConnections[store.startParams.data.peer_id]
+
+        if (connection) {
+            connection.send({
+                type: 'error',
+                message: i18n.global.t('message.jp_message_rejected')
+            })
+        }
+
+        // Reset start params
+        store.startParams = null
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 1000,
+            title: i18n.global.t('message.notification_jp_get_address_reject'),
+            type: 'default'
+        })
+
+        // Redirect
+        router.push('/account')
+    }
+</script>
+
+
+<style scoped>
+    .desc
+    {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
+    }
+</style>

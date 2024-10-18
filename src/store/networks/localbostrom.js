@@ -17,7 +17,8 @@ const network = {
     gas_amount_claim: 300000,
     gas_amount_stake: 250000,
     gas_amount_unstake: 250000,
-    gas_amount_redelegate: 300000
+    gas_amount_redelegate: 300000,
+    is_staking_available: true
 }
 
 export default network

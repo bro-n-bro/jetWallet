@@ -194,13 +194,22 @@ export default {
             'sign_tx_title': 'Sign transaction',
 
             'sign_tx_error_title': 'Incorrect pin!',
-            'sign_tx_error_desc': 'Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat Idi nahuj user, ti zablokirovan v blockchaine, prishli sms 4toby razblokirovat',
+            'sign_tx_error_desc': 'You have entered an incorrect PIN 4 times. For security reasons, you will be returned to the main screen to protect your account and prevent unauthorized access.',
 
 
             // Search
             'search_placeholder': 'Search...',
             'search_empty': 'Token not found...',
             'search_empty_validator': 'Validator not found...',
+
+
+            // Jet Pack
+            'jp_connection_title': 'Request for connection',
+            'jp_send_tx_title': 'Request for send transaction',
+
+            'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
+
+            'jp_message_rejected': 'The user rejected the request.',
 
 
             // Notifications
@@ -212,6 +221,12 @@ export default {
             'notification_error_invalid_paste_title': 'Incorrect address in the clipboard',
 
             'notification_explorer_link': 'Explorer',
+
+            'notification_jp_chain_id_not_passed': 'Parameter "chain_id" not passed.',
+            'notification_jp_chain_not_supported': 'Chain {chain_id} not supported.',
+            'notification_jp_get_address_success': 'You have successfully submitted your address.',
+            'notification_jp_get_address_reject': 'You have rejected the request to provide your address.',
+            'notification_jp_send_reject': 'You have rejected the request to send.',
 
 
             // Buttons
@@ -236,6 +251,7 @@ export default {
             'btn_redelegate': 'Switch validator',
             'btn_claim': 'Claim',
             'btn_approve': 'Approve',
+            'btn_reject': 'Reject',
             'btn_json': 'View JSON',
             'btn_close': 'Close',
             'btn_sign': 'Sign',
