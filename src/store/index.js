@@ -993,7 +993,7 @@ export const useGlobalStore = defineStore('global', {
             }
 
             // Return result
-            return iaAgeConfirmed
+            return this.iaAgeConfirmed
         },
 
 
