@@ -9,7 +9,7 @@
 <script setup>
     // Open support link
     function openSupportLink() {
-        Telegram.WebApp.openTelegramLink('https://t.me/c/2381947257/2')
+        Telegram.WebApp.openTelegramLink('https://t.me/jetwallet_official/2')
     }
 </script>
 
