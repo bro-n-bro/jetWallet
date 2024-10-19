@@ -18,6 +18,11 @@
             <QRCodeScanner v-if="store.isInitialized" />
             </KeepAlive>
 
+            <!-- Support button -->
+            <KeepAlive>
+            <SupportBtn />
+            </KeepAlive>
+
             <!-- Currency -->
             <KeepAlive>
             <CurrentCurrency />
@@ -76,6 +81,7 @@
     // Components
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
     import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
+    import SupportBtn from '@/components/account/SupportBtn.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
 
     import AvailableSection from '@/components/account/Available.vue'
@@ -346,7 +352,7 @@
         position: absolute;
         z-index: 9;
         top: 17px;
-        right: 60px;
+        right: 108px;
 
         display: flex;
         align-content: center;
