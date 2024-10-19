@@ -142,6 +142,16 @@
         }
 
 
+        // Clear Peer on close
+        window.addEventListener('beforeunload', () => {
+            // Close all connections on close
+            Object.keys(store.RTCConnections).forEach(key => store.RTCConnections[key].close())
+
+            // Close Peer
+            store.RTCPeer.destroy()
+        })
+
+
         if (window.Telegram && window.Telegram.WebApp) {
             // Initialize the mini-application
             await Telegram.WebApp.ready()
@@ -158,6 +168,9 @@
             // Disable vertical swipes
             Telegram.WebApp.disableVerticalSwipes()
 
+            // Init biometric
+            Telegram.WebApp.BiometricManager.init()
+
             // Age modal
             await store.getAgeConfirmed()
 
@@ -172,9 +185,6 @@
                     }
                 })
             }
-
-            // Init biometric
-            Telegram.WebApp.BiometricManager.init()
 
             // Qr code received
             Telegram.WebApp.onEvent('qrTextReceived', data => {

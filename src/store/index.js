@@ -791,15 +791,17 @@ export const useGlobalStore = defineStore('global', {
                     })
 
                     // Send response
-                    const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+                    if (this.jetPackRequest) {
+                        const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
 
-                    if (connection) {
-                        connection.send({
-                            type: 'tx',
-                            requestId: this.jetPackRequest.data.request_id,
-                            status: 'success',
-                            hash: this.networks[this.currentNetwork].currentTxHash
-                        })
+                        if (connection) {
+                            connection.send({
+                                type: 'tx',
+                                requestId: this.jetPackRequest.data.request_id,
+                                status: 'success',
+                                hash: this.networks[this.currentNetwork].currentTxHash
+                            })
+                        }
                     }
                 } else {
                     // Get error code
@@ -821,16 +823,18 @@ export const useGlobalStore = defineStore('global', {
                     })
 
                     // Send response
-                    const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+                    if (this.jetPackRequest) {
+                        const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
 
-                    if (connection) {
-                        connection.send({
-                            type: 'error',
-                            requestId: this.jetPackRequest.data.request_id,
-                            status: 'error',
-                            hash: this.networks[this.currentNetwork].currentTxHash,
-                            message: errorText
-                        })
+                        if (connection) {
+                            connection.send({
+                                type: 'error',
+                                requestId: this.jetPackRequest.data.request_id,
+                                status: 'error',
+                                hash: this.networks[this.currentNetwork].currentTxHash,
+                                message: errorText
+                            })
+                        }
                     }
                 }
 
