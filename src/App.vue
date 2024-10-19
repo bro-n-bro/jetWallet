@@ -54,11 +54,11 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, inject, watch, computed, onMounted } from 'vue'
+    import { ref, reactive, onBeforeMount, inject, watch, computed, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
-    import { useTitle } from '@vueuse/core'
+    import { useTitle, useNetwork } from '@vueuse/core'
 
 
     const store = useGlobalStore(),
@@ -73,7 +73,8 @@
         notificationAnimation = {
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
-        }
+        },
+        network = reactive(useNetwork())
 
 
     onBeforeMount(() => {
@@ -211,6 +212,32 @@
 
             // Reinit APP
             await store.initApp()
+        }
+    })
+
+
+    watch(computed(() => network.isOnline), async () => {
+        if (network.isOnline) {
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+        } else {
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: -100,
+                title: i18n.global.t('message.notification_offline_title'),
+                type: 'error'
+            })
         }
     })
 
