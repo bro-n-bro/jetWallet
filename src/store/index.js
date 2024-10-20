@@ -42,8 +42,8 @@ export const useGlobalStore = defineStore('global', {
         isUnstakingBalancesGot: false,
         isAuthorized: false,
         isAnyModalOpen: false,
+        isAgeConfirmed: false,
 
-        startParams: null,
         forcedUnlock: false,
         authErrorLimit: 4,
 
@@ -63,10 +63,11 @@ export const useGlobalStore = defineStore('global', {
         unstakingBalances: [],
         redelegations: [],
 
-        tgBotId: '7437812149',
-        // tgUserId: '808958531',
+        tgBotId: 7437812149,
+        // tgUserId: 808958531,
         tgUserId: '',
         jetPackRequest: null,
+
         RTCPeer: null,
         RTCConnections: {},
 
@@ -137,8 +138,8 @@ export const useGlobalStore = defineStore('global', {
             this.TxFee.isRemember = DBData.TxFeeIsRemember || false
 
             // Set current network
-            if (this.startParams) {
-                if (!this.startParams.data || !this.startParams.data?.chain_id) {
+            if (this.jetPackRequest) {
+                if (!this.jetPackRequest.data || !this.jetPackRequest.data?.chain_id) {
                     // Show notification - Param chain_id not passed
                     notification.notify({
                         group: 'default',
@@ -148,14 +149,14 @@ export const useGlobalStore = defineStore('global', {
                         type: 'error'
                     })
 
-                    // Reset start params
-                    this.startParams = null
+                    // Reset jetPack request
+                    this.jetPackRequest = null
 
                     // Set data from DB
                     this.currentNetwork = DBData.currentNetwork
                 } else {
                     // Checking for network availability
-                    let chain = Object.values(this.networks).find(network => network.chain_id === this.startParams.data.chain_id)
+                    let chain = Object.values(this.networks).find(network => network.chain_id === this.jetPackRequest.data.chain_id)
 
                     if (chain) {
                         // Set data
@@ -170,8 +171,8 @@ export const useGlobalStore = defineStore('global', {
                             type: 'error'
                         })
 
-                        // Reset start params
-                        this.startParams = null
+                        // Reset jetPack request
+                        this.jetPackRequest = null
 
                         // Set data from DB
                         this.currentNetwork = DBData.currentNetwork
@@ -179,7 +180,9 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set data from DB
-                this.currentNetwork = DBData.currentNetwork
+                this.networks[this.currentNetwork]
+                    ? this.currentNetwork = DBData.currentNetwork
+                    : this.currentNetwork = 'cosmoshub'
             }
 
             try {
@@ -565,9 +568,7 @@ export const useGlobalStore = defineStore('global', {
         // Set current network
         setCurrentNetwork(chain) {
             // Save in DB
-            DBaddData('wallet', [
-                ['currentNetwork', chain]
-            ])
+            DBaddData('wallet', [['currentNetwork', chain]])
 
             // Update current network
             this.currentNetwork = chain
@@ -790,6 +791,20 @@ export const useGlobalStore = defineStore('global', {
                             explorer_link: getExplorerLink(this.currentNetwork)
                         }
                     })
+
+                    // Send response
+                    if (this.jetPackRequest) {
+                        const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                        if (connection) {
+                            connection.send({
+                                type: 'tx',
+                                requestId: this.jetPackRequest.data.request_id,
+                                status: 'success',
+                                hash: this.networks[this.currentNetwork].currentTxHash
+                            })
+                        }
+                    }
                 } else {
                     // Get error code
                     let errorText = ''
@@ -808,10 +823,28 @@ export const useGlobalStore = defineStore('global', {
                         text: errorText,
                         type: 'error'
                     })
+
+                    // Send response
+                    if (this.jetPackRequest) {
+                        const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                        if (connection) {
+                            connection.send({
+                                type: 'error',
+                                requestId: this.jetPackRequest.data.request_id,
+                                status: 'error',
+                                hash: this.networks[this.currentNetwork].currentTxHash,
+                                message: errorText
+                            })
+                        }
+                    }
                 }
 
                 // Clear tx hash
                 this.networks[this.currentNetwork].currentTxHash = null
+
+                // Reset jetPack request
+                this.jetPackRequest = null
 
                 // Update all balances
                 this.updateAllBalances()
@@ -944,6 +977,28 @@ export const useGlobalStore = defineStore('global', {
                 console.error(error)
 
                 return false
+            }
+        },
+
+
+        // Set age confirmed
+        async setAgeConfirmed() {
+            await DBaddData('wallet', [['ageConfirmed', true]])
+        },
+
+
+        // Get age confirmed
+        async getAgeConfirmed() {
+            try {
+                // Get from DB
+                let result = await this.getMultipleData(['ageConfirmed'])
+
+                if (result.ageConfirmed) {
+                    // Set result
+                    this.isAgeConfirmed = result.ageConfirmed
+                }
+            } catch (error) {
+                console.log(error)
             }
         },
 

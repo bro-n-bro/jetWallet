@@ -93,76 +93,7 @@
 
 
     // Approve request
-    // function approveRequest() {
-    //     // Send response
-    //     const connection = store.RTCConnections[store.startParams.data.peer_id]
-
-    //     if (connection) {
-    //         connection.send({
-    //             type: 'tx',
-    //             hash: store.networks[store.currentNetwork].currentTxHash
-    //         })
-    //     }
-
-    //     // Show notification
-    //     notification.notify({
-    //         group: 'default',
-    //         speed: 200,
-    //         duration: 1000,
-    //         title: i18n.global.t('message.notification_jp_get_address_success'),
-    //         type: 'default'
-    //     })
-
-    //     // Reset jetPack request
-    //     store.jetPackRequest = null
-
-    //     // Redirect
-    //     router.push('/account')
-    // }
-
-
-    // Reject request
-    function rejectRequest() {
-        // Send response
-        const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
-
-        if (connection) {
-            connection.send({
-                type: 'error',
-                requestId: store.jetPackRequest.data.request_id,
-                message: i18n.global.t('message.jp_message_rejected')
-            })
-        }
-
-        // Reset jetPack request
-        store.jetPackRequest = null
-
-        // Show notification
-        notification.notify({
-            group: 'default',
-            speed: 200,
-            duration: 1000,
-            title: i18n.global.t('message.notification_jp_send_reject'),
-            type: 'default'
-        })
-
-        // Redirect
-        router.push('/account')
-    }
-
-
-    // Open SignTx modal
-    function openSignTxModal() {
-        // Show SignTx modal
-        showSignTxModal.value = true
-
-        // Update status
-        store.isAnyModalOpen = true
-    }
-
-
-    // Send tokens
-    async function send() {
+    async function approveRequest() {
         // Set process status
         isProcess.value = true
 
@@ -198,22 +129,15 @@
             sendTx(txBytes).catch(error => {
                 console.log(error)
 
+                // Reset jetPack request
+                store.jetPackRequest = null
+
                 // Show error
                 showError(error)
             })
 
             // Check Tx result
             store.checkTxResult()
-
-            // Send response
-            const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
-
-            if (connection) {
-                connection.send({
-                    type: 'tx',
-                    hash: store.networks[store.currentNetwork].currentTxHash
-                })
-            }
 
             // Redirect
             router.push('/account')
@@ -226,6 +150,86 @@
     }
 
 
+    // Reject request
+    function rejectRequest() {
+        // Send response
+        const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
+
+        if (connection) {
+            connection.send({
+                type: 'error',
+                requestId: store.jetPackRequest.data.request_id,
+                message: i18n.global.t('message.jp_message_rejected')
+            })
+        }
+
+        // Reset jetPack request
+        store.jetPackRequest = null
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 1000,
+            title: i18n.global.t('message.notification_jp_send_reject'),
+            type: 'default'
+        })
+
+        // Reset Tx Fee
+        store.resetTxFee()
+
+        // Redirect
+        router.push('/account')
+    }
+
+
+    // Show error message
+    function showError(error) {
+        // Set process status
+        isProcess.value = false
+
+        // Get error code
+        let errorText = ''
+
+        // Get error title
+        error.code
+            ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
+            : errorText = i18n.global.t('message.notification_tx_error_rejected')
+
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 6000,
+            title: i18n.global.t('message.notification_tx_error_title'),
+            text: errorText,
+            type: 'error'
+        })
+
+        // Clear tx hash
+        store.networks[store.currentNetwork].currentTxHash = null
+
+        // Reset Tx Fee
+        store.resetTxFee()
+    }
+
+
+    // Open SignTx modal
+    function openSignTxModal() {
+        // Show SignTx modal
+        showSignTxModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Event "auth"
     emitter.on('auth', () => {
         // Hide SignTx modal
@@ -235,7 +239,7 @@
         store.isAnyModalOpen = false
 
         // Send tokens
-        send()
+        approveRequest()
     })
 
 
@@ -251,9 +255,6 @@
 
     // Event "close_any_modal"
     emitter.on('close_any_modal', () => {
-        // Hide tokens modal
-        showTokensModal.value = false
-
         // Hide SignTx modal
         showSignTxModal.value = false
 

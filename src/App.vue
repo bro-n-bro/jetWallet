@@ -54,11 +54,11 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, inject, watch, computed, onMounted } from 'vue'
+    import { ref, reactive, onBeforeMount, inject, watch, computed, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
-    import { useTitle } from '@vueuse/core'
+    import { useTitle, useNetwork } from '@vueuse/core'
 
 
     const store = useGlobalStore(),
@@ -73,7 +73,8 @@
         notificationAnimation = {
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
-        }
+        },
+        network = reactive(useNetwork())
 
 
     onBeforeMount(() => {
@@ -104,6 +105,15 @@
             // Processing data receipt
             conn.on('data', data => {
                 // Send Tx
+                if (data.method === 'connectWallet') {
+                    // Save messages
+                    store.jetPackRequest = data
+
+                    // Redirect
+                    router.push('/jet_pack/connect_wallet')
+                }
+
+                // Send Tx
                 if (data.method === 'sendTx') {
                     // Save messages
                     store.jetPackRequest = data
@@ -117,6 +127,7 @@
 
 
     onMounted(async () => {
+        // Analytics
         if (process.env.VUE_APP_IS_PRODUCTION === 'true') {
             var _paq = window._paq = window._paq || [];
 			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
@@ -130,6 +141,16 @@
 			g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
 			})();
         }
+
+
+        // Clear Peer on close
+        window.addEventListener('beforeunload', () => {
+            // Close all connections on close
+            Object.keys(store.RTCConnections).forEach(key => store.RTCConnections[key].close())
+
+            // Close Peer
+            store.RTCPeer.destroy()
+        })
 
 
         if (window.Telegram && window.Telegram.WebApp) {
@@ -150,6 +171,21 @@
 
             // Init biometric
             Telegram.WebApp.BiometricManager.init()
+
+            // Age modal
+            await store.getAgeConfirmed()
+
+            if (!store.isAgeConfirmed) {
+                Telegram.WebApp.showConfirm(i18n.global.t('message.age_modal_text'), async result => {
+                    if (result) {
+                        // Set age confirmed
+                        await store.setAgeConfirmed()
+                    } else {
+                        // Close App
+                        Telegram.WebApp.close()
+                    }
+                })
+            }
 
             // Qr code received
             Telegram.WebApp.onEvent('qrTextReceived', data => {
@@ -176,6 +212,32 @@
 
             // Reinit APP
             await store.initApp()
+        }
+    })
+
+
+    watch(computed(() => network.isOnline), async () => {
+        if (network.isOnline) {
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+        } else {
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: -100,
+                title: i18n.global.t('message.notification_offline_title'),
+                type: 'error'
+            })
         }
     })
 

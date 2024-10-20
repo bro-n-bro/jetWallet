@@ -1,15 +1,15 @@
 <template>
-    <!-- QR code button -->
-    <button class="btn" @click.prevent="openScanner()">
-        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_scaner"></use></svg>
+    <!-- Support button -->
+    <button class="btn" @click.prevent="openSupportLink()">
+        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_support"></use></svg>
     </button>
 </template>
 
 
 <script setup>
-    // Open QR popup
-    function openScanner() {
-        Telegram.WebApp.showScanQrPopup({ text: '' })
+    // Open support link
+    function openSupportLink() {
+        Telegram.WebApp.openTelegramLink('https://t.me/jetwallet_official/2')
     }
 </script>
 
@@ -20,7 +20,7 @@
         position: absolute;
         z-index: 9;
         top: 17px;
-        right: 60px;
+        right: 12px;
 
         display: flex;
         align-content: center;
@@ -54,8 +54,8 @@
     {
         display: block;
 
-        width: 14px;
-        height: 14px;
+        width: 18px;
+        height: 20px;
     }
 
 

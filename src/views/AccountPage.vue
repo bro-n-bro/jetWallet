@@ -18,6 +18,11 @@
             <QRCodeScanner v-if="store.isInitialized" />
             </KeepAlive>
 
+            <!-- Support button -->
+            <KeepAlive>
+            <SupportBtn />
+            </KeepAlive>
+
             <!-- Currency -->
             <KeepAlive>
             <CurrentCurrency />
@@ -76,6 +81,7 @@
     // Components
     import NetworkChooser from '@/components/account/NetworkChooser.vue'
     import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
+    import SupportBtn from '@/components/account/SupportBtn.vue'
     import CurrentCurrency from '@/components/account/Currency.vue'
 
     import AvailableSection from '@/components/account/Available.vue'
@@ -150,9 +156,10 @@
 
     // Update qr code
     watch(computed(() => store.currentAddress), () => {
-        if (store.startParams) {
+        if (store.jetPackRequest) {
             // Get address
-            if (store.startParams.method === 'connectWallet') {
+            if (store.jetPackRequest.method === 'connectWallet') {
+                // Redirect
                 router.push('/jet_pack/connect_wallet')
             }
         }
@@ -274,7 +281,7 @@
     .top_block
     {
         position: fixed;
-        z-index: 3;
+        z-index: 10;
         top: 0;
         left: 0;
 
@@ -345,7 +352,7 @@
         position: absolute;
         z-index: 9;
         top: 17px;
-        right: 60px;
+        right: 108px;
 
         display: flex;
         align-content: center;

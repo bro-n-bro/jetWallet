@@ -12,6 +12,10 @@ export default {
             'import_wallet_title': 'Import Existing Wallet',
 
 
+            // Age modal
+            'age_modal_text': 'Are you 18 years old?',
+
+
             // Create page
             'create_wallet_agree_label1': 'Do not share your recovery phrase with ANYONE.',
             'create_wallet_agree_label2': 'Back up the phrase safely.',
@@ -205,7 +209,7 @@ export default {
 
             // Jet Pack
             'jp_connection_title': 'Request for connection',
-            'jp_send_tx_title': 'Request for send transaction',
+            'jp_send_tx_title': 'Request for transaction',
 
             'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
 
@@ -214,6 +218,7 @@ export default {
 
             // Notifications
             'notification_copied_title': 'Copied to clipboard',
+            'notification_offline_title': 'You are offline',
             'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Success',
             'notification_tx_error_title': 'Error:',
