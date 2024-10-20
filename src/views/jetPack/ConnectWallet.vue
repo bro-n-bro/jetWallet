@@ -74,6 +74,10 @@
 
         // Redirect
         router.push('/account')
+
+        setTimeout(() => {
+            window.open('https://t.me/dummy_app_bot')
+        }, 2000)
     }
 
 
