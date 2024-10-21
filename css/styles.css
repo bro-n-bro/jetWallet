@@ -130,9 +130,9 @@ input[type=number]
 html
 {
     height: 100%;
-    min-height: -moz-available;
+    /* min-height: -moz-available;
     min-height: -webkit-fill-available;
-    min-height:         fill-available;
+    min-height:         fill-available; */
 }
 
 
@@ -141,9 +141,10 @@ body
     font: var(--font_size) var(--font_family);
 
     height: 100%;
-    min-height: -moz-available;
+
+/* min-height: -moz-available;
     min-height: -webkit-fill-available;
-    min-height:         fill-available;
+    min-height:         fill-available; */
 
     color: var(--text_color);
 }
@@ -153,6 +154,20 @@ body.lock
     overflow: hidden;
 
     padding-right: var(--scroll_width);
+}
+
+
+@supports(padding: env(safe-area-inset-bottom))
+{
+    html,
+    body
+    {
+        height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        /* padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right); */
+    }
 }
 
 
@@ -720,7 +735,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 {
     font-family: var(--font_family);
     font-size: 14px;
-    line-height: 26px;
+    line-height: normal;
 
     display: block;
 
@@ -960,12 +975,6 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 .mnemonic .input
 {
-    display: flex;
-    align-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-
     padding-left: 27px;
 }
 
