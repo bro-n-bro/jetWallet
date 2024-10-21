@@ -146,6 +146,9 @@
 
             // Show error
             showError(error)
+
+            // Show redirect modal
+            store.showRedirectModal = true
         }
     }
 
@@ -177,6 +180,9 @@
 
         // Reset Tx Fee
         store.resetTxFee()
+
+        // Show redirect modal
+        store.showRedirectModal = true
 
         // Redirect
         router.push('/account')

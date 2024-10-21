@@ -44,7 +44,8 @@
     const store = useGlobalStore(),
         router = useRouter(),
         notification = useNotification(),
-        i18n = inject('i18n')
+        i18n = inject('i18n'),
+        emitter = inject('emitter')
 
 
     // Approve request
@@ -71,6 +72,9 @@
 
         // Reset jetPack request
         store.jetPackRequest = null
+
+        // Event "show_redirect_modal"
+        emitter.emit('show_redirect_modal')
 
         // Redirect
         router.push('/account')
