@@ -8,12 +8,12 @@ import i18n from '@/locale'
 
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
-// import bostrom from '@/store/networks/bostrom'
+import bostrom from '@/store/networks/bostrom'
 import neutron from '@/store/networks/neutron'
 import omniflix from '@/store/networks/omniflix'
 import dymension from '@/store/networks/dymension'
 import stride from '@/store/networks/stride'
-import localbostrom from '@/store/networks/localbostrom'
+// import localbostrom from '@/store/networks/localbostrom'
 
 
 // Networks additional options
@@ -90,12 +90,12 @@ export const useGlobalStore = defineStore('global', {
 
         networks: {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
-            // bostrom: Object.assign(bostrom, networksAdditionalOptions),
+            bostrom: Object.assign(bostrom, networksAdditionalOptions),
             neutron: Object.assign(neutron, networksAdditionalOptions),
             omniflix: Object.assign(omniflix, networksAdditionalOptions),
             dymension: Object.assign(dymension, networksAdditionalOptions),
             stride: Object.assign(stride, networksAdditionalOptions),
-            localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
+            // localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
         },
 
         formatableTokens: [
