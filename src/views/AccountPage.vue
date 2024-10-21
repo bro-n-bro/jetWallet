@@ -281,7 +281,7 @@
     .top_block
     {
         position: fixed;
-        z-index: 10;
+        z-index: 5;
         top: 0;
         left: 0;
 
