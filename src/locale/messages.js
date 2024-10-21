@@ -201,6 +201,11 @@ export default {
             'sign_tx_error_desc': 'You have entered an incorrect PIN 4 times. For security reasons, you will be returned to the main screen to protect your account and prevent unauthorized access.',
 
 
+            // Redirect modal
+            'redirect_modal_title': 'Return to the application.',
+            'redirect_modal_desc': 'You can now switch back to another application to continue.',
+
+
             // Search
             'search_placeholder': 'Search...',
             'search_empty': 'Token not found...',
@@ -263,6 +268,7 @@ export default {
             'btn_understood': 'Understood',
             'btn_waiting_tx': 'Waiting tx',
             'btn_MAX': 'MAX',
+            'btn_OK': 'Ok',
             'btn_cancel': 'Cancel',
             'btn_amount': 'Amount',
             'btn_share': 'Share',

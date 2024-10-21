@@ -50,6 +50,17 @@
             </div>
         </template>
     </notifications>
+
+
+    <!-- Sign transaction modal -->
+    <transition name="modal">
+    <RedirectModal v-if="store.showRedirectModal"/>
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_redirect_modal')" v-if="store.showRedirectModal"></div>
+    </transition>
 </template>
 
 
@@ -59,6 +70,9 @@
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
     import { useTitle, useNetwork } from '@vueuse/core'
+
+    // Components
+    import RedirectModal from '@/components/modal/RedirectModal.vue'
 
 
     const store = useGlobalStore(),
@@ -333,5 +347,19 @@
                 }, store.notificationsCollapsingDelay)
             }
         }
+    })
+
+
+    // Event "show_redirect_modal"
+    emitter.on('show_redirect_modal', () => {
+        // Hide redirect modal
+        store.showRedirectModal = true
+    })
+
+
+    // Event "close_redirect_modal"
+    emitter.on('close_redirect_modal', () => {
+        // Hide redirect modal
+        store.showRedirectModal = false
     })
 </script>

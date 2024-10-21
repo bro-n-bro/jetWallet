@@ -8,12 +8,12 @@ import i18n from '@/locale'
 
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
-import bostrom from '@/store/networks/bostrom'
+// import bostrom from '@/store/networks/bostrom'
 import neutron from '@/store/networks/neutron'
 import omniflix from '@/store/networks/omniflix'
 import dymension from '@/store/networks/dymension'
 import stride from '@/store/networks/stride'
-// import localbostrom from '@/store/networks/localbostrom'
+import localbostrom from '@/store/networks/localbostrom'
 
 
 // Networks additional options
@@ -44,6 +44,7 @@ export const useGlobalStore = defineStore('global', {
         isAnyModalOpen: false,
         isAgeConfirmed: false,
 
+        showRedirectModal: false,
         forcedUnlock: false,
         authErrorLimit: 4,
 
@@ -89,12 +90,12 @@ export const useGlobalStore = defineStore('global', {
 
         networks: {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
-            bostrom: Object.assign(bostrom, networksAdditionalOptions),
+            // bostrom: Object.assign(bostrom, networksAdditionalOptions),
             neutron: Object.assign(neutron, networksAdditionalOptions),
             omniflix: Object.assign(omniflix, networksAdditionalOptions),
             dymension: Object.assign(dymension, networksAdditionalOptions),
             stride: Object.assign(stride, networksAdditionalOptions),
-            // localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
+            localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
         },
 
         formatableTokens: [
@@ -180,7 +181,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set data from DB
-                this.networks[this.currentNetwork]
+                this.networks[DBData.currentNetwork]
                     ? this.currentNetwork = DBData.currentNetwork
                     : this.currentNetwork = 'cosmoshub'
             }
@@ -695,7 +696,7 @@ export const useGlobalStore = defineStore('global', {
                 let parsedMsg = JSON.parse(msg.data)
 
                 // If the result object is not empty
-                if (Object.keys(parsedMsg.result).length) {
+                if (parsedMsg.result && Object.keys(parsedMsg.result).length > 0) {
                     // User recipient
                     if (parsedMsg.id == '1') {
                         // Update all balances
@@ -845,6 +846,9 @@ export const useGlobalStore = defineStore('global', {
 
                 // Reset jetPack request
                 this.jetPackRequest = null
+
+                // Show redirect modal
+                this.showRedirectModal = true
 
                 // Update all balances
                 this.updateAllBalances()

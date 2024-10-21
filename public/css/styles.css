@@ -141,7 +141,8 @@ body
     font: var(--font_size) var(--font_family);
 
     height: 100%;
-    /* min-height: -moz-available;
+
+/* min-height: -moz-available;
     min-height: -webkit-fill-available;
     min-height:         fill-available; */
 
