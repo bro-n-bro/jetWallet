@@ -184,7 +184,7 @@
         overflow: auto;
         flex-direction: column;
 
-        max-height: 345px;
+        max-height: 209px;
         padding-top: 4px;
 
         gap: 8px;

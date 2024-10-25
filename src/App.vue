@@ -70,6 +70,7 @@
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
     import { useTitle, useNetwork } from '@vueuse/core'
+    import { convertArrayBuffersToUint8Arrays } from '@/utils'
 
     // Components
     import RedirectModal from '@/components/modal/RedirectModal.vue'
@@ -118,20 +119,17 @@
 
             // Processing data receipt
             conn.on('data', data => {
-                // Send Tx
-                if (data.method === 'connectWallet') {
-                    // Save messages
-                    store.jetPackRequest = data
+                // Save request
+                store.jetPackRequest = convertArrayBuffersToUint8Arrays(data)
 
+                // Send Tx
+                if (store.jetPackRequest.method === 'connectWallet') {
                     // Redirect
                     router.push('/jet_pack/connect_wallet')
                 }
 
                 // Send Tx
-                if (data.method === 'sendTx') {
-                    // Save messages
-                    store.jetPackRequest = data
-
+                if (store.jetPackRequest.method === 'sendTx') {
                     // Redirect
                     router.push('/jet_pack/send_tx')
                 }

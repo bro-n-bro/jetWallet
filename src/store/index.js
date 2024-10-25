@@ -192,6 +192,7 @@ export const useGlobalStore = defineStore('global', {
 
                 this.currentAddress = signer.address
                 this.networks[this.currentNetwork].signingClient = signer.signingClient
+                this.networks[this.currentNetwork].signingCosmWasmClient = signer.signingCosmWasmClient
 
                 // Set current currency symbol
                 switch (this.currentCurrency) {
@@ -445,12 +446,20 @@ export const useGlobalStore = defineStore('global', {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
+            var old_base_denom = base_denom
+
             // Get (token info/chain name) from assets
             for (let asset of assets) {
                 // Exceptions
                 switch (base_denom) {
                     case 'uusdc':
                         var currentAsset = assets.find(el => el.chain_name === 'noble')
+                        break;
+
+                    case 'udatom':
+                        var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
+
+                        base_denom = 'uatom'
                         break;
 
                     default:
@@ -462,6 +471,8 @@ export const useGlobalStore = defineStore('global', {
                 let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
 
                 if (tokenInfo) {
+                    balance.old_base_denom = old_base_denom
+
                     // Set data
                     balance.token_info = tokenInfo
                     balance.chain_name = currentAsset.chain_name

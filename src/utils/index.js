@@ -1,6 +1,7 @@
 import { useGlobalStore } from '@/store'
 import { DirectSecp256k1HdWallet, DirectSecp256k1Wallet } from '@cosmjs/proto-signing'
 import { fromHex } from '@cosmjs/encoding'
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { SigningStargateClient } from '@cosmjs/stargate'
 import { TxRaw } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { sha256 } from '@cosmjs/crypto'
@@ -151,7 +152,9 @@ export const createSinger = async () => {
     // Stargate client
     let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
 
-    return { address, signingClient }
+    let signingCosmWasmClient = await SigningCosmWasmClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
+
+    return { address, signingClient, signingCosmWasmClient }
 }
 
 
@@ -351,7 +354,7 @@ export const simulateTx = async (msg, memo = '') => {
     let store = useGlobalStore()
 
     // Simulate gas
-    let gasUsed = await store.networks[store.currentNetwork].signingClient.simulate(store.currentAddress, msg, memo)
+    let gasUsed = await store.networks[store.currentNetwork].signingCosmWasmClient.simulate(store.currentAddress, msg, memo)
 
     // Set gas amount
     store.TxFee.gasAmount = parseInt(gasUsed * store.networks[store.currentNetwork].gas_adjustment)
@@ -375,7 +378,7 @@ export const signTx = async (msg, memo) => {
     }
 
     // Sign
-    let txRaw = await store.networks[store.currentNetwork].signingClient.sign(store.currentAddress, msg, fee, memo)
+    let txRaw = await store.networks[store.currentNetwork].signingCosmWasmClient.sign(store.currentAddress, msg, fee, memo)
 
     // Encode TxRaw
     let txBytes = TxRaw.encode(txRaw).finish()
@@ -398,7 +401,11 @@ export const sendTx = async txBytes => {
     let store = useGlobalStore()
 
     // Broadcast
-    await store.networks[store.currentNetwork].signingClient.broadcastTx(txBytes, store.networks[store.currentNetwork].signingClient.broadcastTimeoutMs, store.networks[store.currentNetwork].signingClient.broadcastPollIntervalMs)
+    await store.networks[store.currentNetwork].signingCosmWasmClient.broadcastTx(
+        txBytes,
+        store.networks[store.currentNetwork].signingCosmWasmClient.broadcastTimeoutMs,
+        store.networks[store.currentNetwork].signingCosmWasmClient.broadcastPollIntervalMs
+    )
 }
 
 
@@ -430,4 +437,32 @@ export const decodeFromBase64 = base64String => {
 
     // Convert the JSON string back to an object
     return JSON.parse(jsonString)
+}
+
+
+
+export const convertArrayBuffersToUint8Arrays = data => {
+    if (Array.isArray(data)) {
+        return data.map(convertArrayBuffersToUint8Arrays)
+    }
+
+    if (data !== null && typeof data === "object") {
+        const result = {}
+
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const value = data[key];
+
+                if (value instanceof ArrayBuffer) {
+                    result[key] = new Uint8Array(value)
+                } else {
+                    result[key] = convertArrayBuffersToUint8Arrays(value);
+                }
+            }
+        }
+
+        return result
+    }
+
+    return data
 }

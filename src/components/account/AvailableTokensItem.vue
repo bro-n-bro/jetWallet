@@ -13,7 +13,8 @@
 
             <!-- Token denom -->
             <div class="denom">
-                {{ props.balance.token_info.symbol }}
+                <span v-if="props.balance.old_base_denom === 'udatom'">DATOM</span>
+                <span v-else>{{ props.balance.token_info.symbol }}</span>
             </div>
 
             <!-- Token amount -->
