@@ -230,9 +230,6 @@
                 showError(error)
             })
 
-            // Check Tx result
-            store.checkTxResult()
-
             // Redirect
             router.push('/account')
         } catch (error) {

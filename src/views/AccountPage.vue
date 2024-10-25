@@ -154,6 +154,20 @@
     })
 
 
+    // Check Tx result
+    watch(computed(() => store.isInitialized), async () => {
+        // Check Tx result
+        if (store.isInitialized && store.networks[store.currentNetwork].currentTxHash) {
+            await store.checkTxResult()
+
+            if (store.networks[store.currentNetwork].currentTxHash) {
+                // Set listener current tx
+                store.setListenerCurrentTx()
+            }
+        }
+    })
+
+
     // Update qr code
     watch(computed(() => store.currentAddress), () => {
         if (store.jetPackRequest) {

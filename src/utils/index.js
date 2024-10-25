@@ -389,9 +389,6 @@ export const signTx = async (msg, memo) => {
     // Convert hash bytes to hex string
     store.networks[store.currentNetwork].currentTxHash = Buffer.from(txHash).toString('hex')
 
-    // Set listener current tx
-    store.setListenerCurrentTx()
-
     return txBytes
 }
 
