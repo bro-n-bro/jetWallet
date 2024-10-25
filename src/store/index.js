@@ -10,6 +10,8 @@ import i18n from '@/locale'
 import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
 import neutron from '@/store/networks/neutron'
+import pion from '@/store/networks/pion'
+import mocha from '@/store/networks/mocha'
 import omniflix from '@/store/networks/omniflix'
 import dymension from '@/store/networks/dymension'
 import stride from '@/store/networks/stride'
@@ -92,6 +94,8 @@ export const useGlobalStore = defineStore('global', {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
             bostrom: Object.assign(bostrom, networksAdditionalOptions),
             neutron: Object.assign(neutron, networksAdditionalOptions),
+            pion: Object.assign(pion, networksAdditionalOptions),
+            mocha: Object.assign(mocha, networksAdditionalOptions),
             omniflix: Object.assign(omniflix, networksAdditionalOptions),
             dymension: Object.assign(dymension, networksAdditionalOptions),
             stride: Object.assign(stride, networksAdditionalOptions),
@@ -286,7 +290,10 @@ export const useGlobalStore = defineStore('global', {
                             if (chain.denom == (this.networks[this.currentNetwork].token_name).toLowerCase()) {
                                 // Set network APR
                                 this.networks[this.currentNetwork].APR = chain.apr
-                            }
+                            } else (
+                                // Set network APR
+                                this.networks[this.currentNetwork].APR = '0.1008'
+                            )
                         })
                     })
             } catch (err) {
@@ -454,6 +461,10 @@ export const useGlobalStore = defineStore('global', {
                 switch (base_denom) {
                     case 'uusdc':
                         var currentAsset = assets.find(el => el.chain_name === 'noble')
+                        break;
+
+                    case 'utia':
+                        var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
                         break;
 
                     case 'udatom':

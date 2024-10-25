@@ -147,7 +147,7 @@
 
         // Update rewards with timeout
         if (!rewardsCost.value && stakedBalancesCost.value) {
-            setTimeout(async () => await getRewards(), 5000)
+            // setTimeout(async () => await getRewards(), 5000)
         }
 
         // Update rewards cost
