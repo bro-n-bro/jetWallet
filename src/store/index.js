@@ -467,10 +467,10 @@ export const useGlobalStore = defineStore('global', {
                         var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
                         break;
 
-                    case 'udatom':
-                        var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
+                    case 'drop':
+                        var currentAsset = assets.find(el => el.chain_name === 'celestia')
 
-                        base_denom = 'uatom'
+                        base_denom = 'utia'
                         break;
 
                     default:

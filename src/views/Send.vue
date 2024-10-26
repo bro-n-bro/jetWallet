@@ -19,9 +19,6 @@
             </div>
 
 
-            <!-- <pre>{{ balance }}</pre> -->
-
-
             <!-- Send page token -->
             <div class="token_wrap" @click.prevent="openTokensModal()" v-if="balance">
                 <div class="token">
@@ -32,7 +29,8 @@
 
                     <!-- Send page token denom -->
                     <div class="denom">
-                        {{ balance.token_info.symbol }}
+                        <span v-if="balance.old_base_denom === 'drop'">d{{ balance.token_info.symbol }}</span>
+                        <span v-else>{{ balance.token_info.symbol }}</span>
                     </div>
 
                     <!-- Send page token amount -->
