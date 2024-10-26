@@ -453,7 +453,8 @@ export const useGlobalStore = defineStore('global', {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
-            var old_base_denom = base_denom
+            // Old base denom
+            balance.old_base_denom = base_denom
 
             // Get (token info/chain name) from assets
             for (let asset of assets) {
@@ -465,6 +466,12 @@ export const useGlobalStore = defineStore('global', {
 
                     case 'utia':
                         var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
+                        break;
+
+                    case 'udatom':
+                        var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
+
+                        base_denom = 'uatom'
                         break;
 
                     case 'drop':
@@ -482,8 +489,6 @@ export const useGlobalStore = defineStore('global', {
                 let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
 
                 if (tokenInfo) {
-                    balance.old_base_denom = old_base_denom
-
                     // Set data
                     balance.token_info = tokenInfo
                     balance.chain_name = currentAsset.chain_name
@@ -589,12 +594,12 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Set current network
-        setCurrentNetwork(chain) {
-            // Save in DB
-            DBaddData('wallet', [['currentNetwork', chain]])
-
+        async setCurrentNetwork(chain) {
             // Update current network
             this.currentNetwork = chain
+
+            // Save in DB
+            await DBaddData('wallet', [['currentNetwork', chain]])
         },
 
 

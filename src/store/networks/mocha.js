@@ -12,7 +12,7 @@ const network = {
     explorer_link: 'https://mintscan.io/celestia-testnet/txs/{tx_hash}',
     alias: 'mocha',
     exponent: 6,
-    gas_adjustment: 1.3,
+    gas_adjustment: 1.4,
     address_length: 20,
     gas_amount_send: 300000,
     gas_amount_claim: 300000,

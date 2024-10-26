@@ -143,7 +143,7 @@
     })
 
 
-    onMounted(() => {
+    onMounted(async () => {
         // Get swiper instance
         swiperEl.value = document.querySelector('swiper-container')
 
@@ -151,6 +151,16 @@
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
+
+        // Check Tx result
+        if (store.isInitialized && store.networks[store.currentNetwork].currentTxHash) {
+            await store.checkTxResult()
+
+            if (store.networks[store.currentNetwork].currentTxHash) {
+                // Set listener current tx
+                store.setListenerCurrentTx()
+            }
+        }
     })
 
 
