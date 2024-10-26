@@ -456,6 +456,10 @@ export const useGlobalStore = defineStore('global', {
             // Old base denom
             balance.old_base_denom = base_denom
 
+            if (base_denom === 'share') {
+                return
+            }
+
             // Get (token info/chain name) from assets
             for (let asset of assets) {
                 // Exceptions
