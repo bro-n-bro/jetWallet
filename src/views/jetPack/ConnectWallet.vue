@@ -57,7 +57,8 @@
             connection.send({
                 type: 'address',
                 requestId: store.jetPackRequest.data.request_id,
-                address: store.currentAddress
+                address: store.currentAddress,
+                balances: store.balances
             })
         }
 

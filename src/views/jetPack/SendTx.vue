@@ -129,12 +129,12 @@
             sendTx(txBytes).catch(error => {
                 console.log(error)
 
+                // Reset jetPack request
+                store.jetPackRequest = null
+
                 // Show error
                 showError(error)
             })
-
-            // Reset jetPack request
-            store.jetPackRequest = null
 
             // Redirect
             router.push('/account')

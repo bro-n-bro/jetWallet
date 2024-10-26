@@ -164,7 +164,6 @@
     })
 
 
-    // Check Tx result
     watch(computed(() => store.isInitialized), async () => {
         // Check Tx result
         if (store.isInitialized && store.networks[store.currentNetwork].currentTxHash) {
@@ -175,11 +174,9 @@
                 store.setListenerCurrentTx()
             }
         }
-    })
 
 
-    // Update qr code
-    watch(computed(() => store.currentAddress), () => {
+        // Connect wallet
         if (store.jetPackRequest) {
             // Get address
             if (store.jetPackRequest.method === 'connectWallet') {

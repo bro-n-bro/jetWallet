@@ -733,7 +733,7 @@ input[type='password']::-webkit-credentials-auto-fill-button
 .input,
 .input:focus
 {
-    font-family: var(--font_family);
+    font-family: inherit;
     font-size: 14px;
     line-height: normal;
 

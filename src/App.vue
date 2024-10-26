@@ -122,10 +122,24 @@
                 // Save request
                 store.jetPackRequest = convertArrayBuffersToUint8Arrays(data)
 
-                // Send Tx
+                // Connect wallet
                 if (store.jetPackRequest.method === 'connectWallet') {
                     // Redirect
                     router.push('/jet_pack/connect_wallet')
+                }
+
+                // Get balances
+                if (store.jetPackRequest.method === 'loadBalances') {
+                    // Send response
+                    const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
+
+                    if (connection) {
+                        connection.send({
+                            type: 'balances',
+                            requestId: store.jetPackRequest.data.request_id,
+                            balances: store.balances
+                        })
+                    }
                 }
 
                 // Send Tx
