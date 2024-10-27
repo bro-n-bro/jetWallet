@@ -147,7 +147,7 @@
                                     address: store.currentAddress,
                                 })
                             }
-                        }, 2000)
+                        }, 3000)
                     }
                 }
 
@@ -164,7 +164,7 @@
                                 balances: store.balances
                             })
                         }
-                    }, 2000)
+                    }, 3000)
                 }
 
                 // Send Tx

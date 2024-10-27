@@ -453,12 +453,10 @@ export const useGlobalStore = defineStore('global', {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
+            console.log(balance)
+
             // Old base denom
             balance.old_base_denom = base_denom
-
-            if (base_denom === 'share') {
-                return
-            }
 
             // Get (token info/chain name) from assets
             for (let asset of assets) {
@@ -479,6 +477,12 @@ export const useGlobalStore = defineStore('global', {
                         break;
 
                     case 'drop':
+                        var currentAsset = assets.find(el => el.chain_name === 'celestia')
+
+                        base_denom = 'utia'
+                        break;
+
+                    case 'share':
                         var currentAsset = assets.find(el => el.chain_name === 'celestia')
 
                         base_denom = 'utia'
