@@ -252,24 +252,6 @@
         // // Clear tx hash
         // store.networks[store.currentNetwork].currentTxHash = null
 
-        // Clean notifications
-        notification.notify({
-            group: 'default',
-            clean: true
-        })
-
-        // Show notification
-        notification.notify({
-            group: 'default',
-            speed: 200,
-            duration: 4000,
-            title: i18n.global.t('message.notification_tx_success_title'),
-            type: 'success',
-            data: {
-                explorer_link: getExplorerLink(store.currentNetwork)
-            }
-        })
-
         // Reset Tx Fee
         store.resetTxFee()
     }
