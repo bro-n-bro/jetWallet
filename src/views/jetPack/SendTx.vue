@@ -133,28 +133,10 @@
                 store.jetPackRequest = null
 
                 // Show error
-                // showError(error)
+                showError(error)
 
                 // Show redirect modal
                 store.showRedirectModal = true
-
-                // Clean notifications
-                notification.notify({
-                    group: 'default',
-                    clean: true
-                })
-
-                // Show notification
-                notification.notify({
-                    group: 'default',
-                    speed: 200,
-                    duration: 4000,
-                    title: i18n.global.t('message.notification_tx_success_title'),
-                    type: 'success',
-                    data: {
-                        explorer_link: getExplorerLink(store.currentNetwork)
-                    }
-                })
 
                 // Send response
                 if (store.jetPackRequest) {
@@ -180,28 +162,10 @@
             store.jetPackRequest = null
 
             // Show error
-            // showError(error)
+            showError(error)
 
             // Show redirect modal
             store.showRedirectModal = true
-
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
-
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: 4000,
-                title: i18n.global.t('message.notification_tx_success_title'),
-                type: 'success',
-                data: {
-                    explorer_link: getExplorerLink(store.currentNetwork)
-                }
-            })
 
             // Send response
             if (store.jetPackRequest) {
@@ -261,13 +225,32 @@
         // Set process status
         isProcess.value = false
 
-        // Get error code
-        let errorText = ''
+        // // Get error code
+        // let errorText = ''
 
-        // Get error title
-        error.code
-            ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
-            : errorText = i18n.global.t('message.notification_tx_error_rejected')
+        // // Get error title
+        // error.code
+        //     ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
+        //     : errorText = i18n.global.t('message.notification_tx_error_rejected')
+
+        // // Clean notifications
+        // notification.notify({
+        //     group: 'default',
+        //     clean: true
+        // })
+
+        // // Show notification
+        // notification.notify({
+        //     group: 'default',
+        //     speed: 200,
+        //     duration: 6000,
+        //     title: i18n.global.t('message.notification_tx_error_title'),
+        //     text: errorText,
+        //     type: 'error'
+        // })
+
+        // // Clear tx hash
+        // store.networks[store.currentNetwork].currentTxHash = null
 
         // Clean notifications
         notification.notify({
@@ -279,14 +262,13 @@
         notification.notify({
             group: 'default',
             speed: 200,
-            duration: 6000,
-            title: i18n.global.t('message.notification_tx_error_title'),
-            text: errorText,
-            type: 'error'
+            duration: 4000,
+            title: i18n.global.t('message.notification_tx_success_title'),
+            type: 'success',
+            data: {
+                explorer_link: getExplorerLink(store.currentNetwork)
+            }
         })
-
-        // Clear tx hash
-        store.networks[store.currentNetwork].currentTxHash = null
 
         // Reset Tx Fee
         store.resetTxFee()
