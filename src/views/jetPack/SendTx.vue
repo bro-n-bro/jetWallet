@@ -125,9 +125,6 @@
                 }
             })
 
-
-            console.log(txBytes)
-
             // Send Tx
             sendTx(txBytes).catch(error => {
                 console.log(error)
@@ -141,6 +138,12 @@
                 // Show redirect modal
                 store.showRedirectModal = true
 
+                // Clean notifications
+                notification.notify({
+                    group: 'default',
+                    clean: true
+                })
+
                 // Show notification
                 notification.notify({
                     group: 'default',
@@ -149,20 +152,20 @@
                     title: i18n.global.t('message.notification_tx_success_title'),
                     type: 'success',
                     data: {
-                        explorer_link: getExplorerLink(this.currentNetwork)
+                        explorer_link: getExplorerLink(store.currentNetwork)
                     }
                 })
 
                 // Send response
-                if (this.jetPackRequest) {
-                    const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+                if (store.jetPackRequest) {
+                    const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
 
                     if (connection) {
                         connection.send({
                             type: 'tx',
-                            requestId: this.jetPackRequest.data.request_id,
+                            requestId: store.jetPackRequest.data.request_id,
                             status: 'success',
-                            hash: this.networks[this.currentNetwork].currentTxHash
+                            hash: store.networks[store.currentNetwork].currentTxHash
                         })
                     }
                 }
@@ -182,6 +185,12 @@
             // Show redirect modal
             store.showRedirectModal = true
 
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
             // Show notification
             notification.notify({
                 group: 'default',
@@ -190,20 +199,20 @@
                 title: i18n.global.t('message.notification_tx_success_title'),
                 type: 'success',
                 data: {
-                    explorer_link: getExplorerLink(this.currentNetwork)
+                    explorer_link: getExplorerLink(store.currentNetwork)
                 }
             })
 
             // Send response
-            if (this.jetPackRequest) {
-                const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+            if (store.jetPackRequest) {
+                const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
 
                 if (connection) {
                     connection.send({
                         type: 'tx',
-                        requestId: this.jetPackRequest.data.request_id,
+                        requestId: store.jetPackRequest.data.request_id,
                         status: 'success',
-                        hash: this.networks[this.currentNetwork].currentTxHash
+                        hash: store.networks[store.currentNetwork].currentTxHash
                     })
                 }
             }

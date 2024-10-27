@@ -453,8 +453,6 @@ export const useGlobalStore = defineStore('global', {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
-            console.log(balance)
-
             // Old base denom
             balance.old_base_denom = base_denom
 
