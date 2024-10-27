@@ -165,7 +165,7 @@ export const useGlobalStore = defineStore('global', {
 
                     if (chain) {
                         // Set data
-                        this.currentNetwork = chain.alias
+                        this.setCurrentNetwork(chain.alias)
                     } else {
                         // Show notification - Network not supported
                         notification.notify({
