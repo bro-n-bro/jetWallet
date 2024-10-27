@@ -129,25 +129,8 @@
             sendTx(txBytes).catch(error => {
                 console.log(error)
 
-                // Reset jetPack request
-                store.jetPackRequest = null
-
                 // Show error
                 showError(error)
-
-                // Send response
-                if (store.jetPackRequest) {
-                    const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
-
-                    if (connection) {
-                        connection.send({
-                            type: 'tx',
-                            requestId: store.jetPackRequest.data.request_id,
-                            status: 'success',
-                            hash: store.networks[store.currentNetwork].currentTxHash
-                        })
-                    }
-                }
             })
 
             // Redirect
@@ -155,28 +138,11 @@
         } catch (error) {
             console.log(error)
 
-            // Reset jetPack request
-            store.jetPackRequest = null
-
             // Show error
             showError(error)
 
             // Show redirect modal
             store.showRedirectModal = true
-
-            // Send response
-            if (store.jetPackRequest) {
-                const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
-
-                if (connection) {
-                    connection.send({
-                        type: 'tx',
-                        requestId: store.jetPackRequest.data.request_id,
-                        status: 'success',
-                        hash: store.networks[store.currentNetwork].currentTxHash
-                    })
-                }
-            }
         }
     }
 
@@ -248,6 +214,24 @@
 
         // // Clear tx hash
         // store.networks[store.currentNetwork].currentTxHash = null
+
+
+        // Send response
+        if (store.jetPackRequest) {
+            const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
+
+            if (connection) {
+                connection.send({
+                    type: 'tx',
+                    requestId: store.jetPackRequest.data.request_id,
+                    status: 'success',
+                    hash: store.networks[store.currentNetwork].currentTxHash
+                })
+            }
+        }
+
+        // Reset jetPack request
+        store.jetPackRequest = null
 
         // Reset Tx Fee
         store.resetTxFee()
