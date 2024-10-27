@@ -125,6 +125,9 @@
                 }
             })
 
+
+            console.log(txBytes)
+
             // Send Tx
             sendTx(txBytes).catch(error => {
                 console.log(error)
@@ -133,7 +136,36 @@
                 store.jetPackRequest = null
 
                 // Show error
-                showError(error)
+                // showError(error)
+
+                // Show redirect modal
+                store.showRedirectModal = true
+
+                // Show notification
+                notification.notify({
+                    group: 'default',
+                    speed: 200,
+                    duration: 4000,
+                    title: i18n.global.t('message.notification_tx_success_title'),
+                    type: 'success',
+                    data: {
+                        explorer_link: getExplorerLink(this.currentNetwork)
+                    }
+                })
+
+                // Send response
+                if (this.jetPackRequest) {
+                    const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                    if (connection) {
+                        connection.send({
+                            type: 'tx',
+                            requestId: this.jetPackRequest.data.request_id,
+                            status: 'success',
+                            hash: this.networks[this.currentNetwork].currentTxHash
+                        })
+                    }
+                }
             })
 
             // Redirect
@@ -145,10 +177,36 @@
             store.jetPackRequest = null
 
             // Show error
-            showError(error)
+            // showError(error)
 
             // Show redirect modal
             store.showRedirectModal = true
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 4000,
+                title: i18n.global.t('message.notification_tx_success_title'),
+                type: 'success',
+                data: {
+                    explorer_link: getExplorerLink(this.currentNetwork)
+                }
+            })
+
+            // Send response
+            if (this.jetPackRequest) {
+                const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                if (connection) {
+                    connection.send({
+                        type: 'tx',
+                        requestId: this.jetPackRequest.data.request_id,
+                        status: 'success',
+                        hash: this.networks[this.currentNetwork].currentTxHash
+                    })
+                }
+            }
         }
     }
 

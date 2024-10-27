@@ -1,8 +1,8 @@
 const network = {
     name: 'Mocha Testnet',
-    lcd_api: 'https://lcd-celestia-testnet-mocha.keplr.app',
-    rpc_api: 'https://celestia-testnet-rpc.itrocket.net',
-    websocket_url: 'wss://celestia-testnet-rpc.itrocket.net:443/websocket',
+    lcd_api: 'https://lcd.mocha-4.bronbro.io',
+    rpc_api: 'https://rpc.mocha-4.bronbro.io',
+    websocket_url: 'wss://rpc.mocha-4.bronbro.io:443/websocket',
 
     logo: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/testnets/celestiatestnet3/images/celestia.svg',
     denom: 'utia',

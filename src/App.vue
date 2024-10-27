@@ -128,18 +128,43 @@
                     router.push('/jet_pack/connect_wallet')
                 }
 
+                // Switch chain
+                if (store.jetPackRequest.method === 'switchChain') {
+                    let chain = Object.values(store.networks).find(network => network.chain_id === store.jetPackRequest.data.chain_id)
+
+                    if (chain) {
+                        store.setCurrentNetwork(chain.alias)
+
+                        setTimeout(() => {
+                            // Send response
+                            const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
+
+                            if (connection) {
+                                connection.send({
+                                    type: 'switchChain',
+                                    requestId: store.jetPackRequest.data.request_id,
+                                    chain_id: store.jetPackRequest.data.chain_id,
+                                    address: store.currentAddress,
+                                })
+                            }
+                        }, 2000)
+                    }
+                }
+
                 // Get balances
                 if (store.jetPackRequest.method === 'loadBalances') {
-                    // Send response
-                    const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
+                    setTimeout(() => {
+                        // Send response
+                        const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
 
-                    if (connection) {
-                        connection.send({
-                            type: 'balances',
-                            requestId: store.jetPackRequest.data.request_id,
-                            balances: store.balances
-                        })
-                    }
+                        if (connection) {
+                            connection.send({
+                                type: 'balances',
+                                requestId: store.jetPackRequest.data.request_id,
+                                balances: store.balances
+                            })
+                        }
+                    }, 2000)
                 }
 
                 // Send Tx
