@@ -877,11 +877,13 @@ export const useGlobalStore = defineStore('global', {
                 // Clear tx hash
                 this.networks[this.currentNetwork].currentTxHash = null
 
+                // Show redirect modal
+                if (this.jetPackRequest) {
+                    this.showRedirectModal = true
+                }
+
                 // Reset jetPack request
                 this.jetPackRequest = null
-
-                // Show redirect modal
-                this.showRedirectModal = true
 
                 // Update all balances
                 this.updateAllBalances()
