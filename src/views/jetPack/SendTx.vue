@@ -135,9 +135,6 @@
                 // Show error
                 showError(error)
 
-                // Show redirect modal
-                store.showRedirectModal = true
-
                 // Send response
                 if (store.jetPackRequest) {
                     const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
