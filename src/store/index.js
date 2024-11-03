@@ -302,7 +302,7 @@ export const useGlobalStore = defineStore('global', {
                             this.prices = data
 
                             // Add timestamp
-                            data = new Date().toISOString()
+                            data.timestamp = new Date().toISOString()
 
                             // Save in DB
                             await DBaddData('wallet', [
@@ -385,17 +385,14 @@ export const useGlobalStore = defineStore('global', {
                             timestamp: new Date().toISOString()
                         }))]
                     ])
-
-                    // Balances status
-                    this.isBalancesGot = true
                 }
             } else {
                 // Set from cache
                 this.balances = cacheBalances[`${this.currentNetwork}_balances`].value
-
-                // Balances status
-                this.isBalancesGot = true
             }
+
+            // Balances status
+            this.isBalancesGot = true
         },
 
 
