@@ -369,8 +369,6 @@ export const useGlobalStore = defineStore('global', {
                 // Send request
                 this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
 
-                alert(this.balances.length)
-
                 if (this.balances.length) {
                     // Get balance info
                     for (let balance of this.balances) {
@@ -545,8 +543,6 @@ export const useGlobalStore = defineStore('global', {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
-            alert(base_denom)
-
             // Get (token info/chain name) from assets
             for (let asset of assets) {
                 // Exceptions
@@ -562,6 +558,8 @@ export const useGlobalStore = defineStore('global', {
 
                 // Token info
                 let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
+
+                console.log(tokenInfo)
 
                 if (tokenInfo) {
                     // Set data
