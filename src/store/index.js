@@ -365,8 +365,6 @@ export const useGlobalStore = defineStore('global', {
             // Get from DB
             let cache = await this.getMultipleData([`${this.currentNetwork}_balances`])
 
-            alert(cache[`${this.currentNetwork}_balances`])
-
             if (cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
                 // Send request
                 this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
@@ -391,6 +389,8 @@ export const useGlobalStore = defineStore('global', {
             } else {
                 // Set from cache
                 this.balances = cache[`${this.currentNetwork}_balances`].value
+
+                alert(111)
             }
 
             // Balances status
@@ -445,6 +445,8 @@ export const useGlobalStore = defineStore('global', {
             } else {
                 // Set from cache
                 this.stakedBalances = cache[`${this.currentNetwork}_stakedBalances`].value
+
+                alert(222)
 
                 // Staked balances status
                 this.isStakedBalancesGot = true
