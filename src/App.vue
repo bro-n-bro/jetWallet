@@ -52,6 +52,16 @@
     </notifications>
 
 
+    <!-- Validators modal -->
+    <transition name="from_right">
+    <ConnectWalletModal v-if="showConnectWalletModal" />
+    </transition>
+
+    <!-- Validators modal -->
+    <transition name="from_right">
+    <SendTxModal v-if="showSendTxModal" />
+    </transition>
+
     <!-- Sign transaction modal -->
     <transition name="modal">
     <RedirectModal v-if="store.showRedirectModal"/>
@@ -65,15 +75,17 @@
 
 
 <script setup>
-    import { ref, reactive, onBeforeMount, inject, watch, computed, onMounted } from 'vue'
+    import { ref, reactive, onBeforeMount, inject, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
     import { useTitle, useNetwork } from '@vueuse/core'
-    import { convertArrayBuffersToUint8Arrays } from '@/utils'
+    import { convertArrayBuffersToUint8Arrays, getTgUserId } from '@/utils'
 
     // Components
     import RedirectModal from '@/components/modal/RedirectModal.vue'
+    import ConnectWalletModal from '@/components/jetPack/ConnectWallet.vue'
+    import SendTxModal from '@/components/jetPack/SendTx.vue'
 
 
     const store = useGlobalStore(),
@@ -89,96 +101,16 @@
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
         },
-        network = reactive(useNetwork())
+        network = reactive(useNetwork()),
+        showConnectWalletModal = ref(false),
+        showSendTxModal = ref(false)
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
         // Set page title
         title.value = i18n.global.t('message.page_title')
 
-        if (window.Telegram && window.Telegram.WebApp) {
-            // Decode data
-            let decodedString = decodeURIComponent(Telegram.WebApp.initData)
-
-            // Get user params
-            let userParams = JSON.parse(new URLSearchParams(decodedString).get('user'))
-
-            // Set data
-            if (userParams) {
-                store.tgUserId = userParams.id
-            }
-        }
-
-        // Create peer
-        store.RTCPeer = new Peer(`jw-${store.tgBotId}-${store.tgUserId}`)
-
-        // New connection
-        store.RTCPeer.on('connection', conn => {
-            // Save connection
-            store.RTCConnections[conn.peer] = conn
-
-            // Processing data receipt
-            conn.on('data', data => {
-                // Save request
-                store.jetPackRequest = convertArrayBuffersToUint8Arrays(data)
-
-                // Connect wallet
-                if (store.jetPackRequest.method === 'connectWallet') {
-                    // Redirect
-                    router.push('/jet_pack/connect_wallet')
-                }
-
-                // Switch chain
-                if (store.jetPackRequest.method === 'switchChain') {
-                    let chain = Object.values(store.networks).find(network => network.chain_id === store.jetPackRequest.data.chain_id)
-
-                    if (chain) {
-                        store.setCurrentNetwork(chain.alias)
-
-                        setTimeout(() => {
-                            // Send response
-                            const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
-
-                            if (connection) {
-                                connection.send({
-                                    type: 'switchChain',
-                                    requestId: store.jetPackRequest.data.request_id,
-                                    chain_id: store.jetPackRequest.data.chain_id,
-                                    address: store.currentAddress,
-                                })
-                            }
-                        }, 3000)
-                    }
-                }
-
-                // Get balances
-                if (store.jetPackRequest.method === 'loadBalances') {
-                    setTimeout(() => {
-                        // Send response
-                        const connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
-
-                        if (connection) {
-                            connection.send({
-                                type: 'balances',
-                                requestId: store.jetPackRequest.data.request_id,
-                                balances: store.balances
-                            })
-                        }
-                    }, 3000)
-                }
-
-                // Send Tx
-                if (store.jetPackRequest.method === 'sendTx') {
-                    // Redirect
-                    router.push('/jet_pack/send_tx')
-                }
-            })
-        })
-    })
-
-
-    onMounted(async () => {
-        // Analytics
+        // Set analytics
         if (process.env.VUE_APP_IS_PRODUCTION === 'true') {
             var _paq = window._paq = window._paq || [];
 			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
@@ -193,6 +125,122 @@
 			})();
         }
 
+        // Get telegram user ID
+        if (window.Telegram && window.Telegram.WebApp) {
+            getTgUserId(Telegram.WebApp.initData)
+        }
+
+        // Create RTCPeer
+        store.RTCPeer = new Peer(`jw-${store.tgBotId}-${store.tgUserId}`)
+
+        // New connection
+        store.RTCPeer.on('connection', conn => {
+            // Save connection
+            store.RTCConnections[conn.peer] = conn
+
+            // Processing data receipt
+            conn.on('data', data => {
+                // Save request
+                store.jetPackRequest = convertArrayBuffersToUint8Arrays(data)
+
+                // Connect wallet
+                if (store.jetPackRequest.method === 'connectWallet') {
+                    if (store.currentAddress) {
+                        // Show connect wallet modal
+                        showConnectWalletModal.value = true
+                    } else {
+                        // Watch for changes in the current address
+                        let stopWatch = watch(computed(() => store.currentAddress), () => {
+                            if (store.currentAddress) {
+                                // Stop watch
+                                stopWatch()
+
+                                // Show connect wallet modal
+                                showConnectWalletModal.value = true
+                            }
+                        })
+                    }
+                }
+
+                // Switch network
+                if (store.jetPackRequest.method === 'switchChain') {
+                    // Get connection
+                    let connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
+
+                    // Switch
+                    store.jetPackSwitchNetwork()
+                        .then(() => {
+                            // Watch for changes in the current address
+                            let stopWatch = watch(computed(() => store.currentAddress), () => {
+                                if (store.currentAddress.length) {
+                                    // Stop watch
+                                    stopWatch()
+
+                                    // Send response
+                                    if (connection) {
+                                        connection.send({
+                                            type: 'switchChain',
+                                            requestId: store.jetPackRequest.data.request_id,
+                                            chain_id: store.jetPackRequest.data.chain_id,
+                                            address: store.currentAddress,
+                                        })
+                                    }
+                                }
+                            })
+                        }).catch(() => {
+                            // Send response
+                            if (connection) {
+                                connection.send({
+                                    type: 'error',
+                                    requestId: store.jetPackRequest.data.request_id,
+                                    message: i18n.global.t('message.jp_chain_not_found')
+                                })
+                            }
+                        })
+                }
+
+                // Get balances
+                if (store.jetPackRequest.method === 'loadBalances') {
+                    // Get connection
+                    let connection = store.RTCConnections[store.jetPackRequest.data.peer_id]
+
+                    if (store.isBalancesGot) {
+                        // Send response
+                        if (connection) {
+                            connection.send({
+                                type: 'balances',
+                                requestId: store.jetPackRequest.data.request_id,
+                                balances: store.balances
+                            })
+                        }
+                    } else {
+                        // Watch for changes in the balance receipt status
+                        let stopWatch = watch(computed(() => store.isBalancesGot), () => {
+                            if (store.isBalancesGot) {
+                                // Stop watch
+                                stopWatch()
+
+                                // Send response
+                                if (connection) {
+                                    connection.send({
+                                        type: 'balances',
+                                        requestId: store.jetPackRequest.data.request_id,
+                                        balances: store.balances
+                                    })
+                                }
+                            }
+                        })
+                    }
+                }
+
+                // Send Tx
+                if (store.jetPackRequest.method === 'sendTx') {
+                    // Show send Tx modal
+                    showSendTxModal.value = true
+                }
+            })
+        })
+
 
         // Clear Peer on close
         window.addEventListener('beforeunload', () => {
@@ -203,7 +251,7 @@
             store.RTCPeer.destroy()
         })
 
-
+        // Telegram WebApp settings
         if (window.Telegram && window.Telegram.WebApp) {
             // Initialize the mini-application
             await Telegram.WebApp.ready()
@@ -228,13 +276,9 @@
 
             if (!store.isAgeConfirmed) {
                 Telegram.WebApp.showConfirm(i18n.global.t('message.age_modal_text'), async result => {
-                    if (result) {
-                        // Set age confirmed
-                        await store.setAgeConfirmed()
-                    } else {
-                        // Close App
-                        Telegram.WebApp.close()
-                    }
+                    result
+                        ? await store.setAgeConfirmed() // Approve age
+                        : Telegram.WebApp.close() // Reject age
                 })
             }
 
@@ -253,6 +297,7 @@
     })
 
 
+    // Network change
     watch(computed(() => store.currentNetwork), async () => {
         if (store.isInitialized || store.forcedUnlock) {
             // Clean notifications
@@ -267,20 +312,16 @@
     })
 
 
+    // Offline mode
     watch(computed(() => network.isOnline), async () => {
-        if (network.isOnline) {
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
-        } else {
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
 
+        // Offline
+        if (!network.isOnline) {
             // Show notification
             notification.notify({
                 group: 'default',
@@ -304,12 +345,12 @@
             store.setCurrentNetwork(parsedData[1])
 
             // Wait isInitialized
-            const stopWatch = watch(computed(() => store.isInitialized), () => {
-                if (store.isInitialized && parsedData[0] == 'send') {
+            let stopWatch = watch(computed(() => store.isInitialized), () => {
+                if (store.isInitialized && parsedData[0] === 'send') {
                     // Stop watch
                     stopWatch()
 
-                    // Redirect
+                    // Redirect to send page
                     router.push({
                         path: '/account/send',
                         query: {
@@ -321,8 +362,8 @@
                 }
             })
         } else {
-            // Redirect
-            if (parsedData[0] == 'send') {
+            // Redirect to send
+            if (parsedData[0] === 'send') {
                 router.push({
                     path: '/account/send',
                     query: {
@@ -384,6 +425,20 @@
                 }, store.notificationsCollapsingDelay)
             }
         }
+    })
+
+
+    // Event "close_connect_wallet_modal"
+    emitter.on('close_connect_wallet_modal', () => {
+        // Hide connect wallet modal
+        showConnectWalletModal.value = false
+    })
+
+
+    // Event "close_send_tx_modal"
+    emitter.on('close_send_tx_modal', () => {
+        // Hide send Tx modal
+        showSendTxModal.value = false
     })
 
 

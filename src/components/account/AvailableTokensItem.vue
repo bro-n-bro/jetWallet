@@ -13,9 +13,7 @@
 
             <!-- Token denom -->
             <div class="denom">
-                <span v-if="props.balance.old_base_denom === 'drop' || props.balance.old_base_denom === 'udatom'">d{{ props.balance.token_info.symbol }}</span>
-                <span v-else-if="props.balance.old_base_denom === 'share'">TIA\dTIA pool</span>
-                <span v-else>{{ props.balance.token_info.symbol }}</span>
+                {{ props.balance.token_info.symbol }}
             </div>
 
             <!-- Token amount -->

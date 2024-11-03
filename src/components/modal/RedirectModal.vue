@@ -34,12 +34,8 @@
 
 
 <style scoped>
-    .auth_wrap
+    .modal_content
     {
-        display: flex;
-        flex: 1 0 auto;
-        flex-direction: column;
-
-        margin-top: 28px;
+        min-height: 268px;
     }
 </style>

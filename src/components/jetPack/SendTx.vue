@@ -72,7 +72,6 @@
 <script setup>
     import { ref, inject } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
     import { signTx, sendTx, getExplorerLink } from '@/utils'
 
@@ -83,7 +82,6 @@
 
 
     const store = useGlobalStore(),
-        router = useRouter(),
         emitter = inject('emitter'),
         notification = useNotification(),
         i18n = inject('i18n'),
@@ -133,8 +131,8 @@
                 showError(error)
             })
 
-            // Redirect
-            router.push('/account')
+            // Event "close_send_tx_modal"
+            emitter.emit('close_send_tx_modal')
         } catch (error) {
             console.log(error)
 
@@ -160,9 +158,6 @@
             })
         }
 
-        // Reset jetPack request
-        store.jetPackRequest = null
-
         // Show notification
         notification.notify({
             group: 'default',
@@ -175,11 +170,14 @@
         // Reset Tx Fee
         store.resetTxFee()
 
+        // Reset jetPack request
+        store.jetPackRequest = null
+
+        // Event "close_send_tx_modal"
+        emitter.emit('close_send_tx_modal')
+
         // Show redirect modal
         store.showRedirectModal = true
-
-        // Redirect
-        router.push('/account')
     }
 
 
@@ -188,33 +186,32 @@
         // Set process status
         isProcess.value = false
 
-        // // Get error code
-        // let errorText = ''
+        // Get error code
+        let errorText = ''
 
-        // // Get error title
-        // error.code
-        //     ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
-        //     : errorText = i18n.global.t('message.notification_tx_error_rejected')
+        // Get error title
+        error.code
+            ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
+            : errorText = i18n.global.t('message.notification_tx_error_rejected')
 
-        // // Clean notifications
-        // notification.notify({
-        //     group: 'default',
-        //     clean: true
-        // })
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
 
-        // // Show notification
-        // notification.notify({
-        //     group: 'default',
-        //     speed: 200,
-        //     duration: 6000,
-        //     title: i18n.global.t('message.notification_tx_error_title'),
-        //     text: errorText,
-        //     type: 'error'
-        // })
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 6000,
+            title: i18n.global.t('message.notification_tx_error_title'),
+            text: errorText,
+            type: 'error'
+        })
 
-        // // Clear tx hash
-        // store.networks[store.currentNetwork].currentTxHash = null
-
+        // Clear tx hash
+        store.networks[store.currentNetwork].currentTxHash = null
 
         // Send response
         if (store.jetPackRequest) {
@@ -232,6 +229,9 @@
 
         // Reset jetPack request
         store.jetPackRequest = null
+
+        // Event "close_send_tx_modal"
+        emitter.emit('close_send_tx_modal')
 
         // Reset Tx Fee
         store.resetTxFee()
@@ -283,6 +283,19 @@
 
 
 <style scoped>
+    .send_tx
+    {
+        position: fixed;
+        z-index: 9;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+    }
+
+
     .memo_field
     {
         margin-bottom: auto;

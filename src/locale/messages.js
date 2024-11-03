@@ -218,6 +218,7 @@ export default {
 
             'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
 
+            'jp_chain_not_found': 'Chain not found.',
             'jp_message_rejected': 'The user rejected the request.',
 
 

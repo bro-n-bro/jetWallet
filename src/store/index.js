@@ -10,8 +10,8 @@ import i18n from '@/locale'
 import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
 import neutron from '@/store/networks/neutron'
-import pion from '@/store/networks/pion'
-import mocha from '@/store/networks/mocha'
+// import pion from '@/store/networks/pion'
+// import mocha from '@/store/networks/mocha'
 import omniflix from '@/store/networks/omniflix'
 import dymension from '@/store/networks/dymension'
 import stride from '@/store/networks/stride'
@@ -78,6 +78,8 @@ export const useGlobalStore = defineStore('global', {
         secretIV: null,
         aesKey: null,
         privateKey: null,
+
+        cacheTime: 15 * 60 * 1000,
         notificationsCollapsingDelay: 2000,
 
         TxFee: {
@@ -94,8 +96,8 @@ export const useGlobalStore = defineStore('global', {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
             bostrom: Object.assign(bostrom, networksAdditionalOptions),
             neutron: Object.assign(neutron, networksAdditionalOptions),
-            pion: Object.assign(pion, networksAdditionalOptions),
-            mocha: Object.assign(mocha, networksAdditionalOptions),
+            // pion: Object.assign(pion, networksAdditionalOptions),
+            // mocha: Object.assign(mocha, networksAdditionalOptions),
             omniflix: Object.assign(omniflix, networksAdditionalOptions),
             dymension: Object.assign(dymension, networksAdditionalOptions),
             stride: Object.assign(stride, networksAdditionalOptions),
@@ -131,7 +133,7 @@ export const useGlobalStore = defineStore('global', {
             this.currentAddress = ''
 
             // Get DB data
-            let DBData = await this.getMultipleData(['secret', 'secretIV', 'aesKey', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
+            let DBData = await this.getMultipleData(['secret', 'secretIV', 'aesKey', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember', 'prices'])
 
             // Set data from DB
             this.secret = DBData.secret
@@ -194,9 +196,27 @@ export const useGlobalStore = defineStore('global', {
                 // Create singer
                 let signer = await createSinger()
 
-                this.currentAddress = signer.address
+
+                // Get current address / check cache
+                let cacheCurrentAddress = await this.getMultipleData([`${this.currentNetwork}_currentAddress`])
+
+                if (cacheCurrentAddress[`${this.currentNetwork}_currentAddress`] === undefined) {
+                    // Set current address
+                    this.currentAddress = signer.address
+
+                    // Save in DB
+                    await DBaddData('wallet', [
+                        [`${this.currentNetwork}_currentAddress`, signer.address]
+                    ])
+                } else {
+                    // Set current address
+                    this.currentAddress = cacheCurrentAddress[`${this.currentNetwork}_currentAddress`]
+                }
+
+
                 this.networks[this.currentNetwork].signingClient = signer.signingClient
                 this.networks[this.currentNetwork].signingCosmWasmClient = signer.signingCosmWasmClient
+
 
                 // Set current currency symbol
                 switch (this.currentCurrency) {
@@ -216,17 +236,19 @@ export const useGlobalStore = defineStore('global', {
                         break
                 }
 
-                // Get currencies price
-                await this.getCurrenciesPrice()
 
-                // Get APR for current network
-                this.getCurrentNetworkAPR()
+                // Get currencies price / check cache
+                await this.getCurrenciesPrice(DBData.prices)
+
+                // Get APR for current networke / check cache
+                await this.getCurrentNetworkAPR()
 
                 // Connect to websocket
                 this.connectWebsocket()
 
-                // Is cosmos SDK version support unstaking cancel
-                this.networks[this.currentNetwork].isUnstakingCancelSupport = await this.isUnstakingCancelSupport()
+                // Is cosmos SDK version support unstaking cancel / check cache
+                await this.isUnstakingCancelSupport()
+
 
                 // Wait balances
                 if (this.networks[this.currentNetwork].is_staking_available) {
@@ -269,35 +291,68 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Currencies price
-        async getCurrenciesPrice() {
-            try {
-                await fetch('https://rpc.bronbro.io/price_feed_api/tokens/')
-                    .then(response => response.json())
-                    .then(data => this.prices = data)
-            } catch (error) {
-                console.error(error)
+        async getCurrenciesPrice(DBPrices) {
+            if (DBPrices === undefined || (new Date() - new Date(DBPrices.timestamp) > this.cacheTime)) {
+                try {
+                    // Send request
+                    await fetch('https://rpc.bronbro.io/price_feed_api/tokens/')
+                        .then(response => response.json())
+                        .then(async data => {
+                            // Set data
+                            this.prices = data
+
+                            // Add timestamp
+                            data = new Date().toISOString()
+
+                            // Save in DB
+                            await DBaddData('wallet', [
+                                ['prices', JSON.parse(JSON.stringify(data))]
+                            ])
+                        })
+                } catch (error) {
+                    console.error(error)
+                }
+            } else{
+                // Set from cache
+                this.prices = DBPrices
             }
         },
 
 
         // Get APR for current network
         async getCurrentNetworkAPR() {
-            try {
-                await fetch('https://rpc.bronbro.io/networks/')
-                    .then(response => response.json())
-                    .then(data => {
-                        data.infos.find(chain => {
-                            if (chain.denom == (this.networks[this.currentNetwork].token_name).toLowerCase()) {
+            // Get from DB
+            let cacheAPR = await this.getMultipleData([`${this.currentNetwork}_APR`])
+
+            // Check
+            if (cacheAPR[this.currentNetwork + '_APR'] === undefined || (new Date() - new Date(cacheAPR[this.currentNetwork + '_APR'].timestamp) > this.cacheTime)) {
+                try {
+                    // Send request
+                    await fetch('https://rpc.bronbro.io/networks/')
+                        .then(response => response.json())
+                        .then(async data => {
+                            // Find chain
+                            let chain = data.infos.find(chain => chain.denom === (this.networks[this.currentNetwork].token_name).toLowerCase())
+
+                            if (chain) {
                                 // Set network APR
                                 this.networks[this.currentNetwork].APR = chain.apr
-                            } else (
-                                // Set network APR
-                                this.networks[this.currentNetwork].APR = '0.1008'
-                            )
+
+                                // Save in DB
+                                await DBaddData('wallet', [
+                                    [this.currentNetwork + '_APR', JSON.parse(JSON.stringify({
+                                        value: chain.apr,
+                                        timestamp: new Date().toISOString()
+                                    }))]
+                                ])
+                            }
                         })
-                    })
-            } catch (err) {
-                console.log(err)
+                } catch (error) {
+                    console.log(error)
+                }
+            } else {
+                // Set from cache
+                this.networks[this.currentNetwork].APR = cacheAPR[this.currentNetwork + '_APR'].value
             }
         },
 
@@ -307,21 +362,40 @@ export const useGlobalStore = defineStore('global', {
             // Balances status
             this.isBalancesGot = false
 
-            // Request
-            this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
+            // Get from DB
+            let cacheBalances = await this.getMultipleData([`${this.currentNetwork}_balances`])
 
-            if (this.balances.length) {
-                // Get balance info
-                for (let balance of this.balances) {
-                    await this.getBalanceInfo(balance)
+            if (cacheBalances[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cacheBalances[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
+                // Send request
+                this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
+
+                if (this.balances.length) {
+                    // Get balance info
+                    for (let balance of this.balances) {
+                        await this.getBalanceInfo(balance)
+                    }
+
+                    // Clear balances
+                    this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+
+                    // Save in DB
+                    await DBaddData('wallet', [
+                        [this.currentNetwork + '_balances', JSON.parse(JSON.stringify({
+                            value: this.balances,
+                            timestamp: new Date().toISOString()
+                        }))]
+                    ])
+
+                    // Balances status
+                    this.isBalancesGot = true
                 }
+            } else {
+                // Set from cache
+                this.balances = cacheBalances[`${this.currentNetwork}_balances`].value
 
-                // Clear balances
-                this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+                // Balances status
+                this.isBalancesGot = true
             }
-
-            // Balances status
-            this.isBalancesGot = true
         },
 
 
@@ -330,32 +404,51 @@ export const useGlobalStore = defineStore('global', {
             // Balances status
             this.isStakedBalancesGot = false
 
-            // Request
-            try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
-                    .then(response => response.json())
-                    .then(async data => {
-                        if (data.delegation_responses) {
-                            // Set data
-                            this.stakedBalances = data.delegation_responses
+            // Get from DB
+            let cacheStakedBalances = await this.getMultipleData([`${this.currentNetwork}_stakedBalances`])
 
-                            for (let item of this.stakedBalances) {
-                                // Get balance info
-                                await this.getBalanceInfo(item.balance)
+            if (cacheStakedBalances[`${this.currentNetwork}_stakedBalances`] === undefined || (new Date() - new Date(cacheStakedBalances[`${this.currentNetwork}_stakedBalances`].timestamp) > this.cacheTime)) {
+                // Send request
+                try {
+                    await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
+                        .then(response => response.json())
+                        .then(async data => {
+                            if (data.delegation_responses) {
+                                // Set data
+                                this.stakedBalances = data.delegation_responses
 
-                                // Get validator info
-                                await this.getValidatorInfo(item, item.delegation.validator_address)
+                                for (let item of this.stakedBalances) {
+                                    // Get balance info
+                                    await this.getBalanceInfo(item.balance)
+
+                                    // Get validator info
+                                    await this.getValidatorInfo(item, item.delegation.validator_address)
+                                }
+
+                                // Clear balances
+                                this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
+
+                                // Save in DB
+                                await DBaddData('wallet', [
+                                    [this.currentNetwork + '_stakedBalances', JSON.parse(JSON.stringify({
+                                        value: this.stakedBalances,
+                                        timestamp: new Date().toISOString()
+                                    }))]
+                                ])
+
+                                // Staked balances status
+                                this.isStakedBalancesGot = true
                             }
-
-                            // Clear balances
-                            this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
-                        }
-                    })
+                        })
+                } catch (error) {
+                    console.error(error)
+                }
+            } else {
+                // Set from cache
+                this.stakedBalances = cacheStakedBalances[`${this.currentNetwork}_stakedBalances`].value
 
                 // Staked balances status
                 this.isStakedBalancesGot = true
-            } catch (error) {
-                console.error(error)
             }
         },
 
@@ -388,10 +481,10 @@ export const useGlobalStore = defineStore('global', {
                             // Clear data
                             this.rewardsBalances = []
                         }
-                    })
 
-                // Rewards status
-                this.isRewardsGot = true
+                        // Rewards status
+                        this.isRewardsGot = true
+                    })
             } catch (error) {
                 console.error(error)
             }
@@ -453,37 +546,12 @@ export const useGlobalStore = defineStore('global', {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
-            // Old base denom
-            balance.old_base_denom = base_denom
-
             // Get (token info/chain name) from assets
             for (let asset of assets) {
                 // Exceptions
                 switch (base_denom) {
                     case 'uusdc':
                         var currentAsset = assets.find(el => el.chain_name === 'noble')
-                        break;
-
-                    case 'utia':
-                        var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
-                        break;
-
-                    case 'udatom':
-                        var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
-
-                        base_denom = 'uatom'
-                        break;
-
-                    case 'drop':
-                        var currentAsset = assets.find(el => el.chain_name === 'celestia')
-
-                        base_denom = 'utia'
-                        break;
-
-                    case 'share':
-                        var currentAsset = assets.find(el => el.chain_name === 'celestia')
-
-                        base_denom = 'utia'
                         break;
 
                     default:
@@ -503,19 +571,21 @@ export const useGlobalStore = defineStore('global', {
                 }
             }
 
-            // Format denom exponent
-            let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
+            if (balance.token_info) {
+                // Format denom exponent
+                let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
 
-            // Set exponent for denom
-            formatableToken
-                ? balance.exponent = formatableToken.exponent
-                : balance.exponent = balance.token_info.denom_units[1]?.exponent || 0
+                // Set exponent for denom
+                formatableToken
+                    ? balance.exponent = formatableToken.exponent
+                    : balance.exponent = balance.token_info.denom_units[1]?.exponent || 0
 
-            // Get chain info
-            balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
+                // Get chain info
+                balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
 
-            // Get price
-            balance.price = getPriceByDenom(balance.token_info.symbol)
+                // Get price
+                balance.price = getPriceByDenom(balance.token_info.symbol)
+            }
         },
 
 
@@ -600,12 +670,12 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Set current network
-        async setCurrentNetwork(chain) {
+        setCurrentNetwork(chain) {
             // Update current network
             this.currentNetwork = chain
 
             // Save in DB
-            await DBaddData('wallet', [['currentNetwork', chain]])
+            DBaddData('wallet', [['currentNetwork', chain]])
         },
 
 
@@ -991,31 +1061,47 @@ export const useGlobalStore = defineStore('global', {
 
         // Is unstaking cancel support
         async isUnstakingCancelSupport() {
-            try {
-                let response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/base/tendermint/v1beta1/node_info`),
-                    data = await response.json(),
-                    cosmos_sdk_version = data.application_version.cosmos_sdk_version,
-                    min_version = 'v0.46'
+            let result = false,
+                cacheisUnstakingCancelSupport = await this.getMultipleData([`${this.currentNetwork}_isUnstakingCancelSupport`])
 
-                // Parsing versions
-                let cosmos_sdk_version_parsed = cosmos_sdk_version.replace('v', '').split('-')[0].split('.').map(Number),
-                    min_version_parsed = min_version.replace('v', '').split('-')[0].split('.').map(Number)
+            // Check
+            if (cacheisUnstakingCancelSupport[this.currentNetwork + '_isUnstakingCancelSupport'] === undefined || (new Date() - new Date(cacheisUnstakingCancelSupport[this.currentNetwork + '_isUnstakingCancelSupport'].timestamp) > this.cacheTime)) {
+                try {
+                    let response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/base/tendermint/v1beta1/node_info`),
+                        data = await response.json(),
+                        cosmos_sdk_version = data.application_version.cosmos_sdk_version,
+                        min_version = 'v0.46'
 
-                // Fill in the missing with zeros
-                while (cosmos_sdk_version_parsed.length < 3) cosmos_sdk_version_parsed.push(0)
-                while (min_version_parsed.length < 3) min_version_parsed.push(0)
+                    // Parsing versions
+                    let cosmos_sdk_version_parsed = cosmos_sdk_version.replace('v', '').split('-')[0].split('.').map(Number),
+                        min_version_parsed = min_version.replace('v', '').split('-')[0].split('.').map(Number)
 
-                // Compare versions
-                for (let i = 0; i < 3; i++) {
-                    if (cosmos_sdk_version_parsed[i] > min_version_parsed[i]) return true // Version above minimum
-                    if (cosmos_sdk_version_parsed[i] < min_version_parsed[i]) return false // Version is less than minimum
+                    // Fill in the missing with zeros
+                    while (cosmos_sdk_version_parsed.length < 3) cosmos_sdk_version_parsed.push(0)
+                    while (min_version_parsed.length < 3) min_version_parsed.push(0)
+
+                    // Compare versions
+                    for (let i = 0; i < 3; i++) {
+                        if (cosmos_sdk_version_parsed[i] > min_version_parsed[i]) result = true // Version above minimum
+                        if (cosmos_sdk_version_parsed[i] < min_version_parsed[i]) result = false // Version is less than minimum
+                    }
+
+                    // Save in DB
+                    await DBaddData('wallet', [
+                        [this.currentNetwork + '_isUnstakingCancelSupport', JSON.parse(JSON.stringify({
+                            value: result,
+                            timestamp: new Date().toISOString()
+                        }))]
+                    ])
+                } catch (error) {
+                    console.error(error)
                 }
 
-                return true
-            } catch (error) {
-                console.error(error)
-
-                return false
+                // Set data
+                this.networks[this.currentNetwork].isUnstakingCancelSupport = result
+            } else {
+                // Set from cache
+                this.networks[this.currentNetwork].isUnstakingCancelSupport = cacheisUnstakingCancelSupport[this.currentNetwork + '_isUnstakingCancelSupport'].value
             }
         },
 
@@ -1045,6 +1131,26 @@ export const useGlobalStore = defineStore('global', {
         // Clear BD
         async clearAllData() {
             await DBclearData('wallet')
+        },
+
+
+        // JetPack Switch network
+        jetPackSwitchNetwork() {
+            return new Promise((resolve, reject) => {
+                // Get chain info
+                let chain = Object.values(this.networks).find(network => network.chain_id === this.jetPackRequest.data.chain_id)
+
+                if (chain) {
+                    // Set current network
+                    this.setCurrentNetwork(chain.alias)
+
+                    // Resolve
+                    resolve()
+                } else {
+                    // Reject
+                    reject()
+                }
+            })
         }
     }
 })

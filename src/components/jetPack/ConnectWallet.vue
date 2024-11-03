@@ -1,6 +1,6 @@
 <template>
     <!-- JetPack - Get address page -->
-    <section class="page_container get_address">
+    <section class="page_container connect_wallet">
         <div class="cont">
             <!-- JetPack - Connection page title -->
             <div class="page_title">
@@ -37,12 +37,10 @@
 <script setup>
     import { inject } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
 
 
     const store = useGlobalStore(),
-        router = useRouter(),
         notification = useNotification(),
         i18n = inject('i18n'),
         emitter = inject('emitter')
@@ -57,8 +55,7 @@
             connection.send({
                 type: 'address',
                 requestId: store.jetPackRequest.data.request_id,
-                address: store.currentAddress,
-                balances: store.balances
+                address: store.currentAddress
             })
         }
 
@@ -74,11 +71,11 @@
         // Reset jetPack request
         store.jetPackRequest = null
 
+        // Event "close_connect_wallet_modal"
+        emitter.emit('close_connect_wallet_modal')
+
         // Event "show_redirect_modal"
         emitter.emit('show_redirect_modal')
-
-        // Redirect
-        router.push('/account')
     }
 
 
@@ -95,9 +92,6 @@
             })
         }
 
-        // Reset jetPack request
-        store.jetPackRequest = null
-
         // Show notification
         notification.notify({
             group: 'default',
@@ -107,13 +101,32 @@
             type: 'default'
         })
 
-        // Redirect
-        router.push('/account')
+        // Reset jetPack request
+        store.jetPackRequest = null
+
+        // Event "close_connect_wallet_modal"
+        emitter.emit('close_connect_wallet_modal')
+
+        // Event "show_redirect_modal"
+        emitter.emit('show_redirect_modal')
     }
 </script>
 
 
 <style scoped>
+    .connect_wallet
+    {
+        position: fixed;
+        z-index: 9;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+    }
+
+
     .desc
     {
         font-size: 16px;
