@@ -369,7 +369,7 @@ export const useGlobalStore = defineStore('global', {
                 // Send request
                 this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
 
-                alert(111)
+                alert(this.balances.length)
 
                 if (this.balances.length) {
                     // Get balance info
@@ -377,12 +377,8 @@ export const useGlobalStore = defineStore('global', {
                         await this.getBalanceInfo(balance)
                     }
 
-                    alert(222)
-
                     // Clear balances
                     this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
-
-                    alert(333)
 
                     // Save in DB
                     await DBaddData('wallet', [
@@ -391,8 +387,6 @@ export const useGlobalStore = defineStore('global', {
                             timestamp: new Date().toISOString()
                         }))]
                     ])
-
-                    alert(444)
                 }
             } else {
                 // Set from cache
@@ -550,6 +544,8 @@ export const useGlobalStore = defineStore('global', {
         async getBalanceInfo(balance) {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
+
+            alert(base_denom)
 
             // Get (token info/chain name) from assets
             for (let asset of assets) {
