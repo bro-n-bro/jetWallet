@@ -252,10 +252,7 @@ export const useGlobalStore = defineStore('global', {
 
                 // Wait balances
                 if (this.networks[this.currentNetwork].is_staking_available) {
-                    alert(111)
                     Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
-
-                        alert(222)
                         // Init status
                         this.isInitialized = true
                     })
@@ -367,6 +364,8 @@ export const useGlobalStore = defineStore('global', {
 
             // Get from DB
             let cache = await this.getMultipleData([`${this.currentNetwork}_balances`])
+
+            alert(cache)
 
             if (cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
                 // Send request
