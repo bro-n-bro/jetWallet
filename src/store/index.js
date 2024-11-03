@@ -365,8 +365,8 @@ export const useGlobalStore = defineStore('global', {
             // Get from DB
             let cache = await this.getMultipleData([`${this.currentNetwork}_balances`])
 
-            alert(cache[`${this.currentNetwork}_balances`] === undefined)
-            alert(new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)
+            alert(this.cacheTime)
+            alert(new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp))
 
             if (cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
                 // Send request
