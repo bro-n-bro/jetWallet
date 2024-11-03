@@ -365,12 +365,11 @@ export const useGlobalStore = defineStore('global', {
             // Get from DB
             let cache = await this.getMultipleData([`${this.currentNetwork}_balances`])
 
-            alert(this.cacheTime)
-            alert(new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp))
-
             if (cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
                 // Send request
                 this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
+
+                alert(111)
 
                 if (this.balances.length) {
                     // Get balance info
@@ -378,8 +377,12 @@ export const useGlobalStore = defineStore('global', {
                         await this.getBalanceInfo(balance)
                     }
 
+                    alert(222)
+
                     // Clear balances
                     this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+
+                    alert(333)
 
                     // Save in DB
                     await DBaddData('wallet', [
@@ -388,6 +391,8 @@ export const useGlobalStore = defineStore('global', {
                             timestamp: new Date().toISOString()
                         }))]
                     ])
+
+                    alert(444)
                 }
             } else {
                 // Set from cache
