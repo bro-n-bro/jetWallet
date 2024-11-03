@@ -322,10 +322,10 @@ export const useGlobalStore = defineStore('global', {
         // Get APR for current network
         async getCurrentNetworkAPR() {
             // Get from DB
-            let cacheAPR = await this.getMultipleData([`${this.currentNetwork}_APR`])
+            let cache = await this.getMultipleData([`${this.currentNetwork}_APR`])
 
             // Check
-            if (cacheAPR[this.currentNetwork + '_APR'] === undefined || (new Date() - new Date(cacheAPR[this.currentNetwork + '_APR'].timestamp) > this.cacheTime)) {
+            if (cache[`${this.currentNetwork}_APR`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_APR`].timestamp) > this.cacheTime)) {
                 try {
                     // Send request
                     await fetch('https://rpc.bronbro.io/networks/')
@@ -340,7 +340,7 @@ export const useGlobalStore = defineStore('global', {
 
                                 // Save in DB
                                 await DBaddData('wallet', [
-                                    [this.currentNetwork + '_APR', JSON.parse(JSON.stringify({
+                                    [`${this.currentNetwork}_APR`, JSON.parse(JSON.stringify({
                                         value: chain.apr,
                                         timestamp: new Date().toISOString()
                                     }))]
@@ -352,7 +352,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set from cache
-                this.networks[this.currentNetwork].APR = cacheAPR[this.currentNetwork + '_APR'].value
+                this.networks[this.currentNetwork].APR = cache[`${this.currentNetwork}_APR`].value
             }
         },
 
@@ -363,9 +363,9 @@ export const useGlobalStore = defineStore('global', {
             this.isBalancesGot = false
 
             // Get from DB
-            let cacheBalances = await this.getMultipleData([`${this.currentNetwork}_balances`])
+            let cache = await this.getMultipleData([`${this.currentNetwork}_balances`])
 
-            if (cacheBalances[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cacheBalances[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
+            if (cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
                 // Send request
                 this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
 
@@ -380,7 +380,7 @@ export const useGlobalStore = defineStore('global', {
 
                     // Save in DB
                     await DBaddData('wallet', [
-                        [this.currentNetwork + '_balances', JSON.parse(JSON.stringify({
+                        [`${this.currentNetwork}_balances`, JSON.parse(JSON.stringify({
                             value: this.balances,
                             timestamp: new Date().toISOString()
                         }))]
@@ -388,7 +388,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set from cache
-                this.balances = cacheBalances[`${this.currentNetwork}_balances`].value
+                this.balances = cache[`${this.currentNetwork}_balances`].value
             }
 
             // Balances status
@@ -402,9 +402,9 @@ export const useGlobalStore = defineStore('global', {
             this.isStakedBalancesGot = false
 
             // Get from DB
-            let cacheStakedBalances = await this.getMultipleData([`${this.currentNetwork}_stakedBalances`])
+            let cache = await this.getMultipleData([`${this.currentNetwork}_stakedBalances`])
 
-            if (cacheStakedBalances[`${this.currentNetwork}_stakedBalances`] === undefined || (new Date() - new Date(cacheStakedBalances[`${this.currentNetwork}_stakedBalances`].timestamp) > this.cacheTime)) {
+            if (cache[`${this.currentNetwork}_stakedBalances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_stakedBalances`].timestamp) > this.cacheTime)) {
                 // Send request
                 try {
                     await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
@@ -427,7 +427,7 @@ export const useGlobalStore = defineStore('global', {
 
                                 // Save in DB
                                 await DBaddData('wallet', [
-                                    [this.currentNetwork + '_stakedBalances', JSON.parse(JSON.stringify({
+                                    [`${this.currentNetwork}_stakedBalances`, JSON.parse(JSON.stringify({
                                         value: this.stakedBalances,
                                         timestamp: new Date().toISOString()
                                     }))]
@@ -442,7 +442,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set from cache
-                this.stakedBalances = cacheStakedBalances[`${this.currentNetwork}_stakedBalances`].value
+                this.stakedBalances = cache[`${this.currentNetwork}_stakedBalances`].value
 
                 // Staked balances status
                 this.isStakedBalancesGot = true
