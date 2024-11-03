@@ -559,8 +559,6 @@ export const useGlobalStore = defineStore('global', {
                 // Token info
                 let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
 
-                console.log(tokenInfo)
-
                 if (tokenInfo) {
                     // Set data
                     balance.token_info = tokenInfo
@@ -569,6 +567,9 @@ export const useGlobalStore = defineStore('global', {
                     break
                 }
             }
+
+            alert(111)
+            alert(balance.token_info)
 
             if (balance.token_info) {
                 // Format denom exponent
