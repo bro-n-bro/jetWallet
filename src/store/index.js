@@ -568,9 +568,6 @@ export const useGlobalStore = defineStore('global', {
                 }
             }
 
-            alert(111)
-            alert(balance.token_info)
-
             if (balance.token_info) {
                 // Format denom exponent
                 let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
