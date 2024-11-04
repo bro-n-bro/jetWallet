@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createSinger, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
+import { getAddress, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
 import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
@@ -20,7 +20,6 @@ import stride from '@/store/networks/stride'
 
 // Networks additional options
 const networksAdditionalOptions = {
-    signingClient: {},
     websocket: null,
     currentTxHash: null,
     unbondingTime: 0,
@@ -73,11 +72,6 @@ export const useGlobalStore = defineStore('global', {
 
         RTCPeer: null,
         RTCConnections: {},
-
-        secret: null,
-        secretIV: null,
-        aesKey: null,
-        privateKey: null,
 
         cacheTime: 15 * 60 * 1000,
         notificationsCollapsingDelay: 2000,
@@ -133,13 +127,9 @@ export const useGlobalStore = defineStore('global', {
             this.currentAddress = ''
 
             // Get DB data
-            let DBData = await this.getMultipleData(['secret', 'secretIV', 'aesKey', 'privateKey', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember', 'prices'])
+            let DBData = await this.getMultipleData(['currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember', 'prices'])
 
             // Set data from DB
-            this.secret = DBData.secret
-            this.secretIV = DBData.secretIV
-            this.aesKey = DBData.aesKey
-            this.privateKey = DBData.privateKey
             this.currentCurrency = DBData.currentCurrency
             this.TxFee.currentLevel = DBData.TxFeeCurrentLevel || 'average'
             this.TxFee.isRemember = DBData.TxFeeIsRemember || false
@@ -193,29 +183,24 @@ export const useGlobalStore = defineStore('global', {
             }
 
             try {
-                // Create singer
-                let signer = await createSinger()
-
-
                 // Get current address / check cache
                 let cacheCurrentAddress = await this.getMultipleData([`${this.currentNetwork}_currentAddress`])
 
                 if (cacheCurrentAddress[`${this.currentNetwork}_currentAddress`] === undefined) {
+                    // Get address
+                    let address = await getAddress()
+
                     // Set current address
-                    this.currentAddress = signer.address
+                    this.currentAddress = address
 
                     // Save in DB
                     await DBaddData('wallet', [
-                        [`${this.currentNetwork}_currentAddress`, signer.address]
+                        [`${this.currentNetwork}_currentAddress`, address]
                     ])
                 } else {
                     // Set current address
                     this.currentAddress = cacheCurrentAddress[`${this.currentNetwork}_currentAddress`]
                 }
-
-
-                this.networks[this.currentNetwork].signingClient = signer.signingClient
-                this.networks[this.currentNetwork].signingCosmWasmClient = signer.signingCosmWasmClient
 
 
                 // Set current currency symbol
@@ -367,32 +352,44 @@ export const useGlobalStore = defineStore('global', {
 
             if (forceUpdate || cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
                 // Send request
-                this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
+                try {
+                    await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/bank/v1beta1/balances/${this.currentAddress}`)
+                        .then(response => response.json())
+                        .then(async data => {
+                            if (data.balances.length) {
+                                // Set data
+                                this.balances = data.balances
 
-                if (this.balances.length) {
-                    // Get balance info
-                    for (let balance of this.balances) {
-                        await this.getBalanceInfo(balance)
-                    }
+                                for (let balance of this.balances) {
+                                    // Get balance info
+                                    await this.getBalanceInfo(balance)
+                                }
 
-                    // Clear balances
-                    this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+                                // Clear balances
+                                this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
 
-                    // Save in DB
-                    await DBaddData('wallet', [
-                        [`${this.currentNetwork}_balances`, JSON.parse(JSON.stringify({
-                            value: this.balances,
-                            timestamp: new Date().toISOString()
-                        }))]
-                    ])
+                                // Save in DB
+                                await DBaddData('wallet', [
+                                    [`${this.currentNetwork}_balances`, JSON.parse(JSON.stringify({
+                                        value: this.balances,
+                                        timestamp: new Date().toISOString()
+                                    }))]
+                                ])
+
+                                // Balances status
+                                this.isBalancesGot = true
+                            }
+                        })
+                } catch (error) {
+                    console.error(error)
                 }
             } else {
                 // Set from cache
                 this.balances = cache[`${this.currentNetwork}_balances`].value
-            }
 
-            // Balances status
-            this.isBalancesGot = true
+                // Balances status
+                this.isBalancesGot = true
+            }
         },
 
 
@@ -612,13 +609,8 @@ export const useGlobalStore = defineStore('global', {
             // Get from DB
             let DBData = await this.getMultipleData(['secret', 'secretIV', 'aesKey'])
 
-            // Save in store
-            this.secret = DBData.secret
-            this.secretIV = DBData.secretIV
-            this.aesKey = DBData.aesKey
-
             // Return memo
-            return await decryptData(this.secret, this.secretIV, this.aesKey)
+            return await decryptData(DBData.secret, DBData.secretIV, DBData.aesKey)
         },
 
 
@@ -629,11 +621,6 @@ export const useGlobalStore = defineStore('global', {
 
             // Encryption
             let { ciphertext, iv } = await encryptData(secret, aesKey)
-
-            // Save in store
-            this.secret = ciphertext
-            this.secretIV = iv
-            this.aesKey = aesKey
 
             // Save in DB
             await DBaddData('wallet', [
@@ -651,11 +638,6 @@ export const useGlobalStore = defineStore('global', {
 
             // Encryption
             let { ciphertext, iv } = await encryptData(privateKey, aesKey)
-
-            // Save in store
-            this.privateKey = ciphertext
-            this.secretIV = iv
-            this.aesKey = aesKey
 
             // Save in DB
             await DBaddData('wallet', [

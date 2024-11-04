@@ -1,16 +1,12 @@
-import { useGlobalStore } from '@/store'
+import { createSinger } from './createSinger'
 
 
 // Send Tx
 export const sendTx = async txBytes => {
-    let store = useGlobalStore()
+    let { signingCosmWasmClient } = await createSinger()
 
     // Broadcast
-    await store.networks[store.currentNetwork].signingCosmWasmClient.broadcastTx(
-        txBytes,
-        store.networks[store.currentNetwork].signingCosmWasmClient.broadcastTimeoutMs,
-        store.networks[store.currentNetwork].signingCosmWasmClient.broadcastPollIntervalMs
-    )
+    await signingCosmWasmClient.broadcastTx(txBytes, signingCosmWasmClient.broadcastTimeoutMs, signingCosmWasmClient.broadcastPollIntervalMs)
 }
 
 

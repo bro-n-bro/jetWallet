@@ -1,6 +1,4 @@
 import { useGlobalStore } from '@/store'
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { SigningStargateClient } from '@cosmjs/stargate'
 
 import { DBgetMultipleData } from '@/utils/db'
 import { decryptData } from './decryptData'
@@ -8,8 +6,8 @@ import { importWalletFromMnemonic } from './importWalletFromMnemonic'
 import { importWalletFromPrivateKey } from './importWalletFromPrivateKey'
 
 
-// Create singer
-export const createSinger = async () => {
+// Get address
+export const getAddress = async () => {
     let store = useGlobalStore(),
         wallet = null
 
@@ -33,14 +31,11 @@ export const createSinger = async () => {
         wallet = await importWalletFromPrivateKey(decryptedData, store.networks[store.currentNetwork].prefix)
     }
 
-    // Stargate client
-    let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
+    // Current address
+    let address = (await wallet.getAccounts())[0].address
 
-    // Stargate Cosm wasm client
-    let signingCosmWasmClient = await SigningCosmWasmClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
-
-    return { signingClient, signingCosmWasmClient }
+    return address
 }
 
 
-export default createSinger
+export default getAddress

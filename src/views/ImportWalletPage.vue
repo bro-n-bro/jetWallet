@@ -256,7 +256,7 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
+    import { ref, onBeforeMount, onMounted, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
     import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils'
@@ -269,7 +269,6 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
-        emitter = inject('emitter'),
         loading = ref(true),
         activeTab = ref(1),
         tab1 = ref(null),

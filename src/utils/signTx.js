@@ -2,10 +2,13 @@ import { useGlobalStore } from '@/store'
 import { TxRaw } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { sha256 } from '@cosmjs/crypto'
 
+import { createSinger } from './createSinger'
+
 
 // Sign Tx
 export const signTx = async (msg, memo) => {
-    let store = useGlobalStore()
+    let store = useGlobalStore(),
+        { signingCosmWasmClient } = await createSinger()
 
     // Fee
     let fee = {
@@ -17,7 +20,7 @@ export const signTx = async (msg, memo) => {
     }
 
     // Sign
-    let txRaw = await store.networks[store.currentNetwork].signingCosmWasmClient.sign(store.currentAddress, msg, fee, memo)
+    let txRaw = await signingCosmWasmClient.sign(store.currentAddress, msg, fee, memo)
 
     // Encode TxRaw
     let txBytes = TxRaw.encode(txRaw).finish()

@@ -22,6 +22,9 @@ export { default as encryptData } from './encryptData'
 // Decryption
 export { default as decryptData } from './decryptData'
 
+// Get address
+export { default as getAddress } from './getAddress'
+
 // Create singer
 export { default as createSinger } from './createSinger'
 
