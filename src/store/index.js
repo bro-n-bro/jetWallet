@@ -358,14 +358,14 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Get balances
-        async getBalances() {
+        async getBalances(forceUpdate = false) {
             // Balances status
             this.isBalancesGot = false
 
             // Get from DB
             let cache = await this.getMultipleData([`${this.currentNetwork}_balances`])
 
-            if (cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
+            if (forceUpdate || cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
                 // Send request
                 this.balances = await this.networks[this.currentNetwork].signingClient.getAllBalances(this.currentAddress)
 
@@ -397,14 +397,14 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Get staked balances
-        async getStakedBalances() {
+        async getStakedBalances(forceUpdate = false) {
             // Balances status
             this.isStakedBalancesGot = false
 
             // Get from DB
             let cache = await this.getMultipleData([`${this.currentNetwork}_stakedBalances`])
 
-            if (cache[`${this.currentNetwork}_stakedBalances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_stakedBalances`].timestamp) > this.cacheTime)) {
+            if (forceUpdate || cache[`${this.currentNetwork}_stakedBalances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_stakedBalances`].timestamp) > this.cacheTime)) {
                 // Send request
                 try {
                     await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
@@ -965,12 +965,12 @@ export const useGlobalStore = defineStore('global', {
         async updateAllBalances() {
             // Update balances
             if (this.isBalancesGot) {
-                var getBalances = await this.getBalances()
+                var getBalances = await this.getBalances(true)
             }
 
             // Update staked balances
             if (this.isStakedBalancesGot) {
-                var getStakedBalances = await this.getStakedBalances()
+                var getStakedBalances = await this.getStakedBalances(true)
             }
 
             // Wait balances
