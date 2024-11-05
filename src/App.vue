@@ -251,6 +251,7 @@
             store.RTCPeer.destroy()
         })
 
+
         // Telegram WebApp settings
         if (window.Telegram && window.Telegram.WebApp) {
             // Initialize the mini-application
@@ -293,6 +294,28 @@
                 // Redirect to send
                 redirectToSend(parsedData)
             })
+        }
+    })
+
+
+    watch(computed(() => store.isInitialized), () => {
+        // Connect wallet
+        if (store.jetPackRequest && store.jetPackRequest.method === 'connectWallet') {
+            if (store.currentAddress) {
+                // Show connect wallet modal
+                showConnectWalletModal.value = true
+            } else {
+                // Watch for changes in the current address
+                let stopWatch = watch(computed(() => store.currentAddress), () => {
+                    if (store.currentAddress) {
+                        // Stop watch
+                        stopWatch()
+
+                        // Show connect wallet modal
+                        showConnectWalletModal.value = true
+                    }
+                })
+            }
         }
     })
 

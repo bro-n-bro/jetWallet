@@ -147,13 +147,15 @@
         // Get swiper instance
         swiperEl.value = document.querySelector('swiper-container')
 
-        swiperEl.value.addEventListener('swiperslidechangetransitionstart', async () => {
+        swiperEl.value.addEventListener('swiperslidechangetransitionstart', () => {
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
 
+
         // Check Tx result
         if (store.isInitialized && store.networks[store.currentNetwork].currentTxHash) {
+            // Check Tx
             await store.checkTxResult()
 
             if (store.networks[store.currentNetwork].currentTxHash) {
@@ -167,21 +169,12 @@
     watch(computed(() => store.isInitialized), async () => {
         // Check Tx result
         if (store.isInitialized && store.networks[store.currentNetwork].currentTxHash) {
+            // Check Tx
             await store.checkTxResult()
 
             if (store.networks[store.currentNetwork].currentTxHash) {
                 // Set listener current tx
                 store.setListenerCurrentTx()
-            }
-        }
-
-
-        // Connect wallet
-        if (store.jetPackRequest) {
-            // Get address
-            if (store.jetPackRequest.method === 'connectWallet') {
-                // Redirect
-                router.push('/jet_pack/connect_wallet')
             }
         }
     })
@@ -192,6 +185,7 @@
         // Show Stats modal
         showStatsModal.value = true
 
+        // Update status
         store.isAnyModalOpen = true
     }
 

@@ -6,6 +6,10 @@ const dbPromise = openDB('bro_db', 1, {
         if (!db.objectStoreNames.contains('wallet')) {
             db.createObjectStore('wallet')
         }
+
+        if (!db.objectStoreNames.contains('secret')) {
+            db.createObjectStore('secret')
+        }
     }
 })
 
