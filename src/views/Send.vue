@@ -81,6 +81,7 @@
                 <!-- Send page recipient address field -->
                 <div class="field">
                     <input type="text" class="input big" v-model="address" ref="addressInput"
+                        :placeholder="$t('message.placeholder_address')"
                         @input="validateAddress()"
                         @paste="validateAddress()">
 
@@ -111,7 +112,8 @@
 
                 <!-- Send page amount field -->
                 <div class="field">
-                    <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
+                    <input type="number" inputmode="numeric" class="input big" v-model="amount"
+                        :placeholder="$t('message.placeholder_amount', { token: balance.token_info.symbol })"
                         @input="validateAmount()">
 
                     <!-- Send page amount max. button -->
@@ -131,7 +133,8 @@
 
                 <!-- Send page memo field -->
                 <div class="field">
-                    <input type="text" class="input big" v-model="memo">
+                    <input type="text" class="input big" v-model="memo"
+                        :placeholder="$t('message.placeholder_memo')">
                 </div>
             </div>
 

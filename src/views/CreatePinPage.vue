@@ -173,7 +173,7 @@
 
 
 <script setup>
-    import { onBeforeMount, ref, computed, inject } from 'vue'
+    import { onBeforeMount, ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
 
@@ -183,7 +183,6 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
-        emitter = inject('emitter'),
         loading = ref(true),
         walletName = ref(''),
         idValidWalletName = ref(false),

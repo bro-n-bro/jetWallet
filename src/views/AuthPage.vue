@@ -12,14 +12,6 @@
                 <div class="page_data">
                     <!-- Auth -->
                     <Auth />
-
-                    <!-- Buttons -->
-                    <div class="btns">
-                        <!-- Login button -->
-                        <button class="btn" @click.prevent="deleteAll()">
-                            <span>Delete address</span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -59,15 +51,6 @@
         emitter.off('auth')
         emitter.off('show_error_auth_modal')
     })
-
-
-    async function deleteAll() {
-        // Clear data
-        await store.clearAllData()
-
-        // Redirect
-        router.push('/')
-    }
 
 
     // Event "auth"

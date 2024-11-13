@@ -19,7 +19,7 @@
 
                         <!-- Claim rewards cost -->
                         <div class="cost">
-                            ~ <div class="odometer" v-odometer="rewardsCost"></div> $
+                            ≈ <div class="odometer" v-odometer="rewardsCost"></div> $
                         </div>
                     </div>
 

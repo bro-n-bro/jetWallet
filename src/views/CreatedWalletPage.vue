@@ -11,7 +11,7 @@
             <div class="page_data_wrap">
                 <div class="page_data">
                     <!-- Index page image -->
-                    <div class="image" :style="{ '--animation_offset': `${animationOffset}px` }" ref="imageRef" :class="{ animate: animationOffset }">
+                    <div class="image" :style="{ '--animation_offset': `${animationOffset}px` }" ref="imageRef" :class="{ animate: animationOffset, show: ready }">
                         <img src="@/assets/wallet_created_page_front_mountains.svg" alt="" class="front_mountains">
 
                         <img src="@/assets/wallet_created_page_rocket.svg" alt="" class="rocket" ref="rocket">
@@ -50,7 +50,8 @@
         imageBgRef = ref(null),
         rocket = ref(null),
         rocketTimeout = ref(null),
-        imageTimeout = ref(null)
+        imageTimeout = ref(null),
+        ready = ref(false)
 
 
     onUnmounted(() => {
@@ -74,6 +75,9 @@
 
         // Rocket fly away
         rocketTimeout.value = setTimeout(() => rocket.value.classList.add('fly_away'), 3200)
+
+        // Ready status
+        ready.value = true
     }
 </script>
 
@@ -91,10 +95,18 @@
         width: 100%;
         height: 100%;
 
+        transition: opacity .1s linear;
         pointer-events: none;
 
+        opacity: 0;
         border-radius: inherit;
         background: linear-gradient(to bottom,  #000 0%,#000116 100%);
+    }
+
+
+    .image.show
+    {
+        opacity: 1;
     }
 
 

@@ -11,10 +11,11 @@
             <!-- Loader -->
             <Loader v-if="!store.isInitialized || !store.isBalancesGot" />
 
+
             <!-- Balance value -->
             <div v-else class="val">
                 <span @click.prevent="store.updateAllBalances()">
-                    {{ formatTokenCost(calcBalancesCost()) }}
+                    {{ formatTokenCost(calcBalancesCost()) + store.currentCurrencySymbol }}
                 </span>
             </div>
 
@@ -79,8 +80,8 @@
         position: relative;
         z-index: 3;
 
-        height: 266px;
-        padding: 67px 22px 19px;
+        height: 296px;
+        padding: 97px 22px 19px;
     }
 
 

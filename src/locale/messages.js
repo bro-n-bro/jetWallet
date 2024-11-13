@@ -150,12 +150,16 @@ export default {
 
 
             // Stats
-            'stats_title': 'Stats',
+            'stats_title': 'Staking Profit',
             'stats_token_label': 'Token:',
             'stats_available_label': 'Available:',
             'stats_staked_label': 'Staked:',
             'stats_personal_apr_label': 'Personal APR:',
             'stats_daily_profit_label': 'Est. daily profit:',
+
+
+            // Profile
+            'profile_title': 'My wallets',
 
 
             // Redelegations
@@ -222,12 +226,24 @@ export default {
             'jp_message_rejected': 'The user rejected the request.',
 
 
+            // Placeholders
+            'placeholder_address': 'Enter address',
+            'placeholder_amount': '{token} Amount',
+            'placeholder_memo': 'Required for sending to CEX',
+            'placeholder_memo2': 'Your Custom Memo',
+
+
             // Notifications
             'notification_copied_title': 'Copied to clipboard',
             'notification_offline_title': 'You are offline',
+
+            'notification_wallet_update_success': 'Wallet updated successfully.',
+            'notification_wallet_remove_success': 'wallet with the name "{name}" deleted successfully.',
+
             'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Success',
             'notification_tx_error_title': 'Error:',
+
             'notification_error_title': 'Something went wrong, try again later',
             'notification_error_invalid_paste_title': 'Incorrect address in the clipboard',
 

@@ -1,14 +1,18 @@
 import { openDB } from 'idb'
 
 
-const dbPromise = openDB('bro_db', 1, {
+const dbPromise = openDB('jetWallet', 1, {
     upgrade(db) {
-        if (!db.objectStoreNames.contains('wallet')) {
-            db.createObjectStore('wallet')
+        if (!db.objectStoreNames.contains('global')) {
+            db.createObjectStore('global')
         }
 
         if (!db.objectStoreNames.contains('secret')) {
             db.createObjectStore('secret')
+        }
+
+        if (!db.objectStoreNames.contains('wallet1')) {
+            db.createObjectStore('wallet1')
         }
     }
 })
@@ -29,11 +33,9 @@ export async function DBgetData(storeName, key) {
 
 
 export async function DBgetMultipleData(storeName, keys) {
-    const db = await dbPromise,
-        results = await Promise.all(keys.map(key => db.get(storeName, key)))
-
-    // Create an object that maps keys and values
-    let keyValueMap = {}
+    let db = await dbPromise,
+        results = await Promise.all(keys.map(key => db.get(storeName, key))),
+        keyValueMap = {}
 
     keys.forEach((key, index) => keyValueMap[key] = results[index])
 
@@ -61,10 +63,25 @@ export async function DBdeleteData(storeName, id) {
 }
 
 
-export async function DBclearData(storeName) {
-    const db = await dbPromise
-    const tx = db.transaction(storeName, 'readwrite')
-    const store = tx.objectStore(storeName)
+export async function DBclearStore(storeName) {
+    let db = await dbPromise,
+        tx = db.transaction(storeName, 'readwrite')
+        store = tx.objectStore(storeName)
+
     await store.clear()
     await tx.done
+}
+
+
+export async function DBclearAllData() {
+    let db = await dbPromise,
+        storeNames = db.objectStoreNames
+
+    for (let storeName of storeNames) {
+        let tx = db.transaction(storeName, 'readwrite'),
+            store = tx.objectStore(storeName)
+
+        await store.clear()
+        await tx.done
+    }
 }

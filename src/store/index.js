@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { getAddress, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { DBaddData, DBclearData, DBgetMultipleData } from '@/utils/db'
+import { DBaddData, DBgetMultipleData, DBgetData, DBclearAllData, DBclearStore } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
+import sss from 'shamirs-secret-sharing'
 import i18n from '@/locale'
 
 
@@ -49,6 +50,8 @@ export const useGlobalStore = defineStore('global', {
         forcedUnlock: false,
         authErrorLimit: 4,
 
+        currentWalletID: 1,
+        currentWalletName: '',
         currentNetwork: '',
         currentAddress: '',
         currentCurrency: '',
@@ -58,6 +61,7 @@ export const useGlobalStore = defineStore('global', {
         redelegateValidatorFrom: null,
         redelegateValidatorTo: null,
 
+        wallets: [],
         prices: [],
         balances: [],
         stakedBalances: [],
@@ -114,6 +118,30 @@ export const useGlobalStore = defineStore('global', {
 
 
     actions: {
+        // Get current wallet ID
+        async getCurrentWalletID() {
+            // Get data from DB
+            let DBCurrentWalletID = await DBgetData('global', 'currentWalletID')
+
+            if (DBCurrentWalletID !== undefined) {
+                // Set data from DB
+                this.currentWalletID = DBCurrentWalletID
+            }
+        },
+
+
+        // Set current wallet ID
+        async setCurrentWalletID(walletID = 1) {
+            // Save in DB
+            await DBaddData('global', [
+                ['currentWalletID', walletID]
+            ])
+
+            // Set data
+            this.currentWalletID = walletID
+        },
+
+
         // Init APP
         async initApp() {
             // Init status
@@ -127,12 +155,13 @@ export const useGlobalStore = defineStore('global', {
             this.currentAddress = ''
 
             // Get DB data
-            let DBData = await this.getMultipleData(['currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember', 'prices'])
+            let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, ['name', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
 
             // Set data from DB
+            this.currentWalletName = DBData.name
             this.currentCurrency = DBData.currentCurrency
-            this.TxFee.currentLevel = DBData.TxFeeCurrentLevel || 'average'
-            this.TxFee.isRemember = DBData.TxFeeIsRemember || false
+            this.TxFee.currentLevel = DBData.TxFeeCurrentLevel !== undefined ? DBData.TxFeeCurrentLevel : 'average'
+            this.TxFee.isRemember = DBData.TxFeeIsRemember !== undefined ? DBData.TxFeeIsRemember : false
 
             // Set current network
             if (this.jetPackRequest) {
@@ -184,9 +213,9 @@ export const useGlobalStore = defineStore('global', {
 
             try {
                 // Get current address / check cache
-                let cacheCurrentAddress = await this.getMultipleData([`${this.currentNetwork}_currentAddress`])
+                let cacheCurrentAddress = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_currentAddress`)
 
-                if (cacheCurrentAddress[`${this.currentNetwork}_currentAddress`] === undefined) {
+                if (cacheCurrentAddress === undefined) {
                     // Get address
                     let address = await getAddress()
 
@@ -194,12 +223,12 @@ export const useGlobalStore = defineStore('global', {
                     this.currentAddress = address
 
                     // Save in DB
-                    await DBaddData('wallet', [
+                    await DBaddData(`wallet${this.currentWalletID}`, [
                         [`${this.currentNetwork}_currentAddress`, address]
                     ])
                 } else {
                     // Set current address
-                    this.currentAddress = cacheCurrentAddress[`${this.currentNetwork}_currentAddress`]
+                    this.currentAddress = cacheCurrentAddress
                 }
 
 
@@ -223,7 +252,7 @@ export const useGlobalStore = defineStore('global', {
 
 
                 // Get currencies price / check cache
-                await this.getCurrenciesPrice(DBData.prices)
+                await this.getCurrenciesPrice()
 
                 // Get APR for current networke / check cache
                 await this.getCurrentNetworkAPR()
@@ -276,8 +305,11 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Currencies price
-        async getCurrenciesPrice(DBPrices) {
-            if (DBPrices === undefined || (new Date() - new Date(DBPrices.timestamp) > this.cacheTime)) {
+        async getCurrenciesPrice() {
+            // Get from DB
+            let cachePrices = await DBgetData('global', 'prices')
+
+            if (cachePrices === undefined || (new Date() - new Date(cachePrices.timestamp) > this.cacheTime)) {
                 try {
                     // Send request
                     await fetch('https://rpc.bronbro.io/price_feed_api/tokens/')
@@ -290,7 +322,7 @@ export const useGlobalStore = defineStore('global', {
                             data.timestamp = new Date().toISOString()
 
                             // Save in DB
-                            await DBaddData('wallet', [
+                            await DBaddData('global', [
                                 ['prices', JSON.parse(JSON.stringify(data))]
                             ])
                         })
@@ -299,7 +331,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else{
                 // Set from cache
-                this.prices = DBPrices
+                this.prices = cachePrices
             }
         },
 
@@ -307,10 +339,10 @@ export const useGlobalStore = defineStore('global', {
         // Get APR for current network
         async getCurrentNetworkAPR() {
             // Get from DB
-            let cache = await this.getMultipleData([`${this.currentNetwork}_APR`])
+            let cacheAPR = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_APR`)
 
             // Check
-            if (cache[`${this.currentNetwork}_APR`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_APR`].timestamp) > this.cacheTime)) {
+            if (cacheAPR === undefined || (new Date() - new Date(cacheAPR.timestamp) > this.cacheTime)) {
                 try {
                     // Send request
                     await fetch('https://rpc.bronbro.io/networks/')
@@ -324,7 +356,7 @@ export const useGlobalStore = defineStore('global', {
                                 this.networks[this.currentNetwork].APR = chain.apr
 
                                 // Save in DB
-                                await DBaddData('wallet', [
+                                await DBaddData(`wallet${this.currentWalletID}`, [
                                     [`${this.currentNetwork}_APR`, JSON.parse(JSON.stringify({
                                         value: chain.apr,
                                         timestamp: new Date().toISOString()
@@ -337,7 +369,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set from cache
-                this.networks[this.currentNetwork].APR = cache[`${this.currentNetwork}_APR`].value
+                this.networks[this.currentNetwork].APR = cacheAPR.value
             }
         },
 
@@ -348,9 +380,9 @@ export const useGlobalStore = defineStore('global', {
             this.isBalancesGot = false
 
             // Get from DB
-            let cache = await this.getMultipleData([`${this.currentNetwork}_balances`])
+            let cacheBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_balances`)
 
-            if (forceUpdate || cache[`${this.currentNetwork}_balances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_balances`].timestamp) > this.cacheTime)) {
+            if (forceUpdate || cacheBalances === undefined || (new Date() - new Date(cacheBalances.timestamp) > this.cacheTime)) {
                 // Send request
                 try {
                     await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/bank/v1beta1/balances/${this.currentAddress}`)
@@ -369,15 +401,12 @@ export const useGlobalStore = defineStore('global', {
                                 this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
 
                                 // Save in DB
-                                await DBaddData('wallet', [
+                                await DBaddData(`wallet${this.currentWalletID}`, [
                                     [`${this.currentNetwork}_balances`, JSON.parse(JSON.stringify({
                                         value: this.balances,
                                         timestamp: new Date().toISOString()
                                     }))]
                                 ])
-
-                                // Balances status
-                                this.isBalancesGot = true
                             }
                         })
                 } catch (error) {
@@ -385,11 +414,11 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set from cache
-                this.balances = cache[`${this.currentNetwork}_balances`].value
-
-                // Balances status
-                this.isBalancesGot = true
+                this.balances = cacheBalances.value
             }
+
+            // Balances status
+            this.isBalancesGot = true
         },
 
 
@@ -399,9 +428,9 @@ export const useGlobalStore = defineStore('global', {
             this.isStakedBalancesGot = false
 
             // Get from DB
-            let cache = await this.getMultipleData([`${this.currentNetwork}_stakedBalances`])
+            let cacheStakedBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_stakedBalances`)
 
-            if (forceUpdate || cache[`${this.currentNetwork}_stakedBalances`] === undefined || (new Date() - new Date(cache[`${this.currentNetwork}_stakedBalances`].timestamp) > this.cacheTime)) {
+            if (forceUpdate || cacheStakedBalances === undefined || (new Date() - new Date(cacheStakedBalances.timestamp) > this.cacheTime)) {
                 // Send request
                 try {
                     await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
@@ -423,7 +452,7 @@ export const useGlobalStore = defineStore('global', {
                                 this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
 
                                 // Save in DB
-                                await DBaddData('wallet', [
+                                await DBaddData(`wallet${this.currentWalletID}`, [
                                     [`${this.currentNetwork}_stakedBalances`, JSON.parse(JSON.stringify({
                                         value: this.stakedBalances,
                                         timestamp: new Date().toISOString()
@@ -439,7 +468,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else {
                 // Set from cache
-                this.stakedBalances = cache[`${this.currentNetwork}_stakedBalances`].value
+                this.stakedBalances = cacheStakedBalances.value
 
                 // Staked balances status
                 this.isStakedBalancesGot = true
@@ -605,12 +634,74 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Get secret from DB
-        async getSecret() {
+        async getSecret(current = false) {
+            let DBWallets = null,
+                walletID = 0
+
+            if (!current) {
+                // Get wallets
+                DBWallets = await DBgetData('global', 'wallets')
+
+                // Get wallet ID
+                walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+            } else {
+                walletID = this.currentWalletID
+            }
+
             // Get from DB
-            let DBData = await this.getMultipleData(['secret', 'secretIV', 'aesKey'])
+            let DBSecret = await DBgetMultipleData('secret', [
+                `wallet${walletID}_aesKey`,
+                `wallet${walletID}_secret`,
+                `wallet${walletID}_secretIV`
+            ])
+
+            // Get wallet secret part two
+            let DBSecretPartTwo = await DBgetData(`wallet${walletID}`, 'secret')
+
+            // Restore the original secret
+            let restoredSecret = sss.combine([DBSecret[`wallet${walletID}_secret`], DBSecretPartTwo])
+
+            // Convert back to Uint8Array
+            let restoredUint8Array = new Uint8Array(restoredSecret)
 
             // Return memo
-            return await decryptData(DBData.secret, DBData.secretIV, DBData.aesKey)
+            return await decryptData(restoredUint8Array, DBSecret[`wallet${walletID}_secretIV`], DBSecret[`wallet${walletID}_aesKey`])
+        },
+
+
+        // Get private key from DB
+        async getPrivateKey(current = false) {
+            let DBWallets = null,
+                walletID = 0
+
+            if (!current) {
+                // Get wallets
+                DBWallets = await DBgetData('global', 'wallets')
+
+                // Get wallet ID
+                walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+            } else {
+                walletID = this.currentWalletID
+            }
+
+            // Get from DB
+            let DBSecret = await DBgetMultipleData('secret', [
+                `wallet${walletID}_aesKey`,
+                `wallet${walletID}_privateKey`,
+                `wallet${walletID}_secretIV`
+            ])
+
+            // Get wallet secret part two
+            let DBSecretPartTwo = await DBgetData(`wallet${walletID}`, 'privateKey')
+
+            // Restore the original secret
+            let restoredSecret = sss.combine([DBSecret[`wallet${walletID}_privateKey`], DBSecretPartTwo])
+
+            // Convert back to Uint8Array
+            let restoredUint8Array = new Uint8Array(restoredSecret)
+
+            // Return memo
+            return await decryptData(restoredUint8Array, DBSecret[`wallet${walletID}_secretIV`], DBSecret[`wallet${walletID}_aesKey`])
         },
 
 
@@ -622,11 +713,27 @@ export const useGlobalStore = defineStore('global', {
             // Encryption
             let { ciphertext, iv } = await encryptData(secret, aesKey)
 
+            // Split into 2 parts, both parts are required for recovery
+            let shares = sss.split(Buffer.from(ciphertext), {
+                shares: 2,
+                threshold: 2
+            })
+
+            // Get wallets
+            let DBWallets = await DBgetData('global', 'wallets')
+
+            // Get wallet ID
+            let walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+
             // Save in DB
-            await DBaddData('wallet', [
-                ['aesKey', aesKey],
-                ['secret', ciphertext],
-                ['secretIV', iv]
+            await DBaddData('secret', [
+                [`wallet${walletID}_aesKey`, aesKey],
+                [`wallet${walletID}_secret`, shares[0]],
+                [`wallet${walletID}_secretIV`, iv]
+            ])
+
+            await DBaddData(`wallet${walletID}`, [
+                ['secret', shares[1]],
             ])
         },
 
@@ -639,11 +746,27 @@ export const useGlobalStore = defineStore('global', {
             // Encryption
             let { ciphertext, iv } = await encryptData(privateKey, aesKey)
 
+            // Split into 2 parts, both parts are required for recovery
+            let shares = sss.split(Buffer.from(ciphertext), {
+                shares: 2,
+                threshold: 2
+            })
+
+            // Get wallets
+            let DBWallets = await DBgetData('global', 'wallets')
+
+            // Get wallet ID
+            let walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+
             // Save in DB
-            await DBaddData('wallet', [
-                ['aesKey', aesKey],
-                ['privateKey', ciphertext],
-                ['secretIV', iv]
+            await DBaddData('secret', [
+                [`wallet${walletID}_aesKey`, aesKey],
+                [`wallet${walletID}_privateKey`, shares[0]],
+                [`wallet${walletID}_secretIV`, iv]
+            ])
+
+            await DBaddData(`wallet${walletID}`, [
+                ['privateKey', shares[1]],
             ])
         },
 
@@ -654,7 +777,9 @@ export const useGlobalStore = defineStore('global', {
             this.currentNetwork = chain
 
             // Save in DB
-            DBaddData('wallet', [['currentNetwork', chain]])
+            DBaddData(`wallet${this.currentWalletID}`, [
+                ['currentNetwork', chain]
+            ])
         },
 
 
@@ -663,16 +788,34 @@ export const useGlobalStore = defineStore('global', {
             // Generate HMAC key
             let hmacKey = await generateHMACKey()
 
-            // Save in DB
-            await DBaddData('wallet', [
-                ['hmacKey', hmacKey],
-                ['pin', await hashDataWithKey(pinCode.join(''), hmacKey)],
+            // Get all wallets
+            let DBWallets = await DBgetData('global', 'wallets')
+
+            // Max wallet ID in wallets
+            let newId = DBWallets !== undefined
+                ? DBWallets.length + 1
+                : 1
+
+            // Add data to wallet DB
+            await DBaddData(`wallet${newId}`, [
+                ['id', newId],
                 ['name', walletName],
-                ['isRegister', true],
-                ['isBiometric', isBiometricEnabled],
-                ['authErrorLimit', this.authErrorLimit],
                 ['currentNetwork', 'cosmoshub'],
                 ['currentCurrency', 'USD']
+            ])
+
+            // Add data to global DB
+            await DBaddData('global', [
+                ['isRegister', true],
+                ['currentWalletID', newId],
+                ['hmacKey', hmacKey],
+                ['pin', await hashDataWithKey(pinCode.join(''), hmacKey)],
+                ['isBiometric', isBiometricEnabled],
+                ['authErrorLimit', this.authErrorLimit],
+                ['wallets', [{
+                    id: newId,
+                    name: walletName
+                }]]
             ])
 
             // Set authorized status
@@ -680,21 +823,17 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Get data from DB
-        async getMultipleData(requestingData) {
-            return await DBgetMultipleData('wallet', requestingData)
-        },
-
-
         // Update auth error limit
         async updateUserAuthErrorLimit(limit) {
-            await DBaddData('wallet', [['authErrorLimit', limit]])
+            await DBaddData('global', [
+                ['authErrorLimit', limit]
+            ])
         },
 
 
         // Update TxFee info
         async updateTxFeeInfo() {
-            await DBaddData('wallet', [
+            await DBaddData(`wallet${this.currentWalletID}`, [
                 ['TxFeeCurrentLevel', this.TxFee.currentLevel],
                 ['TxFeeIsRemember', this.TxFee.isRemember]
             ])
@@ -712,7 +851,9 @@ export const useGlobalStore = defineStore('global', {
                     this.currentCurrencySymbol = 'ETH'
 
                     // Update in DB
-                    DBaddData('wallet', [['currentCurrency', 'ETH']])
+                    DBaddData(`wallet${this.currentWalletID}`, [
+                        ['currentCurrency', 'ETH']
+                    ])
 
                     break;
 
@@ -724,7 +865,9 @@ export const useGlobalStore = defineStore('global', {
                     this.currentCurrencySymbol = '$'
 
                     // Update in DB
-                    DBaddData('wallet', [['currentCurrency', 'USD']])
+                    DBaddData(`wallet${this.currentWalletID}`, [
+                        ['currentCurrency', 'USD']
+                    ])
 
                     break;
 
@@ -736,7 +879,9 @@ export const useGlobalStore = defineStore('global', {
                     this.currentCurrencySymbol = 'BTC'
 
                     // Update in DB
-                    DBaddData('wallet', [['currentCurrency', 'BTC']])
+                    DBaddData(`wallet${this.currentWalletID}`, [
+                        ['currentCurrency', 'BTC']
+                    ])
 
                     break;
             }
@@ -973,7 +1118,7 @@ export const useGlobalStore = defineStore('global', {
         // Reset Tx Fee
         async resetTxFee() {
             // Get DB data
-            let DBData = await this.getMultipleData(['TxFeeCurrentLevel', 'TxFeeIsRemember'])
+            let DBData = await DBgetMultipleData(`wallet${store.currentWalletID}`, ['TxFeeCurrentLevel', 'TxFeeIsRemember'])
 
             // Reset data
             this.TxFee = {
@@ -1041,10 +1186,10 @@ export const useGlobalStore = defineStore('global', {
         // Is unstaking cancel support
         async isUnstakingCancelSupport() {
             let result = false,
-                cacheisUnstakingCancelSupport = await this.getMultipleData([`${this.currentNetwork}_isUnstakingCancelSupport`])
+                cacheIsUnstakingCancelSupport = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_isUnstakingCancelSupport`)
 
             // Check
-            if (cacheisUnstakingCancelSupport[this.currentNetwork + '_isUnstakingCancelSupport'] === undefined || (new Date() - new Date(cacheisUnstakingCancelSupport[this.currentNetwork + '_isUnstakingCancelSupport'].timestamp) > this.cacheTime)) {
+            if (cacheIsUnstakingCancelSupport === undefined || (new Date() - new Date(cacheIsUnstakingCancelSupport.timestamp) > this.cacheTime)) {
                 try {
                     let response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/base/tendermint/v1beta1/node_info`),
                         data = await response.json(),
@@ -1066,7 +1211,7 @@ export const useGlobalStore = defineStore('global', {
                     }
 
                     // Save in DB
-                    await DBaddData('wallet', [
+                    await DBaddData(`wallet${this.currentWalletID}`, [
                         [this.currentNetwork + '_isUnstakingCancelSupport', JSON.parse(JSON.stringify({
                             value: result,
                             timestamp: new Date().toISOString()
@@ -1080,26 +1225,48 @@ export const useGlobalStore = defineStore('global', {
                 this.networks[this.currentNetwork].isUnstakingCancelSupport = result
             } else {
                 // Set from cache
-                this.networks[this.currentNetwork].isUnstakingCancelSupport = cacheisUnstakingCancelSupport[this.currentNetwork + '_isUnstakingCancelSupport'].value
+                this.networks[this.currentNetwork].isUnstakingCancelSupport = cacheIsUnstakingCancelSupport.value
             }
         },
 
 
-        // Set age confirmed
-        async setAgeConfirmed() {
-            await DBaddData('wallet', [['ageConfirmed', true]])
+        // Get wallets
+        async getWallets() {
+            try {
+                // Get from DB
+                this.wallets = await DBgetData('global', 'wallets')
+            } catch (error) {
+                console.log(error)
+            }
         },
 
 
-        // Get age confirmed
-        async getAgeConfirmed() {
+        // Update wallet
+        async updateWallet({ wallet, new_name }) {
             try {
-                // Get from DB
-                let result = await this.getMultipleData(['ageConfirmed'])
+                // Find wallet
+                let currentWallet = this.wallets.find(el => el.id === wallet.id)
 
-                if (result.ageConfirmed) {
-                    // Set result
-                    this.isAgeConfirmed = result.ageConfirmed
+                // Update name
+                if (currentWallet) {
+                    currentWallet.name = new_name
+
+                    // Update in DB
+                    await DBaddData('global', [
+                        ['wallets', JSON.parse(JSON.stringify(this.wallets))]
+                    ])
+
+                    await DBaddData(`wallet${this.currentWalletID}`, [
+                        ['name', new_name]
+                    ])
+
+                    // Update in state
+                    if (this.currentWalletID === wallet.id) {
+                        this.currentWalletName = new_name
+                    }
+
+                    // Get wallets
+                    await this.getWallets()
                 }
             } catch (error) {
                 console.log(error)
@@ -1107,9 +1274,52 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Clear BD
+        // Remove wallet
+        async removeWallet(wallet) {
+            try {
+                // Remove in DB
+                await DBclearStore(`wallet${wallet.id}`)
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+
+        // Set age confirmed
+        async setAgeConfirmed() {
+            await DBaddData('global', [
+                ['ageConfirmed', true]
+            ])
+        },
+
+
+        // Get age confirmed
+        async getAgeConfirmed() {
+            try {
+                // Get from DB
+                let DBAgeConfirmed = await DBgetData('global', 'ageConfirmed')
+
+                if (DBAgeConfirmed !== undefined) {
+                    // Set result
+                    this.isAgeConfirmed = DBAgeConfirmed
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+
+        // Clear all data
         async clearAllData() {
-            await DBclearData('wallet')
+            try {
+                // Clear in DB
+                await DBclearAllData()
+
+                // Reset all state
+                this.$reset()
+            } catch (error) {
+                console.log(error)
+            }
         },
 
 

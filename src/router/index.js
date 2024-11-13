@@ -134,24 +134,6 @@ const routes = [
 			accessDenied: ['not_authorized']
 		}
 	},
-	// {
-	// 	path: '/jet_pack/connect_wallet',
-	// 	name: 'JetPackConnectWallet',
-	// 	component: () => import('../views/jetPack/ConnectWallet.vue'),
-	// 	meta: {
-	// 		layout: accountLayout,
-	// 		accessDenied: ['not_authorized']
-	// 	}
-	// },
-	// {
-	// 	path: '/jet_pack/send_tx',
-	// 	name: 'JetPackSendTx',
-	// 	component: () => import('../views/jetPack/SendTx.vue'),
-	// 	meta: {
-	// 		layout: accountLayout,
-	// 		accessDenied: ['not_authorized']
-	// 	}
-	// },
 ]
 
 
@@ -163,7 +145,7 @@ const router = createRouter({
 
 router.beforeResolve(async (to, from, next) => {
 	let store = useGlobalStore(),
-		isRegister = await DBgetData('wallet', 'isRegister')
+		isRegister = await DBgetData('global', 'isRegister')
 
 	// Parse jetPack request
 	if (to.query.tgWebAppStartParam) {
@@ -176,7 +158,7 @@ router.beforeResolve(async (to, from, next) => {
 
 		if(access.length) {
 			// Not register
-			if(access.includes('not_register') && !isRegister) {
+			if(access.includes('not_register') && isRegister == undefined) {
 				next({ name: 'MainPage' })
 
 				return false

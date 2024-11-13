@@ -74,7 +74,8 @@
 
                 <!-- Memo field -->
                 <div class="field">
-                    <input type="text" class="input big" v-model="memo">
+                    <input type="text" class="input big" v-model="memo"
+                        :placeholder="$t('message.placeholder_memo2')">
                 </div>
             </div>
 

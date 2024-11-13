@@ -14,7 +14,7 @@
             <!-- Balance value -->
             <div v-else class="val">
                 <span @click.prevent="store.updateAllBalances()">
-                    {{ formatTokenCost(calcStakedBalancesCost()) }}
+                    {{ formatTokenCost(calcStakedBalancesCost()) + store.currentCurrencySymbol }}
                 </span>
             </div>
 
@@ -90,9 +90,9 @@
         position: relative;
         z-index: 3;
 
-        height: 266px;
+        height: 296px;
         overflow: hidden;
-        padding: 67px 22px 19px;
+        padding: 97px 22px 19px;
         border-radius: 0 0 20px 20px;
     }
 

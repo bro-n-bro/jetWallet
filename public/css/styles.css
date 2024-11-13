@@ -314,8 +314,8 @@ button
 {
     position: absolute;
     z-index: 5;
-    top: 9px;
-    left: 9px;
+    top: 0;
+    left: 0;
 
     display: flex;
     align-content: center;
@@ -1197,8 +1197,6 @@ input[type='password']::-webkit-credentials-auto-fill-button
 --------------------------*/
 .inner_page_container
 {
-    padding-top: 8px;
-
     background: #170232;
 }
 
@@ -1211,23 +1209,13 @@ input[type='password']::-webkit-credentials-auto-fill-button
     flex-wrap: wrap;
     justify-content: space-between;
 
-    margin-bottom: 10px;
-}
-
-
-.inner_page_container .back_btn
-{
-    position: relative;
-    top: 0;
-    left: 0;
-
-    margin-left: -12px;
+    min-height: 48px;
 }
 
 
 .inner_page_container .page_title
 {
-    width: calc(100% - 48px);
+    width: calc(100% - 42px);
     margin-left: auto;
     padding: 0;
 }

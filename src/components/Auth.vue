@@ -95,6 +95,7 @@
     import { onBeforeMount, ref, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
     import { hashDataWithKey } from '@/utils'
+    import { DBgetData, DBgetMultipleData } from '@/utils/db'
 
 
     const store = useGlobalStore(),
@@ -111,19 +112,19 @@
 
     onBeforeMount(async () => {
         // Get data from DB
-        let result = await store.getMultipleData(['pin', 'hmacKey', 'authErrorLimit', 'isBiometric'])
+        let DBData = await DBgetMultipleData('global', ['pin', 'authErrorLimit', 'isBiometric', 'hmacKey'])
 
         // Set pin from DB
-        pinDB.value = result.pin
+        pinDB.value = DBData.pin
 
         // Set hmacKey from DB
-        hmacKey.value = result.hmacKey
+        hmacKey.value = DBData.hmacKey
 
         // Set user auth error limit
-        userAuthErrorLimit.value = result.authErrorLimit
+        userAuthErrorLimit.value = DBData.authErrorLimit
 
         // Set biometric status from DB
-        isBiometric.value = result.isBiometric
+        isBiometric.value = DBData.isBiometric
 
         // Is biometric available
         isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable

@@ -1,6 +1,9 @@
 <template>
+    <!-- Loader -->
+    <Loader v-if="isReseting" />
+
     <!-- Main component -->
-    <component :is="layout" />
+    <component :is="layout" v-else />
 
     <!-- Notifications -->
     <notifications position="top left" group="default" width="100%" animation-type="velocity" :animation="notificationAnimation"
@@ -83,6 +86,7 @@
     import { convertArrayBuffersToUint8Arrays, getTgUserId } from '@/utils'
 
     // Components
+    import Loader from '@/components/Loader.vue'
     import RedirectModal from '@/components/modal/RedirectModal.vue'
     import ConnectWalletModal from '@/components/jetPack/ConnectWallet.vue'
     import SendTxModal from '@/components/jetPack/SendTx.vue'
@@ -94,6 +98,7 @@
         route = useRoute(),
         emitter = inject('emitter'),
         title = useTitle(),
+        isReseting = ref(false),
         layout = computed(() => route.meta.layout || 'default-layout'),
         notification = useNotification(),
         notificationTimeout = ref(null),
@@ -124,6 +129,9 @@
 			g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
 			})();
         }
+
+        // Get current wallet ID
+        await store.getCurrentWalletID()
 
         // Get telegram user ID
         if (window.Telegram && window.Telegram.WebApp) {
@@ -476,5 +484,15 @@
     emitter.on('close_redirect_modal', () => {
         // Hide redirect modal
         store.showRedirectModal = false
+    })
+
+
+    // Event "start_reseting"
+    emitter.on('start_reseting', () => {
+        // Show loader
+        isReseting.value = true
+
+        // Hide loader
+        setTimeout(() => isReseting.value = false, 300)
     })
 </script>

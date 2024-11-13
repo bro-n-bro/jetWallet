@@ -130,7 +130,8 @@
 
                 <div class="field">
                     <!-- Redelegate confirm memo field -->
-                    <input type="text" class="input big" v-model="memo">
+                    <input type="text" class="input big" v-model="memo"
+                        :placeholder="$t('message.placeholder_memo')">
                 </div>
             </div>
 

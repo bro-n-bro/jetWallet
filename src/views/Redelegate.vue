@@ -196,7 +196,8 @@
 
                 <div class="field">
                      <!-- Redelegate amount field -->
-                    <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
+                    <input type="number" inputmode="numeric" class="input big" v-model="amount"
+                        :placeholder="$t('message.placeholder_amount', { token: store.networks[store.currentNetwork].token_name })"
                         @input="validateAmount($event)">
 
                     <!-- Redelegate amount max. nutton -->

@@ -9,6 +9,12 @@
             <NetworkChooser v-if="store.currentNetwork" />
             </KeepAlive>
 
+            <!-- Wallet name -->
+            <div class="wallet_name" @click.prevent="openProfileModal()">
+                <span>{{ store.currentWalletName }}</span>
+                <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver3"></use></svg>
+            </div>
+
             <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized && store.networks[store.currentNetwork].is_staking_available" @click.prevent="openStatsModal()">
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
             </div>
@@ -60,6 +66,17 @@
         <StakedTokens v-show="swiperActiveIndex == 1" v-if="store.networks[store.currentNetwork]?.is_staking_available" />
     </section>
 
+
+    <!-- Profile modal -->
+    <transition name="modal">
+    <ProfileModal v-if="showProfileModal" />
+    </transition>
+
+    <!-- Edit wallet modal -->
+    <transition name="from_right">
+    <EditWalletModal v-if="showEditWalletModal" :wallet="editingWallet" />
+    </transition>
+
     <!-- Stats modal -->
     <transition name="modal">
     <StatsModal v-if="showStatsModal && store.networks[store.currentNetwork]?.is_staking_available" />
@@ -67,7 +84,7 @@
 
     <!-- Overlay -->
     <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showStatsModal"></div>
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showStatsModal || showProfileModal"></div>
     </transition>
 </template>
 
@@ -75,7 +92,6 @@
 <script setup>
     import { ref, onBeforeMount, onMounted, inject, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRouter } from 'vue-router'
     import { useUrlSearchParams } from '@vueuse/core'
 
     // Components
@@ -92,14 +108,18 @@
     import UnstakingTokens from '@/components/account/UnstakingTokens.vue'
     import StakedTokens from '@/components/account/StakedTokens.vue'
 
+    import ProfileModal from '@/components/modal/ProfileModal.vue'
+    import EditWalletModal from '@/components/modal/EditWalletModal.vue'
     import StatsModal from '@/components/modal/StatsModal.vue'
 
 
     const store = useGlobalStore(),
         params = useUrlSearchParams('history'),
         emitter = inject('emitter'),
-        router = useRouter(),
         searchingClass = ref(''),
+        showProfileModal = ref(false),
+        showEditWalletModal = ref(false),
+        editingWallet = ref(null),
         showStatsModal = ref(false),
         swiperEl = ref(null),
         swiperActiveIndex = ref(params.activeSlide || 0),
@@ -180,6 +200,16 @@
     })
 
 
+    // Open Profile modal
+    function openProfileModal() {
+        // Show Profile modal
+        showProfileModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Open stats modal
     function openStatsModal() {
         // Show Stats modal
@@ -219,6 +249,49 @@
     })
 
 
+    // Event "show_profile_modal"
+    emitter.on('show_profile_modal', () => {
+        // Show Profile modal
+        showProfileModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    })
+
+
+    // Event "show_edit_wallet_modal"
+    emitter.on('show_edit_wallet_modal', (data) => {
+        // Show Edit wallet modal
+        showEditWalletModal.value = true
+
+        // Editing wallet
+        editingWallet.value = data.wallet
+
+        // Update status
+        store.isAnyModalOpen = true
+    })
+
+
+    // Event "close_profile_modal"
+    emitter.on('close_profile_modal', () => {
+        // Hide Profile modal
+        showProfileModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_edit_wallet_modal"
+    emitter.on('close_edit_wallet_modal', () => {
+        // Hide Edit wallet modal
+        showEditWalletModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
     // Event "close_stats_modal"
     emitter.on('close_stats_modal', () => {
         // Hide Stats modal
@@ -233,6 +306,12 @@
     emitter.on('close_any_modal', () => {
         // Hide Stats modal
         showStatsModal.value = false
+
+        // Hide Profile modal
+        showProfileModal.value = false
+
+        // Hide Edit wallet modal
+        showEditWalletModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
@@ -269,7 +348,7 @@
         display: flex;
         flex-direction: column;
 
-        padding-top: 266px;
+        padding-top: 296px;
 
         transition: .2s linear;
         transform: translateY(0%);
@@ -338,6 +417,7 @@
     }
 
 
+
     .top_block .balance
     {
         display: flex;
@@ -355,9 +435,60 @@
         font-size: 38px;
         font-weight: 700;
 
+        overflow: hidden;
+
         width: 100%;
 
         cursor: pointer;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+
+    .top_block .wallet_name
+    {
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+
+        position: absolute;
+        z-index: 9;
+        top: 51px;
+        left: 0;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+
+        width: 100%;
+        padding: 7px 11px;
+
+        white-space: nowrap;
+
+        gap: 4px;
+    }
+
+
+    .top_block .wallet_name span
+    {
+        overflow: hidden;
+
+        max-width: calc(100% - 22px);
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .top_block .wallet_name .icon
+    {
+        display: block;
+
+        width: 18px;
+        height: 18px;
     }
 
 

@@ -1,7 +1,6 @@
 import { useGlobalStore } from '@/store'
 
 import { DBgetMultipleData } from '@/utils/db'
-import { decryptData } from './decryptData'
 import { importWalletFromMnemonic } from './importWalletFromMnemonic'
 import { importWalletFromPrivateKey } from './importWalletFromPrivateKey'
 
@@ -11,24 +10,27 @@ export const getAddress = async () => {
     let store = useGlobalStore(),
         wallet = null
 
-    // Get DB data
-    let DBData = await DBgetMultipleData('wallet', ['secret', 'secretIV', 'aesKey', 'privateKey'])
+    // Get from DB
+    let DBSecret = await DBgetMultipleData('secret', [
+        `wallet${store.currentWalletID}_secret`,
+        `wallet${store.currentWalletID}_privateKey`
+    ])
 
     // Wallet
-    if (DBData.secret) {
-        // Decryption
-        let decryptedData = await decryptData(DBData.secret, DBData.secretIV, DBData.aesKey)
+    if (DBSecret[`wallet${store.currentWalletID}_secret`]) {
+        // Get secret from DB
+        let secret = await store.getSecret(true)
 
         // Get wallet
-        wallet = await importWalletFromMnemonic(decryptedData, store.networks[store.currentNetwork].prefix)
+        wallet = await importWalletFromMnemonic(secret, store.networks[store.currentNetwork].prefix)
     }
 
-    if (DBData.privateKey) {
-        // Decryption
-        let decryptedData = await decryptData(DBData.privateKey, DBData.secretIV, DBData.aesKey)
+    if (DBSecret[`wallet${store.currentWalletID}_privateKey`]) {
+        // Get secret from DB
+        let privateKey = await store.getPrivateKey(true)
 
         // Get wallet
-        wallet = await importWalletFromPrivateKey(decryptedData, store.networks[store.currentNetwork].prefix)
+        wallet = await importWalletFromPrivateKey(privateKey, store.networks[store.currentNetwork].prefix)
     }
 
     // Current address

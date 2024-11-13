@@ -149,7 +149,8 @@
 
                 <!-- Unstake page amount field -->
                 <div class="field">
-                    <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
+                    <input type="number" inputmode="numeric" class="input big" v-model="amount"
+                        :placeholder="$t('message.placeholder_amount', { token: store.networks[store.currentNetwork].token_name })"
                         @input="validateAmount($event)">
 
                     <!-- Unstake page amount max. button -->
