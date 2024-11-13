@@ -453,7 +453,7 @@
         font-weight: 500;
 
         position: absolute;
-        z-index: 9;
+        z-index: 5;
         top: 51px;
         left: 0;
 

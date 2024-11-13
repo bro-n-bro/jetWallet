@@ -35,8 +35,6 @@ export const createSinger = async () => {
         wallet = await importWalletFromPrivateKey(privateKey, store.networks[store.currentNetwork].prefix)
     }
 
-    console.log(wallet)
-
     // Stargate client
     let signingClient = await SigningStargateClient.connectWithSigner(store.networks[store.currentNetwork].rpc_api, wallet)
 

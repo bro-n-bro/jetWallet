@@ -263,7 +263,6 @@ export const useGlobalStore = defineStore('global', {
                 // Is cosmos SDK version support unstaking cancel / check cache
                 await this.isUnstakingCancelSupport()
 
-
                 // Wait balances
                 if (this.networks[this.currentNetwork].is_staking_available) {
                     Promise.all([await this.getBalances(), await this.getStakedBalances()]).then(() => {
@@ -379,6 +378,9 @@ export const useGlobalStore = defineStore('global', {
             // Balances status
             this.isBalancesGot = false
 
+            // Reset data
+            this.balances = []
+
             // Get from DB
             let cacheBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_balances`)
 
@@ -427,6 +429,9 @@ export const useGlobalStore = defineStore('global', {
             // Balances status
             this.isStakedBalancesGot = false
 
+            // Reset data
+            this.stakedBalances = []
+
             // Get from DB
             let cacheStakedBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_stakedBalances`)
 
@@ -458,9 +463,6 @@ export const useGlobalStore = defineStore('global', {
                                         timestamp: new Date().toISOString()
                                     }))]
                                 ])
-
-                                // Staked balances status
-                                this.isStakedBalancesGot = true
                             }
                         })
                 } catch (error) {
@@ -469,10 +471,10 @@ export const useGlobalStore = defineStore('global', {
             } else {
                 // Set from cache
                 this.stakedBalances = cacheStakedBalances.value
-
-                // Staked balances status
-                this.isStakedBalancesGot = true
             }
+
+            // Staked balances status
+            this.isStakedBalancesGot = true
         },
 
 
@@ -480,6 +482,9 @@ export const useGlobalStore = defineStore('global', {
         async getRewards() {
             // Rewards status
             this.isRewardsGot = false
+
+            // Reset data
+            this.rewardsBalances = []
 
             // Request
             try {
@@ -500,17 +505,14 @@ export const useGlobalStore = defineStore('global', {
 
                             // Filter rewards
                             this.rewardsBalances = this.rewardsBalances.filter(balance => balance.chain_info.chain_id == this.networks[this.currentNetwork].chain_id)
-                        } else {
-                            // Clear data
-                            this.rewardsBalances = []
                         }
-
-                        // Rewards status
-                        this.isRewardsGot = true
                     })
             } catch (error) {
                 console.error(error)
             }
+
+            // Rewards status
+            this.isRewardsGot = true
         },
 
 
@@ -539,12 +541,12 @@ export const useGlobalStore = defineStore('global', {
                             await this.getValidatorInfo(item, item.validator_address)
                         }
                     })
-
-                // Unstaking balances status
-                this.isUnstakingBalancesGot = true
             } catch (error) {
                 console.error(error)
             }
+
+            // Unstaking balances status
+            this.isUnstakingBalancesGot = true
         },
 
 
@@ -1118,7 +1120,7 @@ export const useGlobalStore = defineStore('global', {
         // Reset Tx Fee
         async resetTxFee() {
             // Get DB data
-            let DBData = await DBgetMultipleData(`wallet${store.currentWalletID}`, ['TxFeeCurrentLevel', 'TxFeeIsRemember'])
+            let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, ['TxFeeCurrentLevel', 'TxFeeIsRemember'])
 
             // Reset data
             this.TxFee = {
