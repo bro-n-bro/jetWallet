@@ -94,11 +94,13 @@
 <script setup>
     import { onBeforeMount, ref, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
-    import { DBgetData, DBgetMultipleData } from '@/utils/db'
+    import { DBgetMultipleData } from '@/utils/db'
 
 
     const store = useGlobalStore(),
+        router = useRouter(),
         emitter = inject('emitter'),
         pinCode = ref(['', '', '', '', '', '']),
         pinDB = ref(''),
@@ -229,11 +231,16 @@
         userAuthErrorLimit.value = newLimit
 
         if (!store.isAuthorized) {
-            newLimit
-                // Сhange auth limit
-                ? store.updateUserAuthErrorLimit(newLimit)
-                // Set event show_error_auth_modal
-                : emitter.emit('show_error_auth_modal')
+            // Сhange auth limit
+            await store.updateUserAuthErrorLimit(newLimit)
+
+            if (!newLimit) {
+                // Set user lock
+                await store.setUserLock()
+
+                // Redirect
+                router.push('/lock')
+            }
         } else {
             if (!newLimit) {
                 // Set event show_error_sign_tx_modal

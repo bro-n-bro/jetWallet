@@ -25,7 +25,7 @@
                             <input type="text" class="input big" v-model="walletName"
                                 :placeholder="$t('message.create_pin_wallet_name_placeholder')"
                                 :class="{ error: !idValidWalletName && isTouchedWalletName, success: idValidWalletName && isTouchedWalletName }"
-                                @input="validateWalletName">
+                                @input="validateWalletName()">
                         </div>
                     </div>
 

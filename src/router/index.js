@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { DBgetData } from '@/utils/db'
+import { DBgetMultipleData } from '@/utils/db'
 import { decodeFromBase64 } from '@/utils'
 import { useGlobalStore } from '@/store'
 
@@ -14,7 +14,7 @@ const routes = [
 		component: () => import('../views/IndexPage.vue'),
 		meta: {
 			layout: defaultLayout,
-			accessDenied: ['register']
+			accessDenied: ['register', 'locked']
 		}
 	},
 	{
@@ -23,7 +23,7 @@ const routes = [
 		component: () => import('../views/CreateWalletPage.vue'),
 		meta: {
 			layout: defaultLayout,
-			accessDenied: ['register']
+			accessDenied: ['register', 'locked']
 		}
 	},
 	{
@@ -32,7 +32,7 @@ const routes = [
 		component: () => import('../views/ConfirmWalletPage.vue'),
 		meta: {
 			layout: defaultLayout,
-			accessDenied: ['register']
+			accessDenied: ['register', 'locked']
 		}
 	},
 	{
@@ -41,7 +41,7 @@ const routes = [
 		component: () => import('../views/CreatePinPage.vue'),
 		meta: {
 			layout: defaultLayout,
-			accessDenied: ['register']
+			accessDenied: ['register', 'locked']
 		}
 	},
 	{
@@ -50,7 +50,7 @@ const routes = [
 		component: () => import('../views/CreatedWalletPage.vue'),
 		meta: {
 			layout: defaultLayout,
-			accessDenied: ['not_register']
+			accessDenied: ['not_register', 'locked']
 		}
 	},
 	{
@@ -59,7 +59,7 @@ const routes = [
 		component: () => import('../views/ImportWalletPage.vue'),
 		meta: {
 			layout: defaultLayout,
-			accessDenied: ['register']
+			accessDenied: ['register', 'locked']
 		}
 	},
 	{
@@ -68,7 +68,16 @@ const routes = [
 		component: () => import('../views/AuthPage.vue'),
 		meta: {
 			layout: defaultLayout,
-			accessDenied: ['not_register', 'authorized']
+			accessDenied: ['not_register', 'authorized', 'locked']
+		}
+	},
+	{
+		path: '/lock',
+		name: 'Lock',
+		component: () => import('../views/UserLockPage.vue'),
+		meta: {
+			layout: defaultLayout,
+			accessDenied: ['not_register']
 		}
 	},
 	{
@@ -77,7 +86,7 @@ const routes = [
 		component: () => import('../views/AccountPage.vue'),
 		meta: {
 			layout: accountLayout,
-			accessDenied: ['not_authorized']
+			accessDenied: ['not_authorized', 'locked']
 		}
 	},
 	{
@@ -86,7 +95,7 @@ const routes = [
 		component: () => import('../views/ClaimConfirmPage.vue'),
 		meta: {
 			layout: accountLayout,
-			accessDenied: ['not_authorized']
+			accessDenied: ['not_authorized', 'locked']
 		}
 	},
 	{
@@ -95,7 +104,7 @@ const routes = [
 		component: () => import('../views/Stake.vue'),
 		meta: {
 			layout: accountLayout,
-			accessDenied: ['not_authorized']
+			accessDenied: ['not_authorized', 'locked']
 		}
 	},
 	{
@@ -104,7 +113,7 @@ const routes = [
 		component: () => import('../views/Unstake.vue'),
 		meta: {
 			layout: accountLayout,
-			accessDenied: ['not_authorized']
+			accessDenied: ['not_authorized', 'locked']
 		}
 	},
 	{
@@ -113,7 +122,7 @@ const routes = [
 		component: () => import('../views/Redelegate.vue'),
 		meta: {
 			layout: accountLayout,
-			accessDenied: ['not_authorized']
+			accessDenied: ['not_authorized', 'locked']
 		}
 	},
 	{
@@ -122,7 +131,7 @@ const routes = [
 		component: () => import('../views/Receive.vue'),
 		meta: {
 			layout: accountLayout,
-			accessDenied: ['not_authorized']
+			accessDenied: ['not_authorized', 'locked']
 		}
 	},
 	{
@@ -131,7 +140,7 @@ const routes = [
 		component: () => import('../views/Send.vue'),
 		meta: {
 			layout: accountLayout,
-			accessDenied: ['not_authorized']
+			accessDenied: ['not_authorized', 'locked']
 		}
 	},
 ]
@@ -145,7 +154,7 @@ const router = createRouter({
 
 router.beforeResolve(async (to, from, next) => {
 	let store = useGlobalStore(),
-		isRegister = await DBgetData('global', 'isRegister')
+		DBData = await DBgetMultipleData('global', ['isRegister', 'isUserLock', 'userLockTimestamp'])
 
 	// Parse jetPack request
 	if (to.query.tgWebAppStartParam) {
@@ -158,14 +167,21 @@ router.beforeResolve(async (to, from, next) => {
 
 		if(access.length) {
 			// Not register
-			if(access.includes('not_register') && isRegister == undefined) {
+			if(access.includes('not_register') && DBData.isRegister == undefined) {
 				next({ name: 'MainPage' })
 
 				return false
 			}
 
+			// Lock
+			else if(access.includes('locked') && DBData.isUserLock && (new Date() - new Date(DBData.userLockTimestamp) < store.userLockTime)) {
+				next({ name: 'Lock' })
+
+				return false
+			}
+
 			// Register
-			else if(access.includes('register') && isRegister) {
+			else if(access.includes('register') && DBData.isRegister) {
 				next({ name: 'Auth' })
 
 				return false

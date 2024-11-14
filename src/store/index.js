@@ -19,7 +19,7 @@ import stride from '@/store/networks/stride'
 // import localbostrom from '@/store/networks/localbostrom'
 
 
-// Networks additional options
+// Networks additional optionsupdateUserAuthErrorLimit
 const networksAdditionalOptions = {
     websocket: null,
     currentTxHash: null,
@@ -78,6 +78,7 @@ export const useGlobalStore = defineStore('global', {
         RTCConnections: {},
 
         cacheTime: 15 * 60 * 1000,
+        userLockTime: 15 * 60 * 1000,
         notificationsCollapsingDelay: 2000,
 
         TxFee: {
@@ -1289,6 +1290,7 @@ export const useGlobalStore = defineStore('global', {
 
         // Set age confirmed
         async setAgeConfirmed() {
+            // Save in DB
             await DBaddData('global', [
                 ['ageConfirmed', true]
             ])
@@ -1308,6 +1310,29 @@ export const useGlobalStore = defineStore('global', {
             } catch (error) {
                 console.log(error)
             }
+        },
+
+
+        // Set user lock
+        async setUserLock() {
+            // Save in DB
+            await DBaddData('global', [
+                ['isUserLock', true],
+                ['userLockTimestamp', new Date().toISOString()]
+            ])
+        },
+
+
+        // Set user unlock
+        async setUserUnlock() {
+            // Save in DB
+            await DBaddData('global', [
+                ['isUserLock', false],
+                ['userLockTimestamp', '']
+            ])
+
+            // Сhange auth limit
+            await this.updateUserAuthErrorLimit(this.authErrorLimit)
         },
 
 

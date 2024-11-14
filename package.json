@@ -22,7 +22,7 @@
         "swiper": "^11.1.5",
         "ua-parser-js": "^1.0.39",
         "velocity-animate": "^1.5.2",
-        "vue": "^3.2.13",
+        "vue": "^3.5.12",
         "vue-i18n": "^9.13.1",
         "vue-router": "^4.0.3"
     },

@@ -42,8 +42,11 @@ export default {
             'auth_enter_pin_label': 'Enter pin:',
             'auth_error_warning': 'You have {count} attempts left',
 
-            'auth_error_title': 'Incorrect pin!',
-            'auth_error_desc': 'The PIN code was entered incorrectly the maximum number of times. For security reasons, the current wallet will be deleted. You can restore it the next time you log into the app using your saved seed phrase or private key',
+
+            // User lock
+            'user_lock_title': 'Account blocked!',
+            'user_lock_desc': 'Your account has been blocked for {time} minutes due to multiple authorization errors. Unlocking will occur automatically after a period of time, you do not need to do anything for this.',
+            'user_lock_timer_label': 'Time left:',
 
 
             // Mnemonic
@@ -259,7 +262,6 @@ export default {
             // Buttons
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',
-            'btn_import_existing_wallet': 'Import an existing wallet',
             'btn_show': 'Show',
             'btn_next': 'Next',
             'btn_copy': 'Copy to clipboard',
