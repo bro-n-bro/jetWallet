@@ -69,6 +69,15 @@
             ? idValidWalletName.value = true
             : idValidWalletName.value = false
 
+        // Name uniqueness validation
+        let nameExists = store.wallets.some(wallet =>
+            wallet.name === newName.value && wallet.id !== props.wallet.id
+        )
+
+        !nameExists
+            ? idValidWalletName.value = true
+            : idValidWalletName.value = false
+
         // Touched status
         isTouchedWalletName.value = true
     }
@@ -85,8 +94,8 @@
         // Event "close_edit_wallet_modal"
         emitter.emit('close_edit_wallet_modal')
 
-        // Event "show_profile_modal"
-        emitter.emit('show_profile_modal')
+        // Event "show_wallets_modal"
+        emitter.emit('show_wallets_modal')
 
         // Show notification
         notification.notify({
@@ -105,16 +114,11 @@
             // Remove
             await store.removeWallet(props.wallet)
 
-            // // Set defaul wallet if deleted current
-            // if (props.wallet.id === store.currentWalletID) {
-            //     await store.setCurrentWalletID()
-            // }
-
             // Event "close_edit_wallet_modal"
             emitter.emit('close_edit_wallet_modal')
 
-            // Event "show_profile_modal"
-            emitter.emit('show_profile_modal')
+            // Event "show_wallets_modal"
+            emitter.emit('show_wallets_modal')
 
             // Show notification
             notification.notify({

@@ -1,10 +1,10 @@
 <template>
-    <!-- Profile modal -->
+    <!-- Wallets modal -->
     <section class="modal">
         <div class="modal_content">
             <div class="data">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_profile_modal')">
+                <button class="close_btn" @click.prevent="emitter.emit('close_wallets_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -13,9 +13,9 @@
                     {{ $t('message.profile_title') }}
                 </div>
 
-                <!-- Profile modal data -->
+                <!-- Wallets modal data -->
                 <div class="list">
-                    <div class="item" v-for="(wallet, index) in store.wallets" :key="index">
+                    <div class="item" v-for="(wallet, index) in store.wallets" :key="index" @click.stop.prevent="store.setCurrentWalletID(wallet.id)">
                         <div class="logo">
                             <img src="@/assets/logo.svg" alt="" loading="lazy">
 
@@ -26,11 +26,18 @@
                             {{ wallet.name }}
                         </div>
 
-                        <button class="edit_btn" @click.prevent="editWalletModal(wallet)">
+                        <button class="edit_btn" @click.stop.prevent="editWalletModal(wallet)">
                             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_edit"></use></svg>
                         </button>
                     </div>
                 </div>
+
+                <!-- Wallets modal add butto -->
+                <router-link to="/add_wallet" class="add_btn">
+                    <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_plus"></use></svg>
+
+                    <span>{{ $t('message.btn_add_new_wallet') }}</span>
+                </router-link>
             </div>
         </div>
     </section>
@@ -54,8 +61,8 @@
 
     // Edit wallet modal
     function editWalletModal(wallet) {
-        // Event "close_profile_modal"
-        emitter.emit('close_profile_modal')
+        // Event "close_wallets_modal"
+        emitter.emit('close_wallets_modal')
 
         // Event "show_edit_wallet_modal"
         emitter.emit('show_edit_wallet_modal', { wallet: JSON.parse(JSON.stringify(wallet)) })
@@ -89,6 +96,8 @@
         justify-content: space-between;
 
         padding: 3px;
+
+        transition: .2s linear;
 
         color: #fff;
         border: 1px solid #1a0242;
@@ -172,5 +181,48 @@
 
         width: 24px;
         height: 24px;
+    }
+
+
+    .item:hover,
+    .item:active
+    {
+        color: #000;
+        background: #fff;
+    }
+
+
+
+    .add_btn
+    {
+        font-size: 20px;
+        font-weight: 500;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+
+        width: 100%;
+        margin-top: 8px;
+        padding: 9px 7px;
+
+        text-decoration: none;
+
+        color: currentColor;
+        border: 1px solid #fff;
+        border-radius: 10px;
+
+        gap: 2px;
+    }
+
+
+    .add_btn .icon
+    {
+        display: block;
+
+        width: 28px;
+        height: 28px;
     }
 </style>

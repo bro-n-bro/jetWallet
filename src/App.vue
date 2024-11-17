@@ -328,6 +328,19 @@
     })
 
 
+    // Wallet change
+    watch(computed(() => store.currentWalletID), async () => {
+        // Clean notifications
+        notification.notify({
+            group: 'default',
+            clean: true
+        })
+
+        // Reinit APP
+        await store.initApp()
+    })
+
+
     // Network change
     watch(computed(() => store.currentNetwork), async () => {
         if (store.isInitialized || store.forcedUnlock) {

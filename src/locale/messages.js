@@ -241,7 +241,9 @@ export default {
             'notification_offline_title': 'You are offline',
 
             'notification_wallet_update_success': 'Wallet updated successfully.',
-            'notification_wallet_remove_success': 'wallet with the name "{name}" deleted successfully.',
+            'notification_wallet_remove_success': '{name} deleted successfully.',
+
+            'notification_wallet_added_success': 'Wallet added successfully.',
 
             'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Success',
@@ -260,6 +262,8 @@ export default {
 
 
             // Buttons
+            'btn_add_new_wallet': 'Add New Wallet',
+            'btn_from_exist_wallet': 'Create from existing wallet',
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',
             'btn_show': 'Show',

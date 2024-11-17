@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { getAddress, denomTraces, hashDataWithKey, generateHMACKey, generateAESKey, getPriceByDenom, getExplorerLink, encryptData, decryptData } from '@/utils'
 import { chains, assets } from 'chain-registry'
-import { DBaddData, DBgetMultipleData, DBgetData, DBclearAllData, DBclearStore } from '@/utils/db'
+import { DBaddData, DBgetMultipleData, DBgetData, DBclearAllData, DBclearStore, DBcheckStoreName, DBdeleteData } from '@/utils/db'
 import { useNotification } from '@kyvg/vue3-notification'
 import sss from 'shamirs-secret-sharing'
 import i18n from '@/locale'
@@ -49,6 +49,7 @@ export const useGlobalStore = defineStore('global', {
         showRedirectModal: false,
         forcedUnlock: false,
         authErrorLimit: 4,
+        DBVersion: 1,
 
         currentWalletID: 1,
         currentWalletName: '',
@@ -76,6 +77,8 @@ export const useGlobalStore = defineStore('global', {
 
         RTCPeer: null,
         RTCConnections: {},
+
+        defaultWalletName: 'MyJetWallet',
 
         cacheTime: 15 * 60 * 1000,
         userLockTime: 15 * 60 * 1000,
@@ -119,6 +122,33 @@ export const useGlobalStore = defineStore('global', {
 
 
     actions: {
+        // Get current DB version
+        getCurrentDBVersion() {
+            // Get data from DB
+            let DBCurrentVersion = localStorage.getItem('DBVersion')
+
+            console.log(DBCurrentVersion)
+
+            if (!DBCurrentVersion) {
+                // Save data in localStorage
+                localStorage.setItem('DBVersion', this.DBVersion)
+            } else {
+                // Set data from localStorage
+                this.DBVersion = DBCurrentVersion
+            }
+        },
+
+
+        // Set new DB version
+        setNewDBVersion() {
+            // Increase by 1
+            this.DBVersion++
+
+            // Save data in localStorage
+            localStorage.setItem('DBVersion', this.DBVersion)
+        },
+
+
         // Get current wallet ID
         async getCurrentWalletID() {
             // Get data from DB
@@ -133,13 +163,15 @@ export const useGlobalStore = defineStore('global', {
 
         // Set current wallet ID
         async setCurrentWalletID(walletID = 1) {
-            // Save in DB
-            await DBaddData('global', [
-                ['currentWalletID', walletID]
-            ])
+            if (this.currentWalletID !== walletID) {
+                // Save in DB
+                await DBaddData('global', [
+                    ['currentWalletID', walletID]
+                ])
 
-            // Set data
-            this.currentWalletID = walletID
+                // Set data
+                this.currentWalletID = walletID
+            }
         },
 
 
@@ -735,6 +767,10 @@ export const useGlobalStore = defineStore('global', {
                 [`wallet${walletID}_secretIV`, iv]
             ])
 
+            // Check DB storeName
+            await DBcheckStoreName(`wallet${walletID}`)
+
+            // Save in DB
             await DBaddData(`wallet${walletID}`, [
                 ['secret', shares[1]],
             ])
@@ -787,39 +823,51 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Create wallet
-        async createWallet({ pinCode, walletName, isBiometricEnabled }) {
-            // Generate HMAC key
-            let hmacKey = await generateHMACKey()
-
+        async createWallet({ pinCode = null, walletName = null, isBiometricEnabled = null, isAdding = false }) {
             // Get all wallets
             let DBWallets = await DBgetData('global', 'wallets')
 
-            // Max wallet ID in wallets
-            let newId = DBWallets !== undefined
-                ? DBWallets.length + 1
-                : 1
+            // Get wallet ID
+            let walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+
+            if (DBWallets === undefined) {
+                // Set array type
+                DBWallets = []
+            }
+
+            // Update wallets
+            DBWallets.push({
+                id: walletID,
+                name: walletName || this.defaultWalletName + walletID
+            })
 
             // Add data to wallet DB
-            await DBaddData(`wallet${newId}`, [
-                ['id', newId],
-                ['name', walletName],
+            await DBaddData(`wallet${walletID}`, [
+                ['id', walletID],
+                ['name', walletName || this.defaultWalletName + walletID],
                 ['currentNetwork', 'cosmoshub'],
                 ['currentCurrency', 'USD']
             ])
 
             // Add data to global DB
-            await DBaddData('global', [
-                ['isRegister', true],
-                ['currentWalletID', newId],
-                ['hmacKey', hmacKey],
-                ['pin', await hashDataWithKey(pinCode.join(''), hmacKey)],
-                ['isBiometric', isBiometricEnabled],
-                ['authErrorLimit', this.authErrorLimit],
-                ['wallets', [{
-                    id: newId,
-                    name: walletName
-                }]]
-            ])
+            if (!isAdding) {
+                // Generate HMAC key
+                let hmacKey = await generateHMACKey()
+
+                await DBaddData('global', [
+                    ['isRegister', true],
+                    ['currentWalletID', walletID],
+                    ['hmacKey', hmacKey],
+                    ['pin', await hashDataWithKey(pinCode.join(''), hmacKey)],
+                    ['isBiometric', isBiometricEnabled],
+                    ['authErrorLimit', this.authErrorLimit],
+                    ['wallets', DBWallets]
+                ])
+            } else {
+                await DBaddData('global', [
+                    ['wallets', DBWallets]
+                ])
+            }
 
             // Set authorized status
             this.isAuthorized = true
@@ -1280,8 +1328,29 @@ export const useGlobalStore = defineStore('global', {
         // Remove wallet
         async removeWallet(wallet) {
             try {
-                // Remove in DB
+                // Set default wallet if deleted current
+                if (wallet.id === this.currentWalletID) {
+                    await this.setCurrentWalletID()
+                }
+
+                // Cleare store in DB
                 await DBclearStore(`wallet${wallet.id}`)
+
+                // Remove in secret DB
+                await DBdeleteData('secret', [
+                    `wallet${wallet.id}_aesKey`,
+                    `wallet${wallet.id}_privateKey`,
+                    `wallet${wallet.id}_secret`,
+                    `wallet${wallet.id}_secretIV`
+                ])
+
+                // Update wallets
+                this.wallets = this.wallets.filter(el => el.id !== wallet.id)
+
+                // Update wallets in DB
+                await DBaddData('global', [
+                    ['wallets', JSON.parse(JSON.stringify(this.wallets))]
+                ])
             } catch (error) {
                 console.log(error)
             }

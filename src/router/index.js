@@ -20,7 +20,7 @@ const routes = [
 	{
 		path: '/create_wallet',
 		name: 'CreateWallet',
-		component: () => import('../views/CreateWalletPage.vue'),
+		component: () => import('../views/CreateWallet/IndexPage.vue'),
 		meta: {
 			layout: defaultLayout,
 			accessDenied: ['register', 'locked']
@@ -29,7 +29,7 @@ const routes = [
 	{
 		path: '/confirm_wallet',
 		name: 'CreateWalletConfirm',
-		component: () => import('../views/ConfirmWalletPage.vue'),
+		component: () => import('../views/CreateWallet/ConfirmPage.vue'),
 		meta: {
 			layout: defaultLayout,
 			accessDenied: ['register', 'locked']
@@ -38,7 +38,7 @@ const routes = [
 	{
 		path: '/create_pin',
 		name: 'CreatePin',
-		component: () => import('../views/CreatePinPage.vue'),
+		component: () => import('../views/CreateWallet/PinPage.vue'),
 		meta: {
 			layout: defaultLayout,
 			accessDenied: ['register', 'locked']
@@ -47,7 +47,7 @@ const routes = [
 	{
 		path: '/wallet_created',
 		name: 'CreatedWallet',
-		component: () => import('../views/CreatedWalletPage.vue'),
+		component: () => import('../views/CreateWallet/CreatedPage.vue'),
 		meta: {
 			layout: defaultLayout,
 			accessDenied: ['not_register', 'locked']
@@ -56,7 +56,7 @@ const routes = [
 	{
 		path: '/import_wallet',
 		name: 'ImportWallet',
-		component: () => import('../views/ImportWalletPage.vue'),
+		component: () => import('../views/CreateWallet/ImportPage.vue'),
 		meta: {
 			layout: defaultLayout,
 			accessDenied: ['register', 'locked']
@@ -83,7 +83,7 @@ const routes = [
 	{
 		path: '/account',
 		name: 'Account',
-		component: () => import('../views/AccountPage.vue'),
+		component: () => import('../views/Account/IndexPage.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized', 'locked']
@@ -92,7 +92,7 @@ const routes = [
 	{
 		path: '/account/claim_confirm',
 		name: 'ClaimConfirm',
-		component: () => import('../views/ClaimConfirmPage.vue'),
+		component: () => import('../views/Account/ClaimConfirmPage.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized', 'locked']
@@ -101,7 +101,7 @@ const routes = [
 	{
 		path: '/account/stake',
 		name: 'Stake',
-		component: () => import('../views/Stake.vue'),
+		component: () => import('../views/Account/StakePage.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized', 'locked']
@@ -110,7 +110,7 @@ const routes = [
 	{
 		path: '/account/unstake',
 		name: 'Unstake',
-		component: () => import('../views/Unstake.vue'),
+		component: () => import('../views/Account/UnstakePage.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized', 'locked']
@@ -119,7 +119,7 @@ const routes = [
 	{
 		path: '/account/redelegate',
 		name: 'Redelegate',
-		component: () => import('../views/Redelegate.vue'),
+		component: () => import('../views/Account/RedelegatePage.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized', 'locked']
@@ -128,7 +128,7 @@ const routes = [
 	{
 		path: '/account/receive',
 		name: 'Receive',
-		component: () => import('../views/Receive.vue'),
+		component: () => import('../views/Account/ReceivePage.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized', 'locked']
@@ -137,7 +137,25 @@ const routes = [
 	{
 		path: '/account/send',
 		name: 'Send',
-		component: () => import('../views/Send.vue'),
+		component: () => import('../views/Account/SendPage.vue'),
+		meta: {
+			layout: accountLayout,
+			accessDenied: ['not_authorized', 'locked']
+		}
+	},
+	{
+		path: '/add_wallet',
+		name: 'AddWallet',
+		component: () => import('../views/AddWallet/IndexPage.vue'),
+		meta: {
+			layout: accountLayout,
+			accessDenied: ['not_authorized', 'locked']
+		}
+	},
+	{
+		path: '/add_wallet/import',
+		name: 'AddWalletImport',
+		component: () => import('../views/AddWallet/ImportPage.vue'),
 		meta: {
 			layout: accountLayout,
 			accessDenied: ['not_authorized', 'locked']

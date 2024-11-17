@@ -20,9 +20,10 @@
 
 
 <script setup>
-    import { inject, onUnmounted } from 'vue'
+    import { inject, onUnmounted, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
+    import { DBgetData } from '@/utils/db'
 
     // Components
     import Auth from '@/components/Auth.vue'
@@ -31,6 +32,17 @@
     const store = useGlobalStore(),
         router = useRouter(),
         emitter = inject('emitter')
+
+
+    onMounted(async () => {
+        // Get data from DB
+        let userLockTimestamp = await DBgetData('global', 'userLockTimestamp')
+
+        if (new Date(userLockTimestamp) - new Date() < store.userLockTime) {
+            // Set user unlock
+            await store.setUserUnlock()
+        }
+    })
 
 
     onUnmounted(() => {

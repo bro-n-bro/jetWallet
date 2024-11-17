@@ -15,7 +15,11 @@
 
                     <template v-else>
                     <!-- Back button -->
-                    <router-link class="back_btn" to="/">
+                    <router-link v-if="props.isAdding" class="back_btn" to="/add_wallet">
+                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
+                    </router-link>
+
+                    <router-link v-else class="back_btn" to="/">
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                     </router-link>
 
@@ -256,9 +260,10 @@
 
 
 <script setup>
-    import { ref, onBeforeMount, onMounted, watch, computed } from 'vue'
+    import { ref, onBeforeMount, onMounted, watch, computed, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
+    import { useNotification } from '@kyvg/vue3-notification'
     import { importWalletFromMnemonic, importWalletFromPrivateKey } from '@/utils'
     import { fromHex } from '@cosmjs/encoding'
     import { Secp256k1 } from '@cosmjs/crypto'
@@ -267,8 +272,12 @@
     import Loader from '@/components/Loader.vue'
 
 
-    const store = useGlobalStore(),
+    const props = defineProps(['isAdding']),
+        store = useGlobalStore(),
         router = useRouter(),
+        emitter = inject('emitter'),
+        notification = useNotification(),
+        i18n = inject('i18n'),
         loading = ref(true),
         activeTab = ref(1),
         tab1 = ref(null),
@@ -462,8 +471,30 @@
             await store.setPrivateKey(privateKey.value)
         }
 
-        // Redirect
-        router.push('/create_pin')
+        if (props.isAdding) {
+            // Save in DB
+            await store.createWallet({
+                isAdding: true
+            })
+
+            // Redirect
+            router.push('/account')
+
+            // Event "show_wallets_modal"
+            emitter.emit('show_wallets_modal')
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 1000,
+                title: i18n.global.t('message.notification_wallet_added_success'),
+                type: 'success',
+            })
+        } else {
+            // Redirect
+            router.push('/create_pin')
+        }
     }
 </script>
 
