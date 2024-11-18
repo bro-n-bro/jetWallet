@@ -6,7 +6,28 @@ on:
       - dev
 
 jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Generate version
+        run: |
+          NEW_VERSION=$(date +%Y.%m.%d)-${{ github.run_number }}
+          echo $NEW_VERSION > version.txt
+          echo '{"schemaVersion": 1, "label": "version", "message": "'$VERSION'", "color": "blue"}' > version-badge.json
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add version.txt
+          git commit -m "Update version to $NEW_VERSION"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build_signer:
+    needs: update-version
+    if: steps.version-commit.outputs.committed == 'true'
     runs-on: ubuntu-latest
 
     strategy:
@@ -35,21 +56,3 @@ jobs:
           BRANCH: build
           FOLDER: dist
           CLEAN: true
-  
-  update-version:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Generate version
-        run: |
-          NEW_VERSION=$(date +%Y.%m.%d)-${{ github.run_number }}
-          echo $NEW_VERSION > version.txt
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add version.txt
-          git commit -m "Update version to $NEW_VERSION"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
