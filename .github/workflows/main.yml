@@ -15,11 +15,9 @@ jobs:
       - name: Generate version
         run: |
           NEW_VERSION=$(date +%Y.%m.%d)-${{ github.run_number }}
-          echo $NEW_VERSION > version.txt
-          echo '{"schemaVersion": 1, "label": "version", "message": "'$NEW_VERSION'", "color": "blue"}' > version-badge.json
+          echo '{"schemaVersion": 1, "label": "dev-version", "message": "'$NEW_VERSION'", "color": "blue"}' > version-badge.json
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add version.txt
           git add version-badge.json
           git commit -m "Update version to $NEW_VERSION"
           git push
