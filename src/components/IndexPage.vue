@@ -23,9 +23,9 @@
                         </button> -->
 
                         <!-- Create wallet button -->
-                        <!-- <router-link to="/add_wallet/create" class="btn">
+                        <router-link to="/add_wallet/create" class="btn">
                             <span>{{ $t('message.btn_create_wallet') }}</span>
-                        </router-link> -->
+                        </router-link>
 
                         <!-- Import wallet button -->
                         <router-link to="/add_wallet/import" class="btn purple_btn">

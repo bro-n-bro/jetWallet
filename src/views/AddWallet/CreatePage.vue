@@ -1,12 +1,12 @@
 <template>
     <!-- Create page -->
-    <CreatePage />
+    <CreatePage isAdding="true" />
 </template>
 
 
 <script setup>
     // Components
-    import IndexPage from '@/components/IndexPage.vue'
+    import CreatePage from '@/components/createWallet/CreatePage.vue'
 </script>
 
 

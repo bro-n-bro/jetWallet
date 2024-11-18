@@ -1,6 +1,6 @@
 <template>
     <!-- Confirm page -->
-    <ConfirmPage />
+    <ConfirmPage isAdding="true" />
 </template>
 
 

@@ -153,6 +153,24 @@ const routes = [
 		}
 	},
 	{
+		path: '/add_wallet/create',
+		name: 'AddWalletCreate',
+		component: () => import('../views/AddWallet/CreatePage.vue'),
+		meta: {
+			layout: accountLayout,
+			accessDenied: ['not_authorized', 'locked']
+		}
+	},
+	{
+		path: '/add_wallet/confirm',
+		name: 'AddWalletConfirm',
+		component: () => import('../views/AddWallet/ConfirmPage.vue'),
+		meta: {
+			layout: accountLayout,
+			accessDenied: ['not_authorized', 'locked']
+		}
+	},
+	{
 		path: '/add_wallet/import',
 		name: 'AddWalletImport',
 		component: () => import('../views/AddWallet/ImportPage.vue'),

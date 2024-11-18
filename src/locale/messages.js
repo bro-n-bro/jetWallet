@@ -266,7 +266,7 @@ export default {
             'btn_from_exist_wallet': 'Create from existing wallet',
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',
-            'btn_show': 'Show',
+            'btn_show': 'Ok. Show my phrases',
             'btn_next': 'Next',
             'btn_copy': 'Copy to clipboard',
             'btn_copy_small': 'Copy',

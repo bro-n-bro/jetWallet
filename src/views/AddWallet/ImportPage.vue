@@ -6,7 +6,7 @@
 
 <script setup>
     // Components
-    import ImportPage from '@/components/ImportPage.vue'
+    import ImportPage from '@/components/createWallet/ImportPage.vue'
 </script>
 
 
