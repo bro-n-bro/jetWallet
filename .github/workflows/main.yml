@@ -20,6 +20,7 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add version.txt
+          git add version-badge.json
           git commit -m "Update version to $NEW_VERSION"
           git push
         env:
