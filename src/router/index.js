@@ -189,9 +189,6 @@ const router = createRouter({
 
 
 router.beforeResolve(async (to, from, next) => {
-	showDatabaseStructure('jetWallet')
-	showDatabaseStructure('bro_db')
-
 	let store = useGlobalStore(),
 		DBData = await DBgetMultipleData('global', ['isRegister', 'isUserLock', 'userLockTimestamp'])
 

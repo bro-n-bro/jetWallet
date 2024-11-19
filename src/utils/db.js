@@ -14,37 +14,11 @@ async function getStore() {
 }
 
 
-export async function showDatabaseStructure(dbName) {
-    const db = await openDB(dbName)
-
-    let structureInfo = `Database: ${dbName}\nVersion: ${db.version}\n\nObject Stores:\n`
-
-    for (const storeName of db.objectStoreNames) {
-        structureInfo += `- ${storeName}:\n`
-
-        const transaction = db.transaction(storeName, 'readonly')
-        const store = transaction.objectStore(storeName)
-
-        structureInfo += `  Key Path: ${store.keyPath}\n`
-
-        for (const indexName of store.indexNames) {
-            const index = store.index(indexName)
-            structureInfo += `  Index: ${indexName}\n`
-            structureInfo += `    Key Path: ${index.keyPath}\n`
-            structureInfo += `    Unique: ${index.unique}\n`
-            structureInfo += `    MultiEntry: ${index.multiEntry}\n`
-        }
-    }
-
-    db.close()
-
-    alert(structureInfo)
-}
-
-
 // DB promise
 const dbPromise = (async () => {
     let store = await getStore()
+
+    deleteDB('bro_db')
 
     // Get current DB version
     store.getCurrentDBVersion()
@@ -118,14 +92,6 @@ export async function DBgetMultipleData(storeName, keys) {
     if (!DB) {
         // Check DB
         DB = await dbPromise
-    }
-
-    if (DB.objectStoreNames.contains('wallet')) {
-        DB.close()
-
-        deleteDB('jetWallet')
-
-        return false
     }
 
     let results = await Promise.all(keys.map(key => DB.get(storeName, key))),

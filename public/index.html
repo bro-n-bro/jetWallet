@@ -37,6 +37,19 @@
     </body>
 
 	<script>
+		window.onerror = function (message, source, lineno, colno, error) {
+			alert(`Error: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\n${error ? 'Stack: ' + error.stack : ''}`)
+
+			return true
+		}
+
+		// Обработчик для ошибок промисов (необработанные ошибки в промисах)
+		window.addEventListener('unhandledrejection', function (event) {
+			alert(`Unhandled Promise Rejection:\n${event.reason}`)
+
+			event.preventDefault()
+		})
+
 		document.addEventListener('click', e => {
 			if (!e.target.closest('input, textarea')) {
 				document.activeElement.blur()
