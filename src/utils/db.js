@@ -1,4 +1,4 @@
-import { openDB } from 'idb'
+import { openDB, deleteDB } from 'idb'
 
 
 var DB = null
@@ -95,7 +95,7 @@ export async function DBgetMultipleData(storeName, keys) {
     if (DB.objectStoreNames.contains('wallet')) {
         DB.close()
 
-        indexedDB.deleteDatabase('jetWallet')
+        deleteDB('jetWallet')
 
         return false
     }
