@@ -127,8 +127,6 @@ export const useGlobalStore = defineStore('global', {
             // Get data from DB
             let DBCurrentVersion = localStorage.getItem('DBVersion')
 
-            console.log(DBCurrentVersion)
-
             if (!DBCurrentVersion) {
                 // Save data in localStorage
                 localStorage.setItem('DBVersion', this.DBVersion)

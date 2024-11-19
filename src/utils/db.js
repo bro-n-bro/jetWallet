@@ -22,16 +22,15 @@ const dbPromise = (async () => {
     store.getCurrentDBVersion()
 
     // Open DB
-    return await openDB('jetWallet', store.DBVersion, {
+    return openDB('jetWallet', store.DBVersion, {
         async upgrade(db) {
-            if (!db.objectStoreNames.contains('secret')) {
+            if (db.objectStoreNames.contains('wallet')) {
                 db.close()
 
-                await indexedDB.deleteDatabase('jetWallet')
+                indexedDB.deleteDatabase('jetWallet')
 
-                return
+                return false
             }
-
 
             // Create store if it does not exist
             if (!db.objectStoreNames.contains('global')) {
