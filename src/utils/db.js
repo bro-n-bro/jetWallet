@@ -23,15 +23,7 @@ const dbPromise = (async () => {
 
     // Open DB
     return openDB('jetWallet', store.DBVersion, {
-        async upgrade(db) {
-            if (db.objectStoreNames.contains('wallet')) {
-                db.close()
-
-                indexedDB.deleteDatabase('jetWallet')
-
-                return false
-            }
-
+        upgrade(db) {
             // Create store if it does not exist
             if (!db.objectStoreNames.contains('global')) {
                 db.createObjectStore('global')
@@ -98,6 +90,14 @@ export async function DBgetMultipleData(storeName, keys) {
     if (!DB) {
         // Check DB
         DB = await dbPromise
+    }
+
+    if (DB.objectStoreNames.contains('wallet')) {
+        DB.close()
+
+        indexedDB.deleteDatabase('jetWallet')
+
+        return false
     }
 
     let results = await Promise.all(keys.map(key => DB.get(storeName, key))),
