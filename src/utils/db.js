@@ -14,6 +14,34 @@ async function getStore() {
 }
 
 
+export async function showDatabaseStructure(dbName) {
+    const db = await openDB(dbName)
+
+    let structureInfo = `Database: ${dbName}\nVersion: ${db.version}\n\nObject Stores:\n`
+
+    for (const storeName of db.objectStoreNames) {
+        structureInfo += `- ${storeName}:\n`
+
+        const transaction = db.transaction(storeName, 'readonly')
+        const store = transaction.objectStore(storeName)
+
+        structureInfo += `  Key Path: ${store.keyPath}\n`
+
+        for (const indexName of store.indexNames) {
+            const index = store.index(indexName)
+            structureInfo += `  Index: ${indexName}\n`
+            structureInfo += `    Key Path: ${index.keyPath}\n`
+            structureInfo += `    Unique: ${index.unique}\n`
+            structureInfo += `    MultiEntry: ${index.multiEntry}\n`
+        }
+    }
+
+    db.close()
+
+    alert(structureInfo)
+}
+
+
 // DB promise
 const dbPromise = (async () => {
     let store = await getStore()

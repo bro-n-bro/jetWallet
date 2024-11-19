@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { DBgetMultipleData } from '@/utils/db'
+import { DBgetMultipleData, showDatabaseStructure } from '@/utils/db'
 import { decodeFromBase64 } from '@/utils'
 import { useGlobalStore } from '@/store'
 
@@ -189,6 +189,9 @@ const router = createRouter({
 
 
 router.beforeResolve(async (to, from, next) => {
+	showDatabaseStructure('jetWallet')
+	showDatabaseStructure('bro_db')
+
 	let store = useGlobalStore(),
 		DBData = await DBgetMultipleData('global', ['isRegister', 'isUserLock', 'userLockTimestamp'])
 
