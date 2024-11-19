@@ -2,10 +2,24 @@
     <!-- Index page -->
     <section class="page_container index_page">
         <div class="cont">
+            <!-- Index page head -->
+            <div class="head" v-if="props.additionalButton">
+                <!-- Back button -->
+                <router-link to="/account" class="back_btn">
+                    <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
+                </router-link>
+
+                <!-- Index page title -->
+                <div class="page_title">
+                    {{ $t('message.index_page_title') }}
+                </div>
+            </div>
+
             <!-- Index page logo -->
-            <div class="logo">
+            <div class="logo" v-else>
                 <img src="@/assets/logo.svg" alt="" loading="lazy">
             </div>
+
 
             <!-- Index page data -->
             <div class="page_data_wrap">
@@ -73,6 +87,13 @@
         margin: 0 auto;
 
         filter: drop-shadow(0px 0px 180px rgba(231, 200, 255, .5));
+    }
+
+
+
+    .page_title
+    {
+        padding-left: 46px;
     }
 
 

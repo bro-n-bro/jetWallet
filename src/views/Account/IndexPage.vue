@@ -50,6 +50,8 @@
                     <StakedSection :swiperActiveIndex />
                 </swiper-slide>
             </swiper-container>
+
+            <div class="wave" v-if="!swipeExperience"></div>
         </section>
 
 
@@ -121,6 +123,7 @@
         showEditWalletModal = ref(false),
         editingWallet = ref(null),
         showStatsModal = ref(false),
+        swipeExperience = ref(localStorage.getItem('swipe_experience') || false),
         swiperEl = ref(null),
         swiperActiveIndex = ref(params.activeSlide || 0),
         swiperInjectStyles = [`
@@ -168,6 +171,12 @@
         swiperEl.value = document.querySelector('swiper-container')
 
         swiperEl.value.addEventListener('swiperslidechangetransitionstart', () => {
+            // Set user swipe experience
+            swipeExperience.value = true
+
+            // Save user swipe experience in localStorage
+            localStorage.setItem('swipe_experience', swipeExperience.value)
+
             // Set active slide
             swiperActiveIndex.value = swiperEl.value.swiper.activeIndex
         })
@@ -390,6 +399,66 @@
     }
 
 
+    .top_block .wave
+    {
+        position: absolute;
+        top: 15%;
+        left: 100%;
+
+        width: 50px;
+        height: 70%;
+
+        transform: scale(1);
+        animation: pulse 3s infinite;
+
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 1);
+    }
+
+
+    .top_block .wave::before
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        content: '';
+        animation: pulse 3s infinite;
+        animation-delay: .5s;
+
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 1);
+    }
+
+
+    @keyframes pulse
+    {
+        0%
+        {
+            transform: scale(.95);
+
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, .7);
+        }
+
+        70%
+        {
+            transform: scale(1);
+
+            box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+        }
+
+        100%
+        {
+            transform: scale(.95);
+
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        }
+    }
+
+
     .searching .top_block
     {
         pointer-events: none;
@@ -448,7 +517,6 @@
 
     .top_block .wallet_name
     {
-        cursor: pointer;
         font-size: 16px;
         font-weight: 500;
 
@@ -465,6 +533,8 @@
 
         max-width: 100%;
         padding: 7px 11px;
+
+        cursor: pointer;
 
         gap: 4px;
     }

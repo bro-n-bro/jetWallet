@@ -16,6 +16,10 @@ export default {
             'age_modal_text': 'Are you 18 years old?',
 
 
+            // Index page
+            'index_page_title': 'Сreation of a new wallet',
+
+
             // Create page
             'create_wallet_agree_label1': 'Do not share your recovery phrase with ANYONE.',
             'create_wallet_agree_label2': 'Back up the phrase safely.',

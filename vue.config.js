@@ -3,6 +3,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 
 module.exports = defineConfig({
+	filenameHashing: true,
 	transpileDependencies: true,
 
 	configureWebpack: {

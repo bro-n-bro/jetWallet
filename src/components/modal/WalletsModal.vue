@@ -15,7 +15,7 @@
 
                 <!-- Wallets modal data -->
                 <div class="list">
-                    <div class="item" v-for="(wallet, index) in store.wallets" :key="index" @click.stop.prevent="store.setCurrentWalletID(wallet.id)">
+                    <div class="item" v-for="(wallet, index) in store.wallets" :key="index" @click.stop.prevent="setWallet(wallet)">
                         <div class="logo">
                             <img src="@/assets/logo.svg" alt="" loading="lazy">
 
@@ -57,6 +57,16 @@
         // Get wallets
         await store.getWallets()
     })
+
+
+    // Set new current wallet
+    function setWallet(wallet) {
+        // Set current wallet ID
+        store.setCurrentWalletID(wallet.id)
+
+        // Event "close_wallets_modal"
+        emitter.emit('close_wallets_modal')
+    }
 
 
     // Edit wallet modal
