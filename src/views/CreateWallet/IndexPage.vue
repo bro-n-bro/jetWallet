@@ -6,7 +6,7 @@
 
 <script setup>
     // Components
-    import IndexPage from '@/components/IndexPage.vue'
+    import CreatePage from '@/components/createWallet/CreatePage.vue'
 </script>
 
 

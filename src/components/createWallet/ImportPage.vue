@@ -459,7 +459,7 @@
         // Import wallet
         if (activeTab.value != 3) {
             // Import
-            wallet.value = await importWalletFromMnemonic(secret.value.join(' ').toLocaleLowerCase())
+            wallet.value = await importWalletFromMnemonic(secret.value.join(' ').toLocaleLowerCase(), null, store.defaultDerivationPath)
 
             // Save in DB
             await store.setSecret(wallet.value.secret.data)

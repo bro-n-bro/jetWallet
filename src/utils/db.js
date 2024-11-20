@@ -16,9 +16,16 @@ async function getStore() {
 
 // DB promise
 const dbPromise = (async () => {
-    let store = await getStore()
+    let store = await getStore(),
+        isFirstRun = localStorage.getItem('firstRun') === null
 
     deleteDB('bro_db')
+
+    if (isFirstRun) {
+        deleteDB('jetWallet')
+
+        localStorage.setItem('firstRun', 'false')
+    }
 
     // Get current DB version
     store.getCurrentDBVersion()
@@ -34,6 +41,11 @@ const dbPromise = (async () => {
             // Create store if it does not exist
             if (!db.objectStoreNames.contains('secret')) {
                 db.createObjectStore('secret')
+            }
+
+            // Create store if it does not exist
+            if (!db.objectStoreNames.contains('wallet1')) {
+                db.createObjectStore('wallet1')
             }
         }
     })

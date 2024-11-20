@@ -46,12 +46,14 @@ export const useGlobalStore = defineStore('global', {
         isAnyModalOpen: false,
         isAgeConfirmed: false,
 
+        defaultDerivationPath: "m/44'/118'/0'/0/0",
         showRedirectModal: false,
         forcedUnlock: false,
         authErrorLimit: 4,
         DBVersion: 1,
 
         currentWalletID: 1,
+        currentWalletDerivationPath: null,
         currentWalletName: '',
         currentNetwork: '',
         currentAddress: '',
@@ -186,9 +188,10 @@ export const useGlobalStore = defineStore('global', {
             this.currentAddress = ''
 
             // Get DB data
-            let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, ['name', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
+            let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, ['derivationPath', 'name', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
 
             // Set data from DB
+            this.currentWalletDerivationPath = DBData.derivationPath
             this.currentWalletName = DBData.name
             this.currentCurrency = DBData.currentCurrency
             this.TxFee.currentLevel = DBData.TxFeeCurrentLevel !== undefined ? DBData.TxFeeCurrentLevel : 'average'
@@ -348,12 +351,9 @@ export const useGlobalStore = defineStore('global', {
                             // Set data
                             this.prices = data
 
-                            // Add timestamp
-                            data.timestamp = new Date().toISOString()
-
                             // Save in DB
                             await DBaddData('global', [
-                                ['prices', JSON.parse(JSON.stringify(data))]
+                                ['prices', { data, timestamp: new Date().toISOString() }]
                             ])
                         })
                 } catch (error) {
@@ -361,7 +361,7 @@ export const useGlobalStore = defineStore('global', {
                 }
             } else{
                 // Set from cache
-                this.prices = cachePrices
+                this.prices = cachePrices.data
             }
         },
 
@@ -771,6 +771,7 @@ export const useGlobalStore = defineStore('global', {
             // Save in DB
             await DBaddData(`wallet${walletID}`, [
                 ['secret', shares[1]],
+                ['createdBy', 'secret']
             ])
         },
 
@@ -804,6 +805,7 @@ export const useGlobalStore = defineStore('global', {
 
             await DBaddData(`wallet${walletID}`, [
                 ['privateKey', shares[1]],
+                ['createdBy', 'privateKey']
             ])
         },
 
@@ -821,7 +823,7 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Create wallet
-        async createWallet({ pinCode = null, walletName = null, isBiometricEnabled = null, isAdding = false }) {
+        async createWallet({ pinCode = null, walletName = null, isBiometricEnabled = null, isAdding = false, relativeWallet = null, derivationPath = this.defaultDerivationPath }) {
             // Get all wallets
             let DBWallets = await DBgetData('global', 'wallets')
 
@@ -844,7 +846,10 @@ export const useGlobalStore = defineStore('global', {
                 ['id', walletID],
                 ['name', walletName || this.defaultWalletName + walletID],
                 ['currentNetwork', 'cosmoshub'],
-                ['currentCurrency', 'USD']
+                ['currentCurrency', 'USD'],
+                ['derivationPath', derivationPath],
+                ['subWallets', JSON.parse(JSON.stringify([]))],
+                ['relativeWallet', relativeWallet]
             ])
 
             // Add data to global DB
@@ -869,6 +874,44 @@ export const useGlobalStore = defineStore('global', {
 
             // Set authorized status
             this.isAuthorized = true
+
+            // Return wallet ID
+            return walletID
+        },
+
+
+        // Create from exist wallet
+        async createFromExistWallet() {
+            // Get secret from DB
+            let currentWalletSecret = await this.getSecret(true)
+
+            // Get sub wallets of current wallet
+            let subWallets = await DBgetData(`wallet${this.currentWalletID}`, 'subWallets')
+
+            // Set secret
+            await this.setSecret(currentWalletSecret)
+
+            // Create wallet
+            let newWalletID = await this.createWallet({
+                isAdding: true,
+                relativeWallet: this.currentWalletID,
+                derivationPath: this.defaultDerivationPath.replace(/\/\d+$/, `/${(subWallets + 1)}`)
+            })
+
+            // Add new subwallet
+            subWallets.push(newWalletID)
+
+            // Update current wallet
+            await DBaddData(`wallet${this.currentWalletID}`, [
+                ['subWallets', JSON.parse(JSON.stringify(subWallets))]
+            ])
+        },
+
+
+        // Get current wallet created by
+        async getCurrentWalletCreatedBy() {
+            // Get data from DB
+            return await DBgetData(`wallet${this.currentWalletID}`, 'createdBy')
         },
 
 

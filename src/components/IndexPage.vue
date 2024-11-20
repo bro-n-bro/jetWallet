@@ -1,6 +1,9 @@
 <template>
     <!-- Index page -->
     <section class="page_container index_page">
+        <!-- Loader -->
+        <Loader v-if="loading" />
+
         <div class="cont">
             <!-- Index page head -->
             <div class="head" v-if="props.additionalButton">
@@ -32,9 +35,9 @@
                     <!-- Index page buttons -->
                     <div class="btns" v-if="props.additionalButton">
                         <!-- Create from existing wallet button -->
-                        <!-- <button class="btn">
+                        <button class="btn" @click.prevent="createFromExistWallet()" v-if="currentWalletCreatedBy === 'secret'">
                             <span>{{ $t('message.btn_from_exist_wallet') }}</span>
-                        </button> -->
+                        </button>
 
                         <!-- Create wallet button -->
                         <router-link to="/add_wallet/create" class="btn">
@@ -66,7 +69,38 @@
 
 
 <script setup>
-    const props = defineProps(['additionalButton'])
+    import { ref, onBeforeMount } from 'vue'
+    import { useRouter } from 'vue-router'
+    import { useGlobalStore } from '@/store'
+
+    // Components
+    import Loader from '@/components/Loader.vue'
+
+
+    const props = defineProps(['additionalButton']),
+        store = useGlobalStore(),
+        router = useRouter(),
+        loading = ref(false),
+        currentWalletCreatedBy = ref(null)
+
+
+    onBeforeMount(async () => {
+        // Get current wallet created by
+        currentWalletCreatedBy.value = await store.getCurrentWalletCreatedBy()
+    })
+
+
+    // Create from exist wallet
+    async function createFromExistWallet() {
+        // Show loader
+        loading.value = true
+
+        // Create from exist wallet
+        await store.createFromExistWallet()
+
+        // Go to account page
+        router.push('/account')
+    }
 </script>
 
 
