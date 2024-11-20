@@ -111,12 +111,17 @@ export const useGlobalStore = defineStore('global', {
         formatableTokens: [
             {
                 token_name: 'USD',
-                format_token_name: 'USDT',
+                format_token_name: 'usdt',
                 exponent: 0
             },
             {
                 token_name: 'BTC',
-                format_token_name: 'WBTC',
+                format_token_name: 'wbtc',
+                exponent: 0
+            },
+            {
+                token_name: 'ETH',
+                format_token_name: 'axleth',
                 exponent: 0
             }
         ]

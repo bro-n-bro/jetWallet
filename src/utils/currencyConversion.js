@@ -8,9 +8,9 @@ export const currencyConversion = (amount, denom, currency) => {
     let store = useGlobalStore(),
         currentCurrencyPrice = 1
 
-    // currency
-    //     ? currentCurrencyPrice = store.prices.find(el => el.symbol == formatTokenName(currency)).price
-    //     : currentCurrencyPrice = store.prices.find(el => el.symbol == formatTokenName(store.currentCurrency)).price
+    currency
+        ? currentCurrencyPrice = store.prices.find(el => el.symbol.toLowerCase() === formatTokenName(currency).toLowerCase()).price
+        : currentCurrencyPrice = store.prices.find(el => el.symbol.toLowerCase() === formatTokenName(store.currentCurrency).toLowerCase()).price
 
     return amount * (getPriceByDenom(denom) / currentCurrencyPrice)
 }
