@@ -12,6 +12,10 @@
                 <div class="page_data">
                     <!-- Auth -->
                     <Auth />
+
+                    <div class="version">
+                        {{ version }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -31,7 +35,8 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
-        emitter = inject('emitter')
+        emitter = inject('emitter'),
+        version = process.env.APP_VERSION || 'unknown'
 
 
     onMounted(async () => {
@@ -69,5 +74,17 @@
     .btns
     {
         margin-top: 0;
+    }
+
+
+    .version
+    {
+        font-size: 10px;
+
+        margin-top: 12px;
+
+        text-align: center;
+
+        opacity: .5;
     }
 </style>
