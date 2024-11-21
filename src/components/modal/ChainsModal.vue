@@ -1,15 +1,15 @@
 <template>
-    <!-- Validators page -->
+    <!-- Chains page -->
     <section class="page_container inner_page_container chains_page">
         <div class="cont">
-            <!-- Validators page head -->
+            <!-- Chains page head -->
             <div class="head">
                 <!-- Back button -->
                 <button class="back_btn" @click="emitter.emit('close_chains_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
-                <!-- Validators page title -->
+                <!-- Chains page title -->
                 <div class="page_title">
                     {{ $t('message.chains_page_title') }}
                 </div>
