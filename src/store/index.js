@@ -59,6 +59,7 @@ export const useGlobalStore = defineStore('global', {
         currentAddress: '',
         currentCurrency: '',
         currentCurrencySymbol: '',
+        IBCSendCurrentChain: null,
         stakeCurrentValidator: null,
         unstakeCurrentValidator: null,
         redelegateValidatorFrom: null,

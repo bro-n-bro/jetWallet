@@ -12,9 +12,24 @@
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </router-link>
 
-                <!-- Send page title -->
-                <div class="page_title">
-                    {{ $t('message.send_page_title') }}
+                <!-- Tabs -->
+                <div class="tabs_wrap">
+                    <div class="tabs">
+                        <!-- Tab send -->
+                        <button class="btn" ref="tab1" @click.prevent="activeTab = 1" :class="{ active: activeTab === 1 }">
+                            <span>{{ $t('message.send_page_tab1') }}</span>
+                        </button>
+
+                        <!-- Tab IBC send -->
+                        <button class="btn" ref="tab2" @click.prevent="activeTab = 2" :class="{ active: activeTab === 2 }">
+                            <span>{{ $t('message.send_page_tab2') }}</span>
+                        </button>
+
+                        <!-- Tabs roller -->
+                        <div class="roller" :style="`width: ${rollerWidth}px; left: ${rollerOffsetLeft}px;`">
+                            <span></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -66,6 +81,47 @@
                         <div class="cost">
                             0.00 {{ store.currentCurrencySymbol }}
                         </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Send page destination chain -->
+            <div class="destination_chain" v-if="activeTab === 2">
+                <!-- Send page destination chain label -->
+                <div class="field_label">
+                    {{ $t('message.send_destination_chain_label') }}
+                </div>
+
+                <!-- Send page destination chain info -->
+                <div class="info_wrap" @click.prevent="openChainsModal()" v-if="!store.IBCSendCurrentChain">
+                    <div class="info">
+                        <div class="placeholder">
+                            {{ $t('message.send_destination_chain_placeholder') }}
+                        </div>
+
+                        <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg>
+                    </div>
+                </div>
+
+                <!-- Send page destination chain info -->
+                <div class="chain_wrap" @click.prevent="openChainsModal()" v-else>
+                    <div class="chain">
+                        <!-- Send page destination chain logo -->
+                        <div class="logo">
+                            <img :src="getNetworkLogo(store.IBCSendCurrentChain?.info.chain_id)" alt="" @error="imageLoadError($event)">
+
+                            <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
+                        </div>
+
+                        <div>
+                            <!-- Send page destination chain name -->
+                            <div class="name">
+                                {{ store.IBCSendCurrentChain?.info.pretty_name }}
+                            </div>
+                        </div>
+
+                        <svg class="arr"><use xlink:href="@/assets/sprite.svg#ic_arr_ver2"></use></svg>
                     </div>
                 </div>
             </div>
@@ -159,7 +215,12 @@
     </section>
 
 
-    <!-- Validators modal -->
+    <!-- Chains modal -->
+    <transition name="from_right">
+    <ChainsModal v-if="showChainsModal" />
+    </transition>
+
+    <!-- Tokens modal -->
     <transition name="from_right">
     <TokensModal v-if="showTokensModal" :currentToken="balance" />
     </transition>
@@ -182,13 +243,14 @@
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
     import { fromBech32 } from '@cosmjs/encoding'
-    import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink, getNetworkLogo } from '@/utils'
+    import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink, getNetworkLogo, imageLoadError } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
     import TokensModal from '@/components/modal/TokensModal.vue'
     import TxFee from '@/components/TxFee.vue'
     import SignTxModal from '@/components/modal/SignTxModal.vue'
+    import ChainsModal from '@/components/modal/ChainsModal.vue'
     import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
 
 
@@ -198,6 +260,12 @@
         emitter = inject('emitter'),
         i18n = inject('i18n'),
         notification = useNotification(),
+        activeTab = ref(1),
+        tab1 = ref(null),
+        tab2 = ref(null),
+        tabs = [tab1, tab2],
+        rollerWidth = ref(null),
+        rollerOffsetLeft = ref(null),
         balance = ref(store.balances.find(balance => balance.denom === route.query.denom)),
         addressInput = ref(null),
         address = ref(route.query.address || ''),
@@ -205,6 +273,7 @@
         memo = ref(''),
         showTokensModal = ref(false),
         showSignTxModal = ref(false),
+        showChainsModal =ref(false),
         msgAny = ref([]),
         isProcess = ref(false),
         isAmountReady = ref(false),
@@ -228,6 +297,10 @@
             // Update data
             updateData()
         })
+
+        // Set roller params
+        rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+        rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
     })
 
 
@@ -237,6 +310,13 @@
         emitter.off('close_sign_tx_modal')
 
         Telegram.WebApp.offEvent('qrTextReceived')
+    })
+
+
+    watch(computed(() => activeTab.value), () => {
+        // Update roller params
+        rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+        rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
     })
 
 
@@ -522,6 +602,13 @@
     }
 
 
+    // Open chains modal
+    function openChainsModal() {
+        // Show chains modal
+        showChainsModal.value = true
+    }
+
+
     // Event "auth"
     emitter.on('auth', () => {
         // Hide SignTx modal
@@ -532,6 +619,13 @@
 
         // Send tokens
         send()
+    })
+
+
+    // Event "close_chains_modal"
+    emitter.on('close_chains_modal', () => {
+        // Hide chains modal
+        showChainsModal.value = false
     })
 
 
@@ -570,6 +664,12 @@
     .send
     {
         background: #170232;
+    }
+
+
+    .tabs_wrap
+    {
+        margin-bottom: 0;
     }
 
 
@@ -656,6 +756,171 @@
         font-weight: 400;
 
         color: #836b9e;
+    }
+
+
+    .destination_chain
+    {
+        margin-bottom: 10px;
+    }
+
+
+    .destination_chain .info_wrap,
+    .destination_chain .chain_wrap
+    {
+        padding: 1px;
+
+        border-radius: 12px;
+        background: linear-gradient(to bottom,  #5e33cf 0%,#210750 100%);
+    }
+
+
+    .destination_chain .info
+    {
+        position: relative;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        height: 46px;
+        padding: 0 15px;
+
+        cursor: pointer;
+
+        border-radius: 11px;
+        background: #06000e;
+    }
+
+
+    .destination_chain .info .placeholder
+    {
+        font-size: 16px;
+        font-weight: 500;
+
+        opacity: .6;
+    }
+
+
+    .destination_chain .info .arr
+    {
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        right: 16px;
+        bottom: 0;
+
+        display: block;
+
+        width: 28px;
+        height: 28px;
+        margin: auto 0;
+
+        transform: rotate(-90deg);
+    }
+
+
+    .destination_chain .chain
+    {
+        position: relative;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+
+        padding: 5px 7px;
+
+        border-radius: 11px;
+        background: radial-gradient(130.57% 114.69% at 50% 0%, rgba(148, 56, 248, .70) 0%, rgba(89, 21, 167, .70) 50.94%, rgba(53, 12, 107, .70) 85.09%);
+    }
+
+
+    .destination_chain .chain .logo
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 44px;
+        height: 44px;
+        margin-right: 8px;
+        padding: 6px;
+
+        border-radius: 50%;
+        background: #950fff;
+    }
+
+
+    .destination_chain .chain .logo img
+    {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: inherit;
+    }
+
+
+    .destination_chain .chain .logo .icon
+    {
+        display: none;
+
+        width: 24px;
+        height: 24px;
+    }
+
+
+    .destination_chain .chain .logo img.hide
+    {
+        display: none;
+    }
+
+    .destination_chain .chain .logo img.hide + .icon
+    {
+        display: block;
+    }
+
+
+    .destination_chain .chain .logo + *
+    {
+        width: calc(100% - 100px);
+    }
+
+
+    .destination_chain .chain .name
+    {
+        font-size: 18px;
+        font-weight: 500;
+
+        overflow: hidden;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .destination_chain .chain .arr
+    {
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        right: 16px;
+        bottom: 0;
+
+        display: block;
+
+        width: 28px;
+        height: 28px;
+        margin: auto 0;
+
+        transform: rotate(-90deg);
     }
 
 

@@ -125,9 +125,14 @@ export default {
 
 
             // Send
-            'send_page_title': 'Send',
-            'send_amount_label': 'Amount:',
+            'send_page_tab1': 'Send',
+            'send_page_tab2': 'IBC send',
+
+            'send_destination_chain_label': 'Destination Chain:',
             'send_address_label': 'Address:',
+            'send_amount_label': 'Amount:',
+
+            'send_destination_chain_placeholder': 'Select Chain',
 
 
             // Receive
@@ -154,6 +159,10 @@ export default {
             'validators_page_title': 'Validators:',
             'validatoes_staked_label': 'Staked:',
             'validatoes_available_label': 'Available:',
+
+
+            // Chains
+            'chains_page_title': 'Select Chain',
 
 
             // Stats
@@ -221,6 +230,7 @@ export default {
             'search_placeholder': 'Search...',
             'search_empty': 'Token not found...',
             'search_empty_validator': 'Validator not found...',
+            'search_empty_chains': 'Chain not found...',
 
 
             // Jet Pack
