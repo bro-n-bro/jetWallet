@@ -11,12 +11,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 20.10.x
 
       - name: Get Current Version
         id: current_version
@@ -36,6 +38,7 @@ jobs:
           echo "LATEST_VERSION: $LATEST_VERSION"
 
       - name: Compare Versions and Update
+        id: compare_versions
         run: |
           if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
             echo "Updating chain-registry to $LATEST_VERSION"
@@ -44,7 +47,19 @@ jobs:
             git config user.email "actions@github.com"
             git add package.json package-lock.json
             git commit -m "chore: update chain-registry to $LATEST_VERSION"
-            git push origin dev
+            git push
+            echo "update_needed=true" >> $GITHUB_ENV
           else
+            echo "chain-registry is already up-to-date"
+            echo "update_needed=false" >> $GITHUB_ENV
+          
+      - name: Trigger Main Workflow
+        if: env.update_needed == 'true'
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/bro-n-bro/jetWallet/actions/workflows/main.yml/dispatches \
+            -d '{"ref":"dev"}'
             echo "chain-registry is already up-to-date"
           fi
