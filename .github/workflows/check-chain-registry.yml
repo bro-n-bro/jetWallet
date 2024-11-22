@@ -7,16 +7,19 @@ on:
 
 jobs:
   check-and-commit:
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          ref: dev
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: 20.10.x
 
       - name: Get Current Version
         id: current_version
