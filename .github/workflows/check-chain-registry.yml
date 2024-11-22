@@ -3,6 +3,9 @@ name: Check chain-registry and Commit
 on:
   schedule:
     - cron: "0 * * * *"
+  push:
+    branches:
+      - dev
   workflow_dispatch:
 
 jobs:
