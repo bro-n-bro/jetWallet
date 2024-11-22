@@ -2,7 +2,7 @@ name: Check chain-registry and Commit
 
 on:
   schedule:
-    - cron: "*/15 * * * *" 
+    - cron: "0 * * * *" 
   workflow_dispatch: 
 
 jobs:
@@ -52,6 +52,7 @@ jobs:
           else
             echo "chain-registry is already up-to-date"
             echo "update_needed=false" >> $GITHUB_ENV
+          fi
           
       - name: Trigger Main Workflow
         if: env.update_needed == 'true'
