@@ -1,0 +1,57 @@
+name: Bug Report
+description: Report an issue or bug with the project
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill in as much detail as possible.
+
+  - type: input
+    id: title
+    attributes:
+      label: Bug Title
+      description: Provide a short, descriptive title for the bug.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Describe the bug in detail. Include steps to reproduce, device, app version, expected behavior, and actual behavior.
+      placeholder: "What is the bug? How can it be reproduced?"
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Specify the environment where the bug occurs device, device OS with version and app version. 
+      placeholder: "e.g., iPhone, iOS 18, 2024.11.22-100"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a step-by-step guide to reproduce the bug.
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. Observe...
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: Describe what you expected to happen.
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: Describe what actually happened.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context or Screenshots
+      description: Add any other information, logs, or screenshots that might help.
