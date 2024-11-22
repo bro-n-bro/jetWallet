@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Generate version
         run: |
@@ -24,6 +26,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Verify pushed changes
+        run: git log -1
+
   build_signer:
     needs: update-version
     runs-on: ubuntu-latest
@@ -35,6 +40,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull origin dev
 
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
