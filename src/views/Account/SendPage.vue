@@ -168,7 +168,7 @@
 
                 <!-- Send page amount field -->
                 <div class="field">
-                    <input type="number" inputmode="numeric" class="input big" v-model="amount"
+                    <input type="number" inputmode="decimal" class="input big" v-model="amount"
                         :placeholder="$t('message.placeholder_amount', { token: balance.token_info.symbol })"
                         @input="validateAmount()">
 

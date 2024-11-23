@@ -30,7 +30,7 @@
 
                     <div class="field">
                          <!-- Amount field -->
-                        <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
+                        <input type="number" inputmode="decimal" class="input big" v-model="amount" placeholder="0.00"
                             @input="validateAmount($event)">
                     </div>
                 </div>

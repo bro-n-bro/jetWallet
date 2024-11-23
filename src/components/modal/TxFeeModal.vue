@@ -160,7 +160,7 @@
 
                     <div class="field" v-else>
                         <!-- Gas adjustment field -->
-                        <input type="number" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10"
+                        <input type="number" inputmode="decimal" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10"
                             @input="validateUserGasAmount($event)">
                     </div>
                 </div>

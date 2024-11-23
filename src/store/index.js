@@ -168,7 +168,7 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Set current wallet ID
-        async setCurrentWalletID(walletID = 1) {
+        async setCurrentWalletID(walletID = null) {
             if (this.currentWalletID !== walletID) {
                 // Save in DB
                 await DBaddData('global', [
@@ -744,6 +744,58 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Find missing wallet ID
+        async findMissingId(DBWallets = null) {
+            if (!DBWallets) {
+                // Get wallets
+                DBWallets = await DBgetData('global', 'wallets')
+            }
+
+            // Find the minimum missing value
+            let missingId = 1
+
+            if (DBWallets !== undefined) {
+                // Set IDs
+                let ids = DBWallets.map(el => el.id)
+
+                while (ids.includes(missingId)) {
+                    missingId++
+                }
+            }
+
+            // Return value
+            return missingId
+        },
+
+
+        // Find next available wallet name
+        async findNextAvailableWalletName(DBWallets = null) {
+            let i = 2,
+                name = this.defaultWalletName + i
+
+            if (!DBWallets) {
+                // Get wallets
+                DBWallets = await DBgetData('global', 'wallets')
+            }
+
+            if (DBWallets !== undefined) {
+                while (true) {
+                    name = this.defaultWalletName + i
+
+                    // Check if a wallet with this name exists
+                    if (!DBWallets.some(el => el.name === name)) {
+                        return name
+                    }
+
+                    i++
+                }
+            }
+
+            // Return value
+            return name
+        },
+
+
         // Set secret
         async setSecret(secret) {
             // Generate AES key
@@ -758,11 +810,8 @@ export const useGlobalStore = defineStore('global', {
                 threshold: 2
             })
 
-            // Get wallets
-            let DBWallets = await DBgetData('global', 'wallets')
-
             // Get wallet ID
-            let walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+            let walletID = await this.findMissingId()
 
             // Save in DB
             await DBaddData('secret', [
@@ -796,11 +845,8 @@ export const useGlobalStore = defineStore('global', {
                 threshold: 2
             })
 
-            // Get wallets
-            let DBWallets = await DBgetData('global', 'wallets')
-
             // Get wallet ID
-            let walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+            let walletID = await this.findMissingId()
 
             // Save in DB
             await DBaddData('secret', [
@@ -833,18 +879,18 @@ export const useGlobalStore = defineStore('global', {
             // Get all wallets
             let DBWallets = await DBgetData('global', 'wallets')
 
-            // Get wallet ID
-            let walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
-
             if (DBWallets === undefined) {
                 // Set array type
                 DBWallets = []
             }
 
+            // Get wallet ID
+            let walletID = await this.findMissingId(DBWallets)
+
             // Update wallets
             DBWallets.push({
                 id: walletID,
-                name: walletName || this.defaultWalletName + walletID
+                name: walletName || await this.findNextAvailableWalletName()
             })
 
             // Add data to wallet DB
@@ -1355,12 +1401,12 @@ export const useGlobalStore = defineStore('global', {
                     ])
 
                     await DBaddData(`wallet${this.currentWalletID}`, [
-                        ['name', new_name]
+                        ['name', currentWallet.name]
                     ])
 
                     // Update in state
                     if (this.currentWalletID === wallet.id) {
-                        this.currentWalletName = new_name
+                        this.currentWalletName = currentWallet.name
                     }
 
                     // Get wallets
@@ -1377,7 +1423,11 @@ export const useGlobalStore = defineStore('global', {
             try {
                 // Set default wallet if deleted current
                 if (wallet.id === this.currentWalletID) {
-                    await this.setCurrentWalletID()
+                    // Get wallets
+                    let DBWallets = await DBgetData('global', 'wallets')
+
+                    // Set second wallet like default
+                    await this.setCurrentWalletID(DBWallets[1].id)
                 }
 
                 // Cleare store in DB

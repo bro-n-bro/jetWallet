@@ -12,6 +12,7 @@
             <!-- Wallet name -->
             <div class="wallet_name" @click.prevent="openWalletsModal()">
                 <span>{{ store.currentWalletName }}</span>
+
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver3"></use></svg>
             </div>
 

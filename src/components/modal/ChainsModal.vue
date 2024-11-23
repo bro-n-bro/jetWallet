@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <!-- Search 666 -->
+            <!-- Search -->
             <Search source="chains" />
 
             <!-- Chains -->
