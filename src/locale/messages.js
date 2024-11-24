@@ -178,6 +178,13 @@ export default {
             'profile_title': 'My wallets',
 
 
+            // Remove wallet
+            'remove_wallet_title': 'Delete Wallet',
+            'remove_wallet_desc': 'Enter the name of the wallet you want to delete. We warn you that you will not be able to return it.',
+
+            'remove_wallet_confirm_title': 'Confirm by pin',
+
+
             // Redelegations
             'redelegations_title': 'Active redelegations',
 
@@ -248,16 +255,16 @@ export default {
             'placeholder_amount': '{token} Amount',
             'placeholder_memo': 'Required for sending to CEX',
             'placeholder_memo2': 'Your Custom Memo',
+            'placeholder_wallet_name': 'Wallet Name',
 
 
             // Notifications
             'notification_copied_title': 'Copied to clipboard',
             'notification_offline_title': 'You are offline',
 
+            'notification_wallet_added_success': 'Wallet added successfully.',
             'notification_wallet_update_success': 'Wallet updated successfully.',
             'notification_wallet_remove_success': '{name} deleted successfully.',
-
-            'notification_wallet_added_success': 'Wallet added successfully.',
 
             'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Success',
@@ -311,6 +318,7 @@ export default {
             'btn_share': 'Share',
             'btn_accept': 'Accept',
             'btn_paste': 'Paste',
+            'btn_remove': 'Delete',
 
 
             'notification_tx_error_2': "tx parse error",

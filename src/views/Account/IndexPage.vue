@@ -80,6 +80,11 @@
     <EditWalletModal v-if="showEditWalletModal" :wallet="editingWallet" />
     </transition>
 
+    <!-- Remove wallet modal -->
+    <transition name="from_right">
+    <RemoveWalletModal v-if="showRemoveWalletModal" :wallet="removingWallet" />
+    </transition>
+
     <!-- Stats modal -->
     <transition name="modal">
     <StatsModal v-if="showStatsModal && store.networks[store.currentNetwork]?.is_staking_available" />
@@ -113,6 +118,7 @@
 
     import WalletsModal from '@/components/modal/WalletsModal.vue'
     import EditWalletModal from '@/components/modal/EditWalletModal.vue'
+    import RemoveWalletModal from '@/components/modal/RemoveWalletModal.vue'
     import StatsModal from '@/components/modal/StatsModal.vue'
 
 
@@ -122,7 +128,9 @@
         searchingClass = ref(''),
         showWalletsModal = ref(false),
         showEditWalletModal = ref(false),
+        showRemoveWalletModal = ref(false),
         editingWallet = ref(null),
+        removingWallet = ref(null),
         showStatsModal = ref(false),
         swipeExperience = ref(localStorage.getItem('swipe_experience') || false),
         swiperEl = ref(null),
@@ -282,6 +290,19 @@
     })
 
 
+    // Event "show_remove_wallet_modal"
+    emitter.on('show_remove_wallet_modal', (data) => {
+        // Show Remove wallet modal
+        showRemoveWalletModal.value = true
+
+        // Editing wallet
+        removingWallet.value = data.wallet
+
+        // Update status
+        store.isAnyModalOpen = true
+    })
+
+
     // Event "close_wallets_modal"
     emitter.on('close_wallets_modal', () => {
         // Hide wallets modal
@@ -293,12 +314,24 @@
 
 
     // Event "close_edit_wallet_modal"
-    emitter.on('close_edit_wallet_modal', () => {
+    emitter.on('close_edit_wallet_modal', ({ back }) => {
         // Hide Edit wallet modal
         showEditWalletModal.value = false
 
-        // Show wallets modal
-        showWalletsModal.value = true
+        if (back) {
+            // Show wallets modal
+            showWalletsModal.value = true
+        }
+    })
+
+
+    // Event "close_remove_wallet_modal"
+    emitter.on('close_remove_wallet_modal', () => {
+        // Hide Remove wallet modal
+        showRemoveWalletModal.value = false
+
+        // Show Edit wallet modal
+        showEditWalletModal.value = true
     })
 
 

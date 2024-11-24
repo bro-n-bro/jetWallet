@@ -20,7 +20,7 @@
 
             <!-- Index page logo -->
             <div class="logo" v-else>
-                <img src="@/assets/logo.svg" alt="" loading="lazy">
+                <img src="@/assets/logo.svg" alt="">
             </div>
 
 
@@ -29,7 +29,7 @@
                 <div class="page_data">
                     <!-- Index page image -->
                     <div class="image">
-                        <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
+                        <img src="@/assets/index_page_img.svg" alt="">
                     </div>
 
                     <!-- Index page buttons -->
@@ -69,9 +69,10 @@
 
 
 <script setup>
-    import { ref, onBeforeMount } from 'vue'
+    import { ref, onBeforeMount, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
+    import { useNotification } from '@kyvg/vue3-notification'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -80,13 +81,17 @@
     const props = defineProps(['additionalButton']),
         store = useGlobalStore(),
         router = useRouter(),
+        notification = useNotification(),
+        i18n = inject('i18n'),
         loading = ref(false),
         currentWalletCreatedBy = ref(null)
 
 
     onBeforeMount(async () => {
-        // Get current wallet created by
-        currentWalletCreatedBy.value = await store.getCurrentWalletCreatedBy()
+        if (props.additionalButton) {
+            // Get current wallet created by
+            currentWalletCreatedBy.value = await store.getCurrentWalletCreatedBy()
+        }
     })
 
 
@@ -97,6 +102,15 @@
 
         // Create from exist wallet
         await store.createFromExistWallet()
+
+        // Show notification
+        notification.notify({
+            group: 'default',
+            speed: 200,
+            duration: 1000,
+            title: i18n.global.t('message.notification_wallet_added_success'),
+            type: 'success',
+        })
 
         // Go to account page
         router.push('/account')

@@ -52,7 +52,7 @@ export const useGlobalStore = defineStore('global', {
         authErrorLimit: 4,
         DBVersion: 1,
 
-        currentWalletID: 1,
+        currentWalletID: null,
         currentWalletDerivationPath: null,
         currentWalletName: '',
         currentNetwork: '',
@@ -192,6 +192,9 @@ export const useGlobalStore = defineStore('global', {
 
             // Reset data
             this.currentAddress = ''
+
+            // Get current wallet ID
+            await this.getCurrentWalletID()
 
             // Get DB data
             let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, ['derivationPath', 'name', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
@@ -887,16 +890,19 @@ export const useGlobalStore = defineStore('global', {
             // Get wallet ID
             let walletID = await this.findMissingId(DBWallets)
 
+            // Available wallet name
+            let availableWalletName = await this.findNextAvailableWalletName()
+
             // Update wallets
             DBWallets.push({
                 id: walletID,
-                name: walletName || await this.findNextAvailableWalletName()
+                name: walletName || availableWalletName
             })
 
             // Add data to wallet DB
             await DBaddData(`wallet${walletID}`, [
                 ['id', walletID],
-                ['name', walletName || this.defaultWalletName + walletID],
+                ['name', walletName || availableWalletName],
                 ['currentNetwork', 'cosmoshub'],
                 ['currentCurrency', 'USD'],
                 ['derivationPath', derivationPath],
@@ -947,7 +953,7 @@ export const useGlobalStore = defineStore('global', {
             let newWalletID = await this.createWallet({
                 isAdding: true,
                 relativeWallet: this.currentWalletID,
-                derivationPath: this.defaultDerivationPath.replace(/\/\d+$/, `/${(subWallets + 1)}`)
+                derivationPath: this.defaultDerivationPath.replace(/\/\d+$/, `/${(subWallets.length + 1)}`)
             })
 
             // Add new subwallet
@@ -1421,13 +1427,13 @@ export const useGlobalStore = defineStore('global', {
         // Remove wallet
         async removeWallet(wallet) {
             try {
+                // Update wallets
+                this.wallets = this.wallets.filter(el => el.id !== wallet.id)
+
                 // Set default wallet if deleted current
                 if (wallet.id === this.currentWalletID) {
-                    // Get wallets
-                    let DBWallets = await DBgetData('global', 'wallets')
-
                     // Set second wallet like default
-                    await this.setCurrentWalletID(DBWallets[1].id)
+                    await this.setCurrentWalletID(this.wallets[0].id)
                 }
 
                 // Cleare store in DB
@@ -1440,9 +1446,6 @@ export const useGlobalStore = defineStore('global', {
                     `wallet${wallet.id}_secret`,
                     `wallet${wallet.id}_secretIV`
                 ])
-
-                // Update wallets
-                this.wallets = this.wallets.filter(el => el.id !== wallet.id)
 
                 // Update wallets in DB
                 await DBaddData('global', [

@@ -149,7 +149,7 @@
             document.activeElement.blur()
         }
 
-        // Compare pins
+        // Login
         if (pinCode.value[5].length && userAuthErrorLimit.value === store.authErrorLimit) {
             login()
         }

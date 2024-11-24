@@ -5,7 +5,7 @@
             <!-- Edit wallet head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_edit_wallet_modal')">
+                <button class="back_btn" @click="emitter.emit('close_edit_wallet_modal', { back: true })">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -20,7 +20,7 @@
                 </button>
 
                 <!-- Edit wallet remove button -->
-                <button class="remove_btn" @click.prevent="remove()">
+                <button class="remove_btn" @click.prevent="remove(props.wallet)">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_remove"></use></svg>
                 </button>
             </div>
@@ -47,13 +47,11 @@
 <script setup>
     import { inject, ref } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
 
 
     const props = defineProps(['wallet']),
         store = useGlobalStore(),
-        router = useRouter(),
         emitter = inject('emitter'),
         notification = useNotification(),
         i18n = inject('i18n'),
@@ -70,13 +68,15 @@
             : idValidWalletName.value = false
 
         // Name uniqueness validation
-        let nameExists = store.wallets.some(wallet =>
-            wallet.name === newName.value && wallet.id !== props.wallet.id
-        )
+        if (idValidWalletName.value) {
+            let nameExists = store.wallets.some(wallet =>
+                wallet.name === newName.value && wallet.id !== props.wallet.id
+            )
 
-        !nameExists
-            ? idValidWalletName.value = true
-            : idValidWalletName.value = false
+            !nameExists
+                ? idValidWalletName.value = true
+                : idValidWalletName.value = false
+        }
 
         // Touched status
         isTouchedWalletName.value = true
@@ -92,7 +92,7 @@
         })
 
         // Event "close_edit_wallet_modal"
-        emitter.emit('close_edit_wallet_modal')
+        emitter.emit('close_edit_wallet_modal', { back: true })
 
         // Event "show_wallets_modal"
         emitter.emit('show_wallets_modal')
@@ -109,35 +109,12 @@
 
 
     // Remove wallet
-    async function remove() {
-        if (store.wallets.length > 1) {
-            // Remove
-            await store.removeWallet(props.wallet)
+    async function remove(wallet) {
+        // Event "close_edit_wallet_modal"
+        emitter.emit('close_edit_wallet_modal', { back: false })
 
-            // Event "close_edit_wallet_modal"
-            emitter.emit('close_edit_wallet_modal')
-
-            // Event "show_wallets_modal"
-            emitter.emit('show_wallets_modal')
-
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: 1000,
-                title: i18n.global.t('message.notification_wallet_remove_success', { name: props.wallet.name }),
-                type: 'success',
-            })
-        } else {
-            // Event "start_reseting"
-            emitter.emit('start_reseting')
-
-            // Clear all data
-            await store.clearAllData()
-
-            // Redirect
-            router.push('/')
-        }
+        // Event "show_remove_wallet_modal"
+        emitter.emit('show_remove_wallet_modal', { wallet })
     }
 </script>
 

@@ -84,6 +84,7 @@
     import { useRoute, useRouter } from 'vue-router'
     import { useTitle, useNetwork } from '@vueuse/core'
     import { convertArrayBuffersToUint8Arrays, getTgUserId } from '@/utils'
+    import { DBgetData } from '@/utils/db'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -129,9 +130,6 @@
 			g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
 			})();
         }
-
-        // Get current wallet ID
-        await store.getCurrentWalletID()
 
         // Get telegram user ID
         if (window.Telegram && window.Telegram.WebApp) {
@@ -330,14 +328,19 @@
 
     // Wallet change
     watch(computed(() => store.currentWalletID), async () => {
-        // Clean notifications
-        notification.notify({
-            group: 'default',
-            clean: true
-        })
+        // Get wallets
+        let DBWallets = await DBgetData('global', 'wallets')
 
-        // Reinit APP
-        await store.initApp()
+        if (DBWallets !== undefined) {
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
+            // Reinit APP
+            await store.initApp()
+        }
     })
 
 
