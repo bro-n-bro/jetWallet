@@ -21,7 +21,7 @@
 
                     <!-- Token validator moniker -->
                     <div class="moniker">
-                        {{ props.item.validator_info.description.moniker }}
+                        {{ props.item.validator_info?.description?.moniker }}
                     </div>
 
                     <!-- Token validator logo -->

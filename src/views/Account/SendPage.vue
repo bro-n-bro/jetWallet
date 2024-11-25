@@ -54,7 +54,9 @@
                         </div>
 
                         <div class="cost">
-                            {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }} {{ store.currentCurrencySymbol }}
+                            {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, balance.amount, balance.exponent)) }}
+
+                            {{ store.currentCurrencySymbol }}
                         </div>
                     </div>
                 </div>
@@ -94,7 +96,7 @@
                 </div>
 
                 <!-- Send page destination chain info -->
-                <div class="info_wrap" @click.prevent="openChainsModal()" v-if="!store.IBCSendCurrentChain">
+                <div class="info_wrap" @click.prevent="openChainsModal()" v-if="!store.IBCSendCurrentChain" :class="{ disabled: balance.denom.toLowerCase() !== store.networks[store.currentNetwork].denom.toLowerCase() }">
                     <div class="info">
                         <div class="placeholder">
                             {{ $t('message.send_destination_chain_placeholder') }}
@@ -105,7 +107,7 @@
                 </div>
 
                 <!-- Send page destination chain info -->
-                <div class="chain_wrap" @click.prevent="openChainsModal()" v-else>
+                <div class="chain_wrap" @click.prevent="openChainsModal()" v-else :class="{ disabled: balance.denom.toLowerCase() !== store.networks[store.currentNetwork].denom.toLowerCase() }">
                     <div class="chain">
                         <!-- Send page destination chain logo -->
                         <div class="logo">
@@ -160,7 +162,7 @@
 
                     <!-- Send page amount cost -->
                     <div class="cost">
-                        {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
+                        {{ formatTokenCost(calcTokenCost(balance.token_info.symbol, (amount * Math.pow(10, balance.exponent)), balance.exponent)) }}
 
                         {{ store.currentCurrencySymbol }}
                     </div>
@@ -243,6 +245,7 @@
     import { useRouter, useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
     import { fromBech32 } from '@cosmjs/encoding'
+    import { ibc } from 'chain-registry'
     import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink, getNetworkLogo, imageLoadError } from '@/utils'
 
     // Components
@@ -278,7 +281,11 @@
         isProcess = ref(false),
         isAmountReady = ref(false),
         isAddressValid = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && isAddressValid.value))
+        isFormValid = ref(computed(() =>
+            isAmountReady.value &&
+            isAddressValid.value &&
+            (activeTab.value !== 2 || store.IBCSendCurrentChain)
+        ))
 
 
     onMounted(() => {
@@ -317,6 +324,35 @@
         // Update roller params
         rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
         rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+
+        // Reset data
+        store.IBCSendCurrentChain = null
+
+        // Get token home chain
+        if (activeTab.value === 2 && balance.value.denom.toLowerCase() !== store.networks[store.currentNetwork].denom.toLowerCase()) {
+            // Get chain
+            let chain = ibc
+                .filter(el => el.chain_1.chain_name === store.currentNetwork && el.chain_2.chain_name === balance.value.chain_info.chain_name)
+                .filter((el, index, self) =>
+                    self.findIndex(t => t.chain_2.chain_name === el.chain_2.chain_name) === index
+                )
+
+            if(chain.length) {
+                // Get chain name
+                chain[0].info = balance.value.chain_info
+
+                // Set data
+                store.IBCSendCurrentChain = chain[0]
+            }
+        }
+    })
+
+
+    watch(computed(() => store.IBCSendCurrentChain), () => {
+        // Validate address
+        if (address.value) {
+            validateAddress()
+        }
     })
 
 
@@ -333,7 +369,8 @@
 
 
     watch(computed(() => isFormValid.value), () => {
-        if (isFormValid.value) {
+        // Send message
+        if (isFormValid.value && activeTab.value === 1) {
             // Set messeges
             msgAny.value = [{
                 typeUrl: '/cosmos.bank.v1beta1.MsgSend',
@@ -344,6 +381,28 @@
                         denom: balance.value.denom,
                         amount: `${parseFloat(amount.value.toString().replace(',', '.')).toFixed(balance.value.exponent) * Math.pow(10, balance.value.exponent)}`
                     }]
+                }
+            }]
+        }
+
+        // IBC send message
+        if (isFormValid.value && activeTab.value === 2) {
+            console.log(store.IBCSendCurrentChain)
+
+            // Set messeges
+            msgAny.value = [{
+                typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
+                value: {
+                    sender: store.currentAddress,
+                    receiver: address.value,
+                    sourceChannel: store.IBCSendCurrentChain.channels[0].chain_1.channel_id,
+                    sourcePort: 'transfer',
+                    token: {
+                        denom: balance.value.denom,
+                        amount: `${parseFloat(amount.value.toString().replace(',', '.')).toFixed(balance.value.exponent) * Math.pow(10, balance.value.exponent)}`
+                    },
+                    timeoutHeight: {},
+                    timeoutTimestamp: (Date.now() + 60000) * 1e6
                 }
             }]
         }
@@ -393,19 +452,40 @@
         try {
             let { prefix, data } = fromBech32(address.value)
 
-            // Check
-            if (prefix == store.networks[store.currentNetwork].prefix && data.length == store.networks[store.currentNetwork].address_length) {
-                // Toggle classes
-                addressInput.value.classList.remove('error')
+            // For send
+            if (activeTab.value === 1) {
+                // Check
+                if (prefix == store.networks[store.currentNetwork].prefix && data.length == store.networks[store.currentNetwork].address_length) {
+                    // Toggle classes
+                    addressInput.value.classList.remove('error')
 
-                // Address status
-                isAddressValid.value = true
-            } else {
-                // Toggle classes
-                addressInput.value.classList.add('error')
+                    // Address status
+                    isAddressValid.value = true
+                } else {
+                    // Toggle classes
+                    addressInput.value.classList.add('error')
 
-                // Address status
-                isAddressValid.value = false
+                    // Address status
+                    isAddressValid.value = false
+                }
+            }
+
+            // For IBC send
+            if (activeTab.value === 2) {
+                // Check
+                if (prefix == store.IBCSendCurrentChain.info.bech32_prefix) {
+                    // Toggle classes
+                    addressInput.value.classList.remove('error')
+
+                    // Address status
+                    isAddressValid.value = true
+                } else {
+                    // Toggle classes
+                    addressInput.value.classList.add('error')
+
+                    // Address status
+                    isAddressValid.value = false
+                }
             }
         } catch (error) {
             // Toggle classes
@@ -775,6 +855,13 @@
     }
 
 
+    .destination_chain .info_wrap.disabled,
+    .destination_chain .chain_wrap.disabled
+    {
+        pointer-events: none;
+    }
+
+
     .destination_chain .info
     {
         position: relative;
@@ -921,6 +1008,12 @@
         margin: auto 0;
 
         transform: rotate(-90deg);
+    }
+
+
+    .destination_chain .disabled .chain .arr
+    {
+        display: none;
     }
 
 
