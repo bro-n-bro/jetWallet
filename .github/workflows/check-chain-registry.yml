@@ -57,10 +57,12 @@ jobs:
       - name: Trigger Main Workflow
         if: env.update_needed == 'true'
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/bro-n-bro/jetWallet/actions/workflows/main.yml/dispatches \
-            -d '{"ref":"dev"}'
+          if [ "$update_needed" = "true" ]; then
+            curl -X POST \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/bro-n-bro/jetWallet/actions/workflows/main.yml/dispatches \
+              -d '{"ref":"dev"}'
+          else
             echo "chain-registry is already up-to-date"
           fi
