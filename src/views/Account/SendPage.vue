@@ -329,12 +329,15 @@
         store.IBCSendCurrentChain = null
 
         // Get token home chain
-        if (activeTab.value === 2 && balance.value.denom.toLowerCase() !== store.networks[store.currentNetwork].denom.toLowerCase()) {
+        if (activeTab.value === 2 && balance.value.denom.toLowerCase().startsWith('ibc/')) {
             // Get chain
             let chain = ibc
-                .filter(el => el.chain_1.chain_name === store.currentNetwork && el.chain_2.chain_name === balance.value.chain_info.chain_name)
+                .filter(el => (el.chain_1.chain_name === store.currentNetwork && el.chain_2.chain_name === balance.value.chain_info.chain_name) || (el.chain_2.chain_name === store.currentNetwork && el.chain_1.chain_name === balance.value.chain_info.chain_name))
                 .filter((el, index, self) =>
-                    self.findIndex(t => t.chain_2.chain_name === el.chain_2.chain_name) === index
+                    self.findIndex(t =>
+                        (t.chain_1.chain_name === el.chain_1.chain_name && t.chain_2.chain_name === el.chain_2.chain_name) ||
+                        (t.chain_1.chain_name === el.chain_2.chain_name && t.chain_2.chain_name === el.chain_1.chain_name)
+                    ) === index
                 )
 
             if(chain.length) {
@@ -387,7 +390,9 @@
 
         // IBC send message
         if (isFormValid.value && activeTab.value === 2) {
-            console.log(store.IBCSendCurrentChain)
+            let channelID = store.IBCSendCurrentChain.chain_1.chain_name === store.currentNetwork
+                ? store.IBCSendCurrentChain.channels[0].chain_1.channel_id
+                : store.IBCSendCurrentChain.channels[0].chain_2.channel_id
 
             // Set messeges
             msgAny.value = [{
@@ -395,7 +400,7 @@
                 value: {
                     sender: store.currentAddress,
                     receiver: address.value,
-                    sourceChannel: store.IBCSendCurrentChain.channels[0].chain_1.channel_id,
+                    sourceChannel: channelID,
                     sourcePort: 'transfer',
                     token: {
                         denom: balance.value.denom,

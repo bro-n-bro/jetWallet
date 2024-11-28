@@ -327,19 +327,21 @@
 
 
     // Wallet change
-    watch(computed(() => store.currentWalletID), async () => {
-        // Get wallets
-        let DBWallets = await DBgetData('global', 'wallets')
+    watch(computed(() => store.currentWalletID), async (newValue, oldValue) => {
+        if (oldValue) {
+            // Get wallets
+            let DBWallets = await DBgetData('global', 'wallets')
 
-        if (DBWallets !== undefined) {
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
+            if (DBWallets !== undefined) {
+                // Clean notifications
+                notification.notify({
+                    group: 'default',
+                    clean: true
+                })
 
-            // Reinit APP
-            await store.initApp()
+                // Reinit APP
+                await store.initApp()
+            }
         }
     })
 

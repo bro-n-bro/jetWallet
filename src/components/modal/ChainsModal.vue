@@ -80,14 +80,20 @@
     onBeforeMount(() => {
         // Get chains
         chainsList.value = ibc
-            .filter(el => el.chain_1.chain_name === store.currentNetwork)
+            .filter(el => el.chain_1.chain_name === store.currentNetwork || el.chain_2.chain_name === store.currentNetwork)
             .filter((el, index, self) =>
-                self.findIndex(t => t.chain_2.chain_name === el.chain_2.chain_name) === index
+                self.findIndex(t =>
+                    (t.chain_1.chain_name === el.chain_1.chain_name && t.chain_2.chain_name === el.chain_2.chain_name) ||
+                    (t.chain_1.chain_name === el.chain_2.chain_name && t.chain_2.chain_name === el.chain_1.chain_name)
+                ) === index
             )
 
         // Get chain names
         chainsList.value.forEach(el => {
-            el.info = chains.find(chain => chain.chain_name === el.chain_2.chain_name)
+            let findChain = el.chain_2.chain_name === store.currentNetwork ? el.chain_1.chain_name : el.chain_2.chain_name
+
+            // Get chain name
+            el.info = chains.find(chain => chain.chain_name === findChain)
         })
 
         // Default search result
