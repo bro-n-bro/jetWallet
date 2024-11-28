@@ -182,21 +182,6 @@
             </div>
 
 
-            <!-- Send page memo -->
-            <div class="memo_field">
-                <!-- Send page memo label -->
-                <div class="field_label">
-                    {{ $t('message.memo_label') }}
-                </div>
-
-                <!-- Send page memo field -->
-                <div class="field">
-                    <input type="text" class="input big" v-model="memo"
-                        :placeholder="$t('message.placeholder_memo')">
-                </div>
-            </div>
-
-
             <!-- Tx fee -->
             <TxFee v-if="isFormValid" :msgAny txType="send" />
 
@@ -204,7 +189,7 @@
             <!-- Send page button -->
             <div class="btns">
                 <!-- Send button -->
-                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="openSignTxModal()" :class="{ disabled: !store.TxFee.isEnough }">
+                <button v-if="!store.networks[store.currentNetwork].currentTxHash" class="btn" @click.prevent="showSendConfirmModal = true" :class="{ disabled: !store.TxFee.isEnough }">
                     <span>{{ $t('message.btn_send') }}</span>
                 </button>
 
@@ -227,14 +212,9 @@
     <TokensModal v-if="showTokensModal" :currentToken="balance" />
     </transition>
 
-    <!-- Sign transaction modal -->
-    <transition name="modal">
-    <SignTxModal v-if="showSignTxModal"/>
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showSignTxModal"></div>
+    <!-- Send confirm modal -->
+    <transition name="from_right">
+    <SendConfirmModal v-if="showSendConfirmModal" :balance :amount :msgAny :type="activeTab" />
     </transition>
 </template>
 
@@ -242,23 +222,22 @@
 <script setup>
     import { ref, inject, watch, onMounted, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { useRouter, useRoute } from 'vue-router'
+    import { useRoute } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
     import { fromBech32 } from '@cosmjs/encoding'
     import { ibc } from 'chain-registry'
-    import { calcTokenCost, formatTokenCost, formatTokenAmount, signTx, sendTx, getExplorerLink, getNetworkLogo, imageLoadError } from '@/utils'
+    import { calcTokenCost, formatTokenCost, formatTokenAmount, getNetworkLogo, imageLoadError } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
     import TokensModal from '@/components/modal/TokensModal.vue'
     import TxFee from '@/components/TxFee.vue'
-    import SignTxModal from '@/components/modal/SignTxModal.vue'
     import ChainsModal from '@/components/modal/ChainsModal.vue'
     import QRCodeScanner from '@/components/account/QRCodeScanner.vue'
+    import SendConfirmModal from '@/components/modal/SendConfirmModal.vue'
 
 
     const store = useGlobalStore(),
-        router = useRouter(),
         route = useRoute(),
         emitter = inject('emitter'),
         i18n = inject('i18n'),
@@ -273,10 +252,9 @@
         addressInput = ref(null),
         address = ref(route.query.address || ''),
         amount = ref(route.query.amount || ''),
-        memo = ref(''),
         showTokensModal = ref(false),
-        showSignTxModal = ref(false),
-        showChainsModal =ref(false),
+        showChainsModal = ref(false),
+        showSendConfirmModal = ref(false),
         msgAny = ref([]),
         isProcess = ref(false),
         isAmountReady = ref(false),
@@ -314,7 +292,7 @@
     onUnmounted(() => {
         // Unlisten events
         emitter.off('auth')
-        emitter.off('close_sign_tx_modal')
+        emitter.off('close_send_confirm_modal')
 
         Telegram.WebApp.offEvent('qrTextReceived')
     })
@@ -327,6 +305,12 @@
 
         // Reset data
         store.IBCSendCurrentChain = null
+
+        // Address validation when switching to ibc
+        if (activeTab.value === 2 && address.value) {
+            // Validate address
+            validateAddress()
+        }
 
         // Get token home chain
         if (activeTab.value === 2 && balance.value.denom.toLowerCase().startsWith('ibc/')) {
@@ -419,7 +403,6 @@
         // Reset data
         address.value = ''
         amount.value = ''
-        memo.value = ''
         isProcess.value = false
         isAmountReady.value = false
         isAddressValid.value = false
@@ -581,109 +564,10 @@
     }
 
 
-    // Send tokens
-    async function send() {
-        // Set process status
-        isProcess.value = true
-
-        try {
-            // Update TxFee info
-            if (store.TxFee.isRemember) {
-                await store.updateTxFeeInfo()
-            }
-
-            // Sign Tx
-            let txBytes = await signTx(msgAny.value, memo.value)
-
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
-
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: -100,
-                title: i18n.global.t('message.notification_tx_pending_title'),
-                type: 'pending',
-                data: {
-                    isCollapsible: true,
-                    explorer_link: getExplorerLink(store.currentNetwork)
-                }
-            })
-
-            // Send Tx
-            sendTx(txBytes).catch(error => {
-                console.log(error)
-
-                // Show error
-                showError(error)
-            })
-
-            // Redirect
-            router.push('/account')
-        } catch (error) {
-            console.log(error)
-
-            // Show error
-            showError(error)
-        }
-    }
-
-
-    // Show error message
-    function showError(error) {
-        // Set process status
-        isProcess.value = false
-
-        // Get error code
-        let errorText = ''
-
-        // Get error title
-        error.code
-            ? errorText = i18n.global.t(`message.notification_tx_error_${error.code}`)
-            : errorText = i18n.global.t('message.notification_tx_error_rejected')
-
-        // Clean notifications
-        notification.notify({
-            group: 'default',
-            clean: true
-        })
-
-        // Show notification
-        notification.notify({
-            group: 'default',
-            speed: 200,
-            duration: 6000,
-            title: i18n.global.t('message.notification_tx_error_title'),
-            text: errorText,
-            type: 'error'
-        })
-
-        // Clear tx hash
-        store.networks[store.currentNetwork].currentTxHash = null
-
-        // Reset Tx Fee
-        store.resetTxFee()
-    }
-
-
     // Open tokens modal
     function openTokensModal() {
         // Show tokens modal
         showTokensModal.value = true
-    }
-
-
-    // Open SignTx modal
-    function openSignTxModal() {
-        // Show SignTx modal
-        showSignTxModal.value = true
-
-        // Update status
-        store.isAnyModalOpen = true
     }
 
 
@@ -692,19 +576,6 @@
         // Show chains modal
         showChainsModal.value = true
     }
-
-
-    // Event "auth"
-    emitter.on('auth', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-
-        // Send tokens
-        send()
-    })
 
 
     // Event "close_chains_modal"
@@ -721,13 +592,10 @@
     })
 
 
-    // Event "close_sign_tx_modal"
-    emitter.on('close_sign_tx_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
+    // Event "close_send_confirm_modal"
+    emitter.on('close_send_confirm_modal', () => {
+        // Hide send confirm modal
+        showSendConfirmModal.value = false
     })
 
 
@@ -735,9 +603,6 @@
     emitter.on('close_any_modal', () => {
         // Hide tokens modal
         showTokensModal.value = false
-
-        // Hide SignTx modal
-        showSignTxModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
@@ -1047,6 +912,8 @@
     .amount_field
     {
         margin-top: 10px;
+        margin-bottom: auto;
+        padding-bottom: 40px;
     }
 
 
@@ -1057,14 +924,6 @@
         color: rgba(255, 255, 255, .70);
     }
 
-
-
-    .memo_field
-    {
-        margin-top: 10px;
-        margin-bottom: auto;
-        padding-bottom: 40px;
-    }
 
 
     .field

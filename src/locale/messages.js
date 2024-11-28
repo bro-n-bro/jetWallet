@@ -125,6 +125,8 @@ export default {
 
 
             // Send
+            'send_confirm_page_title': 'Confirm',
+
             'send_page_tab1': 'Send',
             'send_page_tab2': 'IBC send',
 
@@ -133,6 +135,11 @@ export default {
             'send_amount_label': 'Amount:',
 
             'send_destination_chain_placeholder': 'Select Chain',
+
+            'send_confirm_chain_from_label': 'From the network:',
+            'send_confirm_chain_to_label': 'To the network:',
+            'send_confirm_receiver_label': 'Receiver:',
+            'send_confirm_fee_label': 'Fee:',
 
 
             // Receive
@@ -300,6 +307,7 @@ export default {
             'btn_stake': 'Earn',
             'btn_confirm_stake': 'Confirm Staking',
             'btn_confirm_unstake': 'Confirm Unstake',
+            'btn_confirm_send': 'Confirm Send',
             'btn_confirm_redelegate': 'Confirm',
             'btn_unstake': 'Unstake',
             'btn_redelegate': 'Switch validator',

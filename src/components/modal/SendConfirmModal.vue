@@ -1,155 +1,118 @@
 <template>
-    <!-- Stake confirm modal -->
-    <section class="page_container inner_page_container stake_confirm">
+    <!-- Send confirm modal -->
+    <section class="page_container inner_page_container send_confirm">
         <!-- Loader -->
         <Loader v-if="isProcess" />
 
         <div class="cont">
-            <!-- Stake confirm head -->
+            <!-- Send confirm head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_stake_confirm_modal')">
+                <button class="back_btn" @click="emitter.emit('close_send_confirm_modal')">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
-                <!-- Stake confirm title -->
+                <!-- Send confirm title -->
                 <div class="page_title">
-                    {{ $t('message.stake_confirm_page_title') }}
+                    {{ $t('message.send_confirm_page_title') }}
                 </div>
             </div>
 
-            <!-- Stake confirm data -->
+            <!-- Send confirm data -->
             <div class="data">
-                <!-- Stake confirm label -->
+                <!-- Send confirm label -->
                 <div class="field_label">
                     {{ $t('message.details_label') }}
                 </div>
 
-                <!-- Stake confirm info -->
+                <!-- Send confirm info -->
                 <div class="info_wrap">
                     <div class="info">
-                        <!-- Validator -->
-                        <div class="validator">
-                            <!-- Validator logo -->
-                            <div class="logo">
-                                <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${store.stakeCurrentValidator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
-
-                                <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
-                            </div>
-
-                            <div>
-                                <!-- Validator moniker -->
-                                <div class="moniker">
-                                    {{ store.stakeCurrentValidator.description.moniker }}
-                                </div>
-
-                                <!-- Validator voting power -->
-                                <div class="voting_power">
-                                    {{ (votingPower * 100).toFixed(2) }}% {{ $t('message.stake_confirm_voting_power') }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Validator APR -->
-                        <div class="apr">
-                            <span>
-                                <!-- Validator APR label -->
-                                {{ $t('message.stake_APR_label') }}<br>
-
-                                <!-- Validator APR value -->
-                                {{ ((store.networks[store.currentNetwork].APR * 100) - (store.networks[store.currentNetwork].APR * 100 * store.stakeCurrentValidator.commission.commission_rates.rate)).toFixed(2) }}%
-                            </span>
-                        </div>
-
-                        <!-- Stake confirm features -->
+                        <!-- Send confirm features -->
                         <div class="features">
-                            <!-- Stake confirm feature -->
-                            <div>
-                                <!-- Stake confirm feature label -->
+                            <!-- Send confirm feature -->
+                            <div v-if="props.type === 2">
+                                <!-- Send confirm feature label -->
                                 <div class="label">
-                                    {{ $t('message.stake_confirm_token_label') }}
+                                    {{ $t('message.send_confirm_chain_from_label') }}
                                 </div>
 
-                                <!-- Stake confirm feature value -->
+                                <!-- Send confirm feature value -->
                                 <div class="val">
                                     <img :src="getNetworkLogo(store.networks[store.currentNetwork].chain_id)" alt="">
 
-                                    <span>{{ store.networks[store.currentNetwork].token_name }}</span>
+                                    <span>{{ store.networks[store.currentNetwork].name }}</span>
                                 </div>
                             </div>
 
-                            <!-- Stake confirm feature -->
+                            <!-- Send confirm feature -->
+                            <div v-if="props.type === 2">
+                                <!-- Send confirm feature label -->
+                                <div class="label">
+                                    {{ $t('message.send_confirm_chain_to_label') }}
+                                </div>
+
+                                <!-- Send confirm feature value -->
+                                <div class="val">
+                                    <img :src="getNetworkLogo(store.IBCSendCurrentChain?.info.chain_id)" alt="">
+
+                                    <span>{{ store.IBCSendCurrentChain?.info.pretty_name }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Send confirm feature -->
+                            <div v-if="props.type === 1">
+                                <!-- Send confirm feature label -->
+                                <div class="label">
+                                    {{ $t('message.send_confirm_receiver_label') }}
+                                </div>
+
+                                <!-- Send confirm feature value -->
+                                <div class="val">
+                                    <span>{{ props.msgAny[0].value.toAddress.slice(0, 9) + '...' + props.msgAny[0].value.toAddress.slice(-6) }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Send confirm feature -->
+                            <div v-if="props.type === 2">
+                                <!-- Send confirm feature label -->
+                                <div class="label">
+                                    {{ $t('message.send_confirm_receiver_label') }}
+                                </div>
+
+                                <!-- Send confirm feature value -->
+                                <div class="val">
+                                    <span>{{ props.msgAny[0].value.receiver.slice(0, 9) + '...' + props.msgAny[0].value.receiver.slice(-6) }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Send confirm feature -->
                             <div>
-                                <!-- Stake confirm feature label -->
+                                <!-- Send confirm feature label -->
                                 <div class="label">
                                     {{ $t('message.stake_confirm_amount_label') }}
                                 </div>
 
-                                <!-- Stake confirm feature value -->
+                                <!-- Send confirm feature value -->
                                 <div class="val">
                                     {{ props.amount }}
 
-                                    {{ store.networks[store.currentNetwork].token_name }}
+                                    {{ props.balance.token_info.symbol }}
 
                                     <span class="currency">
-                                        ({{ formatTokenCost(currencyConversion(props.amount, store.networks[store.currentNetwork].token_name)) }}{{ store.currentCurrencySymbol }})
+                                        ({{ formatTokenCost(currencyConversion(props.amount, props.balance.token_info.symbol)) }}{{ store.currentCurrencySymbol }})
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- Stake confirm feature -->
+                            <!-- Send confirm feature -->
                             <div>
-                                <!-- Stake confirm feature label -->
+                                <!-- Send confirm feature label -->
                                 <div class="label">
-                                    {{ $t('message.stake_confirm_daily_profit_label') }}
+                                    {{ $t('message.send_confirm_fee_label') }}
                                 </div>
 
-                                <!-- Stake confirm feature value -->
-                                <div class="val">
-                                    ~{{ dailyProfit.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
-
-                                    {{ store.networks[store.currentNetwork].token_name }}
-
-                                    <span class="currency">({{ formatTokenCost(currencyConversion(dailyProfit, store.networks[store.currentNetwork].token_name)) }}{{ store.currentCurrencySymbol }})</span>
-                                </div>
-                            </div>
-
-                            <!-- Stake confirm feature -->
-                            <div>
-                                <!-- Stake confirm feature label -->
-                                <div class="label">
-                                    {{ $t('message.stake_confirm_commission_label') }}
-                                </div>
-
-                                <!-- Stake confirm feature value -->
-                                <div class="val">
-                                    {{ (store.stakeCurrentValidator.commission.commission_rates.rate * 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }).replace(',', '.') }}%
-                                </div>
-                            </div>
-
-                            <!-- Stake confirm feature -->
-                            <div>
-                                <!-- Stake confirm feature label -->
-                                <div class="label">
-                                    {{ $t('message.stake_confirm_unbonding_period_label') }}
-                                </div>
-
-                                <!-- Stake confirm feature value -->
-                                <div class="val">
-                                    {{ store.networks[store.currentNetwork].unbondingTime }}
-
-                                    {{ $t('message.stake_unbonding_time_unit') }}
-                                </div>
-                            </div>
-
-                            <!-- Stake confirm feature -->
-                            <div>
-                                <!-- Stake confirm feature label -->
-                                <div class="label">
-                                    {{ $t('message.stake_confirm_fee_label') }}
-                                </div>
-
-                                <!-- Stake confirm feature value -->
+                                <!-- Send confirm feature value -->
                                 <div class="val">
                                     {{ feeCost.toLocaleString('ru-RU', { maximumFractionDigits: 5 }).replace(',', '.') }}
 
@@ -162,26 +125,26 @@
             </div>
 
 
-            <!-- Stake confirm memo -->
+            <!-- Send page memo -->
             <div class="memo_field">
-                <!-- Stake confirm memo label -->
+                <!-- Send page memo label -->
                 <div class="field_label">
                     {{ $t('message.memo_label') }}
                 </div>
 
+                <!-- Send page memo field -->
                 <div class="field">
-                    <!-- Stake confirm memo field -->
                     <input type="text" class="input big" v-model="memo"
                         :placeholder="$t('message.placeholder_memo')">
                 </div>
             </div>
 
 
-            <!-- Stake confirm buttons -->
+            <!-- Send confirm buttons -->
             <div class="btns">
                 <!-- Confirm button -->
                 <button class="btn" @click.prevent="openSignTxModal()">
-                    <span>{{ $t('message.btn_confirm_stake') }}</span>
+                    <span>{{ $t('message.btn_confirm_send') }}</span>
                 </button>
             </div>
         </div>
@@ -201,38 +164,27 @@
 
 
 <script setup>
-    import { ref, inject, computed, onBeforeMount, onUnmounted } from 'vue'
+    import { ref, inject, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
-    import { currencyConversion, formatTokenCost, formatTokenAmount, getNetworkLogo, imageLoadError, signTx, sendTx, getExplorerLink } from '@/utils'
+    import { currencyConversion, formatTokenCost, formatTokenAmount, getNetworkLogo, signTx, sendTx, getExplorerLink } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
     import SignTxModal from '@/components/modal/SignTxModal.vue'
 
 
-    const props = defineProps(['amount', 'msgAny']),
+    const props = defineProps(['balance', 'amount', 'msgAny', 'type']),
         store = useGlobalStore(),
         router = useRouter(),
         emitter = inject('emitter'),
         i18n = inject('i18n'),
         notification = useNotification(),
         showSignTxModal = ref(false),
-        votingPower = ref(0),
-        dailyProfit = ref(0),
         memo = ref(''),
         feeCost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent)),
         isProcess = ref(false)
-
-
-    onBeforeMount(() => {
-        // Calc voting power
-        calcVotingPower()
-
-        // Calc daily profit
-        calcDailyProfit()
-    })
 
 
     onUnmounted(() => {
@@ -242,25 +194,8 @@
     })
 
 
-    // Calc voting power
-    async function calcVotingPower() {
-        // Get total bonded tokens
-        await store.getTotalBondedTokens()
-
-        // Set data
-        votingPower.value = store.stakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
-    }
-
-
-    // Calc daily profit
-    function calcDailyProfit() {
-        // Set data
-        dailyProfit.value = props.amount * ((store.networks[store.currentNetwork].APR - store.networks[store.currentNetwork].APR * store.stakeCurrentValidator.commission.commission_rates.rate) / 100) / 365
-    }
-
-
-    // Delegate tokens
-    async function delegate() {
+    // Send tokens
+    async function send() {
         // Set process status
         isProcess.value = true
 
@@ -367,7 +302,7 @@
         store.isAnyModalOpen = false
 
         // Delegate tokens
-        delegate()
+        send()
     })
 
 
@@ -393,7 +328,7 @@
 
 
 <style scoped>
-    .stake_confirm
+    .send_confirm
     {
         position: fixed;
         z-index: 9;
@@ -425,126 +360,6 @@
 
         border-radius: 11px;
         background: #06000e;
-    }
-
-
-
-    .validator
-    {
-        display: flex;
-        align-content: flex-start;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        margin-bottom: 20px;
-        padding-right: 60px;
-    }
-
-
-    .validator .logo
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 38px;
-        height: 38px;
-        margin-right: 6px;
-        padding: 6px;
-
-        border-radius: 50%;
-        background: #950fff;
-    }
-
-
-    .validator .logo img
-    {
-        display: block;
-
-        width: 100%;
-        height: 100%;
-
-        border-radius: inherit;
-    }
-
-
-    .validator .logo .icon
-    {
-        display: none;
-
-        width: 24px;
-        height: 24px;
-    }
-
-
-    .validator .logo img.hide
-    {
-        display: none;
-    }
-
-    .validator .logo img.hide + .icon
-    {
-        display: block;
-    }
-
-
-    .validator .logo + *
-    {
-        align-self: center;
-
-        width: calc(100% - 44px);
-    }
-
-
-    .validator .moniker
-    {
-        font-size: 16px;
-        font-weight: 500;
-
-        overflow: hidden;
-
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-
-    .validator .voting_power
-    {
-        font-size: 12px;
-        font-weight: 200;
-    }
-
-
-
-    .apr
-    {
-        font-size: 12px;
-
-        position: absolute;
-        top: 9px;
-        right: 9px;
-
-        padding: 2px 6px;
-
-        text-align: center;
-
-        border-radius: 4px;
-        background: #170232;
-    }
-
-
-    .apr span
-    {
-        display: block;
-
-        background: linear-gradient(180deg, #dd93fe 0%, #aa36de 100%);
-        -webkit-background-clip: text;
-                background-clip: text;
-
-        -webkit-text-fill-color: transparent;
     }
 
 
