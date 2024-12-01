@@ -1505,6 +1505,57 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Set user channel
+        async setUserChannel(channel) {
+            try {
+                // Get from DB
+                let userChannels = await DBgetData('global', 'userChannels') || []
+
+                // Add new channel
+                userChannels.push(channel)
+
+                console.log(userChannels)
+
+                // Save in DB
+                await DBaddData('global', [
+                    ['userChannels', JSON.parse(JSON.stringify(userChannels))]
+                ])
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+
+        // Get all user channels
+        async getAllUserChannels() {
+            try {
+                // Get from DB
+                return await DBgetData('global', 'userChannels')
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+
+        // Delete user channel
+        async deleteUserChannel(channelId) {
+            try {
+                // Get from DB
+                let userChannels = await DBgetData('global', 'userChannels')
+
+                // Delete channel
+                userChannels.filter(el => el.channel_id = channelId)
+
+                // Update in DB
+                await DBaddData('global', [
+                    ['userChannels', userChannels],
+                ])
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+
         // Clear all data
         async clearAllData() {
             try {

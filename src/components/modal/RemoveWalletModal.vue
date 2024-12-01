@@ -12,6 +12,8 @@
                 <!-- Remove wallet title -->
                 <div class="page_title">
                     {{ $t('message.remove_wallet_title') }}
+
+                    <span>{{ props.wallet.name }}</span>
                 </div>
             </div>
 
@@ -21,7 +23,10 @@
                     <!-- Edit wallet name field -->
                     <input type="text" class="input big" v-model="name"
                         :placeholder="$t('message.placeholder_wallet_name')"
-                        @input="validateWalletName()">
+                        @input="validateWalletName()"
+                        @keydown="preventPaste"
+                        @paste="preventPaste"
+                        @beforeinput="preventPaste">
                 </div>
             </div>
 
@@ -71,7 +76,7 @@
 
 
     // Validate wallet name
-    function validateWalletName() {
+    function validateWalletName(e) {
         // Validate length
         name.value.trim().length
             ? idValidWalletName.value = true
@@ -84,6 +89,20 @@
 
         // Touched status
         isTouchedWalletName.value = true
+    }
+
+
+    // Prevent paste
+    function preventPaste(e) {
+        // Prohibition
+        if (e.type === 'keydown' && e.ctrlKey && e.key === 'v') {
+            e.preventDefault()
+        }
+
+        // Prohibition
+        if (e.type === 'paste' || e.inputType === 'insertFromPaste') {
+            e.preventDefault()
+        }
     }
 
 
@@ -135,19 +154,21 @@
 
     .remove_wallet .head
     {
-        height: 48px;
-        margin-bottom: 0;
+        min-height: 48px;
+        margin-bottom: 10px;
+        padding-top: 10px;
     }
 
 
-    .page_title
+    .page_title span
     {
+        display: block;
         overflow: hidden;
-
-        padding-right: 90px;
 
         white-space: nowrap;
         text-overflow: ellipsis;
+
+        color: #ffc700;
     }
 
 

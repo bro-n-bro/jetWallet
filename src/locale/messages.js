@@ -186,7 +186,7 @@ export default {
 
 
             // Remove wallet
-            'remove_wallet_title': 'Delete Wallet',
+            'remove_wallet_title': 'You are deleting wallet:',
             'remove_wallet_desc': 'Enter the name of the wallet you want to delete. We warn you that you will not be able to return it.',
 
             'remove_wallet_confirm_title': 'Confirm by pin',
@@ -240,6 +240,15 @@ export default {
             'redirect_modal_desc': 'You can now switch back to another application to continue.',
 
 
+            // Add IBC channek modal
+            'add_IBC_channel_title': 'Add IBC Channel',
+
+            'add_IBC_channel_chain_label': 'Destination Chain:',
+            'add_IBC_channel_id_label': 'Source Channel ID:',
+
+            'add_IBC_channel_chain_placeholder': 'Select Chain',
+
+
             // Search
             'search_placeholder': 'Search...',
             'search_empty': 'Token not found...',
@@ -263,6 +272,7 @@ export default {
             'placeholder_memo': 'Required for sending to CEX',
             'placeholder_memo2': 'Your Custom Memo',
             'placeholder_wallet_name': 'Wallet Name',
+            'placeholder_source_channel_ID': 'Source Channel ID',
 
 
             // Notifications
@@ -272,6 +282,8 @@ export default {
             'notification_wallet_added_success': 'Wallet added successfully.',
             'notification_wallet_update_success': 'Wallet updated successfully.',
             'notification_wallet_remove_success': '{name} deleted successfully.',
+
+            'notification_add_user_channel_success': 'IBC channel saved successfully.',
 
             'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Success',
@@ -327,6 +339,8 @@ export default {
             'btn_accept': 'Accept',
             'btn_paste': 'Paste',
             'btn_remove': 'Delete',
+            'btn_add_chain': 'Add Chain',
+            'btn_save': 'Save',
 
 
             'notification_tx_error_2': "tx parse error",

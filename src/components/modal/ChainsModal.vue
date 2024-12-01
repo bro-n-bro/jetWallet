@@ -13,6 +13,15 @@
                 <div class="page_title">
                     {{ $t('message.chains_page_title') }}
                 </div>
+
+                <!-- Add chain butoo -->
+                <button class="add_chain_btn" @click.prevent="showAddIBCChannelModal = true">
+                    <span>
+                        <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_plus"></use></svg>
+
+                        {{ $t('message.btn_add_chain') }}
+                    </span>
+                </button>
             </div>
 
             <!-- Search -->
@@ -58,26 +67,53 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Add IBC channel modal -->
+    <transition name="modal">
+    <AddIBCChannelModal v-if="showAddIBCChannelModal"/>
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showAddIBCChannelModal"></div>
+    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, onBeforeMount } from 'vue'
+    import { ref, inject, onBeforeMount, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { chains, ibc } from 'chain-registry'
     import { imageLoadError, getNetworkLogo } from '@/utils'
 
     // Components
     import Search from '@/components/Search.vue'
+    import AddIBCChannelModal from '@/components/modal/AddIBCChannelModal.vue'
 
 
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         chainsList = ref([]),
-        searchResult = ref([])
+        searchResult = ref([]),
+        showAddIBCChannelModal = ref(false)
 
 
-    onBeforeMount(() => {
+    onBeforeMount(async () => {
+        // Load chains
+        await loadChains()
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal')
+        emitter.off('close_add_IBC_channel_modal')
+    })
+
+
+    // Load chains
+    async function loadChains() {
         // Get chains
         chainsList.value = ibc
             .filter(el => el.chain_1.chain_name === store.currentNetwork || el.chain_2.chain_name === store.currentNetwork)
@@ -96,9 +132,24 @@
             el.info = chains.find(chain => chain.chain_name === findChain)
         })
 
+        // Load user channels
+        let userChannerls = await store.getAllUserChannels()
+
+        // Merge arrays
+        if (userChannerls !== undefined) {
+            chainsList.value = [...chainsList.value, ...userChannerls]
+        }
+
+        // Sort by info.pretty_name
+        chainsList.value.sort((a, b) => {
+            if (a.info.pretty_name < b.info.pretty_name) return -1
+            if (a.info.pretty_name > b.info.pretty_name) return 1
+            return 0
+        })
+
         // Default search result
         searchResult.value = chainsList.value
-    })
+    }
 
 
     // Is current chain
@@ -133,6 +184,23 @@
             }
         }
     })
+
+
+    // Event "close_add_IBC_channel_modal"
+    emitter.on('close_add_IBC_channel_modal', () => {
+        // Hide add IBC channel modal
+        showAddIBCChannelModal.value = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Hide add IBC channel modal
+        showAddIBCChannelModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
 </script>
 
 
@@ -154,6 +222,46 @@
     .chains_page .head
     {
         margin-bottom: 0;
+    }
+
+
+    .add_chain_btn
+    {
+        font-size: 12px;
+        font-weight: 500;
+
+        position: absolute;
+        top: 10px;
+        right: 16px;
+
+        padding: 1px;
+
+        border-radius: 10px;
+        background: linear-gradient(to bottom,  #6be3fd 0%,#002749 100%);
+    }
+
+
+    .add_chain_btn .icon
+    {
+        display: block;
+
+        width: 28px;
+        height: 28px;
+    }
+
+
+    .add_chain_btn span
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        padding: 3px 15px 3px 8px;
+
+        border-radius: 9px;
+        background: linear-gradient(to bottom, #5badec 0%, #01428f 100%);
     }
 
 
