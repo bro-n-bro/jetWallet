@@ -32,7 +32,9 @@
                             <div class="validator">
                                 <!-- Validator logo -->
                                 <div class="logo">
-                                    <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                                    <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt=""
+                                        @error="imageLoadError($event)"
+                                        @load="imageLoadSuccess($event)">
 
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
 
@@ -97,7 +99,7 @@
 <script setup>
     import { ref, inject, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { imageLoadError, getNetworkLogo, formatTokenAmount } from '@/utils'
+    import { imageLoadError, imageLoadSuccess, getNetworkLogo, formatTokenAmount } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'

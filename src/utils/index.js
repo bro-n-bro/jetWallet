@@ -85,6 +85,9 @@ export { default as getExplorerLink } from './getExplorerLink'
 // Image load error
 export { default as imageLoadError } from './imageLoadError'
 
+// Image load success
+export { default as imageLoadSuccess } from './imageLoadSuccess'
+
 // Date calc
 export { default as dateCalc } from './dateCalc'
 

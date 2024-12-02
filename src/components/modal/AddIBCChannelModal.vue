@@ -24,8 +24,7 @@
                     <!-- Add IBC chain ID field -->
                     <div class="field">
                         <input type="text" class="input big" v-model="chain_ID" ref="chainIDInput"
-                            :placeholder="$t('message.placeholder_chain_ID')"
-                            @input="validateChainId()">
+                            :placeholder="$t('message.placeholder_chain_ID')">
 
                         <!-- Paste button -->
                         <button class="paste_btn" @click.prevent="pasteFromClipboard('chain')">
@@ -83,7 +82,7 @@
         currentChain = ref(null),
         chain_ID = ref(''),
         channel_ID = ref(''),
-        isFormValid = ref(computed(() => channel_ID.value.length && currentChain.value))
+        isFormValid = ref(computed(() => channel_ID.value.length && chain_ID.value.length))
 
 
     onUnmounted(() => {
@@ -93,26 +92,26 @@
 
 
     // Validate chain ID
-    function validateChainId() {
-        // Get chain info from chain registry
-        let chainInfo = chains.find(el => el.chain_id === chain_ID.value)
+    // function validateChainId() {
+    //     // Get chain info from chain registry
+    //     let chainInfo = chains.find(el => el.chain_id === chain_ID.value)
 
-        if (chainInfo !== undefined) {
-            // Set data
-            currentChain.value = chainInfo
+    //     if (chainInfo !== undefined) {
+    //         // Set data
+    //         currentChain.value = chainInfo
 
-            // Toggle classes
-            chainIDInput.value.classList.remove('error')
-            chainIDInput.value.classList.add('success')
-        } else {
-            // Reset data
-            currentChain.value = null
+    //         // Toggle classes
+    //         chainIDInput.value.classList.remove('error')
+    //         chainIDInput.value.classList.add('success')
+    //     } else {
+    //         // Reset data
+    //         currentChain.value = null
 
-            // Toggle classes
-            chainIDInput.value.classList.remove('success')
-            chainIDInput.value.classList.add('error')
-        }
-    }
+    //         // Toggle classes
+    //         chainIDInput.value.classList.remove('success')
+    //         chainIDInput.value.classList.add('error')
+    //     }
+    // }
 
 
     // Paste from clipboard
@@ -123,7 +122,7 @@
                 chain_ID.value = clipboardData
 
                 // Validate chain ID
-                validateChainId()
+                // validateChainId()
             }
 
             if (type === 'channel') {
@@ -137,12 +136,11 @@
     // Save
     async function save() {
         try {
-            // Change pretty_name
-            currentChain.value.pretty_name = currentChain.value.pretty_name + '-' + (channel_ID.value.split('-'))[1]
-
             // Set user channel
             await store.setUserChannel({
-                info: currentChain.value,
+                info: {
+                    pretty_name: `${chain_ID.value} (${(channel_ID.value.split('-'))[1]})`
+                },
                 channel_id: channel_ID.value
             })
 

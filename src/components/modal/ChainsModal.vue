@@ -38,7 +38,7 @@
                             <div class="chain">
                                 <!-- Chain logo -->
                                 <div class="logo">
-                                    <img :src="getNetworkLogo(chain.info.chain_id)" alt="" @error="imageLoadError($event)">
+                                    <img :src="getNetworkLogo(chain.info?.chain_id)" alt="" @error="imageLoadError($event)">
 
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
 
@@ -145,15 +145,8 @@
 
         // Merge arrays
         if (userChannels !== undefined) {
-            chainsList.value = [...chainsList.value, ...userChannels]
+            chainsList.value = [...userChannels, ...chainsList.value]
         }
-
-        // Sort by info.pretty_name
-        chainsList.value.sort((a, b) => {
-            if (a.info.pretty_name < b.info.pretty_name) return -1
-            if (a.info.pretty_name > b.info.pretty_name) return 1
-            return 0
-        })
 
         // Default search result
         searchResult.value = chainsList.value
@@ -206,7 +199,12 @@
 
 
     // Event "close_add_IBC_channel_modal"
-    emitter.on('close_add_IBC_channel_modal', () => {
+    emitter.on('close_add_IBC_channel_modal', async ({ reload }) => {
+        if (reload) {
+            // Reload chains
+            await loadChains()
+        }
+
         // Hide add IBC channel modal
         showAddIBCChannelModal.value = false
     })

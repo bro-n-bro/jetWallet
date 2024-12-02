@@ -305,47 +305,47 @@
 
 
     onMounted(() => {
-        window.onerror = function (message, source, lineno, colno, error) {
-			console.log(`Error: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\n${error ? 'Stack: ' + error.stack : ''}`)
+        // window.onerror = function (message, source, lineno, colno, error) {
+		// 	console.log(`Error: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\n${error ? 'Stack: ' + error.stack : ''}`)
 
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
+        //     // Clean notifications
+        //     notification.notify({
+        //         group: 'default',
+        //         clean: true
+        //     })
 
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: -100,
-                title: i18n.global.t('message.notification_error_title'),
-                type: 'error'
-            })
+        //     // Show notification
+        //     notification.notify({
+        //         group: 'default',
+        //         speed: 200,
+        //         duration: -100,
+        //         title: i18n.global.t('message.notification_error_title'),
+        //         type: 'error'
+        //     })
 
-			return true
-		}
+		// 	return true
+		// }
 
-		window.addEventListener('unhandledrejection', function (event) {
-			console.log(`Unhandled Promise Rejection:\n${event.reason}`)
+		// window.addEventListener('unhandledrejection', function (event) {
+		// 	console.log(`Unhandled Promise Rejection:\n${event.reason}`)
 
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
+        //     // Clean notifications
+        //     notification.notify({
+        //         group: 'default',
+        //         clean: true
+        //     })
 
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: -100,
-                title: i18n.global.t('message.notification_error_title'),
-                type: 'error'
-            })
+        //     // Show notification
+        //     notification.notify({
+        //         group: 'default',
+        //         speed: 200,
+        //         duration: -100,
+        //         title: i18n.global.t('message.notification_error_title'),
+        //         type: 'error'
+        //     })
 
-			event.preventDefault()
-		})
+		// 	event.preventDefault()
+		// })
     })
 
 

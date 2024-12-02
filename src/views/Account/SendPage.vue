@@ -111,7 +111,9 @@
                     <div class="chain">
                         <!-- Send page destination chain logo -->
                         <div class="logo">
-                            <img :src="getNetworkLogo(store.IBCSendCurrentChain?.info.chain_id)" alt="" @error="imageLoadError($event)">
+                            <img :src="getNetworkLogo(store.IBCSendCurrentChain?.info?.chain_id)" alt=""
+                                @error="imageLoadError($event)"
+                                @load="imageLoadSuccess($event)">
 
                             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                         </div>
@@ -226,7 +228,7 @@
     import { useNotification } from '@kyvg/vue3-notification'
     import { fromBech32 } from '@cosmjs/encoding'
     import { ibc } from 'chain-registry'
-    import { calcTokenCost, formatTokenCost, formatTokenAmount, getNetworkLogo, imageLoadError } from '@/utils'
+    import { calcTokenCost, formatTokenCost, formatTokenAmount, getNetworkLogo, imageLoadError, imageLoadSuccess } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -306,12 +308,6 @@
         // Reset data
         store.IBCSendCurrentChain = null
 
-        // Address validation when switching to ibc
-        if (activeTab.value === 2 && address.value) {
-            // Validate address
-            validateAddress()
-        }
-
         // Get token home chain
         if (activeTab.value === 2 && balance.value.denom.toLowerCase().startsWith('ibc/')) {
             // Get chain
@@ -332,13 +328,21 @@
                 store.IBCSendCurrentChain = chain[0]
             }
         }
+
+        if (address.value.length) {
+            // Validate address
+            validateAddress()
+        }
     })
 
 
     watch(computed(() => store.IBCSendCurrentChain), () => {
-        // Validate address
-        if (address.value) {
-            validateAddress()
+        if (address.value && activeTab.value === 2) {
+            store.IBCSendCurrentChain && store.IBCSendCurrentChain?.channel_id === undefined
+                // Validate address
+                ? validateAddress()
+                // Toggle classes
+                : addressInput.value.classList.remove('error')
         }
     })
 
@@ -450,7 +454,7 @@
             // For send
             if (activeTab.value === 1) {
                 // Check
-                if (prefix == store.networks[store.currentNetwork].prefix && data.length == store.networks[store.currentNetwork].address_length) {
+                if (prefix === store.networks[store.currentNetwork].prefix && data.length == store.networks[store.currentNetwork].address_length) {
                     // Toggle classes
                     addressInput.value.classList.remove('error')
                     addressInput.value.classList.add('success')
@@ -469,30 +473,37 @@
 
             // For IBC send
             if (activeTab.value === 2) {
-                // Check
-                if (prefix == store.IBCSendCurrentChain.info.bech32_prefix) {
-                    // Toggle classes
-                    addressInput.value.classList.remove('error')
-                    addressInput.value.classList.add('success')
+                if (store.IBCSendCurrentChain && store.IBCSendCurrentChain?.channel_id !== undefined) {
+                    // Check
+                    if (prefix === store.IBCSendCurrentChain.info.bech32_prefix) {
+                        // Toggle classes
+                        addressInput.value.classList.remove('error')
+                        addressInput.value.classList.add('success')
 
-                    // Address status
-                    isAddressValid.value = true
+                        // Address status
+                        isAddressValid.value = true
+                    } else {
+                        // Toggle classes
+                        addressInput.value.classList.remove('success')
+                        addressInput.value.classList.add('error')
+
+                        // Address status
+                        isAddressValid.value = false
+                    }
                 } else {
                     // Toggle classes
-                    addressInput.value.classList.remove('success')
-                    addressInput.value.classList.add('error')
-
-                    // Address status
-                    isAddressValid.value = false
+                    addressInput.value.classList.remove('error')
                 }
             }
         } catch (error) {
-            // Toggle classes
-            addressInput.value.classList.remove('success')
-            addressInput.value.classList.add('error')
+            if (store.IBCSendCurrentChain?.channel_id === undefined) {
+                // Toggle classes
+                addressInput.value.classList.remove('success')
+                addressInput.value.classList.add('error')
 
-            // Address status
-            isAddressValid.value = false
+                // Address status
+                isAddressValid.value = false
+            }
         }
     }
 
@@ -569,7 +580,7 @@
                 }
 
                 // For IBC send
-                if (activeTab.value === 2) {
+                if (activeTab.value === 2 && store.IBCSendCurrentChain?.channel_id !== undefined) {
                     // Check
                     if (prefix == store.IBCSendCurrentChain.info.bech32_prefix) {
                         // Set data
