@@ -183,7 +183,7 @@ export const useGlobalStore = defineStore('global', {
 
         // Init APP
         async initApp() {
-            // Init status
+             // Init status
             this.isInitializing = true
             this.isInitialized = false
 
@@ -1056,6 +1056,8 @@ export const useGlobalStore = defineStore('global', {
 
             // Listening events
             this.networks[this.currentNetwork].websocket.onopen = () => {
+                console.log(111)
+
                 // Event Tx with recipient
                 this.networks[this.currentNetwork].websocket.send(JSON.stringify({
                     jsonrpc: '2.0',
@@ -1065,6 +1067,8 @@ export const useGlobalStore = defineStore('global', {
                         query: `tm.event='Tx' AND transfer.recipient='${this.currentAddress}'`
                     }
                 }))
+
+                console.log(222)
             }
 
 
@@ -1538,13 +1542,13 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Delete user channel
-        async deleteUserChannel(channelId) {
+        async deleteUserChannel(chainName) {
             try {
                 // Get from DB
                 let userChannels = await DBgetData('global', 'userChannels')
 
                 // Delete channel
-                userChannels.filter(el => el.channel_id = channelId)
+                userChannels = userChannels.filter(el => el.info.pretty_name !== chainName)
 
                 // Update in DB
                 await DBaddData('global', [

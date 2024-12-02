@@ -78,7 +78,7 @@
 
 
 <script setup>
-    import { ref, reactive, onBeforeMount, inject, watch, computed } from 'vue'
+    import { ref, reactive, onBeforeMount, onMounted, inject, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute, useRouter } from 'vue-router'
@@ -304,6 +304,51 @@
     })
 
 
+    onMounted(() => {
+        window.onerror = function (message, source, lineno, colno, error) {
+			console.log(`Error: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\n${error ? 'Stack: ' + error.stack : ''}`)
+
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: -100,
+                title: i18n.global.t('message.notification_error_title'),
+                type: 'error'
+            })
+
+			return true
+		}
+
+		window.addEventListener('unhandledrejection', function (event) {
+			console.log(`Unhandled Promise Rejection:\n${event.reason}`)
+
+            // Clean notifications
+            notification.notify({
+                group: 'default',
+                clean: true
+            })
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: -100,
+                title: i18n.global.t('message.notification_error_title'),
+                type: 'error'
+            })
+
+			event.preventDefault()
+		})
+    })
+
+
     watch(computed(() => store.isInitialized), () => {
         // Connect wallet
         if (store.jetPackRequest && store.jetPackRequest.method === 'connectWallet') {
@@ -329,6 +374,7 @@
     // Wallet change
     watch(computed(() => store.currentWalletID), async (newValue, oldValue) => {
         if (oldValue) {
+            console.log(777)
             // Get wallets
             let DBWallets = await DBgetData('global', 'wallets')
 
@@ -349,6 +395,7 @@
     // Network change
     watch(computed(() => store.currentNetwork), async () => {
         if (store.isInitialized || store.forcedUnlock) {
+            console.log(9999)
             // Clean notifications
             notification.notify({
                 group: 'default',

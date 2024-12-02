@@ -33,7 +33,7 @@
                 <div class="list" v-if="searchResult.length">
                     <!-- Chains item -->
                     <div class="item" v-for="(chain, index) in searchResult" :key="index">
-                        <div class="chain_wrap" @click.prevent="setChain(chain)" :class="{ current: isCurrentChain(chain.info.chain_id) }">
+                        <div class="chain_wrap" @click.prevent="setChain(chain)" :class="{ current: isCurrentChain(chain.info.pretty_name) }">
                             <!-- Chain -->
                             <div class="chain">
                                 <!-- Chain logo -->
@@ -43,7 +43,7 @@
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
 
                                     <!-- Chain check -->
-                                    <div class="check" v-if="isCurrentChain(chain.info.chain_id)">
+                                    <div class="check" v-if="isCurrentChain(chain.info.pretty_name)">
                                         <svg><use xlink:href="@/assets/sprite.svg#ic_check"></use></svg>
                                     </div>
                                 </div>
@@ -53,6 +53,11 @@
                                     <div class="name">
                                         {{ chain.info.pretty_name }}
                                     </div>
+
+                                    <!-- Delete button -->
+                                     <button class="delete_btn" v-if="chain.channel_id" @click.stop.prevent="deleteUserChannel(chain)">
+                                        <svg><use xlink:href="@/assets/sprite.svg#ic_remove"></use></svg>
+                                     </button>
                                 </div>
                             </div>
                         </div>
@@ -132,12 +137,15 @@
             el.info = chains.find(chain => chain.chain_name === findChain)
         })
 
+        // Clear chains list
+        chainsList.value = chainsList.value.filter(el => el.info !== undefined)
+
         // Load user channels
-        let userChannerls = await store.getAllUserChannels()
+        let userChannels = await store.getAllUserChannels()
 
         // Merge arrays
-        if (userChannerls !== undefined) {
-            chainsList.value = [...chainsList.value, ...userChannerls]
+        if (userChannels !== undefined) {
+            chainsList.value = [...chainsList.value, ...userChannels]
         }
 
         // Sort by info.pretty_name
@@ -153,20 +161,31 @@
 
 
     // Is current chain
-    function isCurrentChain(chainID) {
+    function isCurrentChain(name) {
         // Check
-        if (store.IBCSendCurrentChain && store.IBCSendCurrentChain.info.chain_id === chainID) {
+        if (store.IBCSendCurrentChain && store.IBCSendCurrentChain.info.pretty_name === name) {
             return true
         }
     }
 
 
+    // Set chain
     function setChain(chain) {
         // Set data
         store.IBCSendCurrentChain = chain
 
         // Event "close_chains_modal"
         emitter.emit('close_chains_modal')
+    }
+
+
+    // Delete user channel
+    async function deleteUserChannel(chain) {
+        // Delete user channel
+        await store.deleteUserChannel(chain.info.pretty_name)
+
+        // Reload chains
+        await loadChains()
     }
 
 
@@ -433,6 +452,8 @@
         justify-content: flex-start;
 
         width: calc(100% - 52px);
+
+        gap: 8px;
     }
 
 
@@ -443,8 +464,32 @@
 
         overflow: hidden;
 
+        width: calc(100% - 48px);
+
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+
+
+    .chains .chain .delete_btn
+    {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 40px;
+        height: 24px;
+    }
+
+
+    .chains .chain .delete_btn svg
+    {
+        display: block;
+
+        width: 18px;
+        height: 18px;
     }
 
 

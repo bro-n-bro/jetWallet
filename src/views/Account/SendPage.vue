@@ -374,9 +374,16 @@
 
         // IBC send message
         if (isFormValid.value && activeTab.value === 2) {
-            let channelID = store.IBCSendCurrentChain.chain_1.chain_name === store.currentNetwork
-                ? store.IBCSendCurrentChain.channels[0].chain_1.channel_id
-                : store.IBCSendCurrentChain.channels[0].chain_2.channel_id
+            let channelID = null
+
+            // Set channel id
+            if (store.IBCSendCurrentChain.channel_id !== undefined) {
+                channelID = store.IBCSendCurrentChain.channel_id
+            } else {
+                channelID = store.IBCSendCurrentChain.chain_1.chain_name === store.currentNetwork
+                    ? store.IBCSendCurrentChain.channels[0].chain_1.channel_id
+                    : store.IBCSendCurrentChain.channels[0].chain_2.channel_id
+            }
 
             // Set messeges
             msgAny.value = [{
@@ -446,11 +453,13 @@
                 if (prefix == store.networks[store.currentNetwork].prefix && data.length == store.networks[store.currentNetwork].address_length) {
                     // Toggle classes
                     addressInput.value.classList.remove('error')
+                    addressInput.value.classList.add('success')
 
                     // Address status
                     isAddressValid.value = true
                 } else {
                     // Toggle classes
+                    addressInput.value.classList.remove('success')
                     addressInput.value.classList.add('error')
 
                     // Address status
@@ -464,11 +473,13 @@
                 if (prefix == store.IBCSendCurrentChain.info.bech32_prefix) {
                     // Toggle classes
                     addressInput.value.classList.remove('error')
+                    addressInput.value.classList.add('success')
 
                     // Address status
                     isAddressValid.value = true
                 } else {
                     // Toggle classes
+                    addressInput.value.classList.remove('success')
                     addressInput.value.classList.add('error')
 
                     // Address status
@@ -477,6 +488,7 @@
             }
         } catch (error) {
             // Toggle classes
+            addressInput.value.classList.remove('success')
             addressInput.value.classList.add('error')
 
             // Address status
@@ -534,20 +546,48 @@
             try {
                 let { prefix, data } = fromBech32(clipboardData)
 
-                // Check
-                if (prefix == store.networks[store.currentNetwork].prefix && data.length == store.networks[store.currentNetwork].address_length) {
-                    // Set data
-                    address.value = clipboardData
-                } else {
-                    // Show notification
-                    notification.notify({
-                        group: 'default',
-                        speed: 200,
-                        duration: 1000,
-                        title: i18n.global.t('message.notification_tx_error_title'),
-                        text: i18n.global.t('message.notification_error_invalid_paste_title'),
-                        type: 'error'
-                    })
+                // For send
+                if (activeTab.value === 1) {
+                    // Check
+                    if (prefix == store.networks[store.currentNetwork].prefix && data.length == store.networks[store.currentNetwork].address_length) {
+                        // Set data
+                        address.value = clipboardData
+
+                        // Validate address
+                        validateAddress()
+                    } else {
+                        // Show notification
+                        notification.notify({
+                            group: 'default',
+                            speed: 200,
+                            duration: 1000,
+                            title: i18n.global.t('message.notification_tx_error_title'),
+                            text: i18n.global.t('message.notification_error_invalid_paste_title'),
+                            type: 'error'
+                        })
+                    }
+                }
+
+                // For IBC send
+                if (activeTab.value === 2) {
+                    // Check
+                    if (prefix == store.IBCSendCurrentChain.info.bech32_prefix) {
+                        // Set data
+                        address.value = clipboardData
+
+                        // Validate address
+                        validateAddress()
+                    } else {
+                        // Show notification
+                        notification.notify({
+                            group: 'default',
+                            speed: 200,
+                            duration: 1000,
+                            title: i18n.global.t('message.notification_tx_error_title'),
+                            text: i18n.global.t('message.notification_error_invalid_paste_title'),
+                            type: 'error'
+                        })
+                    }
                 }
             } catch (error) {
                 // Show notification

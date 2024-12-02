@@ -243,10 +243,8 @@ export default {
             // Add IBC channek modal
             'add_IBC_channel_title': 'Add IBC Channel',
 
-            'add_IBC_channel_chain_label': 'Destination Chain:',
+            'add_IBC_channel_chain_label': 'Destination Channel ID',
             'add_IBC_channel_id_label': 'Source Channel ID:',
-
-            'add_IBC_channel_chain_placeholder': 'Select Chain',
 
 
             // Search
@@ -272,6 +270,8 @@ export default {
             'placeholder_memo': 'Required for sending to CEX',
             'placeholder_memo2': 'Your Custom Memo',
             'placeholder_wallet_name': 'Wallet Name',
+
+            'placeholder_chain_ID': 'Chain ID',
             'placeholder_source_channel_ID': 'Source Channel ID',
 
 
