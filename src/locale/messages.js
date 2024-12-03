@@ -246,6 +246,8 @@ export default {
             'add_IBC_channel_chain_label': 'Destination Channel ID',
             'add_IBC_channel_id_label': 'Source Channel ID:',
 
+            'add_IBC_channel_error_already_exists': 'Such a pair chain_id and channel_id already exists.',
+
 
             // Search
             'search_placeholder': 'Search...',

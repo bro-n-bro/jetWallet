@@ -27,7 +27,7 @@
 
     // Handle touch start
     function handleTouchStart(e) {
-        if (store.networks[store.currentNetwork].isunstakingCancelSupport) {
+        if (store.networks[store.currentNetwork].isUnstakingCancelSupport) {
             startX.value = e.touches[0].clientX
         }
     }
@@ -35,7 +35,7 @@
 
     // Handle touch move
     function handleTouchMove(e) {
-        if (store.networks[store.currentNetwork].isunstakingCancelSupport) {
+        if (store.networks[store.currentNetwork].isUnstakingCancelSupport) {
             let touch = e.touches[0]
 
             // Calc horizontal offset

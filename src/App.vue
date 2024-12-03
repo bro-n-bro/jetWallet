@@ -374,7 +374,6 @@
     // Wallet change
     watch(computed(() => store.currentWalletID), async (newValue, oldValue) => {
         if (oldValue) {
-            console.log(777)
             // Get wallets
             let DBWallets = await DBgetData('global', 'wallets')
 
@@ -395,7 +394,6 @@
     // Network change
     watch(computed(() => store.currentNetwork), async () => {
         if (store.isInitialized || store.forcedUnlock) {
-            console.log(9999)
             // Clean notifications
             notification.notify({
                 group: 'default',

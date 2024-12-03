@@ -264,7 +264,7 @@
         isFormValid = ref(computed(() =>
             isAmountReady.value &&
             isAddressValid.value &&
-            (activeTab.value !== 2 || store.IBCSendCurrentChain)
+            (activeTab.value !== 2 || store.IBCSendCurrentChain !== null)
         ))
 
 
@@ -307,6 +307,15 @@
 
         // Reset data
         store.IBCSendCurrentChain = null
+        address.value = ''
+        amount.value = ''
+        isProcess.value = false
+        isAmountReady.value = false
+        isAddressValid.value = false
+
+        // Toggle classes
+        addressInput.value.classList.remove('success')
+        addressInput.value.classList.remove('error')
 
         // Get token home chain
         if (activeTab.value === 2 && balance.value.denom.toLowerCase().startsWith('ibc/')) {
@@ -328,21 +337,13 @@
                 store.IBCSendCurrentChain = chain[0]
             }
         }
-
-        if (address.value.length) {
-            // Validate address
-            validateAddress()
-        }
     })
 
 
     watch(computed(() => store.IBCSendCurrentChain), () => {
-        if (address.value && activeTab.value === 2) {
-            store.IBCSendCurrentChain && store.IBCSendCurrentChain?.channel_id === undefined
-                // Validate address
-                ? validateAddress()
-                // Toggle classes
-                : addressInput.value.classList.remove('error')
+        if (store.IBCSendCurrentChain !== null && address.value) {
+            // Validate address
+            validateAddress()
         }
     })
 
@@ -412,6 +413,7 @@
     // Update data
     function updateData() {
         // Reset data
+        store.IBCSendCurrentChain = null
         address.value = ''
         amount.value = ''
         isProcess.value = false
@@ -420,6 +422,7 @@
 
         // Remove error classes
         addressInput.value.classList.remove('error')
+        addressInput.value.classList.remove('success')
 
         // Update balance
         balance.value = store.balances.find(balance => balance.denom === route.query.denom)
@@ -448,6 +451,9 @@
 
     // Validate address
     function validateAddress() {
+        // Address status
+        isAddressValid.value = false
+
         try {
             let { prefix, data } = fromBech32(address.value)
 
@@ -460,20 +466,17 @@
                     addressInput.value.classList.add('success')
 
                     // Address status
-                    isAddressValid.value = true
+                    setTimeout(() => isAddressValid.value = true)
                 } else {
                     // Toggle classes
                     addressInput.value.classList.remove('success')
                     addressInput.value.classList.add('error')
-
-                    // Address status
-                    isAddressValid.value = false
                 }
             }
 
             // For IBC send
             if (activeTab.value === 2) {
-                if (store.IBCSendCurrentChain && store.IBCSendCurrentChain?.channel_id !== undefined) {
+                if (store.IBCSendCurrentChain !== null && store.IBCSendCurrentChain.channel_id === undefined) {
                     // Check
                     if (prefix === store.IBCSendCurrentChain.info.bech32_prefix) {
                         // Toggle classes
@@ -481,18 +484,19 @@
                         addressInput.value.classList.add('success')
 
                         // Address status
-                        isAddressValid.value = true
+                        setTimeout(() => isAddressValid.value = true)
                     } else {
                         // Toggle classes
                         addressInput.value.classList.remove('success')
                         addressInput.value.classList.add('error')
-
-                        // Address status
-                        isAddressValid.value = false
                     }
                 } else {
                     // Toggle classes
+                    addressInput.value.classList.remove('success')
                     addressInput.value.classList.remove('error')
+
+                    // Address status
+                    setTimeout(() => isAddressValid.value = true)
                 }
             }
         } catch (error) {
@@ -500,9 +504,6 @@
                 // Toggle classes
                 addressInput.value.classList.remove('success')
                 addressInput.value.classList.add('error')
-
-                // Address status
-                isAddressValid.value = false
             }
         }
     }
@@ -580,9 +581,9 @@
                 }
 
                 // For IBC send
-                if (activeTab.value === 2 && store.IBCSendCurrentChain?.channel_id !== undefined) {
+                if (activeTab.value === 2 && store.IBCSendCurrentChain !== null && store.IBCSendCurrentChain.channel_id === undefined) {
                     // Check
-                    if (prefix == store.IBCSendCurrentChain.info.bech32_prefix) {
+                    if (prefix === store.IBCSendCurrentChain.info.bech32_prefix) {
                         // Set data
                         address.value = clipboardData
 
@@ -599,6 +600,9 @@
                             type: 'error'
                         })
                     }
+                } else {
+                    // Set data
+                    address.value = clipboardData
                 }
             } catch (error) {
                 // Show notification

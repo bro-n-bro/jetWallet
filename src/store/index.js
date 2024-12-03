@@ -183,7 +183,7 @@ export const useGlobalStore = defineStore('global', {
 
         // Init APP
         async initApp() {
-             // Init status
+            // Init status
             this.isInitializing = true
             this.isInitialized = false
 
@@ -301,7 +301,7 @@ export const useGlobalStore = defineStore('global', {
                 await this.getCurrentNetworkAPR()
 
                 // Connect to websocket
-                this.connectWebsocket()
+                await this.connectWebsocket()
 
                 // Is cosmos SDK version support unstaking cancel / check cache
                 await this.isUnstakingCancelSupport()
@@ -483,7 +483,7 @@ export const useGlobalStore = defineStore('global', {
                         .then(async data => {
                             if (data.delegation_responses) {
                                 // Set data
-                                this.stakedBalances = data.delegation_responses
+                                this.stakedBalances = data.delegation_responses.filter(el => el.balance.amount > 0)
 
                                 for (let item of this.stakedBalances) {
                                     // Get balance info
@@ -1039,11 +1039,12 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Connect to websocket
-        connectWebsocket() {
+        async connectWebsocket() {
             // Close previous connections
             Object.values(this.networks).forEach(network => {
                 if (network.websocket) {
                     // Remove onmessage listener
+                    network.websocket.onopen = null
                     network.websocket.onmessage = null
 
                     // Close connection
@@ -1056,8 +1057,6 @@ export const useGlobalStore = defineStore('global', {
 
             // Listening events
             this.networks[this.currentNetwork].websocket.onopen = () => {
-                console.log(111)
-
                 // Event Tx with recipient
                 this.networks[this.currentNetwork].websocket.send(JSON.stringify({
                     jsonrpc: '2.0',
@@ -1067,8 +1066,6 @@ export const useGlobalStore = defineStore('global', {
                         query: `tm.event='Tx' AND transfer.recipient='${this.currentAddress}'`
                     }
                 }))
-
-                console.log(222)
             }
 
 
@@ -1244,28 +1241,30 @@ export const useGlobalStore = defineStore('global', {
 
         // Update all balances
         async updateAllBalances() {
+            let promises = []
+
             // Update balances
             if (this.isBalancesGot) {
-                var getBalances = await this.getBalances(true)
+                promises.push(this.getBalances(true))
             }
 
             // Update staked balances
             if (this.isStakedBalancesGot) {
-                var getStakedBalances = await this.getStakedBalances(true)
+                promises.push(this.getStakedBalances(true))
+            }
+
+            // Update rewards
+            if (this.isRewardsGot) {
+                promises.push(this.getRewards())
+            }
+
+            // Update unstaking balances
+            if (this.isUnstakingBalancesGot) {
+                promises.push(this.getUnstakingBalances())
             }
 
             // Wait balances
-            Promise.all([getBalances, getStakedBalances]).then(() => {
-                // Update rewards
-                if (this.isRewardsGot) {
-                    this.getRewards()
-                }
-
-                // Update unstaking balances
-                if (this.isUnstakingBalancesGot) {
-                    this.getUnstakingBalances()
-                }
-            })
+            await Promise.all(promises)
         },
 
 
@@ -1518,7 +1517,28 @@ export const useGlobalStore = defineStore('global', {
                 // Add new channel
                 userChannels.push(channel)
 
-                console.log(userChannels)
+                // Save in DB
+                await DBaddData('global', [
+                    ['userChannels', JSON.parse(JSON.stringify(userChannels))]
+                ])
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+
+        // Update user channel
+        async updateUserChannel(channel) {
+            try {
+                // Get from DB
+                let userChannels = await DBgetData('global', 'userChannels') || []
+
+                // Add new channel
+                let oldChannel = userChannels.find(el => el.info.pretty_name === channel.old.info.pretty_name)
+
+                // Update data
+                oldChannel.info = channel.info
+                oldChannel.channel_id = channel.channel_id
 
                 // Save in DB
                 await DBaddData('global', [

@@ -1,12 +1,12 @@
 <template>
-    <div class="android_ace" :style="`height: ${topHeight}px;`" :class="{ show: !loading }"></div>
+    <div class="android_ace" :style="`height: ${topHeight}px;`" :class="{ show: !loading }" v-if="store.unstakingBalances.length"></div>
 
     <div class="android_animation" ref="container" :class="{ show: !loading }">
         <div class="top" ref="topBar" :style="`height: ${topHeight}px;`"></div>
 
         <div class="bottom" :style="`height: ${bottomHeight}px;`"></div>
 
-        <svg>
+        <svg v-if="store.unstakingBalances.length">
             <filter id="gooey">
                 <feGaussianBlur stdDeviation="10"/>
                 <feColorMatrix values="1 0 0 0 0
@@ -67,19 +67,21 @@
             isProcess.value = true
 
             // Change count
-            count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
+            if (stakedAmount) {
+                count.value = Math.ceil(10 * (unstakingAmount / stakedAmount))
+            }
 
             // Generate balls
             for(let i = 0; i < count.value; i++) {
                 container.value.insertBefore(randomizedBall(), topBar.value)
             }
-
-            // Show animation
-            setTimeout(() => {
-                loading.value = false
-                isProcess.value = false
-            }, 750)
         }
+
+        // Show animation
+        setTimeout(() => {
+            loading.value = false
+            isProcess.value = false
+        }, 750)
     }
 
 
@@ -110,13 +112,13 @@
     {
         position: absolute;
         z-index: 1;
-        top: -4px;
+        top: 0;
         left: 0;
 
         display: block;
 
         width: 100%;
-        min-height: 8px;
+        min-height: 0;
 
         transition: transform .35s linear .1s;
         transform: translate3d(0, -100%, 0);

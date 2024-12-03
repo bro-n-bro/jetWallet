@@ -48,43 +48,47 @@
 
 
     onBeforeMount(async () => {
-        // Reset data
-        await store.resetTxFee()
+        try {
+            // Reset data
+            await store.resetTxFee()
 
-        // Set current balance
-        store.TxFeeGetCurrentBalance(store.networks[store.currentNetwork].denom)
+            // Set current balance
+            store.TxFeeGetCurrentBalance(store.networks[store.currentNetwork].denom)
 
-        // Set gas prices
-        store.TxFeeSetGasPrices()
+            // Set gas prices
+            store.TxFeeSetGasPrices()
 
-        // Simulate Tx
-        if (store.TxFee.balance.amount) {
-            await simulateTx(props.msgAny)
-        } else {
-            // Set default gas amount
-            if (props.txType === 'send') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_send
+            // Simulate Tx
+            if (store.TxFee.balance.amount) {
+                await simulateTx(props.msgAny)
+            } else {
+                // Set default gas amount
+                if (props.txType === 'send') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_send
+                }
+
+                if (props.txType === 'claim') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_claim
+                }
+
+                if (props.txType === 'stake') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_stake
+                }
+
+                if (props.txType === 'unstake') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_unstake
+                }
+
+                if (props.txType === 'redelegate') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_redelegate
+                }
             }
 
-            if (props.txType === 'claim') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_claim
-            }
-
-            if (props.txType === 'stake') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_stake
-            }
-
-            if (props.txType === 'unstake') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_unstake
-            }
-
-            if (props.txType === 'redelegate') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_redelegate
-            }
+            // Enough status
+            store.TxFeeIsEnough()
+        } catch (error) {
+            console.log(error)
         }
-
-        // Enough status
-        store.TxFeeIsEnough()
     })
 
 

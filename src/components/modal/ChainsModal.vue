@@ -15,7 +15,7 @@
                 </div>
 
                 <!-- Add chain butoo -->
-                <button class="add_chain_btn" @click.prevent="showAddIBCChannelModal = true">
+                <button class="add_chain_btn" @click.prevent="openAddIBCChannelModal()">
                     <span>
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_plus"></use></svg>
 
@@ -38,7 +38,9 @@
                             <div class="chain">
                                 <!-- Chain logo -->
                                 <div class="logo">
-                                    <img :src="getNetworkLogo(chain.info?.chain_id)" alt="" @error="imageLoadError($event)">
+                                    <img :src="getNetworkLogo(chain.info?.chain_id)" alt=""
+                                        @error="imageLoadError($event)"
+                                        @load="imageLoadSuccess($event)">
 
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
 
@@ -58,6 +60,11 @@
                                      <button class="delete_btn" v-if="chain.channel_id" @click.stop.prevent="deleteUserChannel(chain)">
                                         <svg><use xlink:href="@/assets/sprite.svg#ic_remove"></use></svg>
                                      </button>
+
+                                    <!-- Edit button -->
+                                    <button class="edit_btn" v-if="chain.channel_id" @click.stop.prevent="editUserChannel(chain)">
+                                        <svg><use xlink:href="@/assets/sprite.svg#ic_edit"></use></svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +83,7 @@
 
     <!-- Add IBC channel modal -->
     <transition name="modal">
-    <AddIBCChannelModal v-if="showAddIBCChannelModal"/>
+    <AddIBCChannelModal v-if="showAddIBCChannelModal" :channelForEdit />
     </transition>
 
     <!-- Overlay -->
@@ -90,7 +97,7 @@
     import { ref, inject, onBeforeMount, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { chains, ibc } from 'chain-registry'
-    import { imageLoadError, getNetworkLogo } from '@/utils'
+    import { imageLoadError, imageLoadSuccess, getNetworkLogo } from '@/utils'
 
     // Components
     import Search from '@/components/Search.vue'
@@ -101,6 +108,7 @@
         emitter = inject('emitter'),
         chainsList = ref([]),
         searchResult = ref([]),
+        channelForEdit = ref(null),
         showAddIBCChannelModal = ref(false)
 
 
@@ -179,6 +187,32 @@
 
         // Reload chains
         await loadChains()
+    }
+
+
+    // Edit user channel
+    function editUserChannel(chain) {
+        // Set channel for edit
+        channelForEdit.value = chain
+
+        // Show add IBC channel modal
+        showAddIBCChannelModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
+    // Open add IBC channel modal
+    function openAddIBCChannelModal() {
+        // Set channel for edit
+        channelForEdit.value = null
+
+        // Show add IBC channel modal
+        showAddIBCChannelModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
     }
 
 
@@ -451,7 +485,7 @@
 
         width: calc(100% - 52px);
 
-        gap: 8px;
+        gap: 4px;
     }
 
 
@@ -462,14 +496,15 @@
 
         overflow: hidden;
 
-        width: calc(100% - 48px);
+        width: calc(100% - 72px);
 
         white-space: nowrap;
         text-overflow: ellipsis;
     }
 
 
-    .chains .chain .delete_btn
+    .chains .chain .delete_btn,
+    .chains .chain .edit_btn
     {
         display: flex;
         align-content: center;
@@ -477,17 +512,24 @@
         flex-wrap: wrap;
         justify-content: center;
 
-        width: 40px;
+        width: 32px;
         height: 24px;
     }
 
 
-    .chains .chain .delete_btn svg
+    .chains .chain .delete_btn svg,
+    .chains .chain .edit_btn svg
     {
         display: block;
 
         width: 18px;
         height: 18px;
+    }
+
+    .chains .chain .edit_btn svg
+    {
+        width: 24px;
+        height: 24px;
     }
 
 

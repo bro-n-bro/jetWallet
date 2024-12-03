@@ -131,7 +131,7 @@
                                     </template>
 
                                     <!-- Unstaking token cancel button -->
-                                    <template #cancel_btn v-if="store.networks[store.currentNetwork].isunstakingCancelSupport">
+                                    <template #cancel_btn v-if="store.networks[store.currentNetwork].isUnstakingCancelSupport">
                                     <button class="cancel_btn" @click.prevent="cancelUnstaking(item.validator_info.operator_address, entry)">
                                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
 
@@ -502,7 +502,7 @@
         width: 38px;
         height: 38px;
         margin-right: 8px;
-        padding: 6px;
+        padding: 4px;
 
         border-radius: 50%;
         background: #950fff;

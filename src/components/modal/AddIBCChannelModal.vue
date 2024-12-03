@@ -24,7 +24,8 @@
                     <!-- Add IBC chain ID field -->
                     <div class="field">
                         <input type="text" class="input big" v-model="chain_ID" ref="chainIDInput"
-                            :placeholder="$t('message.placeholder_chain_ID')">
+                            :placeholder="$t('message.placeholder_chain_ID')"
+                            @input="validateName()">
 
                         <!-- Paste button -->
                         <button class="paste_btn" @click.prevent="pasteFromClipboard('chain')">
@@ -44,13 +45,20 @@
                     <!-- Add IBC channel ID field -->
                     <div class="field">
                         <input type="text" class="input big" v-model="channel_ID"
-                            :placeholder="$t('message.placeholder_source_channel_ID')">
+                            :placeholder="$t('message.placeholder_source_channel_ID')"
+                            @input="validateName()">
 
                         <!-- Paste button -->
                         <button class="paste_btn" @click.prevent="pasteFromClipboard('channel')">
                             {{ $t('message.btn_paste') }}
                         </button>
                     </div>
+                </div>
+
+
+                <!-- Add IBC channel error -->
+                <div class="error_text" v-if="isAlreadyExists">
+                    {{ $t('message.add_IBC_channel_error_already_exists') }}
                 </div>
 
 
@@ -68,21 +76,34 @@
 
 
 <script setup>
-    import { ref, inject, onUnmounted, computed } from 'vue'
+    import { ref, inject, onBeforeMount, onUnmounted, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
-    import { chains } from 'chain-registry'
+    // import { chains } from 'chain-registry'
 
 
-    const store = useGlobalStore(),
+    const props = defineProps(['channelForEdit']),
+        store = useGlobalStore(),
         emitter = inject('emitter'),
         i18n = inject('i18n'),
         notification = useNotification(),
+        userChannels = ref(null),
         chainIDInput = ref(null),
-        currentChain = ref(null),
-        chain_ID = ref(''),
-        channel_ID = ref(''),
-        isFormValid = ref(computed(() => channel_ID.value.length && chain_ID.value.length))
+        // currentChain = ref(null),
+        chain_ID = ref(props.channelForEdit?.info.chain_id || ''),
+        channel_ID = ref(props.channelForEdit?.channel_id || ''),
+        isAlreadyExists = ref(false),
+        isFormValid = ref(computed(() =>
+            channel_ID.value.length &&
+            chain_ID.value.length &&
+            !isAlreadyExists.value
+        ))
+
+
+    onBeforeMount(async () => {
+        // Load user channels
+        userChannels.value = await store.getAllUserChannels()
+    })
 
 
     onUnmounted(() => {
@@ -129,20 +150,54 @@
                 // Set data
                 channel_ID.value = clipboardData
             }
+
+            // Validate name
+            validateName()
         })
+    }
+
+
+    // Validate name
+    function validateName() {
+        if (userChannels.value !== undefined) {
+            // Find duplicate
+            let exists = userChannels.value.some(el =>
+                el.info?.pretty_name &&
+                el.info.pretty_name === `${chain_ID.value} (${(channel_ID.value.split('-'))[1]})` &&
+                el.info.pretty_name !== props.channelForEdit?.info?.pretty_name
+            )
+
+            // Set status
+            exists
+                ? isAlreadyExists.value = true
+                : isAlreadyExists.value = false
+        }
     }
 
 
     // Save
     async function save() {
         try {
-            // Set user channel
-            await store.setUserChannel({
-                info: {
-                    pretty_name: `${chain_ID.value} (${(channel_ID.value.split('-'))[1]})`
-                },
-                channel_id: channel_ID.value
-            })
+            if (!props.channelForEdit) {
+                // Set user channel
+                await store.setUserChannel({
+                    info: {
+                        chain_id: chain_ID.value,
+                        pretty_name: `${chain_ID.value} (${(channel_ID.value.split('-'))[1]})`
+                    },
+                    channel_id: channel_ID.value
+                })
+            } else {
+                // Set user channel
+                await store.updateUserChannel({
+                    old: props.channelForEdit,
+                    info: {
+                        chain_id: chain_ID.value,
+                        pretty_name: `${chain_ID.value} (${(channel_ID.value.split('-'))[1]})`
+                    },
+                    channel_id: channel_ID.value
+                })
+            }
 
             // Show notification
             notification.notify({
@@ -214,5 +269,14 @@
     {
         border-radius: 9px;
         background: #06000e;
+    }
+
+
+    .error_text
+    {
+        margin-top: 8px;
+        padding: 0 10px;
+
+        color: #ff4b4b;
     }
 </style>
