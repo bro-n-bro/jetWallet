@@ -177,7 +177,7 @@
                         @input="validateAmount()">
 
                     <!-- Send page amount max. button -->
-                    <button type="button" class="max_btn" @click.prevent="setMaxAmount">
+                    <button type="button" class="max_btn" @click.prevent="setMaxAmount()">
                         {{ $t('message.btn_MAX') }}
                     </button>
                 </div>
@@ -530,14 +530,17 @@
         isAmountReady.value = false
 
         setTimeout(() => {
+            // Separator replacement
+            Number(String(amount.value).replace(/,/g, "."))
+
             // Negative value
-            if (amount.value.length && amount.value <= 0) {
+            if (String(amount.value).length && amount.value < 0) {
                 // Set empty
                 amount.value = ''
             }
 
             // Acceptable value
-            if (amount.value && amount.value > 0 && amount.value < formatTokenAmount(balance.value.amount, balance.value.exponent)){
+            if (amount.value && amount.value > 0 && amount.value < formatTokenAmount(balance.value.amount, balance.value.exponent)) {
                 // Set amount status
                 isAmountReady.value = true
             }

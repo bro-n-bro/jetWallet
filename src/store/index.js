@@ -1304,7 +1304,10 @@ export const useGlobalStore = defineStore('global', {
         // Get all validators
         async getAllValidators() {
             try {
-                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+                // Request
+                let result = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+
+                return result.validators
             } catch (error) {
                 console.error(error)
             }
@@ -1314,7 +1317,10 @@ export const useGlobalStore = defineStore('global', {
         // Get user validators
         async getUserValidators() {
             try {
-                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+                // Request
+                let result = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+
+                return result.validators
             } catch (error) {
                 console.error(error)
             }

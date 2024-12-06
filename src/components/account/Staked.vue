@@ -37,7 +37,7 @@
             </router-link>
 
             <!-- Unstake button -->
-            <router-link to="/account/unstake" class="btn" :class="{ disabled: !store.isBalancesGot }">
+            <router-link to="/account/unstake" class="btn" :class="{ disabled: !store.isStakedBalancesGot || !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_unstake"></use></svg>
                 </div>
@@ -46,7 +46,7 @@
             </router-link>
 
             <!-- Redelegate button -->
-            <router-link to="/account/redelegate" class="btn" :class="{ disabled: !store.isStakedBalancesGot }">
+            <router-link to="/account/redelegate" class="btn" :class="{ disabled: !store.isStakedBalancesGot || !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_redelegate"></use></svg>
                 </div>

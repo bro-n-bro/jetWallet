@@ -117,18 +117,18 @@
     onBeforeMount(async() => {
         if (props.unstake) {
             // Get validators
-            validators.value = (await store.getUserValidators()).validators
+            validators.value = await store.getUserValidators()
         } else if(props.redelegate) {
             if (props.redelegate === 'from') {
                 // Get validators
-                validators.value = (await store.getUserValidators()).validators
+                validators.value = await store.getUserValidators()
             } else {
                 // Get validators (Exclude validator from)
-                validators.value = (await store.getAllValidators()).validators.filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
+                validators.value = await store.getAllValidators().filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
             }
         } else {
             // Get validators
-            validators.value = (await store.getAllValidators()).validators
+            validators.value = await store.getAllValidators()
         }
 
         // Sort by voiting power

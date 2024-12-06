@@ -151,7 +151,7 @@
                 <div class="field">
                     <input type="number" inputmode="decimal" class="input big" v-model="amount"
                         :placeholder="$t('message.placeholder_amount', { token: store.networks[store.currentNetwork].token_name })"
-                        @input="validateAmount($event)">
+                        @input="validateAmount()">
 
                     <!-- Unstake page amount max. button -->
                     <button type="button" class="max_btn" @click.prevent="setMaxAmount()">
@@ -280,20 +280,23 @@
         isAmountReady.value = false
 
         setTimeout(() => {
+            // Separator replacement
+            Number(String(amount.value).replace(/,/g, "."))
+
             // Negative value
-            if (e.target.value.length && e.target.value <= 0) {
+            if (String(amount.value).length && amount.value < 0) {
                 // Set empty
                 amount.value = ''
             }
 
             // Acceptable value
-            if (e.target.value.length && e.target.value > 0 && e.target.value < formatTokenAmount(maxAmount.value, store.networks[store.currentNetwork].exponent)){
+            if (amount.value && amount.value > 0 && amount.value < formatTokenAmount(maxAmount.value, store.networks[store.currentNetwork].exponent)){
                 // Set amount status
                 isAmountReady.value = true
             }
 
             // More than available balance
-            if (e.target.value > formatTokenAmount(maxAmount.value, store.networks[store.currentNetwork].exponent)) {
+            if (amount.value > formatTokenAmount(maxAmount.value, store.networks[store.currentNetwork].exponent)) {
                 // Set MAX amount
                 setMaxAmount()
             }
