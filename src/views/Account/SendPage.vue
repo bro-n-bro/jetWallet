@@ -43,8 +43,13 @@
                     </div>
 
                     <!-- Send page token denom -->
-                    <div class="denom">
+                    <!-- <div class="denom">
                         {{ balance.token_info.symbol }}
+                    </div> -->
+
+                    <div class="denom">
+                        <span v-if="balance.old_base_denom === 'drop' || balance.old_base_denom === 'udatom'">d{{ balance.token_info.symbol }}</span>
+                        <span v-else>{{ balance.token_info.symbol }}</span>
                     </div>
 
                     <!-- Send page token amount -->

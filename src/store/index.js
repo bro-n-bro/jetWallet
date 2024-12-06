@@ -11,7 +11,7 @@ import i18n from '@/locale'
 import cosmoshub from '@/store/networks/cosmoshub'
 import bostrom from '@/store/networks/bostrom'
 import neutron from '@/store/networks/neutron'
-// import pion from '@/store/networks/pion'
+import pion from '@/store/networks/pion'
 // import mocha from '@/store/networks/mocha'
 import omniflix from '@/store/networks/omniflix'
 import dymension from '@/store/networks/dymension'
@@ -101,7 +101,7 @@ export const useGlobalStore = defineStore('global', {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
             bostrom: Object.assign(bostrom, networksAdditionalOptions),
             neutron: Object.assign(neutron, networksAdditionalOptions),
-            // pion: Object.assign(pion, networksAdditionalOptions),
+            pion: Object.assign(pion, networksAdditionalOptions),
             // mocha: Object.assign(mocha, networksAdditionalOptions),
             omniflix: Object.assign(omniflix, networksAdditionalOptions),
             dymension: Object.assign(dymension, networksAdditionalOptions),
@@ -611,12 +611,35 @@ export const useGlobalStore = defineStore('global', {
             // Denom traces
             let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
+            // Old base denom
+            balance.old_base_denom = base_denom
+
+            if (base_denom === 'share') {
+                return
+            }
+
             // Get (token info/chain name) from assets
             for (let asset of assets) {
                 // Exceptions
                 switch (base_denom) {
                     case 'uusdc':
                         var currentAsset = assets.find(el => el.chain_name === 'noble')
+                        break;
+
+                    case 'utia':
+                        var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
+                        break;
+
+                    case 'udatom':
+                        var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
+
+                        base_denom = 'uatom'
+                        break;
+
+                    case 'drop':
+                        var currentAsset = assets.find(el => el.chain_name === 'celestia')
+
+                        base_denom = 'utia'
                         break;
 
                     default:
