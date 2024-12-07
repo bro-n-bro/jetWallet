@@ -530,9 +530,20 @@
 
 
     // Event "close_send_tx_modal"
-    emitter.on('close_send_tx_modal', () => {
+    emitter.on('close_send_tx_modal', async () => {
         // Hide send Tx modal
         showSendTxModal.value = false
+
+        // Check Tx result
+        if (store.networks[store.currentNetwork].currentTxHash) {
+            // Check Tx
+            await store.checkTxResult()
+
+            if (store.networks[store.currentNetwork].currentTxHash) {
+                // Set listener current tx
+                store.setListenerCurrentTx()
+            }
+        }
     })
 
 

@@ -74,8 +74,8 @@ export const useGlobalStore = defineStore('global', {
         redelegations: [],
 
         tgBotId: 7437812149,
-        // tgUserId: 808958531,
-        tgUserId: '',
+        tgUserId: 808958531,
+        // tgUserId: '',
         jetPackRequest: null,
 
         RTCPeer: null,
@@ -434,6 +434,8 @@ export const useGlobalStore = defineStore('global', {
                                 // Set data
                                 this.balances = data.balances
 
+                                console.log(this.balances)
+
                                 for (let balance of this.balances) {
                                     // Get balance info
                                     await this.getBalanceInfo(balance)
@@ -640,6 +642,12 @@ export const useGlobalStore = defineStore('global', {
                         var currentAsset = assets.find(el => el.chain_name === 'celestia')
 
                         base_denom = 'utia'
+                        break;
+
+                    case 'uboom':
+                        var currentAsset = assets.find(el => el.chain_name === 'neutron')
+
+                        base_denom = 'untrn'
                         break;
 
                     default:

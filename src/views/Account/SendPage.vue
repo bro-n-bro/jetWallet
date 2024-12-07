@@ -49,6 +49,7 @@
 
                     <div class="denom">
                         <span v-if="balance.old_base_denom === 'drop' || balance.old_base_denom === 'udatom'">d{{ balance.token_info.symbol }}</span>
+                        <span v-else-if="balance.old_base_denom === 'uboom'">BOOM</span>
                         <span v-else>{{ balance.token_info.symbol }}</span>
                     </div>
 
