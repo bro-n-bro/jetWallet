@@ -74,8 +74,8 @@ export const useGlobalStore = defineStore('global', {
         redelegations: [],
 
         tgBotId: 7437812149,
-        tgUserId: 808958531,
-        // tgUserId: '',
+        // tgUserId: 808958531,
+        tgUserId: '',
         jetPackRequest: null,
 
         RTCPeer: null,
