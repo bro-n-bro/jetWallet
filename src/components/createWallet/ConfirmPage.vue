@@ -145,7 +145,7 @@
     function validateFirstWord() {
         validWordOne.value = true
 
-        wordOne.value.toLocaleLowerCase() === memo.value.split(' ')[wordOneNumber.value - 1]
+        wordOne.value.trim().toLocaleLowerCase() === memo.value.split(' ')[wordOneNumber.value - 1]
             ? isValidWordOne.value = true
             : isValidWordOne.value = false
     }
@@ -155,7 +155,7 @@
     function validateSecondWord() {
         validWordTwo.value = true
 
-        wordTwo.value.toLocaleLowerCase() === memo.value.split(' ')[wordTwoNumber.value - 1]
+        wordTwo.value.trim().toLocaleLowerCase() === memo.value.split(' ')[wordTwoNumber.value - 1]
             ? isValidWordTwo.value = true
             : isValidWordTwo.value = false
     }

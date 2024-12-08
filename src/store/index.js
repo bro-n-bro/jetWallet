@@ -434,8 +434,6 @@ export const useGlobalStore = defineStore('global', {
                                 // Set data
                                 this.balances = data.balances
 
-                                console.log(this.balances)
-
                                 for (let balance of this.balances) {
                                     // Get balance info
                                     await this.getBalanceInfo(balance)
@@ -1098,7 +1096,6 @@ export const useGlobalStore = defineStore('global', {
                     }
                 }))
             }
-
 
             // WSS message event
             this.networks[this.currentNetwork].websocket.onmessage = async msg => {
