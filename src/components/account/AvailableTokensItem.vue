@@ -3,7 +3,8 @@
         <div class="token">
             <!-- Token logo -->
             <div class="logo">
-                <img :src="props.balance.token_info.logo_URIs.svg" alt="" loading="lazy">
+                <img src="@/assets/boom_token_logo.svg" alt="" v-if="props.balance.old_base_denom === 'uboom'">
+                <img :src="props.balance.token_info.logo_URIs.svg" alt="" v-else>
 
                 <!-- Token check -->
                 <div class="check" v-if="isCurrentToken(props.balance.denom)">

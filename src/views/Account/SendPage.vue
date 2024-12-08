@@ -39,7 +39,8 @@
                 <div class="token">
                     <!-- Send page token logo -->
                     <div class="logo">
-                        <img :src="balance.token_info.logo_URIs.svg" alt="" loading="lazy">
+                        <img src="@/assets/boom_token_logo.svg" alt="" v-if="balance.old_base_denom === 'uboom'">
+                        <img :src="balance.token_info.logo_URIs.svg" alt="" v-else>
                     </div>
 
                     <!-- Send page token denom -->
