@@ -254,7 +254,9 @@
             Object.keys(store.RTCConnections).forEach(key => store.RTCConnections[key].close())
 
             // Close Peer
-            store.RTCPeer.destroy()
+            if (store.RTCPeer) {
+                store.RTCPeer.destroy()
+            }
         })
 
 

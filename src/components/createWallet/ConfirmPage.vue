@@ -32,6 +32,7 @@
                                 <!-- Confirm word field -->
                                 <input type="text" class="input" v-model="wordOne"
                                     @keyup="validateFirstWord()"
+                                    @paste="validateFirstWord()"
                                     :class="{
                                         success: validWordOne && isValidWordOne,
                                         error: validWordOne && !isValidWordOne
@@ -49,6 +50,7 @@
                                 <!-- Confirm word field -->
                                 <input type="text" class="input" v-model="wordTwo"
                                     @keyup="validateSecondWord()"
+                                    @paste="validateSecondWord()"
                                     :class="{
                                         success: validWordTwo && isValidWordTwo,
                                         error: validWordTwo && !isValidWordTwo
