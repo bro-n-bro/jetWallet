@@ -348,6 +348,12 @@
 
 		// 	event.preventDefault()
 		// })
+
+
+        setTimeout(() => {
+            // Call the expand method to open to full height
+            Telegram.WebApp.expand()
+        }, 5000)
     })
 
 
