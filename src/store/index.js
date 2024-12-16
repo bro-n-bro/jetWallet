@@ -59,9 +59,11 @@ export const useGlobalStore = defineStore('global', {
         currentAddress: '',
         currentCurrency: '',
         currentCurrencySymbol: '',
+
         IBCSendCurrentChain: null,
         stakeCurrentValidator: null,
         unstakeCurrentValidator: null,
+
         redelegateValidatorFrom: null,
         redelegateValidatorTo: null,
 
@@ -79,7 +81,7 @@ export const useGlobalStore = defineStore('global', {
         jetPackRequest: null,
 
         RTCPeer: null,
-        RTCConnections: {},
+        RTCConnections: [],
 
         defaultWalletName: 'MyJetWallet',
 

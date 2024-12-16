@@ -10,7 +10,7 @@
             </KeepAlive>
 
             <!-- Wallet name -->
-            <div class="wallet_name" @click.prevent="openWalletsModal()">
+            <div class="wallet_name" @click.prevent="openWalletsModal()" :class="{ green: store.RTCConnections.length }">
                 <span>{{ store.currentWalletName }}</span>
 
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver3"></use></svg>
@@ -566,11 +566,38 @@
         justify-content: flex-start;
 
         max-width: 100%;
-        padding: 7px 11px;
+        padding: 7px 11px 8px 27px;
 
         cursor: pointer;
 
         gap: 4px;
+    }
+
+
+    .top_block .wallet_name:before
+    {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 11px;
+
+        display: block;
+
+        width: 6px;
+        height: 6px;
+        margin: auto 0;
+
+        content: '';
+        transition: background .2s linear;
+
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .3);
+    }
+
+
+    .top_block .wallet_name.green:before
+    {
+        background: #06c50e;
     }
 
 
@@ -733,4 +760,5 @@
         color: #170232;
         background: url(@/assets/bg_action_btn_a.svg) 0 0/100% 100% no-repeat;
     }
+
 </style>
