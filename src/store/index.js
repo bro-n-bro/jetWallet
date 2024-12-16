@@ -45,6 +45,7 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
         isAnyModalOpen: false,
         isAgeConfirmed: false,
+        isRTCConnected: false,
 
         defaultDerivationPath: "m/44'/118'/0'/0/0",
         showRedirectModal: false,

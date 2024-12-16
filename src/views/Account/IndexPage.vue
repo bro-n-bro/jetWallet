@@ -10,7 +10,7 @@
             </KeepAlive>
 
             <!-- Wallet name -->
-            <div class="wallet_name" @click.prevent="openWalletsModal()" :class="{ green: store.RTCConnections.length }">
+            <div class="wallet_name" @click.prevent="openWalletsModal()" :class="{ green: store.isRTCConnected }">
                 <span>{{ store.currentWalletName }}</span>
 
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver3"></use></svg>

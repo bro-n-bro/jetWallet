@@ -144,6 +144,9 @@
             // Save connection
             store.RTCConnections[conn.peer] = conn
 
+            // Save connection status
+            store.isRTCConnected = true
+
             // Processing data receipt
             conn.on('data', data => {
                 // Save request
@@ -245,13 +248,35 @@
                     showSendTxModal.value = true
                 }
             })
+
+
+            // Handle disconnection event
+            store.RTCPeer.on('close', () => {
+                // Delete connection
+                delete store.RTCConnections[conn.peer]
+
+                // Update connection status
+                if (!Object.keys(store.RTCConnections.length)) {
+                    store.isRTCConnected = false
+                }
+            })
+
+            store.RTCPeer.on('disconnected', () => {
+                // Delete connection
+                delete store.RTCConnections[conn.peer]
+
+                // Update connection status
+                if (!Object.keys(store.RTCConnections.length)) {
+                    store.isRTCConnected = false
+                }
+            })
         })
 
 
         // Clear Peer on close
         window.addEventListener('beforeunload', () => {
             // Close all connections on close
-            Object.keys(store.RTCConnections).forEach(key => store.RTCConnections[key].close())
+            store.RTCConnections.forEach(el => el.close())
 
             // Close Peer
             if (store.RTCPeer) {
