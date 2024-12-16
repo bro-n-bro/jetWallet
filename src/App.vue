@@ -141,6 +141,7 @@
 
         // New connection
         store.RTCPeer.on('connection', conn => {
+            console.log(conn.peer)
             // Save connection
             store.RTCConnections[conn.peer] = conn
 

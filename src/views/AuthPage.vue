@@ -10,6 +10,9 @@
             <!-- Auth page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
+                    <!-- Loader -->
+                    <Loader v-if="loading" />
+
                     <!-- Auth -->
                     <Auth />
 
@@ -24,28 +27,38 @@
 
 
 <script setup>
-    import { inject, onUnmounted, onMounted } from 'vue'
+    import { ref, inject, onUnmounted, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
-    import { DBgetData } from '@/utils/db'
+    import { DBgetMultipleData } from '@/utils/db'
 
     // Components
     import Auth from '@/components/Auth.vue'
+    import Loader from '@/components/Loader.vue'
 
 
     const store = useGlobalStore(),
         router = useRouter(),
         emitter = inject('emitter'),
+        loading = ref(true),
         version = process.env.APP_VERSION || 'unknown'
 
 
     onMounted(async () => {
         // Get data from DB
-        let userLockTimestamp = await DBgetData('global', 'userLockTimestamp')
+        let DBData = await DBgetMultipleData('global', ['userLockTimestamp', 'authTimestamp'])
 
-        if (new Date(userLockTimestamp) - new Date() < store.userLockTime) {
-            // Set user unlock
-            await store.setUserUnlock()
+        if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
+            // Auto auth
+            emitter.emit('auth')
+        } else {
+            if (new Date(DBData.userLockTimestamp) - new Date() < store.userLockTime) {
+                // Set user unlock
+                await store.setUserUnlock()
+            }
+
+            // Hide loader
+            loading.value = false
         }
     })
 
@@ -57,12 +70,12 @@
 
 
     // Event "auth"
-    emitter.on('auth', () => {
-        // Сhange auth limit
-        store.updateUserAuthErrorLimit(store.authErrorLimit)
+    emitter.on('auth', async () => {
+        // Auth
+        await store.auth()
 
-        // Set authorized status
-        store.isAuthorized = true
+        // Hide loader
+        loading.value = false
 
         // Redirect
         router.push('/account')

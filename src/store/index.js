@@ -77,8 +77,8 @@ export const useGlobalStore = defineStore('global', {
         redelegations: [],
 
         tgBotId: 7437812149,
-        // tgUserId: 808958531,
-        tgUserId: '',
+        tgUserId: 808958531,
+        // tgUserId: '',
         jetPackRequest: null,
 
         RTCPeer: null,
@@ -86,6 +86,7 @@ export const useGlobalStore = defineStore('global', {
 
         defaultWalletName: 'MyJetWallet',
 
+        authTime: 60 * 60 * 1000,
         cacheTime: 15 * 60 * 1000,
         userLockTime: 15 * 60 * 1000,
         notificationsCollapsingDelay: 2000,
@@ -181,6 +182,25 @@ export const useGlobalStore = defineStore('global', {
                 // Set data
                 this.currentWalletID = walletID
             }
+        },
+
+
+        // Auth
+        async auth() {
+            let promises = []
+
+            // Сhange auth limit
+            promises.push(this.updateUserAuthErrorLimit(this.authErrorLimit))
+
+            // Save in DB
+            promises.push(DBaddData('global', [
+                ['authTimestamp', new Date().toISOString()]
+            ]))
+
+            await Promise.all(promises)
+
+            // Set authorized status
+            this.isAuthorized = true
         },
 
 
