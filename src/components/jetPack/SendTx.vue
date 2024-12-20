@@ -221,7 +221,7 @@
                 connection.send({
                     type: 'tx',
                     requestId: store.jetPackRequest.data.request_id,
-                    status: 'success',
+                    status: 'error',
                     hash: store.networks[store.currentNetwork].currentTxHash
                 })
             }

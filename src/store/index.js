@@ -1202,14 +1202,14 @@ export const useGlobalStore = defineStore('global', {
         async checkTxResult() {
             let txResult = await this.getTxInfo(this.networks[this.currentNetwork].currentTxHash)
 
-            if (txResult.code != 5) {
+            if (txResult.code !== 5) {
                 // Clean notifications
                 notification.notify({
                     group: 'default',
                     clean: true
                 })
 
-                if (txResult.tx_response.code == '0') {
+                if (txResult.tx_response.code === '0') {
                     // Show notification
                     notification.notify({
                         group: 'default',
