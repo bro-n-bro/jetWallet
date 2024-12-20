@@ -141,7 +141,6 @@
 
         // New connection
         store.RTCPeer.on('connection', conn => {
-            console.log(conn.peer)
             // Save connection
             store.RTCConnections[conn.peer] = conn
 
@@ -252,22 +251,22 @@
 
 
             // Handle disconnection event
-            store.RTCPeer.on('close', () => {
+            conn.on('close', () => {
                 // Delete connection
                 delete store.RTCConnections[conn.peer]
 
                 // Update connection status
-                if (!Object.keys(store.RTCConnections.length)) {
+                if (!Object.keys(store.RTCConnections).length) {
                     store.isRTCConnected = false
                 }
             })
 
-            store.RTCPeer.on('disconnected', () => {
+            conn.on('disconnected', () => {
                 // Delete connection
                 delete store.RTCConnections[conn.peer]
 
                 // Update connection status
-                if (!Object.keys(store.RTCConnections.length)) {
+                if (!Object.keys(store.RTCConnections).length) {
                     store.isRTCConnected = false
                 }
             })
@@ -374,12 +373,6 @@
 
 		// 	event.preventDefault()
 		// })
-
-
-        setTimeout(() => {
-            // Call the expand method to open to full height
-            Telegram.WebApp.expand()
-        }, 5000)
     })
 
 
