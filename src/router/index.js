@@ -243,19 +243,15 @@ router.beforeResolve(async (to, from, next) => {
 			}
 
 			// Auto auth
-			else if (to.name === 'Auth') {
-				if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
-					// Auth
-					store.auth()
+			else if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
+				// Auth
+				store.auth()
 
-					// Redirect
-					next({ name: 'Account' })
+				// Redirect
+				next({ name: 'Account' })
 
-					return false
-				}
-			}
-
-			else {
+				return false
+			} else {
 				next()
 			}
 		}
