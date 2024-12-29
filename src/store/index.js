@@ -79,6 +79,7 @@ export const useGlobalStore = defineStore('global', {
         tgBotId: 7437812149,
         // tgUserId: 808958531,
         tgUserId: '',
+
         jetPackRequest: null,
 
         RTCPeer: null,

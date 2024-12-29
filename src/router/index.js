@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { DBgetMultipleData, showDatabaseStructure } from '@/utils/db'
+import { DBgetMultipleData } from '@/utils/db'
 import { decodeFromBase64 } from '@/utils'
 import { useGlobalStore } from '@/store'
 
@@ -190,7 +190,7 @@ const router = createRouter({
 
 router.beforeResolve(async (to, from, next) => {
 	let store = useGlobalStore(),
-		DBData = await DBgetMultipleData('global', ['isRegister', 'isUserLock', 'userLockTimestamp'])
+		DBData = await DBgetMultipleData('global', ['isRegister', 'isUserLock', 'userLockTimestamp', 'authTimestamp'])
 
 	// Parse jetPack request
 	if (to.query.tgWebAppStartParam) {
@@ -203,38 +203,56 @@ router.beforeResolve(async (to, from, next) => {
 
 		if(access.length) {
 			// Not register
-			if(access.includes('not_register') && DBData.isRegister == undefined) {
+			if (access.includes('not_register') && DBData.isRegister == undefined) {
+				// Redirect
 				next({ name: 'MainPage' })
 
 				return false
 			}
 
 			// Lock
-			else if(access.includes('locked') && DBData.isUserLock && (new Date() - new Date(DBData.userLockTimestamp) < store.userLockTime)) {
+			else if (access.includes('locked') && DBData.isUserLock && (new Date() - new Date(DBData.userLockTimestamp) < store.userLockTime)) {
+				// Redirect
 				next({ name: 'Lock' })
 
 				return false
 			}
 
 			// Register
-			else if(access.includes('register') && DBData.isRegister) {
+			else if (access.includes('register') && DBData.isRegister) {
+				// Redirect
 				next({ name: 'Auth' })
 
 				return false
 			}
 
 			// Not authorized
-			else if(access.includes('not_authorized') && !store.isAuthorized) {
+			else if (access.includes('not_authorized') && !store.isAuthorized) {
+				// Redirect
 				next({ name: 'Auth' })
 
 				return false
 			}
 
 			// Authorized
-			else if(access.includes('authorized') && store.isAuthorized) {
+			else if (access.includes('authorized') && store.isAuthorized) {
+				// Redirect
 				next({ name: 'Account' })
 
 				return false
+			}
+
+			// Auto auth
+			else if (to.name === 'Auth') {
+				if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
+					// Auth
+					store.auth()
+
+					// Redirect
+					next({ name: 'Account' })
+
+					return false
+				}
 			}
 
 			else {

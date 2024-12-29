@@ -30,7 +30,7 @@
     import { ref, inject, onUnmounted, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
-    import { DBgetMultipleData } from '@/utils/db'
+    import { DBgetData } from '@/utils/db'
 
     // Components
     import Auth from '@/components/Auth.vue'
@@ -46,20 +46,15 @@
 
     onMounted(async () => {
         // Get data from DB
-        let DBData = await DBgetMultipleData('global', ['userLockTimestamp', 'authTimestamp'])
+        let DBUserLockTimestamp = await DBgetData('global', 'userLockTimestamp')
 
-        if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
-            // Auto auth
-            emitter.emit('auth')
-        } else {
-            if (new Date(DBData.userLockTimestamp) - new Date() < store.userLockTime) {
-                // Set user unlock
-                await store.setUserUnlock()
-            }
-
-            // Hide loader
-            loading.value = false
+        if (new Date(DBUserLockTimestamp) - new Date() < store.userLockTime) {
+            // Set user unlock
+            await store.setUserUnlock()
         }
+
+        // Hide loader
+        loading.value = false
     })
 
 
