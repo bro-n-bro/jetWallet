@@ -168,7 +168,7 @@
 
 
     onBeforeMount(async () => {
-        if (!store.isInitializing) {
+        if (!store.isInitialized && !store.isInitializing) {
             // Init app
             await store.initApp()
         }

@@ -199,8 +199,15 @@ router.beforeResolve(async (to, from, next) => {
 
 	// Auto auth
 	if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
-		// Auth
-		await store.auth()
+		if (!store.isAuthorized) {
+			// Auth
+			await store.auth()
+        }
+
+		if (!store.isInitialized) {
+            // Init app
+            await store.initApp()
+        }
 	}
 
 	// Check access
