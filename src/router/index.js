@@ -197,6 +197,12 @@ router.beforeResolve(async (to, from, next) => {
 		store.jetPackRequest = decodeFromBase64(to.query.tgWebAppStartParam)
 	}
 
+	// Auto auth
+	if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
+		// Auth
+		await store.auth()
+	}
+
 	// Check access
 	to.matched.some(record => {
 		let access = record.meta.accessDenied
@@ -242,16 +248,7 @@ router.beforeResolve(async (to, from, next) => {
 				return false
 			}
 
-			// Auto auth
-			else if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
-				// Auth
-				store.auth()
-
-				// Redirect
-				next({ name: 'Account' })
-
-				return false
-			} else {
+			else {
 				next()
 			}
 		}
