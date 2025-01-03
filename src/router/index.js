@@ -198,7 +198,7 @@ router.beforeResolve(async (to, from, next) => {
 	}
 
 	// Auto auth
-	if (new Date() - new Date(DBData.authTimestamp) < store.authTime) {
+	if (from.name !== 'Auth' && DBData.authTimestamp !== undefined && new Date() - new Date(DBData.authTimestamp) < store.authTime) {
 		if (!store.isAuthorized) {
 			// Auth
 			await store.auth()
