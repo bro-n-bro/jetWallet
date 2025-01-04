@@ -146,59 +146,65 @@
 
         // New connection
         store.RTCPeer.on('connection', conn => {
-            // Save connection
-            store.RTCConnections[conn.peer] = conn
-
-            // Save connection status
-            store.isRTCConnected = true
-
-            // Processing data receipt
-            conn.on('data', data => {
-                // Save request
-                store.jetPackRequest = convertArrayBuffersToUint8Arrays(data)
-
-                // Connect wallet
-                if (store.jetPackRequest.method === 'connectWallet') {
-                    // JetPack connect wallet
-                    jetPackConnectWallet(emitter)
-                }
-
-                // Switch chain
-                if (store.jetPackRequest.method === 'switchChain') {
-                    // JetPack switch chain
-                    jetPackSwitchChain(i18n)
-                }
-
-                // Get balances
-                if (store.jetPackRequest.method === 'loadBalances') {
-                    // JetPack get balances
-                    jetPackGetBalances()
-                }
-
-                // Send Tx
-                if (store.jetPackRequest.method === 'sendTx') {
-                    // Show send Tx modal
-                    showSendTxModal.value = true
-                }
-            })
-
-
-            // Handle disconnection event
-            conn.on('close', () => {
+            // If there is already one
+            if (store.RTCConnections[conn.peer]) {
                 // JetPack delete connection
                 jetPackDeleteConnection(conn)
-            })
+            } else {
+                // Save connection
+                store.RTCConnections[conn.peer] = conn
 
-            conn.on('disconnected', () => {
-                // JetPack delete connection
-                jetPackDeleteConnection(conn)
-            })
+                // Save connection status
+                store.isRTCConnected = true
+
+                // Processing data receipt
+                conn.on('data', data => {
+                    // Save request
+                    store.jetPackRequest = convertArrayBuffersToUint8Arrays(data)
+
+                    // Connect wallet
+                    if (store.jetPackRequest.method === 'connectWallet') {
+                        // JetPack connect wallet
+                        jetPackConnectWallet(emitter)
+                    }
+
+                    // Switch chain
+                    if (store.jetPackRequest.method === 'switchChain') {
+                        // JetPack switch chain
+                        jetPackSwitchChain(i18n)
+                    }
+
+                    // Get balances
+                    if (store.jetPackRequest.method === 'loadBalances') {
+                        // JetPack get balances
+                        jetPackGetBalances()
+                    }
+
+                    // Send Tx
+                    if (store.jetPackRequest.method === 'sendTx') {
+                        // Show send Tx modal
+                        showSendTxModal.value = true
+                    }
+                })
+
+
+                // Handle disconnection event
+                conn.on('close', () => {
+                    // JetPack delete connection
+                    jetPackDeleteConnection(conn)
+                })
+
+                conn.on('disconnected', () => {
+                    // JetPack delete connection
+                    jetPackDeleteConnection(conn)
+                })
+            }
         })
 
 
         // Clear Peer on close
         window.addEventListener('beforeunload', () => {
-            // Close all connections on close
+            // Close all connections
             store.RTCConnections.forEach(el => el.close())
 
             // Close Peer

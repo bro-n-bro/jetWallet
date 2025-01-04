@@ -1210,7 +1210,7 @@ export const useGlobalStore = defineStore('global', {
                     clean: true
                 })
 
-                if (txResult.tx_response.code === '0') {
+                if (txResult.tx_response.code === 0) {
                     // Show notification
                     notification.notify({
                         group: 'default',

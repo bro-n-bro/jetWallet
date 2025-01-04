@@ -5,6 +5,9 @@ import { useGlobalStore } from '@/store'
 export const jetPackDeleteConnection = (conn) => {
     let store = useGlobalStore()
 
+    // Close connection
+    store.RTCConnections[conn.peer].close()
+
     // Delete connection
     delete store.RTCConnections[conn.peer]
 
