@@ -436,7 +436,8 @@ button
 }
 
 
-#app + .loader_wrap
+#app + .loader_wrap,
+.loader_wrap.no_bg
 {
     z-index: 10;
 
