@@ -345,6 +345,7 @@ export default {
             'btn_save': 'Save',
 
 
+            'notification_tx_error_-32603': "tx already exists in cache",
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",
             'notification_tx_error_4': "unauthorized",

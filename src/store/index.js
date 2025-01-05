@@ -1194,99 +1194,104 @@ export const useGlobalStore = defineStore('global', {
                 // Request
                 return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
             } catch (error) {
-                console.error(error)
+                // Throwing an exception
+                throw error
             }
         },
 
 
         // Check Tx result
         async checkTxResult() {
-            let txResult = await this.getTxInfo(this.networks[this.currentNetwork].currentTxHash)
+            try {
+                let txResult = await this.getTxInfo(this.networks[this.currentNetwork].currentTxHash)
 
-            if (txResult.code !== 5) {
-                // Clean notifications
-                notification.notify({
-                    group: 'default',
-                    clean: true
-                })
-
-                if (txResult.tx_response.code === 0) {
-                    // Show notification
+                if (txResult.code !== 5) {
+                    // Clean notifications
                     notification.notify({
                         group: 'default',
-                        speed: 200,
-                        duration: 4000,
-                        title: i18n.global.t('message.notification_tx_success_title'),
-                        type: 'success',
-                        data: {
-                            explorer_link: getExplorerLink(this.currentNetwork)
-                        }
+                        clean: true
                     })
 
-                    // Send response
-                    if (this.jetPackRequest) {
-                        const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+                    if (txResult.tx_response?.code === 0) {
+                        // Show notification
+                        notification.notify({
+                            group: 'default',
+                            speed: 200,
+                            duration: 4000,
+                            title: i18n.global.t('message.notification_tx_success_title'),
+                            type: 'success',
+                            data: {
+                                explorer_link: getExplorerLink(this.currentNetwork)
+                            }
+                        })
 
-                        if (connection) {
-                            connection.send({
-                                type: 'tx',
-                                requestId: this.jetPackRequest.data.request_id,
-                                status: 'success',
-                                hash: this.networks[this.currentNetwork].currentTxHash
-                            })
+                        // Send response
+                        if (this.jetPackRequest) {
+                            const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                            if (connection) {
+                                connection.send({
+                                    type: 'tx',
+                                    requestId: this.jetPackRequest.data.request_id,
+                                    status: 'success',
+                                    hash: this.networks[this.currentNetwork].currentTxHash
+                                })
+                            }
+                        }
+                    } else {
+                        // Get error code
+                        let errorText = ''
+
+                        // Get error title
+                        txResult.tx_response?.code
+                            ? errorText = i18n.global.t(`message.notification_tx_error_${txResult.tx_response?.code}`)
+                            : errorText = i18n.global.t('message.notification_tx_error_rejected')
+
+                        // Show notification
+                        notification.notify({
+                            group: 'default',
+                            speed: 200,
+                            duration: 6000,
+                            title: i18n.global.t('message.notification_tx_error_title'),
+                            text: errorText,
+                            type: 'error'
+                        })
+
+                        // Send response
+                        if (this.jetPackRequest) {
+                            const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
+
+                            if (connection) {
+                                connection.send({
+                                    type: 'error',
+                                    requestId: this.jetPackRequest.data.request_id,
+                                    status: 'error',
+                                    hash: this.networks[this.currentNetwork].currentTxHash,
+                                    message: errorText
+                                })
+                            }
                         }
                     }
-                } else {
-                    // Get error code
-                    let errorText = ''
 
-                    // Get error title
-                    txResult.tx_response.code
-                        ? errorText = i18n.global.t(`message.notification_tx_error_${txResult.tx_response.code}`)
-                        : errorText = i18n.global.t('message.notification_tx_error_rejected')
+                    // Clear tx hash
+                    this.networks[this.currentNetwork].currentTxHash = null
 
-                    // Show notification
-                    notification.notify({
-                        group: 'default',
-                        speed: 200,
-                        duration: 6000,
-                        title: i18n.global.t('message.notification_tx_error_title'),
-                        text: errorText,
-                        type: 'error'
-                    })
-
-                    // Send response
+                    // Show redirect modal
                     if (this.jetPackRequest) {
-                        const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
-
-                        if (connection) {
-                            connection.send({
-                                type: 'error',
-                                requestId: this.jetPackRequest.data.request_id,
-                                status: 'error',
-                                hash: this.networks[this.currentNetwork].currentTxHash,
-                                message: errorText
-                            })
-                        }
+                        this.showRedirectModal = true
                     }
+
+                    // Reset jetPack request
+                    this.jetPackRequest = null
+
+                    // Update all balances
+                    this.updateAllBalances()
+
+                    // Reset Tx Fee
+                    this.resetTxFee()
                 }
-
-                // Clear tx hash
-                this.networks[this.currentNetwork].currentTxHash = null
-
-                // Show redirect modal
-                if (this.jetPackRequest) {
-                    this.showRedirectModal = true
-                }
-
-                // Reset jetPack request
-                this.jetPackRequest = null
-
-                // Update all balances
-                this.updateAllBalances()
-
-                // Reset Tx Fee
-                this.resetTxFee()
+            } catch (error) {
+                console.error(error)
             }
         },
 
