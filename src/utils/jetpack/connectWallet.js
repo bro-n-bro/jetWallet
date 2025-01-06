@@ -3,8 +3,12 @@ import { useGlobalStore } from '@/store'
 
 
 // JetPack connect wallet
-export const jetPackConnectWallet = (emitter) => {
+export const jetPackConnectWallet = async (emitter) => {
     let store = useGlobalStore()
+
+    if (store.networks[store.currentNetwork].chain_id !== store.jetPackRequest.data.chain_id) {
+        await store.jetPackSwitchNetwork()
+    }
 
     if (store.currentAddress) {
         // Show connect wallet modal

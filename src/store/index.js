@@ -1658,7 +1658,7 @@ export const useGlobalStore = defineStore('global', {
 
 
         // JetPack Switch network
-        jetPackSwitchNetwork() {
+        async jetPackSwitchNetwork() {
             return new Promise((resolve, reject) => {
                 // Get chain info
                 let chain = Object.values(this.networks).find(network => network.chain_id === this.jetPackRequest.data.chain_id)

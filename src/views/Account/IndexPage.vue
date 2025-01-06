@@ -397,8 +397,6 @@
         transform: translateY(0%);
 
         background: #170232;
-
-        will-change: transform, padding;
     }
 
 
@@ -428,8 +426,6 @@
 
         opacity: 1;
         border-radius: 0 0 20px 20px;
-
-        will-change: opacity;
     }
 
 
