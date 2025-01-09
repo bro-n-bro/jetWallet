@@ -47,6 +47,7 @@
 <script setup>
     import { inject, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { jetPackEventChangeWallet } from '@/utils'
 
 
     const store = useGlobalStore(),
@@ -66,6 +67,9 @@
 
         // Event "close_wallets_modal"
         emitter.emit('close_wallets_modal')
+
+        // JetPack event change wallet
+        jetPackEventChangeWallet()
     }
 
 

@@ -3,8 +3,12 @@ import { useGlobalStore } from '@/store'
 
 
 // JetPack get balances
-export const jetPackGetBalances = () => {
+export const jetPackGetBalances = async () => {
     let store = useGlobalStore()
+
+    if (store.networks[store.currentNetwork].chain_id !== store.jetPackRequest.data.chain_id) {
+        await store.jetPackSwitchNetwork()
+    }
 
     // Get connection
     let connection = store.RTCConnections[store.jetPackRequest.data.peer_id]

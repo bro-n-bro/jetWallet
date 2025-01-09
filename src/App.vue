@@ -205,7 +205,7 @@
         // Clear Peer on close
         window.addEventListener('beforeunload', () => {
             // Close all connections
-            store.RTCConnections.forEach(el => el.close())
+            Object.values(store.RTCConnections).forEach(el => el.close())
 
             // Close Peer
             if (store.RTCPeer) {

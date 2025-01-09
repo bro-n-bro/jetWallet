@@ -118,3 +118,7 @@ export { default as jetPackGetBalances } from './jetpack/getBalances'
 
 // JetPack switch chain
 export { default as jetPackSwitchChain } from './jetpack/switchChain'
+
+
+// JetPack event change wallet
+export { default as jetPackEventChangeWallet } from './jetpack/events/changeWallet'

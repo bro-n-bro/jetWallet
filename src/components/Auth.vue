@@ -158,9 +158,11 @@
 
     // Move focus
     function moveFocus(event, nextIndex) {
-        if (event.target.value.length >= 1 && nextIndex < 6) {
-            event.target.closest('.row').querySelector(`.field:nth-child(${nextIndex + 1}) input`).focus()
-        }
+        setTimeout(() => {
+            if (event.target.value.length >= 1 && nextIndex < 6) {
+                event.target.closest('.row').querySelector(`.field:nth-child(${nextIndex + 1}) input`).focus()
+            }
+        })
     }
 
 
