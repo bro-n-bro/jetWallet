@@ -60,5 +60,3 @@ app.component(VueCountdown.name, VueCountdown)
 
 // Mount
 app.mount('#app')
-
-window._paq.push(['trackPageView'])

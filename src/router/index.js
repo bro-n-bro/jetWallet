@@ -263,4 +263,20 @@ router.beforeResolve(async (to, from, next) => {
 })
 
 
+router.afterEach((to) => {
+	// Set analytics
+	if (window._paq) {
+	  // Set custom URL
+	  window._paq.push(['setCustomUrl', window.location.href])
+
+	  // Send page view to Matomo
+	  window._paq.push(['trackPageView'])
+
+	  // (Optional) Dispatch a custom event for Tag Manager
+	  const event = new Event('matomo_spa_url_change')
+
+	  window.dispatchEvent(event)
+	}
+})
+
 export default router
