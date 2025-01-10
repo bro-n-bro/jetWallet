@@ -116,19 +116,19 @@
         title.value = i18n.global.t('message.page_title')
 
         // Set analytics
-        if (process.env.VUE_APP_IS_PRODUCTION === 'true') {
-            var _paq = window._paq = window._paq || [];
-			/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-			_paq.push(['trackPageView']);
-			_paq.push(['enableLinkTracking']);
-			(function() {
-			var u="//metrics.jetwallet.app/";
-			_paq.push(['setTrackerUrl', u+'matomo.php']);
-			_paq.push(['setSiteId', '1']);
-			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-			g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-			})();
-        }
+        // if (process.env.VUE_APP_IS_PRODUCTION === 'true') {
+        //     var _paq = window._paq = window._paq || [];
+		// 	/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+		// 	_paq.push(['trackPageView']);
+		// 	_paq.push(['enableLinkTracking']);
+		// 	(function() {
+		// 	var u="//metrics.jetwallet.app/";
+		// 	_paq.push(['setTrackerUrl', u+'matomo.php']);
+		// 	_paq.push(['setSiteId', '1']);
+		// 	var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		// 	g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+		// 	})();
+        // }
 
         // Get telegram user ID
         if (window.Telegram && window.Telegram.WebApp) {

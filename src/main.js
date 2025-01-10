@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import VueMatomo from 'vue-matomo'
 
 import App from './App.vue'
 import router from './router'
@@ -32,6 +33,10 @@ app.use(pinia)
 app.use(router)
 app.use(i18n)
 app.use(Notifications, { velocity })
+app.use(VueMatomo, {
+    host: 'https://metrics.jetwallet.app/',
+    siteId: 1
+})
 
 
 // Vue provide
@@ -55,3 +60,5 @@ app.component(VueCountdown.name, VueCountdown)
 
 // Mount
 app.mount('#app')
+
+window._paq.push(['trackPageView'])
