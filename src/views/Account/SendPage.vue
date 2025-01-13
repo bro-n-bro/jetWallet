@@ -40,7 +40,8 @@
                     <!-- Send page token logo -->
                     <div class="logo">
                         <img src="@/assets/boom_token_logo.svg" alt="" v-if="balance.old_base_denom === 'uboom'">
-                        <img :src="balance.token_info.logo_URIs.svg" alt="" v-else>
+                        <img :src="balance.token_info.logo_URIs.svg" alt="" v-else-if="balance.token_info.logo_URIs.svg">
+                        <img :src="balance.token_info.logo_URIs.png" alt="" v-else>
                     </div>
 
                     <!-- Send page token denom -->
@@ -739,8 +740,8 @@
     {
         display: block;
 
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
     }
 
 

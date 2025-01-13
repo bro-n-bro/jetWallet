@@ -9,14 +9,16 @@ import i18n from '@/locale'
 
 // Networks
 import cosmoshub from '@/store/networks/cosmoshub'
+import osmosis from '@/store/networks/osmosis'
 import bostrom from '@/store/networks/bostrom'
+import dymension from '@/store/networks/dymension'
+import gravitybridge from '@/store/networks/gravitybridge'
+// import localbostrom from '@/store/networks/localbostrom'
 import neutron from '@/store/networks/neutron'
-import pion from '@/store/networks/pion'
 // import mocha from '@/store/networks/mocha'
 import omniflix from '@/store/networks/omniflix'
-import dymension from '@/store/networks/dymension'
+import pion from '@/store/networks/pion'
 import stride from '@/store/networks/stride'
-// import localbostrom from '@/store/networks/localbostrom'
 
 
 // Networks additional optionsupdateUserAuthErrorLimit
@@ -104,14 +106,16 @@ export const useGlobalStore = defineStore('global', {
 
         networks: {
             cosmoshub: Object.assign(cosmoshub, networksAdditionalOptions),
+            osmosis: Object.assign(osmosis, networksAdditionalOptions),
             bostrom: Object.assign(bostrom, networksAdditionalOptions),
-            neutron: Object.assign(neutron, networksAdditionalOptions),
-            pion: Object.assign(pion, networksAdditionalOptions),
-            // mocha: Object.assign(mocha, networksAdditionalOptions),
-            omniflix: Object.assign(omniflix, networksAdditionalOptions),
             dymension: Object.assign(dymension, networksAdditionalOptions),
-            stride: Object.assign(stride, networksAdditionalOptions),
+            gravitybridge: Object.assign(gravitybridge, networksAdditionalOptions),
+            neutron: Object.assign(neutron, networksAdditionalOptions),
+            // mocha: Object.assign(mocha, networksAdditionalOptions),
             // localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
+            omniflix: Object.assign(omniflix, networksAdditionalOptions),
+            pion: Object.assign(pion, networksAdditionalOptions),
+            stride: Object.assign(stride, networksAdditionalOptions),
         },
 
         formatableTokens: [

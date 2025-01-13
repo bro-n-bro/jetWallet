@@ -3,7 +3,8 @@
         <div class="token">
             <!-- Token logo -->
             <div class="logo">
-                <img :src="props.item.balance.token_info.logo_URIs.svg" alt="" loading="lazy">
+                <img :src="props.item.balance.token_info.logo_URIs.svg" alt="" v-if="props.item.balance.token_info.logo_URIs.svg">
+                <img :src="props.item.balance.token_info.logo_URIs.png" alt="" v-else>
             </div>
 
             <div>

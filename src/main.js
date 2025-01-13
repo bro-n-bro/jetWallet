@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import VueMatomo from 'vue-matomo'
 
 import App from './App.vue'
 import router from './router'
@@ -10,6 +9,7 @@ import Notifications from '@kyvg/vue3-notification'
 import velocity from 'velocity-animate'
 import { register } from 'swiper/element/bundle'
 import VueCountdown from '@chenfengyuan/vue-countdown'
+import VueMatomo from 'vue-matomo'
 
 import { vFocus } from './directives/v-focus'
 import { vParallax } from './directives/v-parallax'

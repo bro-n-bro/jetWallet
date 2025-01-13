@@ -4,7 +4,8 @@
             <!-- Token logo -->
             <div class="logo">
                 <img src="@/assets/boom_token_logo.svg" alt="" v-if="props.balance.old_base_denom === 'uboom'">
-                <img :src="props.balance.token_info.logo_URIs.svg" alt="" v-else>
+                <img :src="props.balance.token_info.logo_URIs.svg" alt="" v-else-if="props.balance.token_info.logo_URIs.svg">
+                <img :src="props.balance.token_info.logo_URIs.png" alt="" v-else>
 
                 <!-- Token check -->
                 <div class="check" v-if="isCurrentToken(props.balance.denom)">
@@ -122,8 +123,8 @@
     {
         display: block;
 
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
     }
 
 

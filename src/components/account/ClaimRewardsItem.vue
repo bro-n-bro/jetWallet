@@ -2,7 +2,8 @@
     <div class="token">
         <!-- Claim rewards token logo -->
         <div class="logo">
-            <img :src="props.balance.token_info.logo_URIs.svg" alt="" loading="lazy">
+            <img :src="props.balance.token_info.logo_URIs.svg" alt="" v-if="props.balance.token_info.logo_URIs.svg">
+            <img :src="props.balance.token_info.logo_URIs.png" alt="" v-else>
         </div>
 
         <div>

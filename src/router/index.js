@@ -265,7 +265,7 @@ router.beforeResolve(async (to, from, next) => {
 
 router.afterEach((to) => {
 	// Set analytics
-	if (window._paq) {
+	if (window._paq && process.env.VUE_APP_IS_PRODUCTION === 'true') {
 	  // Set custom URL
 	  window._paq.push(['setCustomUrl', window.location.href])
 
