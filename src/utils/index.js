@@ -97,6 +97,9 @@ export { default as decodeFromBase64 } from './decodeFromBase64'
 // Convert arrayBuffers to Uint8Arrays
 export { default as convertArrayBuffersToUint8Arrays } from './convertArrayBuffersToUint8Arrays'
 
+// Convert address
+export { default as convertAddress } from './convertAddress'
+
 
 
 // Telegram init

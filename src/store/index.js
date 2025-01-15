@@ -487,6 +487,8 @@ export const useGlobalStore = defineStore('global', {
                 this.balances = cacheBalances.value
             }
 
+            console.log(this.balances)
+
             // Balances status
             this.isBalancesGot = true
         },
@@ -654,9 +656,9 @@ export const useGlobalStore = defineStore('global', {
                         var currentAsset = assets.find(el => el.chain_name === 'noble')
                         break;
 
-                    case 'utia':
-                        var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
-                        break;
+                    // case 'utia':
+                    //     var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
+                    //     break;
 
                     case 'udatom':
                         var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')

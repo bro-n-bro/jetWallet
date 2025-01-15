@@ -236,7 +236,7 @@
     import { useNotification } from '@kyvg/vue3-notification'
     import { fromBech32 } from '@cosmjs/encoding'
     import { ibc } from 'chain-registry'
-    import { calcTokenCost, formatTokenCost, formatTokenAmount, getNetworkLogo, imageLoadError, imageLoadSuccess } from '@/utils'
+    import { calcTokenCost, formatTokenCost, formatTokenAmount, getNetworkLogo, imageLoadError, imageLoadSuccess, convertAddress } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -344,6 +344,9 @@
                 // Set data
                 store.IBCSendCurrentChain = chain[0]
             }
+
+            // Set user address
+            address.value = convertAddress(store.currentAddress, balance.value.chain_info.bech32_prefix)
         }
     })
 
