@@ -487,8 +487,6 @@ export const useGlobalStore = defineStore('global', {
                 this.balances = cacheBalances.value
             }
 
-            console.log(this.balances)
-
             // Balances status
             this.isBalancesGot = true
         },

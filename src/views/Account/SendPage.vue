@@ -313,45 +313,15 @@
         rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
         rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
 
-        // Reset data
-        store.IBCSendCurrentChain = null
-        address.value = ''
-        amount.value = ''
-        isProcess.value = false
-        isAmountReady.value = false
-        isAddressValid.value = false
-
-        // Toggle classes
-        addressInput.value.classList.remove('success')
-        addressInput.value.classList.remove('error')
-
-        // Get token home chain
-        if (activeTab.value === 2 && balance.value.denom.toLowerCase().startsWith('ibc/')) {
-            // Get chain
-            let chain = ibc
-                .filter(el => (el.chain_1.chain_name === store.currentNetwork && el.chain_2.chain_name === balance.value.chain_info.chain_name) || (el.chain_2.chain_name === store.currentNetwork && el.chain_1.chain_name === balance.value.chain_info.chain_name))
-                .filter((el, index, self) =>
-                    self.findIndex(t =>
-                        (t.chain_1.chain_name === el.chain_1.chain_name && t.chain_2.chain_name === el.chain_2.chain_name) ||
-                        (t.chain_1.chain_name === el.chain_2.chain_name && t.chain_2.chain_name === el.chain_1.chain_name)
-                    ) === index
-                )
-
-            if(chain.length) {
-                // Get chain name
-                chain[0].info = balance.value.chain_info
-
-                // Set data
-                store.IBCSendCurrentChain = chain[0]
-            }
-
-            // Set user address
-            address.value = convertAddress(store.currentAddress, balance.value.chain_info.bech32_prefix)
-        }
+        // Update data
+        updateData()
     })
 
 
     watch(computed(() => store.IBCSendCurrentChain), () => {
+        // Set user address
+        address.value = convertAddress(store.currentAddress, store.IBCSendCurrentChain.info.bech32_prefix)
+
         if (store.IBCSendCurrentChain !== null && address.value) {
             // Validate address
             validateAddress()
@@ -454,6 +424,30 @@
         //     // Validate amount
         //     validateAmount()
         // }
+
+        // Get token home chain
+        if (activeTab.value === 2 && balance.value.denom.toLowerCase().startsWith('ibc/')) {
+            // Get chain
+            let chain = ibc
+                .filter(el => (el.chain_1.chain_name === store.currentNetwork && el.chain_2.chain_name === balance.value.chain_info.chain_name) || (el.chain_2.chain_name === store.currentNetwork && el.chain_1.chain_name === balance.value.chain_info.chain_name))
+                .filter((el, index, self) =>
+                    self.findIndex(t =>
+                        (t.chain_1.chain_name === el.chain_1.chain_name && t.chain_2.chain_name === el.chain_2.chain_name) ||
+                        (t.chain_1.chain_name === el.chain_2.chain_name && t.chain_2.chain_name === el.chain_1.chain_name)
+                    ) === index
+                )
+
+            if(chain.length) {
+                // Get chain name
+                chain[0].info = balance.value.chain_info
+
+                // Set data
+                store.IBCSendCurrentChain = chain[0]
+            }
+
+            // Set user address
+            address.value = convertAddress(store.currentAddress, balance.value.chain_info.bech32_prefix)
+        }
 
         // Close any modals
         emitter.emit('close_any_modal')
