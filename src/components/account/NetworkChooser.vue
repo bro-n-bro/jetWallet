@@ -100,7 +100,7 @@
         flex-wrap: wrap;
         justify-content: space-between;
 
-        min-width: 148px;
+        min-width: 156px;
         padding: 6px 10px;
 
         text-align: left;

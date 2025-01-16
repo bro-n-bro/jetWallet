@@ -319,8 +319,10 @@
 
 
     watch(computed(() => store.IBCSendCurrentChain), () => {
-        // Set user address
-        address.value = convertAddress(store.currentAddress, store.IBCSendCurrentChain.info.bech32_prefix)
+        if (store.IBCSendCurrentChain !== null) {
+            // Set user address
+            address.value = convertAddress(store.currentAddress, store.IBCSendCurrentChain.info.bech32_prefix)
+        }
 
         if (store.IBCSendCurrentChain !== null && address.value) {
             // Validate address
