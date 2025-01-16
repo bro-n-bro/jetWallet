@@ -16,6 +16,12 @@
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver3"></use></svg>
             </div>
 
+            <!-- Grants button -->
+            <div class="grants_btn" v-if="store.isInitialized" @click.prevent="openGrantsModal()">
+                GR
+            </div>
+
+            <!-- Stats button -->
             <div class="stats_btn" v-if="swiperActiveIndex == 1 && store.isInitialized && store.networks[store.currentNetwork].is_staking_available" @click.prevent="openStatsModal()">
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_stats"></use></svg>
             </div>
@@ -85,6 +91,11 @@
     <RemoveWalletModal v-if="showRemoveWalletModal" :wallet="removingWallet" />
     </transition>
 
+    <!-- Grants modal -->
+    <transition name="modal">
+    <GrantsModal v-if="showGrantsModal" />
+    </transition>
+
     <!-- Stats modal -->
     <transition name="modal">
     <StatsModal v-if="showStatsModal && store.networks[store.currentNetwork]?.is_staking_available" />
@@ -92,7 +103,7 @@
 
     <!-- Overlay -->
     <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showStatsModal || showWalletsModal"></div>
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showGrantsModal || showStatsModal || showWalletsModal"></div>
     </transition>
 </template>
 
@@ -119,6 +130,7 @@
     import WalletsModal from '@/components/modal/WalletsModal.vue'
     import EditWalletModal from '@/components/modal/EditWalletModal.vue'
     import RemoveWalletModal from '@/components/modal/RemoveWalletModal.vue'
+    import GrantsModal from '@/components/modal/GrantsModal.vue'
     import StatsModal from '@/components/modal/StatsModal.vue'
 
 
@@ -131,6 +143,7 @@
         showRemoveWalletModal = ref(false),
         editingWallet = ref(null),
         removingWallet = ref(null),
+        showGrantsModal = ref(false),
         showStatsModal = ref(false),
         swipeExperience = ref(localStorage.getItem('swipe_experience') || false),
         swiperEl = ref(null),
@@ -228,9 +241,19 @@
     }
 
 
+    // Open grants modal
+    function openGrantsModal() {
+        // Show grants modal
+        showGrantsModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Open stats modal
     function openStatsModal() {
-        // Show Stats modal
+        // Show stats modal
         showStatsModal.value = true
 
         // Update status
@@ -335,9 +358,19 @@
     })
 
 
+    // Event "close_grants_modal"
+    emitter.on('close_grants_modal', () => {
+        // Hide grants modal
+        showGrantsModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
     // Event "close_stats_modal"
     emitter.on('close_stats_modal', () => {
-        // Hide Stats modal
+        // Hide stats modal
         showStatsModal.value = false
 
         // Update status
@@ -347,7 +380,10 @@
 
     // Event "close_any_modal"
     emitter.on('close_any_modal', () => {
-        // Hide Stats modal
+        // Hide grants modal
+        showGrantsModal.value = false
+
+        // Hide stats modal
         showStatsModal.value = false
 
         // Hide wallets modal
@@ -618,6 +654,39 @@
 
 
 
+    .top_block .grants_btn
+    {
+        font-size: 12px;
+
+        position: absolute;
+        z-index: 9;
+        top: 17px;
+        left: 176px;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: 28px;
+        height: 28px;
+
+        transition: .2s linear;
+
+        color: #fff;
+        background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
+    }
+
+
+    .top_block .grants_btn:active
+    {
+        color: #170232;
+        background-image: url(@/assets/bg_action_btn_a.svg);
+    }
+
+
+
     .top_block .stats_btn
     {
         position: absolute;
@@ -756,5 +825,4 @@
         color: #170232;
         background: url(@/assets/bg_action_btn_a.svg) 0 0/100% 100% no-repeat;
     }
-
 </style>

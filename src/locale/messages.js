@@ -172,6 +172,10 @@ export default {
             'chains_page_title': 'Select Chain',
 
 
+            // Grants
+            'grants_title': 'My Grants',
+
+
             // Stats
             'stats_title': 'Staking Profit',
             'stats_token_label': 'Token:',
