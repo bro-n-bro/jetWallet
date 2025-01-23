@@ -60,9 +60,14 @@
     <ConnectWalletModal v-if="showConnectWalletModal" />
     </transition>
 
-    <!-- Validators modal -->
+    <!-- Send Tx modal -->
     <transition name="from_right">
     <SendTxModal v-if="showSendTxModal" />
+    </transition>
+
+    <!-- set grant modal -->
+    <transition name="modal">
+    <SetGrantModal v-if="showSetGrantModal" />
     </transition>
 
     <!-- Sign transaction modal -->
@@ -91,6 +96,7 @@
     import RedirectModal from '@/components/modal/RedirectModal.vue'
     import ConnectWalletModal from '@/components/jetPack/ConnectWallet.vue'
     import SendTxModal from '@/components/jetPack/SendTx.vue'
+    import SetGrantModal from '@/components/jetPack/SetGrantModal.vue'
 
 
     const store = useGlobalStore(),
@@ -108,34 +114,13 @@
         },
         network = reactive(useNetwork()),
         showConnectWalletModal = ref(false),
-        showSendTxModal = ref(false)
+        showSendTxModal = ref(false),
+        showSetGrantModal = ref(false)
 
 
     onBeforeMount(() => {
         // Set page title
         title.value = i18n.global.t('message.page_title')
-
-        // Set analytics
-        // if (process.env.VUE_APP_IS_PRODUCTION === 'true') {
-        //     var _paq = window._paq = window._paq || [];
-		// 	/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-		// 	_paq.push(['trackPageView']);
-		// 	_paq.push(['enableLinkTracking']);
-		// 	(function() {
-		// 	var u="//metrics.jetwallet.app/";
-		// 	_paq.push(['setTrackerUrl', u+'matomo.php']);
-		// 	_paq.push(['setSiteId', '1']);
-		// 	var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-		// 	g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-		// 	})();
-        // }
-
-        // var _mtm = window._mtm = window._mtm || [];
-        // _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-        // (function() {
-        // var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        // g.async=true; g.src='https://metrics.jetwallet.app/js/container_NrZ0pzrp.js'; s.parentNode.insertBefore(g,s);
-        // })();
 
         // Get telegram user ID
         if (window.Telegram && window.Telegram.WebApp) {
@@ -191,6 +176,12 @@
                     if (store.jetPackRequest.method === 'sendTx') {
                         // Show send Tx modal
                         showSendTxModal.value = true
+                    }
+
+                    // Set grant
+                    if (store.jetPackRequest.method === 'setGrant') {
+                        // Show set grant modal
+                        showSetGrantModal.value = true
                     }
                 })
 
@@ -357,6 +348,24 @@
     emitter.on('close_send_tx_modal', async () => {
         // Hide send Tx modal
         showSendTxModal.value = false
+
+        // Check Tx result
+        if (store.networks[store.currentNetwork].currentTxHash) {
+            // Check Tx
+            await store.checkTxResult()
+
+            if (store.networks[store.currentNetwork].currentTxHash) {
+                // Set listener current tx
+                store.setListenerCurrentTx()
+            }
+        }
+    })
+
+
+    // Event "close_set_grant_modal"
+    emitter.on('close_set_grant_modal', async () => {
+        // Hide set grant modal
+        showSetGrantModal.value = false
 
         // Check Tx result
         if (store.networks[store.currentNetwork].currentTxHash) {

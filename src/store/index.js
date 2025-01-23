@@ -1647,6 +1647,19 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
+        // Get grants
+        async getGrants() {
+            try {
+                let result = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/authz/v1beta1/grants/granter/${this.currentAddress}`)
+                    .then(res => res.json())
+
+                return result.grants
+            } catch (error) {
+                console.error(error)
+            }
+        },
+
+
         // Clear all data
         async clearAllData() {
             try {

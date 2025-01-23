@@ -327,6 +327,7 @@ export default {
             'btn_confirm_unstake': 'Confirm Unstake',
             'btn_confirm_send': 'Confirm Send',
             'btn_confirm_redelegate': 'Confirm',
+            'btn_confirm': 'Confirm',
             'btn_unstake': 'Unstake',
             'btn_redelegate': 'Switch validator',
             'btn_claim': 'Claim',
