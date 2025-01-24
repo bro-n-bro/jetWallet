@@ -53,50 +53,20 @@
             </div>
         </template>
     </notifications>
-
-
-    <!-- Validators modal -->
-    <transition name="from_right">
-    <ConnectWalletModal v-if="showConnectWalletModal" />
-    </transition>
-
-    <!-- Send Tx modal -->
-    <transition name="from_right">
-    <SendTxModal v-if="showSendTxModal" />
-    </transition>
-
-    <!-- set grant modal -->
-    <transition name="modal">
-    <SetGrantModal v-if="showSetGrantModal" />
-    </transition>
-
-    <!-- Sign transaction modal -->
-    <transition name="modal">
-    <RedirectModal v-if="store.showRedirectModal"/>
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_redirect_modal')" v-if="store.showRedirectModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, reactive, onBeforeMount, onMounted, inject, watch, computed } from 'vue'
+    import { ref, reactive, onBeforeMount, inject, watch, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useRoute } from 'vue-router'
     import { useTitle, useNetwork } from '@vueuse/core'
-    import { convertArrayBuffersToUint8Arrays, tgInit, getTgUserId, jetPackConnectWallet, jetPackDeleteConnection, jetPackGetBalances, jetPackSwitchChain } from '@/utils'
+    import { tgInit } from '@/utils'
     import { DBgetData } from '@/utils/db'
 
     // Components
     import Loader from '@/components/Loader.vue'
-    import RedirectModal from '@/components/modal/RedirectModal.vue'
-    import ConnectWalletModal from '@/components/jetPack/ConnectWallet.vue'
-    import SendTxModal from '@/components/jetPack/SendTx.vue'
-    import SetGrantModal from '@/components/jetPack/SetGrantModal.vue'
 
 
     const store = useGlobalStore(),
@@ -112,113 +82,15 @@
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
         },
-        network = reactive(useNetwork()),
-        showConnectWalletModal = ref(false),
-        showSendTxModal = ref(false),
-        showSetGrantModal = ref(false)
+        network = reactive(useNetwork())
 
 
     onBeforeMount(() => {
         // Set page title
         title.value = i18n.global.t('message.page_title')
 
-        // Get telegram user ID
-        if (window.Telegram && window.Telegram.WebApp) {
-            getTgUserId(Telegram.WebApp.initData)
-        }
-
         // Telegram WebApp init
         tgInit()
-    })
-
-
-    onMounted(() => {
-        // Create RTCPeer
-        store.RTCPeer = new Peer(`jw-${store.tgBotId}-${store.tgUserId}`)
-
-        // New connection
-        store.RTCPeer.on('connection', conn => {
-            // If there is already one
-            if (store.RTCConnections[conn.peer]) {
-                // JetPack delete connection
-                jetPackDeleteConnection(conn)
-            } else {
-                // Save connection
-                store.RTCConnections[conn.peer] = conn
-
-                // Save connection status
-                store.isRTCConnected = true
-
-                // Processing data receipt
-                conn.on('data', data => {
-                    // Save request
-                    store.jetPackRequest = convertArrayBuffersToUint8Arrays(data)
-
-                    // Connect wallet
-                    if (store.jetPackRequest.method === 'connectWallet') {
-                        // JetPack connect wallet
-                        jetPackConnectWallet(emitter)
-                    }
-
-                    // Switch chain
-                    if (store.jetPackRequest.method === 'switchChain') {
-                        // JetPack switch chain
-                        jetPackSwitchChain(i18n)
-                    }
-
-                    // Get balances
-                    if (store.jetPackRequest.method === 'loadBalances') {
-                        // JetPack get balances
-                        jetPackGetBalances()
-                    }
-
-                    // Send Tx
-                    if (store.jetPackRequest.method === 'sendTx') {
-                        // Show send Tx modal
-                        showSendTxModal.value = true
-                    }
-
-                    // Set grant
-                    if (store.jetPackRequest.method === 'setGrant') {
-                        // Show set grant modal
-                        showSetGrantModal.value = true
-                    }
-                })
-
-
-                // Handle disconnection event
-                conn.on('close', () => {
-                    // JetPack delete connection
-                    jetPackDeleteConnection(conn)
-                })
-
-                conn.on('disconnected', () => {
-                    // JetPack delete connection
-                    jetPackDeleteConnection(conn)
-                })
-            }
-        })
-
-
-        // Clear Peer on close
-        window.addEventListener('beforeunload', () => {
-            // Close all connections
-            Object.values(store.RTCConnections).forEach(el => el.close())
-
-            // Close Peer
-            if (store.RTCPeer) {
-                store.RTCPeer.destroy()
-            }
-        })
-    })
-
-
-    watch(computed(() => store.isInitialized), () => {
-        // Connect wallet
-        if (store.jetPackRequest && store.jetPackRequest.method === 'connectWallet') {
-            // JetPack connect wallet
-            jetPackConnectWallet(emitter)
-        }
     })
 
 
@@ -327,70 +199,6 @@
                 }, store.notificationsCollapsingDelay)
             }
         }
-    })
-
-
-    // Event "show_connect_wallet_modal"
-    emitter.on('show_connect_wallet_modal', () => {
-        // Show connect wallet modal
-        showConnectWalletModal.value = true
-    })
-
-
-    // Event "close_connect_wallet_modal"
-    emitter.on('close_connect_wallet_modal', () => {
-        // Hide connect wallet modal
-        showConnectWalletModal.value = false
-    })
-
-
-    // Event "close_send_tx_modal"
-    emitter.on('close_send_tx_modal', async () => {
-        // Hide send Tx modal
-        showSendTxModal.value = false
-
-        // Check Tx result
-        if (store.networks[store.currentNetwork].currentTxHash) {
-            // Check Tx
-            await store.checkTxResult()
-
-            if (store.networks[store.currentNetwork].currentTxHash) {
-                // Set listener current tx
-                store.setListenerCurrentTx()
-            }
-        }
-    })
-
-
-    // Event "close_set_grant_modal"
-    emitter.on('close_set_grant_modal', async () => {
-        // Hide set grant modal
-        showSetGrantModal.value = false
-
-        // Check Tx result
-        if (store.networks[store.currentNetwork].currentTxHash) {
-            // Check Tx
-            await store.checkTxResult()
-
-            if (store.networks[store.currentNetwork].currentTxHash) {
-                // Set listener current tx
-                store.setListenerCurrentTx()
-            }
-        }
-    })
-
-
-    // Event "show_redirect_modal"
-    emitter.on('show_redirect_modal', () => {
-        // Hide redirect modal
-        store.showRedirectModal = true
-    })
-
-
-    // Event "close_redirect_modal"
-    emitter.on('close_redirect_modal', () => {
-        // Hide redirect modal
-        store.showRedirectModal = false
     })
 
 

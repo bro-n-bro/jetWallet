@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { DBgetMultipleData } from '@/utils/db'
-import { decodeFromBase64 } from '@/utils'
 import { useGlobalStore } from '@/store'
 
 import defaultLayout from '@/layouts/Default.vue'
@@ -191,11 +190,6 @@ const router = createRouter({
 router.beforeResolve(async (to, from, next) => {
 	let store = useGlobalStore(),
 		DBData = await DBgetMultipleData('global', ['isRegister', 'isUserLock', 'userLockTimestamp', 'authTimestamp'])
-
-	// Parse jetPack request
-	if (to.query.tgWebAppStartParam) {
-		store.jetPackRequest = decodeFromBase64(to.query.tgWebAppStartParam)
-	}
 
 	// Auto auth
 	if (from.name !== 'Auth' && DBData.authTimestamp !== undefined && new Date() - new Date(DBData.authTimestamp) < store.authTime) {

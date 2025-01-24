@@ -47,10 +47,8 @@ export const useGlobalStore = defineStore('global', {
         isAuthorized: false,
         isAnyModalOpen: false,
         isAgeConfirmed: false,
-        isRTCConnected: false,
 
         defaultDerivationPath: "m/44'/118'/0'/0/0",
-        showRedirectModal: false,
         forcedUnlock: false,
         authErrorLimit: 4,
         DBVersion: 1,
@@ -77,15 +75,6 @@ export const useGlobalStore = defineStore('global', {
         rewardsBalances: [],
         unstakingBalances: [],
         redelegations: [],
-
-        tgBotId: 7437812149,
-        // tgUserId: 808958531,
-        tgUserId: '',
-
-        jetPackRequest: null,
-
-        RTCPeer: null,
-        RTCConnections: [],
 
         defaultWalletName: 'MyJetWallet',
 
@@ -235,52 +224,10 @@ export const useGlobalStore = defineStore('global', {
             this.TxFee.isRemember = DBData.TxFeeIsRemember !== undefined ? DBData.TxFeeIsRemember : false
 
             // Set current network
-            if (this.jetPackRequest) {
-                if (!this.jetPackRequest.data || !this.jetPackRequest.data?.chain_id) {
-                    // Show notification - Param chain_id not passed
-                    notification.notify({
-                        group: 'default',
-                        speed: 200,
-                        duration: 1000,
-                        title: i18n.global.t('message.notification_jp_chain_id_not_passed'),
-                        type: 'error'
-                    })
-
-                    // Reset jetPack request
-                    this.jetPackRequest = null
-
-                    // Set data from DB
-                    this.currentNetwork = DBData.currentNetwork
-                } else {
-                    // Checking for network availability
-                    let chain = Object.values(this.networks).find(network => network.chain_id === this.jetPackRequest.data.chain_id)
-
-                    if (chain) {
-                        // Set data
-                        this.setCurrentNetwork(chain.alias)
-                    } else {
-                        // Show notification - Network not supported
-                        notification.notify({
-                            group: 'default',
-                            speed: 200,
-                            duration: 1000,
-                            title: i18n.global.t('message.notification_jp_chain_not_supported'),
-                            type: 'error'
-                        })
-
-                        // Reset jetPack request
-                        this.jetPackRequest = null
-
-                        // Set data from DB
-                        this.currentNetwork = DBData.currentNetwork
-                    }
-                }
-            } else {
-                // Set data from DB
-                this.networks[DBData.currentNetwork]
-                    ? this.currentNetwork = DBData.currentNetwork
-                    : this.currentNetwork = 'cosmoshub'
-            }
+            // Set data from DB
+            this.networks[DBData.currentNetwork]
+                ? this.currentNetwork = DBData.currentNetwork
+                : this.currentNetwork = 'cosmoshub'
 
             try {
                 // Get current address / check cache
@@ -1228,20 +1175,6 @@ export const useGlobalStore = defineStore('global', {
                                 explorer_link: getExplorerLink(this.currentNetwork)
                             }
                         })
-
-                        // Send response
-                        if (this.jetPackRequest) {
-                            const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
-
-                            if (connection) {
-                                connection.send({
-                                    type: 'tx',
-                                    requestId: this.jetPackRequest.data.request_id,
-                                    status: 'success',
-                                    hash: this.networks[this.currentNetwork].currentTxHash
-                                })
-                            }
-                        }
                     } else {
                         // Get error code
                         let errorText = ''
@@ -1260,33 +1193,10 @@ export const useGlobalStore = defineStore('global', {
                             text: errorText,
                             type: 'error'
                         })
-
-                        // Send response
-                        if (this.jetPackRequest) {
-                            const connection = this.RTCConnections[this.jetPackRequest.data.peer_id]
-
-                            if (connection) {
-                                connection.send({
-                                    type: 'error',
-                                    requestId: this.jetPackRequest.data.request_id,
-                                    status: 'error',
-                                    hash: this.networks[this.currentNetwork].currentTxHash,
-                                    message: errorText
-                                })
-                            }
-                        }
                     }
 
                     // Clear tx hash
                     this.networks[this.currentNetwork].currentTxHash = null
-
-                    // Show redirect modal
-                    if (this.jetPackRequest) {
-                        this.showRedirectModal = true
-                    }
-
-                    // Reset jetPack request
-                    this.jetPackRequest = null
 
                     // Update all balances
                     this.updateAllBalances()
@@ -1647,19 +1557,6 @@ export const useGlobalStore = defineStore('global', {
         },
 
 
-        // Get grants
-        async getGrants() {
-            try {
-                let result = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/authz/v1beta1/grants/granter/${this.currentAddress}`)
-                    .then(res => res.json())
-
-                return result.grants
-            } catch (error) {
-                console.error(error)
-            }
-        },
-
-
         // Clear all data
         async clearAllData() {
             try {
@@ -1671,26 +1568,6 @@ export const useGlobalStore = defineStore('global', {
             } catch (error) {
                 console.log(error)
             }
-        },
-
-
-        // JetPack Switch network
-        async jetPackSwitchNetwork() {
-            return new Promise((resolve, reject) => {
-                // Get chain info
-                let chain = Object.values(this.networks).find(network => network.chain_id === this.jetPackRequest.data.chain_id)
-
-                if (chain) {
-                    // Set current network
-                    this.setCurrentNetwork(chain.alias)
-
-                    // Resolve
-                    resolve()
-                } else {
-                    // Reject
-                    reject()
-                }
-            })
         }
     }
 })

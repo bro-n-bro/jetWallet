@@ -16,7 +16,6 @@
         "core-js": "^3.8.3",
         "idb": "^8.0.0",
         "mitt": "^3.0.1",
-        "peerjs": "^1.5.4",
         "pinia": "^2.1.7",
         "qrcode-vue3": "^1.6.8",
         "shamirs-secret-sharing": "^2.0.0",

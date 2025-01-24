@@ -10,15 +10,10 @@
             </KeepAlive>
 
             <!-- Wallet name -->
-            <div class="wallet_name" @click.prevent="openWalletsModal()" :class="{ green: store.isRTCConnected }">
+            <div class="wallet_name" @click.prevent="openWalletsModal()">
                 <span>{{ store.currentWalletName }}</span>
 
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver3"></use></svg>
-            </div>
-
-            <!-- Grants button -->
-            <div class="grants_btn" v-if="store.isInitialized" @click.prevent="openGrantsModal()">
-                GR
             </div>
 
             <!-- Stats button -->
@@ -91,11 +86,6 @@
     <RemoveWalletModal v-if="showRemoveWalletModal" :wallet="removingWallet" />
     </transition>
 
-    <!-- Grants modal -->
-    <transition name="modal">
-    <GrantsModal v-if="showGrantsModal" />
-    </transition>
-
     <!-- Stats modal -->
     <transition name="modal">
     <StatsModal v-if="showStatsModal && store.networks[store.currentNetwork]?.is_staking_available" />
@@ -103,7 +93,7 @@
 
     <!-- Overlay -->
     <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showGrantsModal || showStatsModal || showWalletsModal"></div>
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showStatsModal || showWalletsModal"></div>
     </transition>
 </template>
 
@@ -130,7 +120,6 @@
     import WalletsModal from '@/components/modal/WalletsModal.vue'
     import EditWalletModal from '@/components/modal/EditWalletModal.vue'
     import RemoveWalletModal from '@/components/modal/RemoveWalletModal.vue'
-    import GrantsModal from '@/components/modal/GrantsModal.vue'
     import StatsModal from '@/components/modal/StatsModal.vue'
 
 
@@ -143,7 +132,6 @@
         showRemoveWalletModal = ref(false),
         editingWallet = ref(null),
         removingWallet = ref(null),
-        showGrantsModal = ref(false),
         showStatsModal = ref(false),
         swipeExperience = ref(localStorage.getItem('swipe_experience') || false),
         swiperEl = ref(null),
@@ -235,16 +223,6 @@
     function openWalletsModal() {
         // Show wallets modal
         showWalletsModal.value = true
-
-        // Update status
-        store.isAnyModalOpen = true
-    }
-
-
-    // Open grants modal
-    function openGrantsModal() {
-        // Show grants modal
-        showGrantsModal.value = true
 
         // Update status
         store.isAnyModalOpen = true
@@ -358,16 +336,6 @@
     })
 
 
-    // Event "close_grants_modal"
-    emitter.on('close_grants_modal', () => {
-        // Hide grants modal
-        showGrantsModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
-
-
     // Event "close_stats_modal"
     emitter.on('close_stats_modal', () => {
         // Hide stats modal
@@ -380,9 +348,6 @@
 
     // Event "close_any_modal"
     emitter.on('close_any_modal', () => {
-        // Hide grants modal
-        showGrantsModal.value = false
-
         // Hide stats modal
         showStatsModal.value = false
 
@@ -598,38 +563,11 @@
         justify-content: flex-start;
 
         max-width: 100%;
-        padding: 7px 11px 8px 27px;
+        padding: 7px 11px 8px;
 
         cursor: pointer;
 
         gap: 4px;
-    }
-
-
-    .top_block .wallet_name:before
-    {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 11px;
-
-        display: block;
-
-        width: 6px;
-        height: 6px;
-        margin: auto 0;
-
-        content: '';
-        transition: background .2s linear;
-
-        border-radius: 50%;
-        background: rgba(255, 255, 255, .3);
-    }
-
-
-    .top_block .wallet_name.green:before
-    {
-        background: #06c50e;
     }
 
 
@@ -650,39 +588,6 @@
 
         width: 18px;
         height: 18px;
-    }
-
-
-
-    .top_block .grants_btn
-    {
-        font-size: 12px;
-
-        position: absolute;
-        z-index: 9;
-        top: 17px;
-        left: 176px;
-
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-
-        width: 28px;
-        height: 28px;
-
-        transition: .2s linear;
-
-        color: #fff;
-        background: url(@/assets/bg_action_btn.svg) 0 0/100% 100% no-repeat;
-    }
-
-
-    .top_block .grants_btn:active
-    {
-        color: #170232;
-        background-image: url(@/assets/bg_action_btn_a.svg);
     }
 
 

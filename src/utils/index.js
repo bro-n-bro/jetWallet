@@ -91,9 +91,6 @@ export { default as imageLoadSuccess } from './imageLoadSuccess'
 // Date calc
 export { default as dateCalc } from './dateCalc'
 
-// Decode from base64
-export { default as decodeFromBase64 } from './decodeFromBase64'
-
 // Convert arrayBuffers to Uint8Arrays
 export { default as convertArrayBuffersToUint8Arrays } from './convertArrayBuffersToUint8Arrays'
 
@@ -104,24 +101,3 @@ export { default as convertAddress } from './convertAddress'
 
 // Telegram init
 export { default as tgInit } from './tgInit'
-
-// Get Telegram user ID
-export { default as getTgUserId } from './getTgUserId'
-
-
-
-// JetPack connect wallet
-export { default as jetPackConnectWallet } from './jetpack/connectWallet'
-
-// JetPack delete connection
-export { default as jetPackDeleteConnection } from './jetpack/deleteConnection'
-
-// JetPack get balances
-export { default as jetPackGetBalances } from './jetpack/getBalances'
-
-// JetPack switch chain
-export { default as jetPackSwitchChain } from './jetpack/switchChain'
-
-
-// JetPack event change wallet
-export { default as jetPackEventChangeWallet } from './jetpack/events/changeWallet'
