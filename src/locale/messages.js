@@ -181,6 +181,15 @@ export default {
             'stats_daily_profit_label': 'Est. daily profit:',
 
 
+            // Wrong seeds
+            'wrong_seeds_title': 'Wrong seeds',
+            'wrong_seeds_desc': 'Wrong seed phrase. Please try again.',
+
+
+            // Seed phrase hint
+            'seed_phrase_hint_title': 'Seed phrase',
+
+
             // Profile
             'profile_title': 'My wallets',
 
@@ -323,6 +332,8 @@ export default {
             'btn_remove': 'Delete',
             'btn_add_chain': 'Add Chain',
             'btn_save': 'Save',
+            'btn_try': 'Try',
+            'btn_show_seed_phrase': 'Show seed phrase',
 
 
             'notification_tx_error_-32603': "tx already exists in cache",

@@ -51,6 +51,7 @@ export const useGlobalStore = defineStore('global', {
         defaultDerivationPath: "m/44'/118'/0'/0/0",
         forcedUnlock: false,
         authErrorLimit: 4,
+        confirmSeedsErrorLimit: 3,
         DBVersion: 1,
 
         currentWalletID: null,

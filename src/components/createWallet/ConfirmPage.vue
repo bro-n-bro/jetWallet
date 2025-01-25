@@ -20,59 +20,54 @@
 
                     <!-- Confirm data -->
                     <div class="confirm">
-                        <div class="row">
-                            <!-- Confirm first word -->
-                            <div>
-                                <!-- Confirm word label -->
-                                <div class="label">
-                                    <span>{{ $t('message.confirm_label') }}</span>
-                                    <span>{{ wordOneNumber }}.</span>
-                                </div>
-
-                                <!-- Confirm word field -->
-                                <input type="text" class="input" v-model="wordOne"
-                                    @keyup="validateFirstWord()"
-                                    @paste="validateFirstWord()"
-                                    :class="{
-                                        success: validWordOne && isValidWordOne,
-                                        error: validWordOne && !isValidWordOne
-                                    }">
+                        <!-- Confirm first word -->
+                        <div>
+                            <!-- Confirm word label -->
+                            <div class="label">
+                                <span>{{ $t('message.confirm_label') }}</span>
+                                <span>{{ wordOneNumber }}.</span>
                             </div>
 
-                            <!-- Confirm second word -->
-                            <div>
-                                <!-- Confirm word label -->
-                                <div class="label">
-                                    <span>{{ $t('message.confirm_label') }}</span>
-                                    <span>{{ wordTwoNumber }}.</span>
+                            <!-- Confirm word options -->
+                            <div class="options">
+                                <div v-for="(word, index) in wordOneOptions" :key="index">
+                                    <button class="btn" :class="{ selected: wordOneAnswer === word }" @click.prevent="wordOneAnswer = word">
+                                        <span>{{ word }}</span>
+                                    </button>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Confirm word field -->
-                                <input type="text" class="input" v-model="wordTwo"
-                                    @keyup="validateSecondWord()"
-                                    @paste="validateSecondWord()"
-                                    :class="{
-                                        success: validWordTwo && isValidWordTwo,
-                                        error: validWordTwo && !isValidWordTwo
-                                    }">
+                        <!-- Confirm second word -->
+                        <div>
+                            <!-- Confirm word label -->
+                            <div class="label">
+                                <span>{{ $t('message.confirm_label') }}</span>
+                                <span>{{ wordTwoNumber }}.</span>
+                            </div>
+
+                            <!-- Confirm word options -->
+                            <div class="options">
+                                <div v-for="(word, index) in wordTwoOptions" :key="index">
+                                    <button class="btn" :class="{ selected: wordTwoAnswer === word }" @click.prevent="wordTwoAnswer = word">
+                                        <span>{{ word }}</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Confirm create wallet page image -->
-                    <div class="image">
-                        <div class="icon" :class="{
-                            success: (validWordOne && isValidWordOne) && (validWordTwo && isValidWordTwo),
-                            error: (validWordOne && !isValidWordOne) || (validWordTwo && !isValidWordTwo)
-                        }"></div>
-
-                        <img src="@/assets/confirm_wallet_page_img.svg" alt="" loading="lazy">
+                    <!-- Show seed phrase -->
+                    <div class="show_seed_phrase" v-if="failures >= store.confirmSeedsErrorLimit">
+                        <button class="btn" @click.prevent="emitter.emit('show_seed_phrase_hint_modal')">
+                            {{ $t('message.btn_show_seed_phrase') }}
+                        </button>
                     </div>
 
                     <!-- Confirm create wallet page buttons -->
                     <div class="btns">
                         <!-- Next button -->
-                        <div class="btn" :class="{ disabled: !isValidWordOne || !isValidWordTwo }" @click.prevent="save()">
+                        <div class="btn" :class="{ disabled: !wordOneAnswer || !wordTwoAnswer }" @click.prevent="check()">
                             <span>{{ $t('message.btn_next') }}</span>
                         </div>
                     </div>
@@ -85,6 +80,21 @@
             </div>
         </div>
     </section>
+
+    <!-- Wrong seeds modal -->
+    <transition name="fade">
+    <WrongSeedsModal v-if="showWrongSeedsModal" />
+    </transition>
+
+    <!-- Seed phrase hint modal -->
+    <transition name="modal">
+    <SeedPhraseHintModal v-if="showSeedPhraseHintModal" :mnemonic="mnemonic" />
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showWrongSeedsModal || showSeedPhraseHintModal"></div>
+    </transition>
 </template>
 
 
@@ -93,9 +103,12 @@
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
+    import * as bip39 from 'bip39'
 
     // Components
     import Loader from '@/components/Loader.vue'
+    import WrongSeedsModal from '@/components/modal/WrongSeedsModal.vue'
+    import SeedPhraseHintModal from '@/components/modal/SeedPhraseHintModal.vue'
 
 
     const props = defineProps(['isAdding']),
@@ -105,23 +118,31 @@
         notification = useNotification(),
         i18n = inject('i18n'),
         loading = ref(true),
-        memo = ref(''),
-        wordOneNumber = ref(0),
-        wordTwoNumber = ref(0),
-        wordOne = ref(''),
-        wordTwo = ref(''),
-        validWordOne = ref(false),
-        validWordTwo = ref(false),
-        isValidWordOne = ref(false),
-        isValidWordTwo = ref(false)
+        mnemonic = ref(null),
+        mnemonicArr = ref([]),
+        wordlist = bip39.wordlists.english,
+        wordOneOptions = ref([]),
+        wordTwoOptions = ref([]),
+        wordOneNumber = ref(null),
+        wordTwoNumber = ref(null),
+        wordOneAnswer = ref(null),
+        wordTwoAnswer = ref(null),
+        showWrongSeedsModal = ref(false),
+        showSeedPhraseHintModal = ref(false),
+        failures = ref(0)
 
 
     onBeforeMount(async () => {
-        // Get memo
-        memo.value = await store.getSecret()
+        // Get mnemonic
+        mnemonic.value = await store.getSecret()
+        mnemonicArr.value = mnemonic.value.split(' ')
 
         // Get random words
         getRandomWords()
+
+        // Generate options
+        wordOneOptions.value = generateOptions(mnemonicArr.value[wordOneNumber.value - 1])
+        wordTwoOptions.value = generateOptions(mnemonicArr.value[wordTwoNumber.value - 1])
 
         // Hide loader
         loading.value = false
@@ -131,7 +152,7 @@
     // Get random words
     function getRandomWords() {
         let min = 1,
-            max = memo.value.split(' ').length
+            max = mnemonicArr.value.length
 
         // Generate the first random number
         wordOneNumber.value = Math.floor(Math.random() * (max - min + 1)) + min
@@ -143,31 +164,82 @@
     }
 
 
-    // Validate first word
-    function validateFirstWord() {
-        validWordOne.value = true
+    // Generate options
+    function generateOptions(word) {
+        let result = [],
+            randomIndex = Math.floor(Math.random() * 6),
+            usedWords = new Set()
 
-        wordOne.value.trim().toLocaleLowerCase() === memo.value.split(' ')[wordOneNumber.value - 1]
-            ? isValidWordOne.value = true
-            : isValidWordOne.value = false
+        // Set right option
+        result[randomIndex] = word
+        usedWords.add(word)
+
+        // Fill the remaining positions with random options
+        for (let i = 0; i < 6; i++) {
+            if (i !== randomIndex) {
+                let randomOption
+
+                // Get random option
+                do {
+                    let randomOptionIndex = Math.floor(Math.random() * wordlist.length)
+
+                    randomOption = wordlist[randomOptionIndex]
+                } while (usedWords.has(randomOption))
+
+                // Set option
+                result[i] = randomOption
+                usedWords.add(randomOption)
+            }
+        }
+
+        return result
     }
 
 
-    // Validate second word
-    function validateSecondWord() {
-        validWordTwo.value = true
+    // Validate answers
+    function validateAnswers() {
+        let result = true
 
-        wordTwo.value.trim().toLocaleLowerCase() === memo.value.split(' ')[wordTwoNumber.value - 1]
-            ? isValidWordTwo.value = true
-            : isValidWordTwo.value = false
+        // Check first word
+        if (wordOneAnswer.value !== mnemonicArr.value[wordOneNumber.value - 1]) {
+            result = false
+        }
+
+        // Check second word
+        if (wordTwoAnswer.value !== mnemonicArr.value[wordTwoNumber.value - 1]) {
+            result = false
+        }
+
+        return result
+    }
+
+
+    // Check
+    async function check() {
+        // Show loader
+        loading.value = true
+
+        // Validate answers
+        let result = validateAnswers()
+
+        if (result) {
+            // Save
+            await save()
+        } else {
+            // Set a failed attempt
+            failures.value++
+
+            // Show wrong seeds modal
+            showWrongSeedsModal.value = true
+
+            // Hide loader
+            loading.value = false
+        }
     }
 
 
     // Save
     async function save() {
-        // Show loader
-        loading.value = true
-
         if (props.isAdding) {
             // Save in DB
             await store.createWallet({
@@ -193,172 +265,152 @@
             router.push('/create_pin')
         }
     }
+
+
+    // Event "close_wrong_seeds_modal"
+    emitter.on('close_wrong_seeds_modal', () => {
+        // Hide wrong seeds modal
+        showWrongSeedsModal.value = false
+
+        // Get random words
+        getRandomWords()
+
+        // Generate options
+        wordOneOptions.value = generateOptions(mnemonicArr.value[wordOneNumber.value - 1])
+        wordTwoOptions.value = generateOptions(mnemonicArr.value[wordTwoNumber.value - 1])
+    })
+
+
+    // Event "show_seed_phrase_hint_modal"
+    emitter.on('show_seed_phrase_hint_modal', () => {
+        // Show seed phrase hint modal
+        showSeedPhraseHintModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    })
+
+
+    // Event "close_seed_phrase_hint_modal"
+    emitter.on('close_seed_phrase_hint_modal', () => {
+        // Reset errors limit
+        failures.value = 0
+
+        // Hide seed phrase hint modal
+        showSeedPhraseHintModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Event "close_seed_phrase_hint_modal"
+        emitter.emit('close_seed_phrase_hint_modal')
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
 </script>
 
 
 <style scoped>
+    .back_btn
+    {
+        top: 10px;
+        left: 10px;
+    }
+
+
+
     .confirm
     {
         display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        flex-direction: column;
 
-        margin-top: 54px;
-        padding: 11px 13px;
+        margin-top: 58px;
 
-        border-radius: 10px;
-        background: #b44ae4;
-    }
-
-
-    .confirm .row
-    {
-        justify-content: space-between;
-    }
-
-
-    .confirm .row > *
-    {
-        display: flex;
-        align-content: center;
-        align-items: center;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-
-        width: calc(50% - 5px);
+        gap: 10px;
     }
 
 
     .confirm .label
     {
-        font-size: 12px;
+        font-size: 14px;
 
+        margin-bottom: 2px;
+        padding: 0 10px;
+    }
+
+
+    .confirm .options
+    {
         display: flex;
         align-content: flex-start;
         align-items: flex-start;
         flex-wrap: wrap;
-        justify-content: space-between;
+        justify-content: flex-start;
 
-        width: 48px;
+        gap: 10px;
     }
 
 
-    .confirm .input
+    .confirm .options .btn
     {
-        width: calc(100% - 56px);
+        font-size: 14px;
+        font-weight: 500;
+
+        padding: 1px;
+
+        color: #fff;
+        border-radius: 6px;
+        background: linear-gradient(to bottom, #5c32cc 0%, #210750 100%);
     }
 
 
-
-    .image
-    {
-        position: relative;
-
-        width: 173px;
-        max-width: 100%;
-        height: 183px;
-        margin: auto auto 0;
-        padding-top: 24px;
-    }
-
-
-    .image img
+    .confirm .options .btn span
     {
         display: block;
 
-        max-width: 100%;
-        margin: 0 auto;
+        padding: 5px 9px;
 
-        filter: drop-shadow(0px 0px 146.2px 0px rgba(24, 0, 54, .55));
+        border-radius: 5px;
+        background: #170232;
     }
 
 
-    .image .icon
+    .confirm .options .btn.selected
     {
-        position: absolute;
-        z-index: 2;
-        right: 19px;
-        bottom: 26px;
-
-        width: 50px;
-        height: 50px;
-
-        transition: opacity .2s linear;
-        pointer-events: none;
-
-        opacity: 0;
-
-        filter: drop-shadow(0px 4px 0px #350393);
+        background: linear-gradient(to bottom, #6ae1fb 0%, #02294b 100%);
     }
 
 
-    .image .icon.success,
-    .image .icon.error
+    .confirm .options .btn.selected span
     {
-        opacity: 1;
+        background: linear-gradient(to bottom, #59aaea 0%, #024390 100%);
     }
 
 
-    .image .icon:before,
-    .image .icon:after
+
+    .show_seed_phrase
     {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        font-size: 14px;
+        line-height: 100%;
 
-        display: block;
+        margin-top: 18px;
 
-        width: 8px;
-        height: 40px;
-        margin: auto;
-
-        content: '';
-        transition: .25s linear;
-
-        border-radius: 4px;
-        background: #bfe3fc;
+        text-align: center;
     }
 
 
-    .image .icon.success:before
+    .show_seed_phrase .btn
     {
-        bottom: -10px;
-        left: -24px;
+        padding: 3px 6px;
 
-        height: 20px;
+        text-decoration: underline;
 
-        transform: rotate(140deg);
-    }
-
-    .image .icon.success:after
-    {
-        left: 10px;
-
-        transform: rotate(45deg);
-    }
-
-
-    .image .icon.error:before,
-    .image .icon.error:after
-    {
-        background: #ba3030;
-    }
-
-
-    .image .icon.error:before
-    {
-        height: 40px;
-
-        transform: rotate(130deg);
-    }
-
-    .image .icon.error:after
-    {
-        transform: rotate(45deg);
+        text-decoration-thickness: 1px;
     }
 
 
@@ -368,12 +420,6 @@
         font-size: 12px;
 
         margin-top: 6px;
-    }
-
-
-    .input
-    {
-        text-transform: lowercase
     }
 </style>
 

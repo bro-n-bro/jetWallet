@@ -18,7 +18,7 @@
                 <!-- Tokens list -->
                 <div class="list" v-if="searchResult.length">
                     <!-- Tokens item -->
-                    <div class="item" v-for="(item, index) in searchResult" :key="index" :style="`order: ${parseInt(calcTokenCost(item.balance.token_info.symbol, item.balance.amount, item.balance.exponent) * -1000000)};`">
+                    <div class="item" v-for="item in searchResult" :key="item.denom" :style="`order: ${parseInt(calcTokenCost(item.balance.token_info.symbol, item.balance.amount, item.balance.exponent) * -1000000)};`">
                         <!-- Tokens token -->
                         <StakedTokensItem :item />
                     </div>
