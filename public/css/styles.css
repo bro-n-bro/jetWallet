@@ -1152,6 +1152,8 @@ input[type='password']::-webkit-credentials-auto-fill-button
     margin: 8px auto 0;
 
     transition: .2s linear;
+
+    gap: 4px;
 }
 
 
@@ -1161,7 +1163,6 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
     width: 24px;
     height: 24px;
-    margin-right: 4px;
 }
 
 

@@ -1,5 +1,4 @@
 import { useGlobalStore } from '@/store'
-
 import { createSinger } from './createSinger'
 
 

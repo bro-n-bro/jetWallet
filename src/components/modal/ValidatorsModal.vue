@@ -26,7 +26,7 @@
                 <!-- Validators list -->
                 <div class="list" v-if="searchResult.length">
                     <!-- Validators item -->
-                    <div class="item" v-for="(validator, index) in searchResult" :key="index">
+                    <div class="item" v-for="(validator) in searchResult" :key="validator.operator_address">
                         <div class="validator_wrap" @click.prevent="setValidator(validator)" :class="{ current: isCurrentValidator(validator.operator_address) }">
                             <!-- Validator -->
                             <div class="validator">

@@ -87,6 +87,7 @@
         padding: 1px;
 
         border-radius: 10px;
+        background: linear-gradient(to bottom, #5d33ce 0%, #200750 100%);
     }
 
 

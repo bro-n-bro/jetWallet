@@ -32,7 +32,7 @@
                 <!-- Chains list -->
                 <div class="list" v-if="searchResult.length">
                     <!-- Chains item -->
-                    <div class="item" v-for="(chain, index) in searchResult" :key="index">
+                    <div class="item" v-for="(chain) in searchResult" :key="chain.info.chain_id">
                         <div class="chain_wrap" @click.prevent="setChain(chain)" :class="{ current: isCurrentChain(chain.info.pretty_name) }">
                             <!-- Chain -->
                             <div class="chain">

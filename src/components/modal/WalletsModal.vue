@@ -15,7 +15,7 @@
 
                 <!-- Wallets modal data -->
                 <div class="list">
-                    <div class="item" v-for="(wallet, index) in store.wallets" :key="index" @click.stop.prevent="setWallet(wallet)">
+                    <div class="item" v-for="(wallet) in store.wallets" :key="wallet.id" @click.stop.prevent="setWallet(wallet)">
                         <div class="logo">
                             <img src="@/assets/logo.svg" alt="" loading="lazy">
 

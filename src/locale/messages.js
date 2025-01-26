@@ -194,6 +194,10 @@ export default {
             'profile_title': 'My wallets',
 
 
+            // Edit wallet modal
+            'edit_wallet_seep_phrase_exp': 'You can see the seed phrases, but you need to go through verification.',
+
+
             // Remove wallet
             'remove_wallet_title': 'You are deleting wallet:',
             'remove_wallet_desc': 'Enter the name of the wallet you want to delete. We warn you that you will not be able to return it.',

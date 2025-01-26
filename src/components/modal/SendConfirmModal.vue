@@ -191,6 +191,7 @@
         // Unlisten events
         emitter.off('auth')
         emitter.off('close_sign_tx_modal')
+        emitter.off('close_any_modal')
     })
 
 
@@ -295,11 +296,8 @@
 
     // Event "auth"
     emitter.on('auth', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
+        // Event "close_any_modal"
+        emitter.emit('close_any_modal')
 
         // Delegate tokens
         send()
@@ -310,16 +308,13 @@
     emitter.on('close_sign_tx_modal', () => {
         // Hide SignTx modal
         showSignTxModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
     })
 
 
     // Event "close_any_modal"
     emitter.on('close_any_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
+        // Event "close_sign_tx_modal"
+        emitter.emit('close_sign_tx_modal')
 
         // Update status
         store.isAnyModalOpen = false

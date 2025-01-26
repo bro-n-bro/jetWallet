@@ -55,7 +55,7 @@
                         </div>
 
                         <!-- Mnemonic copy button -->
-                        <button class="copy_btn" :disabled="!agreed"  @click.prevent="copyHandler()">
+                        <button class="copy_btn" :disabled="!agreed" @click.prevent="copyHandler()">
                             <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_copy"></use></svg>
 
                             <span>{{ $t('message.btn_copy') }}</span>
