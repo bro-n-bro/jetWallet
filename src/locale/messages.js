@@ -195,6 +195,7 @@ export default {
 
 
             // Edit wallet modal
+            'edit_wallet_name_label': 'Edit wallet name:',
             'edit_wallet_seep_phrase_exp': 'You can see the seed phrases, but you need to go through verification.',
 
 
@@ -202,7 +203,9 @@ export default {
             'remove_wallet_title': 'You are deleting wallet:',
             'remove_wallet_desc': 'Enter the name of the wallet you want to delete. We warn you that you will not be able to return it.',
 
-            'remove_wallet_confirm_title': 'Confirm by pin',
+
+            // Confirm by pin modal
+            'confirm_by_pin_title': 'Confirm by pin',
 
 
             // Redelegations

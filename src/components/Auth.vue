@@ -64,7 +64,7 @@
 
 
     <!-- Biometric button -->
-    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit">
+    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="props.mode === 'all' || isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit">
         <!-- Biometric button text -->
         <span>{{ $t('message.btn_biometric2') }}</span>
 
@@ -84,7 +84,8 @@
     <div class="btns">
         <!-- Login button -->
         <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < store.authErrorLimit">
-            <span v-if="store.isAuthorized">{{ $t('message.btn_sign') }}</span>
+            <span v-if="store.isAuthorized & props.mode === 'pin'">{{ $t('message.btn_confirm') }}</span>
+            <span v-else-if="store.isAuthorized">{{ $t('message.btn_sign') }}</span>
             <span v-else>{{ $t('message.btn_login') }}</span>
         </button>
     </div>
@@ -99,7 +100,13 @@
     import { DBgetMultipleData } from '@/utils/db'
 
 
-    const store = useGlobalStore(),
+    const props = defineProps({
+            mode: {
+                type: String,
+                default: 'all'
+            }
+        }),
+        store = useGlobalStore(),
         router = useRouter(),
         emitter = inject('emitter'),
         pinCode = ref(['', '', '', '', '', '']),
@@ -125,20 +132,22 @@
         // Set user auth error limit
         userAuthErrorLimit.value = DBData.authErrorLimit
 
-        // Set biometric status from DB
-        isBiometric.value = DBData.isBiometric
+        if (props.mode === 'all') {
+            // Set biometric status from DB
+            isBiometric.value = DBData.isBiometric
 
-        // Is biometric available
-        isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
+            // Is biometric available
+            isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
 
-        // Biometric type
-        if (Telegram.WebApp.BiometricManager.biometricType != 'unknown') {
-            biometricType.value = Telegram.WebApp.BiometricManager.biometricType
-        }
+            // Biometric type
+            if (Telegram.WebApp.BiometricManager.biometricType != 'unknown') {
+                biometricType.value = Telegram.WebApp.BiometricManager.biometricType
+            }
 
-        // Check biometric access
-        if (isBiometricAvailable.value && isBiometric.value) {
-            checkBiometricAccess()
+            // Check biometric access
+            if (isBiometricAvailable.value && isBiometric.value) {
+                checkBiometricAccess()
+            }
         }
     })
 

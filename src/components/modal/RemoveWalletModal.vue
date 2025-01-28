@@ -48,7 +48,7 @@
 
     <!-- Confirm modal -->
     <transition name="modal">
-    <ConfirmModal v-if="showConfirmModal" :wallet="props.wallet" />
+    <ConfirmModal v-if="showConfirmModal" />
     </transition>
 
     <!-- Overlay -->
@@ -59,20 +59,33 @@
 
 
 <script setup>
-    import { inject, ref } from 'vue'
+    import { inject, ref, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useRouter } from 'vue-router'
+    import { useNotification } from '@kyvg/vue3-notification'
 
     // Components
-    import ConfirmModal from '@/components/modal/RemoveWalletConfirmModal.vue'
+    import ConfirmModal from '@/components/modal/ConfirmByPinModal.vue'
 
 
     const props = defineProps(['wallet']),
         store = useGlobalStore(),
+        router = useRouter(),
         emitter = inject('emitter'),
+        notification = useNotification(),
+        i18n = inject('i18n'),
         name = ref(''),
         idValidWalletName = ref(false),
         isTouchedWalletName = ref(false),
         showConfirmModal = ref(false)
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('auth')
+        emitter.off('close_confirm_modal')
+        emitter.off('close_any_modal')
+    })
 
 
     // Validate wallet name
@@ -116,8 +129,49 @@
     }
 
 
-    // Event "close_remove_wallet_confirm_modal"
-    emitter.on('close_remove_wallet_confirm_modal', () => {
+    // Event "auth"
+    emitter.on('auth', async () => {
+        console.log(666)
+
+        if (store.wallets.length > 1) {
+            // Remove
+            await store.removeWallet(props.wallet)
+
+            // Event "close_confirm_modal"
+            emitter.emit('close_confirm_modal')
+
+            // Event "close_remove_wallet_modal"
+            emitter.emit('close_remove_wallet_modal')
+
+            // Event "close_edit_wallet_modal"
+            emitter.emit('close_edit_wallet_modal', { back: false })
+
+            // Event "show_wallets_modal"
+            emitter.emit('show_wallets_modal')
+
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 1000,
+                title: i18n.global.t('message.notification_wallet_remove_success', { name: props.wallet.name }),
+                type: 'success',
+            })
+        } else {
+            // Event "start_reseting"
+            emitter.emit('start_reseting')
+
+            // Clear all data
+            await store.clearAllData()
+
+            // Redirect
+            router.push('/')
+        }
+    })
+
+
+    // Event "close_confirm_modal"
+    emitter.on('close_confirm_modal', () => {
         // Hide confirm modal
         showConfirmModal.value = false
 
@@ -128,8 +182,8 @@
 
     // Event "close_any_modal"
     emitter.on('close_any_modal', () => {
-        // Hide confirm modal
-        showConfirmModal.value = false
+        // Event "close_confirm_modal"
+        emitter.emit('close_confirm_modal')
 
         // Update status
         store.isAnyModalOpen = false

@@ -28,6 +28,10 @@
 
             <!-- Edit wallet new name -->
             <div class="name">
+                <div class="label">
+                    {{ $t('message.edit_wallet_name_label') }}
+                </div>
+
                 <div class="field" :class="{ error: !idValidWalletName && isTouchedWalletName, success: idValidWalletName && isTouchedWalletName }">
                     <!-- Edit wallet new name logo -->
                     <div class="logo">
@@ -64,7 +68,7 @@
                 <!-- Seed parase buttons -->
                 <div class="btns" v-if="!mnemonic">
                     <!-- Show button -->
-                    <button class="btn" @click.prevent="openSignTxModal()">
+                    <button class="btn" @click.prevent="openConfirmModal()">
                         <span>{{ $t('message.btn_show_seed_phrase') }}</span>
                     </button>
                 </div>
@@ -80,12 +84,12 @@
 
     <!-- Sign transaction modal -->
     <transition name="modal">
-    <SignTxModal v-if="showSignTxModal"/>
+    <ConfirmModal v-if="showConfirmModal"/>
     </transition>
 
     <!-- Overlay -->
     <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_sign_tx_modal')" v-if="showSignTxModal"></div>
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showConfirmModal"></div>
     </transition>
 </template>
 
@@ -97,7 +101,7 @@
     import { useClipboard } from '@vueuse/core'
 
     // Components
-    import SignTxModal from '@/components/modal/SignTxModal.vue'
+    import ConfirmModal from '@/components/modal/ConfirmByPinModal.vue'
 
 
     const props = defineProps(['wallet']),
@@ -109,14 +113,15 @@
         idValidWalletName = ref(false),
         isTouchedWalletName = ref(false),
         mnemonic = ref(null),
-        showSignTxModal = ref(false),
+        showConfirmModal = ref(false),
         { copy } = useClipboard()
 
 
     onUnmounted(() => {
         // Unlisten events
         emitter.off('auth')
-        emitter.off('close_sign_tx_modal')
+        emitter.off('close_confirm_modal')
+        emitter.off('close_any_modal')
     })
 
 
@@ -170,18 +175,8 @@
 
     // Remove wallet
     async function remove(wallet) {
-        // Event "close_edit_wallet_modal"
-        emitter.emit('close_edit_wallet_modal', { back: false })
-
         // Event "show_remove_wallet_modal"
         emitter.emit('show_remove_wallet_modal', { wallet })
-    }
-
-
-    // Open SignTx modal
-    function openSignTxModal() {
-        // Show SignTx modal
-        showSignTxModal.value = true
     }
 
 
@@ -207,20 +202,43 @@
     }
 
 
+    // Open confirm modal
+    function openConfirmModal() {
+        // Show confirm modal
+        showConfirmModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
     // Event "auth"
     emitter.on('auth', async () => {
-        // Event "close_sign_tx_modal"
-        emitter.emit('close_sign_tx_modal')
+        // Event "close_confirm_modal"
+        emitter.emit('close_confirm_modal')
 
         // Get mnemonic
         mnemonic.value = await store.getSecret(true)
     })
 
 
-    // Event "close_sign_tx_modal"
-    emitter.on('close_sign_tx_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
+    // Event "close_confirm_modal"
+    emitter.on('close_confirm_modal', () => {
+        // Hide confirm modal
+        showConfirmModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
+    })
+
+
+    // Event "close_any_modal"
+    emitter.on('close_any_modal', () => {
+        // Event "close_confirm_modal"
+        emitter.emit('close_confirm_modal')
+
+        // Update status
+        store.isAnyModalOpen = false
     })
 </script>
 
@@ -313,6 +331,13 @@
 
         width: 14px;
         height: 16px;
+    }
+
+
+    .label
+    {
+        margin-bottom: 4px;
+        padding: 0 10px;
     }
 
 
