@@ -63,6 +63,34 @@
                     </div>
 
 
+                    <!-- Advanced -->
+                    <div class="advanced" v-if="agreed">
+                        <button class="btn" @click.prevent="showAdvanced = true" v-if="!showAdvanced">
+                            <span>{{ $t('message.btn_advanced') }}</span>
+                        </button>
+
+                        <div v-else>
+                            <div class="label">
+                                {{ $t('message.create_wallet_derivation_path_label') }} <span @click.prevent="showDerivationPathModal = true">?</span>
+                            </div>
+
+                            <div class="field">
+                                <span>m/44'/118'/</span>
+
+                                <input type="text" class="input" v-model="derivationPathPart1">
+
+                                <span>'/</span>
+
+                                <input type="text" class="input" v-model="derivationPathPart2">
+
+                                <span>/</span>
+
+                                <input type="text" class="input" v-model="derivationPathPart3">
+                            </div>
+                        </div>
+                    </div>
+
+
                     <!-- Agree -->
                     <div class="agree" v-if="!agreed">
                         <div>
@@ -120,6 +148,17 @@
             </div>
         </div>
    </section>
+
+
+    <!-- Wrong seeds modal -->
+    <transition name="fade">
+    <DerivationPathModal v-if="showDerivationPathModal" />
+    </transition>
+
+    <!-- Overlay -->
+    <transition name="fade">
+    <div class="modal_overlay" @click.prevent="emitter.emit('close_derivation_path_modal')" v-if="showDerivationPathModal"></div>
+    </transition>
 </template>
 
 
@@ -133,6 +172,7 @@
 
     // Components
     import Loader from '@/components/Loader.vue'
+    import DerivationPathModal from '@/components/modal/DerivationPathModal.vue'
 
 
     const props = defineProps(['isAdding']),
@@ -140,6 +180,7 @@
         router = useRouter(),
         i18n = inject('i18n'),
         notification = useNotification(),
+        emitter = inject('emitter'),
         loading = ref(true),
         count = ref(12),
         wallet = ref(null),
@@ -152,7 +193,12 @@
         tabs = [tab1, tab2],
         rollerWidth = ref(null),
         rollerOffsetLeft = ref(null),
-        { copy } = useClipboard()
+        { copy } = useClipboard(),
+        showAdvanced = ref(false),
+        showDerivationPathModal = ref(false),
+        derivationPathPart1 = ref(0),
+        derivationPathPart2 = ref(0),
+        derivationPathPart3 = ref(0)
 
 
     onBeforeMount(async () => {
@@ -216,12 +262,22 @@
         // Save in DB
         await store.setSecret(wallet.value.secret.data)
 
+        // Save derivation path
+        store.tempDerivationPath = `m/44'/118'/${derivationPathPart1.value}'/${derivationPathPart2.value}/${derivationPathPart3.value}`
+
         props.isAdding
             // Go to confirm
             ? router.push('/add_wallet/confirm')
             // Go to confirm
             : router.push('/confirm_wallet')
     }
+
+
+    // Event "close_derivation_path_modal"
+    emitter.on('close_derivation_path_modal', () => {
+        // Hide derivation path modal
+        showDerivationPathModal.value = false
+    })
 </script>
 
 
@@ -262,8 +318,105 @@
 
 
 
-    .agree + .btns
+    .btns
     {
         margin-top: 0;
+    }
+
+
+
+    .advanced
+    {
+        margin-top: 25px;
+        margin-bottom: auto;
+
+        text-align: center;
+    }
+
+
+    .advanced .btn
+    {
+        font-size: 14px;
+        line-height: 10px;
+
+        padding: 1px;
+
+        cursor: pointer;
+        transition: opacity .2s linear;
+
+        border-radius: 8px;
+        background: linear-gradient(to bottom,  #da91fc 0%,#300345 100%);
+    }
+
+
+    .advanced .btn span
+    {
+        display: block;
+
+        padding: 9px 19px;
+
+        border-radius: 7px;
+        background: linear-gradient(to bottom, #ad5dd1 0%, #580280 100%);
+    }
+
+
+    .advanced .btn:active span
+    {
+        background: linear-gradient(to bottom,  #580280 0%,#ac5dd1 100%);
+    }
+
+
+    .advanced > div
+    {
+        text-align: left;
+    }
+
+
+    .advanced .label
+    {
+        font-size: 14px;
+        font-weight: 500;
+
+        margin-bottom: 10px;
+    }
+
+
+    .advanced .label span
+    {
+        line-height: 17px;
+
+        display: inline-block;
+
+        width: 17px;
+        height: 17px;
+
+        text-align: center;
+        vertical-align: middle;
+
+        border-radius: 50%;
+        background: rgba(0, 0, 0, .70);
+    }
+
+
+    .advanced .field
+    {
+        font-size: 12px;
+        font-weight: 500;
+
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+
+        padding-left: 11px;
+
+        gap: 4px;
+    }
+
+
+    .advanced .input
+    {
+        width: 66px;
     }
 </style>

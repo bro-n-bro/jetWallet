@@ -62,9 +62,8 @@
         </div>
     </div>
 
-
     <!-- Biometric button -->
-    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="props.mode === 'all' || isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit">
+    <button class="biometric_btn" @click.prevent="checkBiometricAccess()" v-if="props.mode === 'all' && (isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit)">
         <!-- Biometric button text -->
         <span>{{ $t('message.btn_biometric2') }}</span>
 

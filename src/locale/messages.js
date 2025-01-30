@@ -27,6 +27,8 @@ export default {
             'create_wallet_agree_checkbox1': "I understand that I have access to my wallet solely because I possess the recovery phrase. If this phrase falls into someone else's hands, I will lose my funds.",
             'create_wallet_agree_checkbox2': 'I also understand that if I lose my recovery phrase, I will lose all the funds in this wallet.',
 
+            'create_wallet_derivation_path_label': 'Derivation path',
+
 
             // Confirm page
             'confirm_label': 'Word',
@@ -186,6 +188,11 @@ export default {
             'wrong_seeds_desc': 'Wrong seed phrase. Please try again.',
 
 
+            // Derivation path
+            'derivation_path_title': 'Derivation Path',
+            'derivation_path_desc': '<ul><li>You can create multipe addresses from one recovery phrase</li><li>A lost path cannot be recovered</li><li>If you are unfamiliar with this feature, skip or undo this step</li> </ul>',
+
+
             // Seed phrase hint
             'seed_phrase_hint_title': 'Seed phrase',
 
@@ -304,6 +311,7 @@ export default {
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',
             'btn_show': 'Ok. Show my phrases',
+            'btn_advanced': 'Advanced',
             'btn_next': 'Next',
             'btn_copy': 'Copy to clipboard',
             'btn_copy_small': 'Copy',

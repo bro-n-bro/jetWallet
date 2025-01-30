@@ -49,6 +49,7 @@ export const useGlobalStore = defineStore('global', {
         isAgeConfirmed: false,
 
         defaultDerivationPath: "m/44'/118'/0'/0/0",
+        tempDerivationPath: '',
         forcedUnlock: false,
         authErrorLimit: 4,
         confirmSeedsErrorLimit: 3,
@@ -883,7 +884,7 @@ export const useGlobalStore = defineStore('global', {
 
 
         // Create wallet
-        async createWallet({ pinCode = null, walletName = null, isBiometricEnabled = null, isAdding = false, relativeWallet = null, derivationPath = this.defaultDerivationPath }) {
+        async createWallet({ pinCode = null, walletName = null, isBiometricEnabled = null, isAdding = false, relativeWallet = null, derivationPath = this.tempDerivationPath }) {
             // Get all wallets
             let DBWallets = await DBgetData('global', 'wallets')
 

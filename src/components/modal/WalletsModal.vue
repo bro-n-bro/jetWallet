@@ -75,7 +75,9 @@
         emitter.emit('close_wallets_modal')
 
         // Event "show_edit_wallet_modal"
-        emitter.emit('show_edit_wallet_modal', { wallet: JSON.parse(JSON.stringify(wallet)) })
+        emitter.emit('show_edit_wallet_modal', {
+            wallet: JSON.parse(JSON.stringify(wallet))
+        })
     }
 </script>
 

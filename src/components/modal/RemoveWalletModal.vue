@@ -165,7 +165,7 @@
             await store.clearAllData()
 
             // Redirect
-            router.push('/')
+            setTimeout(() => router.push('/'))
         }
     })
 

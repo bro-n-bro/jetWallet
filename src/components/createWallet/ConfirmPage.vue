@@ -81,6 +81,7 @@
         </div>
     </section>
 
+
     <!-- Wrong seeds modal -->
     <transition name="fade">
     <WrongSeedsModal v-if="showWrongSeedsModal" />
