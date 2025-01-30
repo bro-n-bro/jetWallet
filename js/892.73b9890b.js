@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkcosmos_telegram_signer"]=self["webpackChunkcosmos_telegram_signer"]||[]).push([[892],{7078:function(e,n,r){r.r(n),r.d(n,{default:function(){return c}});var s=r(56768),t=r(35976),u={__name:"ConfirmPage",setup(e){return(e,n)=>((0,s.uX)(),(0,s.Wv)(t.A,{isAdding:"true"}))}};const a=u;var c=a}}]);
+//# sourceMappingURL=892.73b9890b.js.map
