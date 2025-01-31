@@ -150,7 +150,7 @@
    </section>
 
 
-    <!-- Wrong seeds modal -->
+    <!-- Derivation path modal -->
     <transition name="fade">
     <DerivationPathModal v-if="showDerivationPathModal" />
     </transition>
