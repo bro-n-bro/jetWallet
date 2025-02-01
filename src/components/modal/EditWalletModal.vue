@@ -46,7 +46,7 @@
 
 
             <!-- Seed parase -->
-            <div class="seed_parase">
+            <div class="seed_parase" v-if="createdBy === 'secret'">
                 <!-- Seed phrase data -->
                 <div class="mnemonic_wrap" v-if="mnemonic">
                     <div class="mnemonic">
@@ -95,10 +95,11 @@
 
 
 <script setup>
-    import { inject, ref, onUnmounted } from 'vue'
+    import { inject, ref, onUnmounted, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useClipboard } from '@vueuse/core'
+    import { DBgetData } from '@/utils/db'
 
     // Components
     import ConfirmModal from '@/components/modal/ConfirmByPinModal.vue'
@@ -114,7 +115,13 @@
         isTouchedWalletName = ref(false),
         mnemonic = ref(null),
         showConfirmModal = ref(false),
-        { copy } = useClipboard()
+        { copy } = useClipboard(),
+        createdBy = ref('')
+
+
+    onBeforeMount(async () => {
+        createdBy.value = await DBgetData(`wallet${store.currentWalletID}`, 'createdBy')
+    })
 
 
     onUnmounted(() => {
