@@ -2,9 +2,9 @@
     <!-- Seed phrase hint modal -->
     <section class="modal">
         <div class="modal_content">
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_seed_phrase_hint_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -35,11 +35,15 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { inject } from 'vue'
+    import { ref, inject, onMounted, onUnmounted } from 'vue'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useClipboard } from '@vueuse/core'
 
@@ -48,7 +52,32 @@
         emitter = inject('emitter'),
         i18n = inject('i18n'),
         notification = useNotification(),
-        { copy } = useClipboard()
+        { copy } = useClipboard(),
+        isClosing = ref(false)
+
+
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_seed_phrase_hint_modal"
+            emitter.emit('close_seed_phrase_hint_modal')
+        }, 200)
+    }
 
 
     // Copy handler

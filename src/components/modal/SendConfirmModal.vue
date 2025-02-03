@@ -1,6 +1,6 @@
 <template>
     <!-- Send confirm modal -->
-    <section class="page_container inner_page_container send_confirm">
+    <section class="page_container inner_page_container send_confirm" :class="{ closing: isClosing }">
         <!-- Loader -->
         <Loader v-if="isProcess" />
 
@@ -8,7 +8,7 @@
             <!-- Send confirm head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_send_confirm_modal')">
+                <button class="back_btn" @click="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -152,19 +152,12 @@
 
 
     <!-- Sign transaction modal -->
-    <transition name="modal">
     <SignTxModal v-if="showSignTxModal"/>
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showSignTxModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, computed, onUnmounted } from 'vue'
+    import { ref, inject, computed, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -184,15 +177,36 @@
         showSignTxModal = ref(false),
         memo = ref(''),
         feeCost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent)),
-        isProcess = ref(false)
+        isProcess = ref(false),
+        isClosing = ref(false)
+
+
+    onMounted(() => {
+        // Event "auth"
+        emitter.on('auth', auth)
+
+        // Event "close_sign_tx_modal"
+        emitter.on('close_sign_tx_modal', closeSignTxModal)
+    })
 
 
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_sign_tx_modal')
-        emitter.off('close_any_modal')
+        emitter.off('auth', auth)
+        emitter.off('close_sign_tx_modal', closeSignTxModal)
     })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_send_confirm_modal"
+            emitter.emit('close_send_confirm_modal')
+        }, 200)
+    }
 
 
     // Send tokens
@@ -294,31 +308,24 @@
     }
 
 
-    // Event "auth"
-    emitter.on('auth', () => {
-        // Event "close_any_modal"
-        emitter.emit('close_any_modal')
-
-        // Delegate tokens
-        send()
-    })
-
-
-    // Event "close_sign_tx_modal"
-    emitter.on('close_sign_tx_modal', () => {
-        // Hide SignTx modal
+    // Close SignTx modal
+    function closeSignTxModal() {
+        // Show SignTx modal
         showSignTxModal.value = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Event "close_sign_tx_modal"
-        emitter.emit('close_sign_tx_modal')
 
         // Update status
         store.isAnyModalOpen = false
-    })
+    }
+
+
+    // Auth
+    function auth() {
+        // Close modal
+        closeHandler()
+
+        // Send tokens
+        send()
+    }
 </script>
 
 
@@ -333,7 +340,15 @@
         width: 100%;
         height: 100%;
 
+        animation: .25s slideLeft forwards linear;
+
         background: #170232;
+    }
+
+
+    .send_confirm.closing
+    {
+        animation: .25s slideRight forwards linear;
     }
 
 

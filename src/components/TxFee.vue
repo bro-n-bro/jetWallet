@@ -20,19 +20,12 @@
 
 
     <!-- Tx fee modal -->
-    <transition name="modal">
     <TxFeeModal v-if="showTxFeeModal" />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showTxFeeModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { inject, ref, onBeforeMount, computed, onUnmounted } from 'vue'
+    import { inject, ref, onBeforeMount, onMounted, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenAmount, simulateTx, calcTokenCost, formatTokenCost } from '@/utils'
 
@@ -92,13 +85,18 @@
     })
 
 
+    onMounted(() => {
+        // Event "close_tx_fee_modal"
+        emitter.on('close_tx_fee_modal', closeTxFeeModal)
+    })
+
+
     onUnmounted(() => {
         // Reset data
         store.TxFee.isEnough = false
 
         // Unlisten events
-        emitter.off('close_any_modal')
-        emitter.off('close_tx_fee_modal')
+        emitter.off('close_tx_fee_modal', closeTxFeeModal)
     })
 
 
@@ -112,24 +110,14 @@
     }
 
 
-    // Event "close_tx_fee_modal"
-    emitter.on('close_tx_fee_modal', () => {
+    // Clos TxFee modal
+    function closeTxFeeModal() {
         // Hide TxFee modal
         showTxFeeModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide TxFee modal
-        showTxFeeModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 

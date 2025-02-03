@@ -1,11 +1,11 @@
 <template>
     <!-- Remove wallet modal -->
-    <section class="page_container inner_page_container remove_wallet">
+    <section class="page_container inner_page_container remove_wallet" :class="{ closing: isClosing }">
         <div class="cont">
             <!-- Remove wallet head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_remove_wallet_modal')">
+                <button class="back_btn" @click="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -47,19 +47,12 @@
 
 
     <!-- Confirm modal -->
-    <transition name="modal">
-    <ConfirmModal v-if="showConfirmModal" />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showConfirmModal"></div>
-    </transition>
+    <ConfirmModal v-if="showConfirmModal"/>
 </template>
 
 
 <script setup>
-    import { inject, ref, onUnmounted } from 'vue'
+    import { ref, inject, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -77,15 +70,37 @@
         name = ref(''),
         idValidWalletName = ref(false),
         isTouchedWalletName = ref(false),
-        showConfirmModal = ref(false)
+        showConfirmModal = ref(false),
+        isClosing = ref(false)
 
+
+    onMounted(() => {
+        // Event "auth"
+        emitter.on('auth', auth)
+
+        // Event "close_confirm_modal"
+        emitter.on('close_confirm_modal', closeConfirmModal)
+    })
 
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_confirm_modal')
-        emitter.off('close_any_modal')
+        emitter.off('auth', auth)
+        emitter.off('close_confirm_modal', closeConfirmModal)
     })
+
+
+    // Close modal
+    function closeHandler(back = true) {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_remove_wallet_modal"
+            emitter.emit('close_remove_wallet_modal', {
+                back: back
+            })
+        }, 200)
+    }
 
 
     // Validate wallet name
@@ -119,35 +134,27 @@
     }
 
 
-    // Open confirm modal
-    function openConfirmModal() {
-        // Show confirm modal
-        showConfirmModal.value = true
-
-        // Update status
-        store.isAnyModalOpen = true
-    }
-
-
     // Event "auth"
-    emitter.on('auth', async () => {
-        console.log(666)
-
+    async function auth() {
         if (store.wallets.length > 1) {
             // Remove
             await store.removeWallet(props.wallet)
 
-            // Event "close_confirm_modal"
-            emitter.emit('close_confirm_modal')
-
-            // Event "close_remove_wallet_modal"
-            emitter.emit('close_remove_wallet_modal')
+            // Close confirm modal
+            closeConfirmModal()
 
             // Event "close_edit_wallet_modal"
-            emitter.emit('close_edit_wallet_modal', { back: false })
+            emitter.emit('close_edit_wallet_modal', {
+                back: false
+            })
 
-            // Event "show_wallets_modal"
-            emitter.emit('show_wallets_modal')
+            // Close modal
+            closeHandler(false)
+
+            setTimeout(() => {
+                // Event "show_wallets_modal"
+                emitter.emit('show_wallets_modal')
+            }, 200)
 
             // Show notification
             notification.notify({
@@ -167,27 +174,27 @@
             // Redirect
             setTimeout(() => router.push('/'))
         }
-    })
+    }
 
 
-    // Event "close_confirm_modal"
-    emitter.on('close_confirm_modal', () => {
+    // Open confirm modal
+    function openConfirmModal() {
+        // Show confirm modal
+        showConfirmModal.value = true
+
+        // Update status
+        store.isAnyModalOpen = true
+    }
+
+
+    // Close confirm modal
+    function closeConfirmModal() {
         // Hide confirm modal
         showConfirmModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Event "close_confirm_modal"
-        emitter.emit('close_confirm_modal')
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 
@@ -202,7 +209,15 @@
         width: 100%;
         height: 100%;
 
+        animation: .25s slideLeft forwards linear;
+
         background: #170232;
+    }
+
+
+    .remove_wallet.closing
+    {
+        animation: .25s slideRight forwards linear;
     }
 
 

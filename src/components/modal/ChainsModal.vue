@@ -1,11 +1,11 @@
 <template>
     <!-- Chains page -->
-    <section class="page_container inner_page_container chains_page">
+    <section class="page_container inner_page_container chains_page" :class="{ closing: isClosing }">
         <div class="cont">
             <!-- Chains page head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_chains_modal')">
+                <button class="back_btn" @click="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -82,19 +82,12 @@
 
 
     <!-- Add IBC channel modal -->
-    <transition name="modal">
     <AddIBCChannelModal v-if="showAddIBCChannelModal" :channelForEdit />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showAddIBCChannelModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, onBeforeMount, onUnmounted } from 'vue'
+    import { ref, inject, onBeforeMount, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { chains, ibc } from 'chain-registry'
     import { imageLoadError, imageLoadSuccess, getNetworkLogo } from '@/utils'
@@ -109,7 +102,8 @@
         chainsList = ref([]),
         searchResult = ref([]),
         channelForEdit = ref(null),
-        showAddIBCChannelModal = ref(false)
+        showAddIBCChannelModal = ref(false),
+        isClosing = ref(false)
 
 
     onBeforeMount(async () => {
@@ -118,11 +112,28 @@
     })
 
 
+    onMounted(() => {
+        // Event "close_add_IBC_channel_modal"
+        emitter.on('close_add_IBC_channel_modal', closeAddIBCChannelModal)
+    })
+
+
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('close_any_modal')
-        emitter.off('close_add_IBC_channel_modal')
+        emitter.off('close_add_IBC_channel_modal', closeAddIBCChannelModal)
     })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_tokens_modal"
+            emitter.emit('close_chains_modal')
+        }, 200)
+    }
 
 
     // Load chains
@@ -175,8 +186,8 @@
         // Set data
         store.IBCSendCurrentChain = chain
 
-        // Event "close_chains_modal"
-        emitter.emit('close_chains_modal')
+        // Close modal
+        closeHandler()
     }
 
 
@@ -216,6 +227,18 @@
     }
 
 
+    // Close add IBC channel modal
+    async function closeAddIBCChannelModal({ reload }) {
+        if (reload) {
+            // Reload chains
+            await loadChains()
+        }
+
+        // Hide add IBC channel modal
+        showAddIBCChannelModal.value = false
+    }
+
+
     // Event "search"
     emitter.on('search', ({ query, source }) => {
         if (source === 'chains') {
@@ -229,28 +252,6 @@
                 }
             }
         }
-    })
-
-
-    // Event "close_add_IBC_channel_modal"
-    emitter.on('close_add_IBC_channel_modal', async ({ reload }) => {
-        if (reload) {
-            // Reload chains
-            await loadChains()
-        }
-
-        // Hide add IBC channel modal
-        showAddIBCChannelModal.value = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide add IBC channel modal
-        showAddIBCChannelModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
     })
 </script>
 
@@ -266,7 +267,15 @@
         width: 100%;
         height: 100%;
 
+        animation: .25s slideLeft forwards linear;
+
         background: #170232;
+    }
+
+
+    .chains_page.closing
+    {
+        animation: .25s slideRight forwards linear;
     }
 
 

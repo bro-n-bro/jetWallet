@@ -182,19 +182,15 @@
 
 
     <!-- Validators modal -->
-    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsModal" unstake="true" />
-    </transition>
 
     <!-- Unstake confirm modal -->
-    <transition name="from_right">
     <UnstakeConfirmModal v-if="showUnstakeConfirmModal" :amount :msgAny />
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, onBeforeMount, computed, onUnmounted, watch } from 'vue'
+    import { ref, inject, onBeforeMount, computed, onUnmounted, onMounted, watch } from 'vue'
     import { useGlobalStore } from '@/store'
     import { getNetworkLogo, formatTokenCost, calcStakedBalancesCost, calcStakedAmount, formatTokenAmount, imageLoadError, calcTokenCost } from '@/utils'
     import { MsgUndelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
@@ -225,13 +221,22 @@
     })
 
 
+    onMounted(() => {
+        // Event "close_unstake_confirm_modal"
+        emitter.on('close_unstake_confirm_modal', closeUnstakeConfirmModal)
+
+        // Event "close_validators_modal"
+        emitter.on('close_validators_modal', closeValidatorsModal)
+    })
+
+
     onUnmounted(() => {
         // Reset data
         store.unstakeCurrentValidator = null
 
         // Unlisten events
-        emitter.off('close_unstake_confirm_modal')
-        emitter.off('close_validators_modal')
+        emitter.off('close_unstake_confirm_modal', closeUnstakeConfirmModal)
+        emitter.off('close_validators_modal', closeValidatorsModal)
     })
 
 
@@ -317,18 +322,18 @@
     }
 
 
-    // Event "close_validators_modal"
-    emitter.on('close_validators_modal', () => {
+    // Close validators modal
+    function closeValidatorsModal() {
         // Hide validators modal
         showValidatorsModal.value = false
-    })
+    }
 
 
-    // Event "close_stake_confirm_modal"
-    emitter.on('close_unstake_confirm_modal', () => {
+    // Close stake confirm modal
+    function closeUnstakeConfirmModal() {
         // Hide stake confirm modal
         showUnstakeConfirmModal.value = false
-    })
+    }
 </script>
 
 

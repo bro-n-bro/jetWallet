@@ -1386,10 +1386,18 @@ input[type='password']::-webkit-credentials-auto-fill-button
     width: 100%;
     height: 100%;
 
+    animation: .2s fadeIn forwards linear;
+
     background: rgba(0, 0, 0, .50);
 
     -webkit-backdrop-filter: blur(2px);
             backdrop-filter: blur(2px);
+}
+
+
+.modal_overlay.closing
+{
+    animation: .2s fadeOut forwards linear;
 }
 
 
@@ -1468,10 +1476,17 @@ input[type='password']::-webkit-credentials-auto-fill-button
     width: 100%;
     padding: 22px 20px;
 
+    animation: .25s slideUp forwards linear;
     pointer-events: auto;
 
     border-radius: 18px 18px 0 0;
     background: radial-gradient(130.57% 114.69% at 50% 0%, #9438f8 0%, #5915a7 50.94%, #350c6b 85.09%);
+}
+
+
+.modal_content .data.closing
+{
+    animation: .25s slideDown forwards linear;
 }
 
 
@@ -1514,58 +1529,83 @@ input[type='password']::-webkit-credentials-auto-fill-button
 
 
 
-/*-----------------
-    Transitions
------------------*/
-.modal-enter-active,
-.modal-leave-active
+/*----------------
+    Animations
+----------------*/
+@keyframes fadeIn
 {
-    transition: transform .4s linear;
-    transform: translateY(0%);
-
-    will-change: transform;
+    from
+    {
+        opacity: 0;
+    }
+    to
+    {
+        opacity: 1;
+    }
 }
 
 
-.modal-enter-from,
-.modal-leave-to
+@keyframes fadeOut
 {
-    transform: translateY(100%);
-}
-
-
-
-.fade-enter-active,
-.fade-leave-active
-{
-    transition: opacity .25s linear;
-
-    opacity: 1;
-
-    will-change: opacity;
-}
-
-
-.fade-enter-from,
-.fade-leave-to
-{
-    opacity: 0;
+    from
+    {
+        opacity: 1;
+    }
+    to
+    {
+        opacity: 0;
+    }
 }
 
 
 
-.from_right-enter-active,
-.from_right-leave-active
+@keyframes slideUp
 {
-    transition: transform .25s linear;
-    transform: translateY(0%);
-
-    will-change: transform;
+    from
+    {
+        transform: translateY(100%);
+    }
+    to
+    {
+        transform: translateY(0%);
+    }
 }
 
 
-.from_right-enter-from,
-.from_right-leave-to
+@keyframes slideDown
 {
-    transform: translateX(100%);
+    from
+    {
+        transform: translateY(0%);
+    }
+    to
+    {
+        transform: translateY(100%);
+    }
+}
+
+
+@keyframes slideLeft
+{
+    from
+    {
+        transform: translateX(100%);
+    }
+    to
+    {
+        transform: translateX(0%);
+    }
+}
+
+
+@keyframes slideRight
+{
+    from
+    {
+        transform: translateX(0%);
+    }
+    to
+    {
+        transform: translateX(100%);
+    }
 }

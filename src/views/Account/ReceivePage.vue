@@ -116,14 +116,7 @@
 
 
     <!-- Amount modal -->
-    <!-- <transition name="modal">
     <AmountModal v-if="showAmountModal" :amount />
-    </transition> -->
-
-    <!-- Overlay -->
-    <!-- <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showAmountModal"></div>
-    </transition> -->
 </template>
 
 
@@ -151,13 +144,6 @@
 
 
     onBeforeMount(() => isShareSupported.value = navigator.share)
-
-
-    onUnmounted(() => {
-        // Unlisten events
-        emitter.off('close_any_modal')
-        emitter.off('close_receive_amount_modal')
-    })
 
 
     // Update qr code
@@ -209,31 +195,21 @@
     // }
 
 
-    // Event "change_receive_amount"
-    emitter.on('change_receive_amount', ({ new_amount }) => {
-        // Set amount
-        amount.value = new_amount
-    })
+    // // Event "change_receive_amount"
+    // emitter.on('change_receive_amount', ({ new_amount }) => {
+    //     // Set amount
+    //     amount.value = new_amount
+    // })
 
 
-    // Event "close_receive_amount_modal"
-    emitter.on('close_receive_amount_modal', () => {
-        // Hide amount modal
-        // showAmountModal.value = false
+    // // Event "close_receive_amount_modal"
+    // emitter.on('close_receive_amount_modal', () => {
+    //     // Hide amount modal
+    //     // showAmountModal.value = false
 
-        // Update status
-        store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide amount modal
-        // showAmountModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    //     // Update status
+    //     store.isAnyModalOpen = false
+    // })
 </script>
 
 

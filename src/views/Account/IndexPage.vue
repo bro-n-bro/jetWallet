@@ -10,7 +10,7 @@
             </KeepAlive>
 
             <!-- Wallet name -->
-            <div class="wallet_name" @click.prevent="openWalletsModal()">
+            <div class="wallet_name" @click.prevent="emitter.emit('show_wallets_modal')">
                 <span>{{ store.currentWalletName }}</span>
 
                 <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arr_ver3"></use></svg>
@@ -72,29 +72,16 @@
 
 
     <!-- wallets modal -->
-    <transition name="modal">
     <WalletsModal v-if="showWalletsModal" />
-    </transition>
 
     <!-- Edit wallet modal -->
-    <transition name="from_right">
     <EditWalletModal v-if="showEditWalletModal" :wallet="editingWallet" />
-    </transition>
 
     <!-- Remove wallet modal -->
-    <transition name="from_right">
     <RemoveWalletModal v-if="showRemoveWalletModal" :wallet="removingWallet" />
-    </transition>
 
     <!-- Stats modal -->
-    <transition name="modal">
     <StatsModal v-if="showStatsModal && store.networks[store.currentNetwork]?.is_staking_available" />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showStatsModal || showWalletsModal"></div>
-    </transition>
 </template>
 
 
@@ -219,16 +206,6 @@
     })
 
 
-    // Open wallets modal
-    function openWalletsModal() {
-        // Show wallets modal
-        showWalletsModal.value = true
-
-        // Update status
-        store.isAnyModalOpen = true
-    }
-
-
     // Open stats modal
     function openStatsModal() {
         // Show stats modal
@@ -280,11 +257,11 @@
 
     // Event "show_edit_wallet_modal"
     emitter.on('show_edit_wallet_modal', (data) => {
-        // Show Edit wallet modal
-        showEditWalletModal.value = true
-
         // Editing wallet
         editingWallet.value = data.wallet
+
+        // Show Edit wallet modal
+        showEditWalletModal.value = true
 
         // Update status
         store.isAnyModalOpen = true
@@ -293,11 +270,11 @@
 
     // Event "show_remove_wallet_modal"
     emitter.on('show_remove_wallet_modal', (data) => {
-        // Show Remove wallet modal
-        showRemoveWalletModal.value = true
-
         // Editing wallet
         removingWallet.value = data.wallet
+
+        // Show Remove wallet modal
+        showRemoveWalletModal.value = true
 
         // Update status
         store.isAnyModalOpen = true
@@ -315,24 +292,26 @@
 
 
     // Event "close_edit_wallet_modal"
-    emitter.on('close_edit_wallet_modal', ({ back }) => {
+    emitter.on('close_edit_wallet_modal', ({ back = false }) => {
         // Hide Edit wallet modal
         showEditWalletModal.value = false
 
         if (back) {
-            // Show wallets modal
-            showWalletsModal.value = true
+            // Event "show_wallets_modal"
+            emitter.emit('show_wallets_modal')
         }
     })
 
 
     // Event "close_remove_wallet_modal"
-    emitter.on('close_remove_wallet_modal', () => {
+    emitter.on('close_remove_wallet_modal', ({ back = false }) => {
         // Hide Remove wallet modal
         showRemoveWalletModal.value = false
 
-        // Show Edit wallet modal
-        showEditWalletModal.value = true
+        if (back) {
+            // Show Edit wallet modal
+            showEditWalletModal.value = true
+        }
     })
 
 
@@ -340,22 +319,6 @@
     emitter.on('close_stats_modal', () => {
         // Hide stats modal
         showStatsModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide stats modal
-        showStatsModal.value = false
-
-        // Hide wallets modal
-        showWalletsModal.value = false
-
-        // Hide Edit wallet modal
-        showEditWalletModal.value = false
 
         // Update status
         store.isAnyModalOpen = false

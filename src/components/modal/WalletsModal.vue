@@ -2,9 +2,9 @@
     <!-- Wallets modal -->
     <section class="modal">
         <div class="modal_content">
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_wallets_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -41,16 +41,21 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { inject, onBeforeMount } from 'vue'
+    import { ref, inject, onBeforeMount, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
 
 
     const store = useGlobalStore(),
-        emitter = inject('emitter')
+        emitter = inject('emitter'),
+        isClosing = ref(false)
 
 
     onBeforeMount(async () => {
@@ -59,20 +64,44 @@
     })
 
 
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_wallets_modal"
+            emitter.emit('close_wallets_modal')
+        }, 200)
+    }
+
+
     // Set new current wallet
     function setWallet(wallet) {
         // Set current wallet ID
         store.setCurrentWalletID(wallet.id)
 
-        // Event "close_wallets_modal"
-        emitter.emit('close_wallets_modal')
+        // Close wallets modal
+        closeHandler()
     }
 
 
     // Edit wallet modal
     function editWalletModal(wallet) {
-        // Event "close_wallets_modal"
-        emitter.emit('close_wallets_modal')
+        // Close wallets modal
+        closeHandler()
 
         // Event "show_edit_wallet_modal"
         emitter.emit('show_edit_wallet_modal', {

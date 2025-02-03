@@ -1,11 +1,11 @@
 <template>
     <!-- Validators page -->
-    <section class="page_container inner_page_container validators_page">
+    <section class="page_container inner_page_container validators_page" :class="{ closing: isClosing }">
         <div class="cont">
             <!-- Validators page head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_validators_modal')">
+                <button class="back_btn" @click="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -111,7 +111,8 @@
         emitter = inject('emitter'),
         isValidatorsGot = ref(false),
         validators = ref([]),
-        searchResult = ref([])
+        searchResult = ref([]),
+        isClosing = ref(false)
 
 
     onBeforeMount(async() => {
@@ -124,7 +125,7 @@
                 validators.value = await store.getUserValidators()
             } else {
                 // Get validators (Exclude validator from)
-                validators.value = await store.getAllValidators().filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
+                validators.value = (await store.getAllValidators()).filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
             }
         } else {
             // Get validators
@@ -144,6 +145,18 @@
         // Hide loader
         isValidatorsGot.value = true
     })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_validators_modal"
+            emitter.emit('close_validators_modal')
+        }, 200)
+    }
 
 
     // Is staked validator
@@ -202,8 +215,8 @@
             store.stakeCurrentValidator = validator
         }
 
-        // Event "close_validators_modal"
-        emitter.emit('close_validators_modal')
+        // Close modal
+        closeHandler()
     }
 
 
@@ -235,7 +248,15 @@
         width: 100%;
         height: 100%;
 
+        animation: .25s slideLeft forwards linear;
+
         background: #170232;
+    }
+
+
+    .validators_page.closing
+    {
+        animation: .25s slideRight forwards linear;
     }
 
 

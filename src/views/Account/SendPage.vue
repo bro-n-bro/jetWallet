@@ -213,19 +213,13 @@
 
 
     <!-- Chains modal -->
-    <transition name="from_right">
     <ChainsModal v-if="showChainsModal" />
-    </transition>
 
     <!-- Tokens modal -->
-    <transition name="from_right">
     <TokensModal v-if="showTokensModal" :currentToken="balance" />
-    </transition>
 
     <!-- Send confirm modal -->
-    <transition name="from_right">
     <SendConfirmModal v-if="showSendConfirmModal" :balance :amount :msgAny :type="activeTab" />
-    </transition>
 </template>
 
 
@@ -296,13 +290,24 @@
         // Set roller params
         rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
         rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+
+
+        // Event "close_chains_modal"
+        emitter.on('close_chains_modal', closeChainsModal)
+
+        // Event "close_tokens_modal"
+        emitter.on('close_tokens_modal', closeTokensModal)
+
+        // Event "close_send_confirm_modal"
+        emitter.on('close_send_confirm_modal', closeSendConfirmModal)
     })
 
 
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_send_confirm_modal')
+        emitter.off('close_chains_modal', closeChainsModal)
+        emitter.off('close_tokens_modal', closeTokensModal)
+        emitter.off('close_send_confirm_modal', closeSendConfirmModal)
 
         Telegram.WebApp.offEvent('qrTextReceived')
     })
@@ -451,8 +456,8 @@
             address.value = convertAddress(store.currentAddress, balance.value.chain_info.bech32_prefix)
         }
 
-        // Close any modals
-        emitter.emit('close_any_modal')
+        // Close any modal
+        emitter.emit('update_data')
     }
 
 
@@ -629,13 +634,6 @@
     }
 
 
-    // Open tokens modal
-    function openTokensModal() {
-        // Show tokens modal
-        showTokensModal.value = true
-    }
-
-
     // Open chains modal
     function openChainsModal() {
         // Show chains modal
@@ -643,35 +641,32 @@
     }
 
 
-    // Event "close_chains_modal"
-    emitter.on('close_chains_modal', () => {
-        // Hide chains modal
+    // Close chains modal
+    function closeChainsModal() {
+        // Hide send confirm modal
         showChainsModal.value = false
-    })
+    }
 
 
-    // Event "close_tokens_modal"
-    emitter.on('close_tokens_modal', () => {
+    // Open tokens modal
+    function openTokensModal() {
+        // Show tokens modal
+        showTokensModal.value = true
+    }
+
+
+    // Close tokens modal
+    function closeTokensModal() {
         // Hide tokens modal
         showTokensModal.value = false
-    })
+    }
 
 
-    // Event "close_send_confirm_modal"
-    emitter.on('close_send_confirm_modal', () => {
+    // Close send confirm modal
+    function closeSendConfirmModal() {
         // Hide send confirm modal
         showSendConfirmModal.value = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide tokens modal
-        showTokensModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 

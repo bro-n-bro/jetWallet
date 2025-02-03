@@ -2,9 +2,9 @@
     <!-- Add IBC channel modal -->
     <section class="modal">
         <div class="modal_content">
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_add_IBC_channel_modal', { reload: false })">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -72,14 +72,17 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { ref, inject, onBeforeMount, onUnmounted, computed } from 'vue'
+    import { ref, inject, onBeforeMount, onMounted, onUnmounted, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
-    // import { chains } from 'chain-registry'
 
 
     const props = defineProps(['channelForEdit']),
@@ -89,7 +92,6 @@
         notification = useNotification(),
         userChannels = ref(null),
         chainIDInput = ref(null),
-        // currentChain = ref(null),
         chain_ID = ref(props.channelForEdit?.info.chain_id || ''),
         channel_ID = ref(props.channelForEdit?.channel_id || ''),
         isAlreadyExists = ref(false),
@@ -97,7 +99,8 @@
             channel_ID.value.length &&
             chain_ID.value.length &&
             !isAlreadyExists.value
-        ))
+        )),
+        isClosing = ref(false)
 
 
     onBeforeMount(async () => {
@@ -106,33 +109,30 @@
     })
 
 
-    onUnmounted(() => {
-        // Unlisten events
-        emitter.off('close_add_IBC_channel_modal')
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
     })
 
 
-    // Validate chain ID
-    // function validateChainId() {
-    //     // Get chain info from chain registry
-    //     let chainInfo = chains.find(el => el.chain_id === chain_ID.value)
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
 
-    //     if (chainInfo !== undefined) {
-    //         // Set data
-    //         currentChain.value = chainInfo
 
-    //         // Toggle classes
-    //         chainIDInput.value.classList.remove('error')
-    //         chainIDInput.value.classList.add('success')
-    //     } else {
-    //         // Reset data
-    //         currentChain.value = null
+    // Close modal
+    function closeHandler(reload = false) {
+        // Closing animation
+        isClosing.value = true
 
-    //         // Toggle classes
-    //         chainIDInput.value.classList.remove('success')
-    //         chainIDInput.value.classList.add('error')
-    //     }
-    // }
+        setTimeout(() => {
+            // Event "close_wallets_modal"
+            emitter.emit('close_add_IBC_channel_modal', {
+                reload: reload
+            })
+        }, 200)
+    }
 
 
     // Paste from clipboard
@@ -141,9 +141,6 @@
             if (type === 'chain') {
                 // Set data
                 chain_ID.value = clipboardData
-
-                // Validate chain ID
-                // validateChainId()
             }
 
             if (type === 'channel') {
@@ -208,8 +205,8 @@
                 type: 'success',
             })
 
-            // Event "close_add_IBC_channel_modal"
-            emitter.emit('close_add_IBC_channel_modal', { reload: true })
+            // Close modal
+            closeHandler(true)
         } catch (error) {
             console.log(error)
         }

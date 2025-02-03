@@ -207,19 +207,15 @@
 
 
     <!-- Validators modal -->
-    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsModal" />
-    </transition>
 
     <!-- Stake confirm modal -->
-    <transition name="from_right">
     <StakeConfirmModal v-if="showStakeConfirmModal" :amount :msgAny />
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, onUnmounted, onBeforeMount, watch, computed } from 'vue'
+    import { ref, inject, onUnmounted, onBeforeMount, watch, computed, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { getNetworkLogo, formatTokenCost, calcTokenCost, calcStakedBalancesCost, calcAvailableAmount, calcStakedAmount, formatTokenAmount, imageLoadError } from '@/utils'
     import { MsgDelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
@@ -250,10 +246,19 @@
     })
 
 
+    onMounted(() => {
+        // Event "close_stake_confirm_modal"
+        emitter.on('close_stake_confirm_modal', closeStakeConfirmModal)
+
+        // Event "close_validators_modal"
+        emitter.on('close_validators_modal', closeValidatorsModal)
+    })
+
+
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('close_stake_confirm_modal')
-        emitter.off('close_validators_modal')
+        emitter.off('close_stake_confirm_modal', closeStakeConfirmModal)
+        emitter.off('close_validators_modal', closeValidatorsModal)
     })
 
 
@@ -333,18 +338,18 @@
     }
 
 
-    // Event "close_validators_modal"
-    emitter.on('close_validators_modal', () => {
+    // Close validators modal
+    function closeValidatorsModal() {
         // Hide validators modal
         showValidatorsModal.value = false
-    })
+    }
 
 
-    // Event "close_stake_confirm_modal"
-    emitter.on('close_stake_confirm_modal', () => {
+    // Close stake confirm modal
+    function closeStakeConfirmModal() {
         // Hide stake confirm modal
         showStakeConfirmModal.value = false
-    })
+    }
 </script>
 
 

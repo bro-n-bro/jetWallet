@@ -2,9 +2,9 @@
     <!-- Stats modal -->
     <section class="modal">
         <div class="modal_content">
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_stats_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -100,11 +100,15 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { ref, inject, onBeforeMount } from 'vue'
+    import { ref, inject, onBeforeMount, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenAmount, formatTokenCost, calcTokenCost, calcStakedAmount, getNetworkLogo, calcAvailableAmount } from '@/utils'
 
@@ -112,7 +116,8 @@
     const store = useGlobalStore(),
         emitter = inject('emitter'),
         personalAPR = ref(0),
-        dailyProfit = ref(0)
+        dailyProfit = ref(0),
+        isClosing = ref(false)
 
 
     onBeforeMount(async () => {
@@ -122,6 +127,30 @@
         // Calc daily profit
         calcDailyProfit()
     })
+
+
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_stats_modal"
+            emitter.emit('close_stats_modal')
+        }, 200)
+    }
 
 
     // Calc personal APR

@@ -2,9 +2,9 @@
     <!-- Wring seeds modal -->
     <section class="modal">
         <div class="modal_content">
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_wrong_seeds_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -26,21 +26,50 @@
                 <!-- Modal buttons -->
                 <div class="btns">
                     <!-- Try button -->
-                    <button class="btn" @click.prevent="emitter.emit('close_wrong_seeds_modal')">
+                    <button class="btn" @click.prevent="closeHandler()">
                         <span>{{ $t('message.btn_try') }}</span>
                     </button>
                 </div>
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { inject } from 'vue'
+    import { ref, inject, onMounted, onUnmounted } from 'vue'
 
 
-    const emitter = inject('emitter')
+    const emitter = inject('emitter'),
+        isClosing = ref(false)
+
+
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_wrong_seeds_modal"
+            emitter.emit('close_wrong_seeds_modal')
+        }, 200)
+    }
 </script>
 
 
@@ -65,8 +94,17 @@
         width: 220px;
         padding: 20px;
 
+        animation: .25s fadeIn forwards linear;
+
         border-radius: 18px;
     }
+
+
+    .modal_content .data.closing
+    {
+        animation: .2s fadeOut forwards linear;
+    }
+
 
     .modal_content .data:before
     {

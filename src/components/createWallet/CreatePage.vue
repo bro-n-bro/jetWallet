@@ -151,19 +151,12 @@
 
 
     <!-- Derivation path modal -->
-    <transition name="fade">
     <DerivationPathModal v-if="showDerivationPathModal" />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_derivation_path_modal')" v-if="showDerivationPathModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { onBeforeMount, ref, inject, watch, computed, nextTick } from 'vue'
+    import { ref, inject, watch, computed, nextTick, onBeforeMount, onMounted, onUnmounted } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -207,6 +200,18 @@
 
         // Hide loader
         loading.value = false
+    })
+
+
+    onMounted(() => {
+        // Event "close_derivation_path_modal"
+        emitter.on('close_derivation_path_modal', closeDerivationPathModal)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_derivation_path_modal', closeDerivationPathModal)
     })
 
 
@@ -273,11 +278,11 @@
     }
 
 
-    // Event "close_derivation_path_modal"
-    emitter.on('close_derivation_path_modal', () => {
+    // Close derivation path modal
+    function closeDerivationPathModal() {
         // Hide derivation path modal
         showDerivationPathModal.value = false
-    })
+    }
 </script>
 
 

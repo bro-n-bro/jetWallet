@@ -3,9 +3,9 @@
     <section class="modal">
         <div class="modal_content">
             <!-- Receive amount data -->
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_receive_amount_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -37,11 +37,15 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { ref, inject } from 'vue'
+    import { ref, inject, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { calcTokenCost, formatTokenCost } from '@/utils'
 
@@ -49,7 +53,32 @@
     const props = defineProps(['amount']),
         store = useGlobalStore(),
         emitter = inject('emitter'),
-        amount = ref(props.amount)
+        amount = ref(props.amount),
+        isClosing = ref(false)
+
+
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_receive_amount_modal"
+            emitter.emit('close_receive_amount_modal')
+        }, 200)
+    }
 
 
     // Validate amount

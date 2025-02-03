@@ -59,7 +59,7 @@
 
                     <!-- Show seed phrase -->
                     <div class="show_seed_phrase" v-if="failures >= store.confirmSeedsErrorLimit">
-                        <button class="btn" @click.prevent="emitter.emit('show_seed_phrase_hint_modal')">
+                        <button class="btn" @click.prevent="openSeedPhraseHintModal()">
                             {{ $t('message.btn_show_seed_phrase') }}
                         </button>
                     </div>
@@ -83,24 +83,15 @@
 
 
     <!-- Wrong seeds modal -->
-    <transition name="fade">
     <WrongSeedsModal v-if="showWrongSeedsModal" />
-    </transition>
 
     <!-- Seed phrase hint modal -->
-    <transition name="modal">
     <SeedPhraseHintModal v-if="showSeedPhraseHintModal" :mnemonic="mnemonic" />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showWrongSeedsModal || showSeedPhraseHintModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, onBeforeMount, inject } from 'vue'
+    import { ref, onBeforeMount, onMounted, onUnmounted, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -147,6 +138,22 @@
 
         // Hide loader
         loading.value = false
+    })
+
+
+    onMounted(() => {
+        // Event "close_wrong_seeds_modal"
+        emitter.on('close_wrong_seeds_modal', closeWrongSeedsModal)
+
+        // Event "close_seed_phrase_hint_modal"
+        emitter.on('close_seed_phrase_hint_modal', closeSeedPhraseHintModal)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_wrong_seeds_modal', closeWrongSeedsModal)
+        emitter.off('close_seed_phrase_hint_modal', closeSeedPhraseHintModal)
     })
 
 
@@ -268,8 +275,8 @@
     }
 
 
-    // Event "close_wrong_seeds_modal"
-    emitter.on('close_wrong_seeds_modal', () => {
+    // Close wrong seeds modal
+    function closeWrongSeedsModal() {
         // Hide wrong seeds modal
         showWrongSeedsModal.value = false
 
@@ -279,40 +286,37 @@
         // Generate options
         wordOneOptions.value = generateOptions(mnemonicArr.value[wordOneNumber.value - 1])
         wordTwoOptions.value = generateOptions(mnemonicArr.value[wordTwoNumber.value - 1])
-    })
+    }
 
 
-    // Event "show_seed_phrase_hint_modal"
-    emitter.on('show_seed_phrase_hint_modal', () => {
+    // Open seed phrase hint modal
+    function openSeedPhraseHintModal() {
         // Show seed phrase hint modal
         showSeedPhraseHintModal.value = true
 
         // Update status
         store.isAnyModalOpen = true
-    })
+    }
 
 
-    // Event "close_seed_phrase_hint_modal"
-    emitter.on('close_seed_phrase_hint_modal', () => {
+    // Close seed phrase hint modal
+    function closeSeedPhraseHintModal() {
         // Reset errors limit
         failures.value = 0
+
+        // Get random words
+        getRandomWords()
+
+        // Generate options
+        wordOneOptions.value = generateOptions(mnemonicArr.value[wordOneNumber.value - 1])
+        wordTwoOptions.value = generateOptions(mnemonicArr.value[wordTwoNumber.value - 1])
 
         // Hide seed phrase hint modal
         showSeedPhraseHintModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Event "close_seed_phrase_hint_modal"
-        emitter.emit('close_seed_phrase_hint_modal')
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 

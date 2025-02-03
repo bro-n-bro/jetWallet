@@ -101,24 +101,15 @@
 
 
     <!-- Sign transaction modal -->
-    <transition name="modal">
     <SignTxModal v-if="showSignTxModal"/>
-    </transition>
 
     <!-- Tx warning modal -->
-    <!-- <transition name="modal">
     <TxWarningModal v-if="showTxWarningModal"/>
-    </transition> -->
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showSignTxModal || showTxWarningModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, onUnmounted, onBeforeMount } from 'vue'
+    import { ref, inject, onUnmounted, onBeforeMount, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -161,11 +152,20 @@
     })
 
 
+    onMounted(() => {
+        // Event "auth"
+        emitter.on('auth', auth)
+
+        // Event "close_sign_tx_modal"
+        emitter.on('close_sign_tx_modal', closeSignTxModal)
+    })
+
+
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_sign_tx_modal')
-        emitter.off('close_tx_warning_modal')
+        emitter.off('auth', auth)
+        emitter.off('close_sign_tx_modal', closeSignTxModal)
+        // emitter.off('close_tx_warning_modal')
     })
 
 
@@ -268,50 +268,34 @@
     }
 
 
-    // Event "auth"
-    emitter.on('auth', () => {
-        // Hide SignTx modal
+    // Close SignTx modal
+    function closeSignTxModal() {
+        // Show SignTx modal
         showSignTxModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
+    }
+
+
+    // Auth
+    function auth() {
+        // Close modal
+        closeHandler()
 
         // Claim tokens
         claim()
-    })
+    }
 
 
-    // Event "close_sign_tx_modal"
-    emitter.on('close_sign_tx_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
+    // // Event "close_tx_warning_modal"
+    // emitter.on('close_tx_warning_modal', () => {
+    //     // Hide Tx warning modal
+    //     // showTxWarningModal.value = false
 
-        // Update status
-        store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_tx_warning_modal"
-    emitter.on('close_tx_warning_modal', () => {
-        // Hide Tx warning modal
-        // showTxWarningModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-
-        // Hide Tx warning modal
-        // showTxWarningModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    //     // Update status
+    //     store.isAnyModalOpen = false
+    // })
 </script>
 
 

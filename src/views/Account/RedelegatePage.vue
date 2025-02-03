@@ -229,33 +229,19 @@
 
 
     <!-- Validators modal -->
-    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsFromModal" redelegate="from" />
-    </transition>
-
-    <transition name="from_right">
     <ValidatorsModal v-if="showValidatorsToModal" redelegate="to" />
-    </transition>
 
     <!-- Redelegations modal -->
-    <transition name="modal">
     <RedelegationsModal v-if="showRedelegationsModal" :redelegations="store.redelegateValidatorFrom?.redelegations" />
-    </transition>
 
     <!-- Redelegate confirm modal -->
-    <transition name="from_right">
     <RedelegateConfirmModal v-if="showRedelegateConfirmModal" :amount :msgAny />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showRedelegationsModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, onBeforeMount, computed, onUnmounted, watch } from 'vue'
+    import { ref, inject, onBeforeMount, computed, onUnmounted, onMounted, watch } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenCost, formatTokenAmount, imageLoadError, calcTokenCost } from '@/utils'
     import { MsgBeginRedelegate } from 'cosmjs-types/cosmos/staking/v1beta1/tx'
@@ -308,15 +294,27 @@
     })
 
 
+    onMounted(() => {
+        // Event "close_redelegations_modal"
+        emitter.on('close_redelegations_modal', closeRedelegationsModal)
+
+        // Event "close_redelegate_confirm_modal"
+        emitter.on('close_redelegate_confirm_modal', closeRedelegateConfirmModal)
+
+        // Event "close_validators_modal"
+        emitter.on('close_validators_modal', closeValidatorsModal)
+    })
+
+
     onUnmounted(() => {
         // Reset data
         store.redelegateValidatorFrom = null
         store.redelegateValidatorTo = null
 
         // Unlisten events
-        emitter.off('close_redelegations_modal')
-        emitter.off('close_redelegate_confirm_modal')
-        emitter.off('close_validators_modal')
+        emitter.off('close_redelegations_modal', closeRedelegationsModal)
+        emitter.off('close_redelegate_confirm_modal', closeRedelegateConfirmModal)
+        emitter.off('close_validators_modal', closeValidatorsModal)
     })
 
 
@@ -415,6 +413,13 @@
     }
 
 
+    // Open validators to modal
+    function openValidatorsToModal() {
+        // Show validators modal
+        showValidatorsToModal.value = true
+    }
+
+
     // Open redelegations modal
     function openRedelegationsModal() {
         // Show redelegations modal
@@ -425,46 +430,29 @@
     }
 
 
-    // Open validators to modal
-    function openValidatorsToModal() {
-        // Show validators modal
-        showValidatorsToModal.value = true
+    // Close redelegations modal
+    function closeRedelegationsModal() {
+        // Hide redelegations modal
+        showRedelegationsModal.value = false
+
+        // Update status
+        store.isAnyModalOpen = false
     }
 
 
-    // Event "close_validators_modal"
-    emitter.on('close_validators_modal', () => {
+    // Close validators modal
+    function closeValidatorsModal() {
         // Hide validators modal
         showValidatorsFromModal.value = false
         showValidatorsToModal.value = false
-    })
+    }
 
 
-    // Event "close_stake_confirm_modal"
-    emitter.on('close_redelegate_confirm_modal', () => {
+    // Close redelegate confirm modal
+    function closeRedelegateConfirmModal() {
         // Hide redelegate confirm modal
         showRedelegateConfirmModal.value = false
-    })
-
-
-    // Event "close_redelegations_modal"
-    emitter.on('close_redelegations_modal', () => {
-        // Hide redelegations modal
-        showRedelegationsModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide redelegations modal
-        showRedelegationsModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 

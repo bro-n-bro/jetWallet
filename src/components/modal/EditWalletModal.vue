@@ -1,11 +1,11 @@
 <template>
     <!-- Edit wallet modal -->
-    <section class="page_container inner_page_container edit_wallet">
+    <section class="page_container inner_page_container edit_wallet" :class="{ closing: isClosing }">
         <div class="cont">
             <!-- Edit wallet head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_edit_wallet_modal', { back: true })">
+                <button class="back_btn" @click="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -82,20 +82,13 @@
     </section>
 
 
-    <!-- Sign transaction modal -->
-    <transition name="modal">
+    <!-- Confirm modal -->
     <ConfirmModal v-if="showConfirmModal"/>
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showConfirmModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { inject, ref, onUnmounted, onBeforeMount } from 'vue'
+    import { ref, inject, onBeforeMount, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useNotification } from '@kyvg/vue3-notification'
     import { useClipboard } from '@vueuse/core'
@@ -116,7 +109,8 @@
         mnemonic = ref(null),
         showConfirmModal = ref(false),
         { copy } = useClipboard(),
-        createdBy = ref('')
+        createdBy = ref(''),
+        isClosing = ref(false)
 
 
     onBeforeMount(async () => {
@@ -124,12 +118,34 @@
     })
 
 
+    onMounted(() => {
+        // Event "auth"
+        emitter.on('auth', auth)
+
+        // Event "close_confirm_modal"
+        emitter.on('close_confirm_modal', closeConfirmModal)
+    })
+
+
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_confirm_modal')
-        emitter.off('close_any_modal')
+        emitter.off('auth', auth)
+        emitter.off('close_confirm_modal', closeConfirmModal)
     })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_edit_wallet_modal"
+            emitter.emit('close_edit_wallet_modal', {
+                back: true
+            })
+        }, 200)
+    }
 
 
     // Validate wallet name
@@ -163,8 +179,8 @@
             new_name: newName.value
         })
 
-        // Event "close_edit_wallet_modal"
-        emitter.emit('close_edit_wallet_modal', { back: true })
+        // Close modal
+        closeHandler()
 
         // Event "show_wallets_modal"
         emitter.emit('show_wallets_modal')
@@ -181,7 +197,7 @@
 
 
     // Remove wallet
-    async function remove(wallet) {
+    function remove(wallet) {
         // Event "show_remove_wallet_modal"
         emitter.emit('show_remove_wallet_modal', { wallet })
     }
@@ -209,6 +225,13 @@
     }
 
 
+    // Event "auth"
+    async function auth() {
+        // Get mnemonic
+        mnemonic.value = await store.getSecret(true)
+    }
+
+
     // Open confirm modal
     function openConfirmModal() {
         // Show confirm modal
@@ -219,34 +242,14 @@
     }
 
 
-    // Event "auth"
-    emitter.on('auth', async () => {
-        // Event "close_confirm_modal"
-        emitter.emit('close_confirm_modal')
-
-        // Get mnemonic
-        mnemonic.value = await store.getSecret(true)
-    })
-
-
     // Event "close_confirm_modal"
-    emitter.on('close_confirm_modal', () => {
+    function closeConfirmModal() {
         // Hide confirm modal
         showConfirmModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Event "close_confirm_modal"
-        emitter.emit('close_confirm_modal')
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 
@@ -261,7 +264,15 @@
         width: 100%;
         height: 100%;
 
+        animation: .25s slideLeft forwards linear;
+
         background: #170232;
+    }
+
+
+    .edit_wallet.closing
+    {
+        animation: .25s slideRight forwards linear;
     }
 
 

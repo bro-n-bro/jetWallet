@@ -2,9 +2,9 @@
     <!-- Derivation path modal -->
     <section class="modal">
         <div class="modal_content">
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_derivation_path_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -26,14 +26,31 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { inject } from 'vue'
+    import { ref, inject } from 'vue'
 
 
-    const emitter = inject('emitter')
+    const emitter = inject('emitter'),
+        isClosing = ref(false)
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_derivation_path_modal"
+            emitter.emit('close_derivation_path_modal')
+        }, 200)
+    }
 </script>
 
 
