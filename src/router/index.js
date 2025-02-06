@@ -208,7 +208,7 @@ router.beforeResolve(async (to, from, next) => {
 	to.matched.some(record => {
 		let access = record.meta.accessDenied
 
-		if(access.length) {
+		if (access.length) {
 			// Not register
 			if (access.includes('not_register') && DBData.isRegister == undefined) {
 				// Redirect
