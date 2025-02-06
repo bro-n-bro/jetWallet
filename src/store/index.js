@@ -285,21 +285,21 @@ export const useGlobalStore = defineStore('global', {
 
                 // Wait balances
                 if (this.networks[this.currentNetwork].is_staking_available) {
-                    Promise.all([
+                    await Promise.all([
                         this.getBalances(),
                         this.getStakedBalances()
-                    ]).then(() => {
-                        // Init status
-                        this.isInitialized = true
-                    })
+                    ])
+
+                    // Init status
+                    this.isInitialized = true
                 } else {
-                    Promise.all([
+                    await Promise.all([
                         this.getBalances()
-                    ]).then(() => {
-                        // Init status
-                        this.isInitializing = false
-                        this.isInitialized = true
-                    })
+                    ])
+
+                    // Init status
+                    this.isInitializing = false
+                    this.isInitialized = true
                 }
             } catch(error) {
                 console.log(error)
