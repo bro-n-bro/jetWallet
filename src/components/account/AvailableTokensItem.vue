@@ -28,7 +28,7 @@
             <div class="amount">
                 <!-- Token amount value -->
                 <div class="val">
-                    {{ formatTokenAmount(props.balance.amount, props.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+                    {{ formatTokenAmount(props.balance.amount, props.balance.exponent).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 7 }).replace(',', '.') }}
                 </div>
 
                 <!-- Token amount cost -->

@@ -206,6 +206,14 @@
     })
 
 
+    watch(computed(() => store.currentNetwork), () => {
+        if (!store.networks[store.currentNetwork].is_staking_available) {
+            // Swiper move slides
+            swiperEl.value.swiper.slideTo(0, 500)
+        }
+    })
+
+
     // Open stats modal
     function openStatsModal() {
         // Show stats modal

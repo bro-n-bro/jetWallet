@@ -270,18 +270,19 @@ export const useGlobalStore = defineStore('global', {
                         break
                 }
 
+                await Promise.all([
+                    // Get currencies price / check cache
+                    this.getCurrenciesPrice(),
 
-                // Get currencies price / check cache
-                await this.getCurrenciesPrice()
+                    // Get APR for current networke / check cache
+                    this.getCurrentNetworkAPR(),
 
-                // Get APR for current networke / check cache
-                await this.getCurrentNetworkAPR()
+                    // Connect to websocket
+                    this.connectWebsocket(),
 
-                // Connect to websocket
-                await this.connectWebsocket()
-
-                // Is cosmos SDK version support unstaking cancel / check cache
-                await this.isUnstakingCancelSupport()
+                    // Is cosmos SDK version support unstaking cancel / check cache
+                    this.isUnstakingCancelSupport()
+                ])
 
                 // Wait balances
                 if (this.networks[this.currentNetwork].is_staking_available) {
