@@ -16,7 +16,7 @@ import gravitybridge from '@/store/networks/gravitybridge'
 // import localbostrom from '@/store/networks/localbostrom'
 import neutron from '@/store/networks/neutron'
 // import mocha from '@/store/networks/mocha'
-import omniflix from '@/store/networks/omniflix'
+import omniflixhub from '@/store/networks/omniflix'
 import pion from '@/store/networks/pion'
 import stride from '@/store/networks/stride'
 
@@ -104,7 +104,7 @@ export const useGlobalStore = defineStore('global', {
             neutron: Object.assign(neutron, networksAdditionalOptions),
             // mocha: Object.assign(mocha, networksAdditionalOptions),
             // localbostrom: Object.assign(localbostrom, networksAdditionalOptions)
-            omniflix: Object.assign(omniflix, networksAdditionalOptions),
+            omniflixhub: Object.assign(omniflixhub, networksAdditionalOptions),
             pion: Object.assign(pion, networksAdditionalOptions),
             stride: Object.assign(stride, networksAdditionalOptions),
         },

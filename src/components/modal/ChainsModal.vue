@@ -74,7 +74,7 @@
 
                 <!-- Empty search -->
                 <div class="empty" v-else>
-                    {{ $t('message.search_empty_validator') }}
+                    {{ $t('message.search_empty_chains') }}
                 </div>
             </div>
         </div>
