@@ -80,7 +80,7 @@
             // Enough status
             store.TxFeeIsEnough()
         } catch (error) {
-            console.log(error)
+            console.error(`Components/TxFee.vue: ${error.message}`)
         }
     })
 

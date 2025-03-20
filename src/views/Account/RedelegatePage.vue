@@ -289,8 +289,12 @@
         store.redelegateValidatorFrom = null
         store.redelegateValidatorTo = null
 
-        // Get redelegations
-        await store.getRedelegations()
+        try {
+            // Get redelegations
+            await store.getRedelegations()
+        } catch (error) {
+            console.error(`Account/RedelegatePage.vue: ${error.message}`)
+        }
     })
 
 

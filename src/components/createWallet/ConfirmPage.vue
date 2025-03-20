@@ -125,19 +125,23 @@
 
 
     onBeforeMount(async () => {
-        // Get mnemonic
-        mnemonic.value = await store.getSecret()
-        mnemonicArr.value = mnemonic.value.split(' ')
+        try {
+            // Get mnemonic
+            mnemonic.value = await store.getSecret()
+            mnemonicArr.value = mnemonic.value.split(' ')
 
-        // Get random words
-        getRandomWords()
+            // Get random words
+            getRandomWords()
 
-        // Generate options
-        wordOneOptions.value = generateOptions(mnemonicArr.value[wordOneNumber.value - 1])
-        wordTwoOptions.value = generateOptions(mnemonicArr.value[wordTwoNumber.value - 1])
+            // Generate options
+            wordOneOptions.value = generateOptions(mnemonicArr.value[wordOneNumber.value - 1])
+            wordTwoOptions.value = generateOptions(mnemonicArr.value[wordTwoNumber.value - 1])
 
-        // Hide loader
-        loading.value = false
+            // Hide loader
+            loading.value = false
+        } catch (error) {
+            console.error(`Components/CreateWallet/ConfirmPage.vue: ${error.message}`)
+        }
     })
 
 
@@ -231,8 +235,12 @@
         let result = validateAnswers()
 
         if (result) {
-            // Save
-            await save()
+            try {
+                // Save
+                await save()
+            } catch (error) {
+                console.error(`Components/CreateWallet/ConfirmPage.vue: ${error.message}`)
+            }
         } else {
             // Set a failed attempt
             failures.value++
@@ -249,25 +257,29 @@
     // Save
     async function save() {
         if (props.isAdding) {
-            // Save in DB
-            await store.createWallet({
-                isAdding: true
-            })
+            try {
+                // Save in DB
+                await store.createWallet({
+                    isAdding: true
+                })
 
-            // Redirect
-            router.push('/account')
+                // Redirect
+                router.push('/account')
 
-            // Event "show_wallets_modal"
-            emitter.emit('show_wallets_modal')
+                // Event "show_wallets_modal"
+                emitter.emit('show_wallets_modal')
 
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: 1000,
-                title: i18n.global.t('message.notification_wallet_added_success'),
-                type: 'success',
-            })
+                // Show notification
+                notification.notify({
+                    group: 'default',
+                    speed: 200,
+                    duration: 1000,
+                    title: i18n.global.t('message.notification_wallet_added_success'),
+                    type: 'success',
+                })
+            } catch (error) {
+                console.error(`Components/CreateWallet/ConfirmPage.vue: ${error.message}`)
+            }
         } else {
             // Redirect
             router.push('/create_pin')

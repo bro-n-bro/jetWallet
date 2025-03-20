@@ -195,11 +195,15 @@
 
 
     onBeforeMount(async () => {
-        // Generate wallet
-        wallet.value = await generateWallet(count.value)
+        try {
+            // Generate wallet
+            wallet.value = await generateWallet(count.value)
 
-        // Hide loader
-        loading.value = false
+            // Hide loader
+            loading.value = false
+        } catch (error) {
+            console.error(`Components/CreateWallet/CreatePage.vue: ${error.message}`)
+        }
     })
 
 
@@ -216,24 +220,32 @@
 
 
     watch(computed(() => loading.value), async () => {
-        if (!loading.value) {
-            // Wait
-            await nextTick()
+        try {
+            if (!loading.value) {
+                // Wait
+                await nextTick()
 
-            // Set roller params
-            rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
-            rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+                // Set roller params
+                rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+                rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+            }
+        } catch (error) {
+            console.error(`Components/CreateWallet/CreatePage.vue: ${error.message}`)
         }
     })
 
 
     watch(computed(() => activeTab.value), async () => {
-        // Update roller params
-        rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
-        rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
+        try {
+            // Update roller params
+            rollerWidth.value = tabs[activeTab.value - 1].value.offsetWidth
+            rollerOffsetLeft.value = tabs[activeTab.value - 1].value.offsetLeft
 
-        // Generate wallet
-        wallet.value = await generateWallet(count.value)
+            // Generate wallet
+            wallet.value = await generateWallet(count.value)
+        } catch (error) {
+            console.error(`Components/CreateWallet/CreatePage.vue: ${error.message}`)
+        }
     })
 
 
@@ -261,20 +273,24 @@
 
     // Save wallet
     async function saveWallet() {
-        // Show loader
-        loading.value = true
+        try {
+            // Show loader
+            loading.value = true
 
-        // Save in DB
-        await store.setSecret(wallet.value.secret.data)
+            // Save in DB
+            await store.setSecret(wallet.value.secret.data)
 
-        // Save derivation path
-        store.tempDerivationPath = `m/44'/118'/${derivationPathPart1.value}'/${derivationPathPart2.value}/${derivationPathPart3.value}`
+            // Save derivation path
+            store.tempDerivationPath = `m/44'/118'/${derivationPathPart1.value}'/${derivationPathPart2.value}/${derivationPathPart3.value}`
 
-        props.isAdding
-            // Go to confirm
-            ? router.push('/add_wallet/confirm')
-            // Go to confirm
-            : router.push('/confirm_wallet')
+            props.isAdding
+                // Go to confirm
+                ? router.push('/add_wallet/confirm')
+                // Go to confirm
+                : router.push('/confirm_wallet')
+        } catch (error) {
+            console.error(`Components/CreateWallet/CreatePage.vue: ${error.message}`)
+        }
     }
 
 

@@ -121,11 +121,15 @@
 
 
     onBeforeMount(async () => {
-        // Calc personal APR
-        await calcPersonalAPR()
+        try {
+            // Calc personal APR
+            await calcPersonalAPR()
 
-        // Calc daily profit
-        calcDailyProfit()
+            // Calc daily profit
+            calcDailyProfit()
+        } catch (error) {
+            console.error(`Components/Modal/StatsModal.vue: ${error.message}`)
+        }
     })
 
 

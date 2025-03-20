@@ -241,11 +241,15 @@
 
     // Calc voting power
     async function calcVotingPower() {
-        // Get total bonded tokens
-        await store.getTotalBondedTokens()
+        try {
+            // Get total bonded tokens
+            await store.getTotalBondedTokens()
 
-        // Set data
-        votingPower.value = store.unstakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
+            // Set data
+            votingPower.value = store.unstakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
+        } catch (error) {
+            console.error(`Components/Modal/UnstakeConfirmModal.vue: ${error.message}`)
+        }
     }
 
 
@@ -284,7 +288,7 @@
 
             // Send Tx
             sendTx(txBytes).catch(error => {
-                console.log(error)
+                console.error(`Components/Modal/UnstakeConfirmModal.vue: ${error.message}`)
 
                 // Show error
                 showError(error)
@@ -293,7 +297,7 @@
             // Redirect
             router.push('/account')
         } catch (error) {
-            console.log(error)
+            console.error(`Components/Modal/UnstakeConfirmModal.vue: ${error.message}`)
 
             // Show error
             showError(error)

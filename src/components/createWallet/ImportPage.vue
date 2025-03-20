@@ -468,6 +468,8 @@
 
             return result
         } catch (error) {
+            console.error(`Components/CreateWallet/ImportPage.vue: ${error.message}`)
+
             // Valid status
             idValidPrivateKey.value = false
 
@@ -503,47 +505,52 @@
 
     // Save data
     async function save() {
-        // Import wallet
-        if (activeTab.value != 3) {
-            // Import
-            wallet.value = await importWalletFromMnemonic(secret.value.join(' ').toLocaleLowerCase(), null, store.defaultDerivationPath)
+        try {
+            // Import wallet
+            if (activeTab.value != 3) {
+                // Import
+                wallet.value = await importWalletFromMnemonic(secret.value.join(' ').toLocaleLowerCase(), null, store.defaultDerivationPath)
 
-            // Save in DB
-            await store.setSecret(wallet.value.secret.data)
+                // Save in DB
+                await store.setSecret(wallet.value.secret.data)
 
-            // Save derivation path
-            store.tempDerivationPath = `m/44'/118'/${derivationPathPart1.value}'/${derivationPathPart2.value}/${derivationPathPart3.value}`
-        } else {
-            // Import
-            wallet.value = await importWalletFromPrivateKey(privateKey.value)
+                // Save derivation path
+                store.tempDerivationPath = `m/44'/118'/${derivationPathPart1.value}'/${derivationPathPart2.value}/${derivationPathPart3.value}`
+            } else {
+                // Import
+                wallet.value = await importWalletFromPrivateKey(privateKey.value)
 
-            // Save in DB
-            await store.setPrivateKey(privateKey.value)
-        }
+                // Save in DB
+                await store.setPrivateKey(privateKey.value)
+            }
 
-        if (props.isAdding) {
-            // Save in DB
-            await store.createWallet({
-                isAdding: true
-            })
+            if (props.isAdding) {
+                // Save in DB
+                await store.createWallet({
+                    isAdding: true
+                })
 
-            // Redirect
-            router.push('/account')
+                // Redirect
+                router.push('/account')
 
-            // Event "show_wallets_modal"
-            emitter.emit('show_wallets_modal')
+                // Event "show_wallets_modal"
+                emitter.emit('show_wallets_modal')
 
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: 1000,
-                title: i18n.global.t('message.notification_wallet_added_success'),
-                type: 'success',
-            })
-        } else {
-            // Redirect
-            router.push('/create_pin')
+                // Show notification
+                notification.notify({
+                    group: 'default',
+                    speed: 200,
+                    duration: 1000,
+                    title: i18n.global.t('message.notification_wallet_added_success'),
+                    type: 'success',
+                })
+            } else {
+                // Redirect
+                router.push('/create_pin')
+            }
+
+        } catch (error) {
+            console.error(`Components/CreateWallet/CreatePage.vue: ${error.message}`)
         }
     }
 

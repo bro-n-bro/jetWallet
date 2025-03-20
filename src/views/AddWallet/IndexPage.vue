@@ -8,8 +8,3 @@
     // Components
     import IndexPage from '@/components/IndexPage.vue'
 </script>
-
-
-<style scoped>
-
-</style>

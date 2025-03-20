@@ -114,7 +114,11 @@
 
 
     onBeforeMount(async () => {
-        createdBy.value = await DBgetData(`wallet${store.currentWalletID}`, 'createdBy')
+        try {
+            createdBy.value = await DBgetData(`wallet${store.currentWalletID}`, 'createdBy')
+        } catch (error) {
+            console.error(`Components/Modal/EditWalletModal.vue: ${error.message}`)
+        }
     })
 
 
@@ -173,26 +177,30 @@
 
     // Save new name
     async function save() {
-        // Update
-        await store.updateWallet({
-            wallet: props.wallet,
-            new_name: newName.value
-        })
+        try {
+            // Update
+            await store.updateWallet({
+                wallet: props.wallet,
+                new_name: newName.value
+            })
 
-        // Close modal
-        closeHandler()
+            // Close modal
+            closeHandler()
 
-        // Event "show_wallets_modal"
-        emitter.emit('show_wallets_modal')
+            // Event "show_wallets_modal"
+            emitter.emit('show_wallets_modal')
 
-        // Show notification
-        notification.notify({
-            group: 'default',
-            speed: 200,
-            duration: 1000,
-            title: i18n.global.t('message.notification_wallet_update_success'),
-            type: 'success',
-        })
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 1000,
+                title: i18n.global.t('message.notification_wallet_update_success'),
+                type: 'success',
+            })
+        } catch (error) {
+            console.error(`Components/Modal/EditWalletModal.vue: ${error.message}`)
+        }
     }
 
 
@@ -227,8 +235,12 @@
 
     // Event "auth"
     async function auth() {
-        // Get mnemonic
-        mnemonic.value = await store.getSecret(true)
+        try {
+            // Get mnemonic
+            mnemonic.value = await store.getSecret(true)
+        } catch (error) {
+            console.error(`Components/Modal/EditWalletModal.vue: ${error.message}`)
+        }
     }
 
 

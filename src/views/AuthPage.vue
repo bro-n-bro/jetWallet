@@ -45,16 +45,20 @@
 
 
     onMounted(async () => {
-        // Get data from DB
-        let DBUserLockTimestamp = await DBgetData('global', 'userLockTimestamp')
+        try {
+            // Get data from DB
+            let DBUserLockTimestamp = await DBgetData('global', 'userLockTimestamp')
 
-        if (new Date(DBUserLockTimestamp) - new Date() < store.userLockTime) {
-            // Set user unlock
-            await store.setUserUnlock()
+            if (new Date(DBUserLockTimestamp) - new Date() < store.userLockTime) {
+                // Set user unlock
+                await store.setUserUnlock()
+            }
+
+            // Hide loader
+            loading.value = false
+        } catch (error) {
+            console.error(`AuthPage.vue: ${error.message}`)
         }
-
-        // Hide loader
-        loading.value = false
     })
 
 
@@ -66,14 +70,18 @@
 
     // Event "auth"
     emitter.on('auth', async () => {
-        // Auth
-        await store.auth()
+        try {
+            // Auth
+            await store.auth()
 
-        // Hide loader
-        loading.value = false
+            // Hide loader
+            loading.value = false
 
-        // Redirect
-        router.push('/account')
+            // Redirect
+            router.push('/account')
+        } catch (error) {
+            console.error(`AuthPage.vue: ${error.message}`)
+        }
     })
 </script>
 

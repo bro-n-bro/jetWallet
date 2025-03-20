@@ -5,13 +5,18 @@ import { useGlobalStore } from '@/store'
 
 // Import wallet from mnemonic
 export const importWalletFromMnemonic = async (mnemonic, prefix = null, derivationPath = null) => {
-    let store = useGlobalStore(),
+    const store = useGlobalStore(),
         path = !derivationPath ? store.currentWalletDerivationPath : derivationPath
 
-    return await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
-        hdPaths: [stringToPath(path)],
-        prefix
-    })
+    try {
+        return await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
+            hdPaths: [stringToPath(path)],
+            prefix
+        })
+    } catch (error) {
+        // Throw error
+        throw new Error(`importWalletFromMnemonic() failed: ${error.message}`)
+    }
 }
 
 

@@ -8,8 +8,3 @@
     // Components
     import PinPage from '@/components/createWallet/PinPage.vue'
 </script>
-
-
-<style scoped>
-
-</style>

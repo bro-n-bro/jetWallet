@@ -1,17 +1,22 @@
 // Decryption
 export const decryptData = async (ciphertext, iv, key) => {
-    let decrypted = await crypto.subtle.decrypt(
-        {
-            name: "AES-GCM",
-            iv: iv,
-        },
-        key,
-        ciphertext
-    )
+    try {
+        const decrypted = await crypto.subtle.decrypt(
+            {
+                name: 'AES-GCM',
+                iv: iv,
+            },
+            key,
+            ciphertext
+        )
 
-    let decoder = new TextDecoder()
+        const decoder = new TextDecoder()
 
-    return decoder.decode(decrypted)
+        return decoder.decode(decrypted)
+    } catch (error) {
+        // Throw error
+        throw new Error(`decryptData() failed: ${error.message}`)
+    }
 }
 
 

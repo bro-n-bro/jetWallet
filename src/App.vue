@@ -73,34 +73,59 @@
         i18n = inject('i18n'),
         route = useRoute(),
         emitter = inject('emitter'),
+        layout = computed(() => route.meta.layout || 'default-layout'),
         title = useTitle(),
         isReseting = ref(false),
-        layout = computed(() => route.meta.layout || 'default-layout'),
+        network = reactive(useNetwork()),
         notification = useNotification(),
         notificationTimeout = ref(null),
         notificationAnimation = {
             enter: { translateY: '0%' },
             leave: { translateY: '-100%' }
-        },
-        network = reactive(useNetwork())
+        }
 
 
-    onBeforeMount(() => {
-        // Set page title
-        title.value = i18n.global.t('message.page_title')
+    onBeforeMount(async () => {
+        try {
+            // Set page title
+            title.value = i18n.global.t('message.page_title')
 
-        // Telegram WebApp init
-        tgInit()
+            // Telegram WebApp init
+            await tgInit()
+        } catch (error) {
+            console.error(`App.vue: ${error.message}`)
+        }
     })
 
 
     // Wallet change
     watch(computed(() => store.currentWalletID), async (newValue, oldValue) => {
-        if (oldValue) {
-            // Get wallets
-            let DBWallets = await DBgetData('global', 'wallets')
+        try {
+            if (oldValue) {
+                // Get wallets
+                const DBWallets = await DBgetData('global', 'wallets')
 
-            if (DBWallets !== undefined) {
+                if (DBWallets !== undefined) {
+                    // Clean notifications
+                    notification.notify({
+                        group: 'default',
+                        clean: true
+                    })
+
+                    // Reinit APP
+                    await store.initApp()
+                }
+            }
+        } catch (error) {
+            console.error(`App.vue: ${error.message}`)
+        }
+    })
+
+
+    // Network change
+    watch(computed(() => store.currentNetwork), async () => {
+        try {
+            if (store.isInitialized || store.forcedUnlock) {
                 // Clean notifications
                 notification.notify({
                     group: 'default',
@@ -110,27 +135,14 @@
                 // Reinit APP
                 await store.initApp()
             }
-        }
-    })
-
-
-    // Network change
-    watch(computed(() => store.currentNetwork), async () => {
-        if (store.isInitialized || store.forcedUnlock) {
-            // Clean notifications
-            notification.notify({
-                group: 'default',
-                clean: true
-            })
-
-            // Reinit APP
-            await store.initApp()
+        } catch (error) {
+            console.error(`App.vue: ${error.message}`)
         }
     })
 
 
     // Offline mode
-    watch(computed(() => network.isOnline), async () => {
+    watch(computed(() => network.isOnline), () => {
         // Clean notifications
         notification.notify({
             group: 'default',
@@ -157,7 +169,7 @@
         if (params.data.isCollapsible) {
             notificationTimeout.value = setTimeout(() => {
                 // Show collapsible notification
-                let notification = document.querySelector('.notification.collapsible')
+                const notification = document.querySelector('.notification.collapsible')
 
                 if (notification) {
                     // Add notification class
@@ -181,7 +193,7 @@
     // Event "show_collapsible_notification"
     emitter.on('show_collapsible_notification', () => {
         if (!notificationTimeout.value) {
-            let notification = document.querySelector('.notification.collapsible')
+            const notification = document.querySelector('.notification.collapsible')
 
             if (notification) {
                 // Show collapsible notification

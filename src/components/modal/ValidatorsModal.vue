@@ -116,34 +116,38 @@
 
 
     onBeforeMount(async() => {
-        if (props.unstake) {
-            // Get validators
-            validators.value = await store.getUserValidators()
-        } else if(props.redelegate) {
-            if (props.redelegate === 'from') {
+        try {
+            if (props.unstake) {
                 // Get validators
                 validators.value = await store.getUserValidators()
+            } else if(props.redelegate) {
+                if (props.redelegate === 'from') {
+                    // Get validators
+                    validators.value = await store.getUserValidators()
+                } else {
+                    // Get validators (Exclude validator from)
+                    validators.value = (await store.getAllValidators()).filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
+                }
             } else {
-                // Get validators (Exclude validator from)
-                validators.value = (await store.getAllValidators()).filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
+                // Get validators
+                validators.value = await store.getAllValidators()
             }
-        } else {
-            // Get validators
-            validators.value = await store.getAllValidators()
+
+            // Sort by voiting power
+            validators.value.sort((a, b) => {
+                if (parseInt(a.tokens) > parseInt(b.tokens)) { return -1 }
+                if (parseInt(a.tokens) < parseInt(b.tokens)) { return 1 }
+                return 0
+            })
+
+            // Default search result
+            searchResult.value = validators.value
+
+            // Hide loader
+            isValidatorsGot.value = true
+        } catch (error) {
+            console.error(`Components/Modal/ValidatorsModal.vue: ${error.message}`)
         }
-
-        // Sort by voiting power
-        validators.value.sort((a, b) => {
-            if (parseInt(a.tokens) > parseInt(b.tokens)) { return -1 }
-            if (parseInt(a.tokens) < parseInt(b.tokens)) { return 1 }
-            return 0
-        })
-
-        // Default search result
-        searchResult.value = validators.value
-
-        // Hide loader
-        isValidatorsGot.value = true
     })
 
 

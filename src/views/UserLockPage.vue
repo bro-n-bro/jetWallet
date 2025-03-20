@@ -31,7 +31,7 @@
 
 
 <script setup>
-    import { onBeforeMount, ref } from 'vue'
+    import { onBeforeMount, onUnmounted, ref, computed } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { DBgetData } from '@/utils/db'
@@ -39,22 +39,31 @@
 
     const store = useGlobalStore(),
         router = useRouter(),
-        userLockTimestamp = ref('')
+        userLockTimestamp = ref(''),
+        timer = ref(null),
+        delay = computed(() => store.userLockTime - (new Date() - new Date(userLockTimestamp.value)))
 
 
     onBeforeMount(async () => {
-        // Get data from DB
-        userLockTimestamp.value = await DBgetData('global', 'userLockTimestamp')
+        try {
+            // Get data from DB
+            userLockTimestamp.value = await DBgetData('global', 'userLockTimestamp')
 
-        // Finish timer
-        setTimeout(async () => {
-            // Set user unlock
-            await store.setUserUnlock()
+            // Finish timer
+            timer.value = setTimeout(async () => {
+                // Set user unlock
+                await store.setUserUnlock()
 
-            // Redirect
-            router.push('/auth')
-        }, store.userLockTime - (new Date() - new Date(userLockTimestamp.value)))
+                // Redirect
+                router.push('/auth')
+            }, delay.value)
+        } catch (error) {
+            console.error(`UserLockPage.vue: ${error.message}`)
+        }
     })
+
+
+    onUnmounted(() => clearTimeout(timer.value))
 </script>
 
 

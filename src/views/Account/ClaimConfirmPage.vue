@@ -213,7 +213,7 @@
             // Redirect
             router.push('/account')
         } catch (error) {
-            console.log(error)
+            console.error(`Account/ClaimConfirmPage.vue: ${error.message}`)
 
             // Show error
             showError(error)

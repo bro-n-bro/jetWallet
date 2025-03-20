@@ -7,31 +7,36 @@ import { createSinger } from './createSinger'
 
 // Sign Tx
 export const signTx = async (msg, memo) => {
-    let store = useGlobalStore(),
-        { signingCosmWasmClient } = await createSinger()
+    try {
+        const store = useGlobalStore(),
+            { signingCosmWasmClient } = await createSinger()
 
-    // Fee
-    let fee = {
-        amount: [{
-            denom: store.networks[store.currentNetwork].denom,
-            amount: parseInt(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`]).toString()
-        }],
-        gas: store.TxFee.userGasAmount.toString()
+        // Fee
+        const fee = {
+            amount: [{
+                denom: store.networks[store.currentNetwork].denom,
+                amount: parseInt(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`]).toString()
+            }],
+            gas: store.TxFee.userGasAmount.toString()
+        }
+
+        // Sign
+        const txRaw = await signingCosmWasmClient.sign(store.currentAddress, msg, fee, memo)
+
+        // Encode TxRaw
+        const txBytes = TxRaw.encode(txRaw).finish()
+
+        // Hash transaction bytes
+        const txHash = sha256(txBytes)
+
+        // Convert hash bytes to hex string
+        store.networks[store.currentNetwork].currentTxHash = Buffer.from(txHash).toString('hex')
+
+        return txBytes
+    } catch (error) {
+        // Throw error
+        throw new Error(`signTx() failed: ${error.message}`)
     }
-
-    // Sign
-    let txRaw = await signingCosmWasmClient.sign(store.currentAddress, msg, fee, memo)
-
-    // Encode TxRaw
-    let txBytes = TxRaw.encode(txRaw).finish()
-
-    // Hash transaction bytes
-    let txHash = sha256(txBytes)
-
-    // Convert hash bytes to hex string
-    store.networks[store.currentNetwork].currentTxHash = Buffer.from(txHash).toString('hex')
-
-    return txBytes
 }
 
 

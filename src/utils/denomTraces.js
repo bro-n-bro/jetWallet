@@ -10,6 +10,7 @@ export const denomTraces = async (string) => {
         },
         hash = string.split('/')
 
+
     if (hash[0] == 'ibc') {
         try {
             // Request
@@ -17,7 +18,8 @@ export const denomTraces = async (string) => {
                 .then(response => response.json())
                 .then(response => result = response.denom_trace)
         } catch (error) {
-            console.error(error)
+            // Throw error
+            throw new Error(`denomTraces() failed: ${error.message}`)
         }
     } else if (hash[0] == 'factory') {
         result.ingnoreTraces = true

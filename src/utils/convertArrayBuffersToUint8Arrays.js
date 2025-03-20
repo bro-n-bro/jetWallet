@@ -9,13 +9,11 @@ export const convertArrayBuffersToUint8Arrays = data => {
 
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
-                const value = data[key];
+                const value = data[key]
 
-                if (value instanceof ArrayBuffer) {
-                    result[key] = new Uint8Array(value)
-                } else {
-                    result[key] = convertArrayBuffersToUint8Arrays(value);
-                }
+                value instanceof ArrayBuffer
+                    ? result[key] = new Uint8Array(value)
+                    : result[key] = convertArrayBuffersToUint8Arrays(value)
             }
         }
 

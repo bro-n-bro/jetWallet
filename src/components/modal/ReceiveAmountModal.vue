@@ -16,11 +16,11 @@
 
                 <!-- Amount -->
                 <div class="amount_field">
-                     <!-- Amount label -->
+                    <!-- Amount label -->
                     <div class="field_label">
                         {{ $t('message.receive_amount_label') }}
 
-                         <!-- Amount cost -->
+                        <!-- Amount cost -->
                         <div class="cost">
                             {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
 
@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="field">
-                         <!-- Amount field -->
+                        <!-- Amount field -->
                         <input type="number" inputmode="decimal" class="input big" v-model="amount" placeholder="0.00"
                             @input="validateAmount($event)">
                     </div>

@@ -241,7 +241,7 @@
             // Send Tx
             sendTx(txBytes)
         } catch (error) {
-            console.log(error)
+            console.error(`Components/Account/UnstakingTokens.vue: ${error.message}`)
 
             // Show error
             showError(error)

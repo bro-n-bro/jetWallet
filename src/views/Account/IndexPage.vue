@@ -157,8 +157,12 @@
 
     onBeforeMount(async () => {
         if (!store.isInitialized && !store.isInitializing) {
-            // Init app
-            await store.initApp()
+            try {
+                // Init app
+                await store.initApp()
+            } catch (error) {
+                console.error(`Account/IndexPage.vue: ${error.message}`)
+            }
         }
     })
 
@@ -181,12 +185,16 @@
 
         // Check Tx result
         if (store.isInitialized && store.networks[store.currentNetwork].currentTxHash) {
-            // Check Tx
-            await store.checkTxResult()
+            try {
+                // Check Tx
+                await store.checkTxResult()
 
-            if (store.networks[store.currentNetwork].currentTxHash) {
-                // Set listener current tx
-                store.setListenerCurrentTx()
+                if (store.networks[store.currentNetwork].currentTxHash) {
+                    // Set listener current tx
+                    store.setListenerCurrentTx()
+                }
+            } catch (error) {
+                console.error(`Account/IndexPage.vue: ${error.message}`)
             }
         }
     })
@@ -195,12 +203,16 @@
     watch(computed(() => store.isInitialized), async () => {
         // Check Tx result
         if (store.isInitialized && store.networks[store.currentNetwork].currentTxHash) {
-            // Check Tx
-            await store.checkTxResult()
+            try {
+                // Check Tx
+                await store.checkTxResult()
 
-            if (store.networks[store.currentNetwork].currentTxHash) {
-                // Set listener current tx
-                store.setListenerCurrentTx()
+                if (store.networks[store.currentNetwork].currentTxHash) {
+                    // Set listener current tx
+                    store.setListenerCurrentTx()
+                }
+            } catch (error) {
+                console.error(`Account/IndexPage.vue: ${error.message}`)
             }
         }
     })

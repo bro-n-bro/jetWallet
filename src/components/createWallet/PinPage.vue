@@ -279,18 +279,22 @@
 
     // Save data
     async function save() {
-        // Show loader
-        loading.value = true
+        try {
+            // Show loader
+            loading.value = true
 
-        // Save in DB
-        await store.createWallet({
-            pinCode: pinCode.value,
-            walletName: walletName.value,
-            isBiometricEnabled: isBiometricEnabled.value
-        })
+            // Save in DB
+            await store.createWallet({
+                pinCode: pinCode.value,
+                walletName: walletName.value,
+                isBiometricEnabled: isBiometricEnabled.value
+            })
 
-        // Go to created page
-        router.push('/wallet_created')
+            // Go to created page
+            router.push('/wallet_created')
+        } catch (error) {
+            console.error(`Components/CreateWallet/PinPage.vue: ${error.message}`)
+        }
     }
 </script>
 

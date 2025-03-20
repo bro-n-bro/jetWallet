@@ -88,32 +88,40 @@
 
 
     onBeforeMount(async () => {
-        if (props.additionalButton) {
-            // Get current wallet created by
-            currentWalletCreatedBy.value = await store.getCurrentWalletCreatedBy()
+        try {
+            if (props.additionalButton) {
+                // Get current wallet created by
+                currentWalletCreatedBy.value = await store.getCurrentWalletCreatedBy()
+            }
+        } catch (error) {
+            console.error(`Components/IndexPage.vue: ${error.message}`)
         }
     })
 
 
     // Create from exist wallet
     async function createFromExistWallet() {
-        // Show loader
-        loading.value = true
+        try {
+            // Show loader
+            loading.value = true
 
-        // Create from exist wallet
-        await store.createFromExistWallet()
+            // Create from exist wallet
+            await store.createFromExistWallet()
 
-        // Show notification
-        notification.notify({
-            group: 'default',
-            speed: 200,
-            duration: 1000,
-            title: i18n.global.t('message.notification_wallet_added_success'),
-            type: 'success',
-        })
+            // Show notification
+            notification.notify({
+                group: 'default',
+                speed: 200,
+                duration: 1000,
+                title: i18n.global.t('message.notification_wallet_added_success'),
+                type: 'success',
+            })
 
-        // Go to account page
-        router.push('/account')
+            // Go to account page
+            router.push('/account')
+        } catch (error) {
+            console.error(`Components/IndexPage.vue: ${error.message}`)
+        }
     }
 </script>
 

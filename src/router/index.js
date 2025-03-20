@@ -1,11 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { DBgetMultipleData } from '@/utils/db'
 import { useGlobalStore } from '@/store'
+import { useNotification } from '@kyvg/vue3-notification'
+import i18n from '@/locale'
 
 import defaultLayout from '@/layouts/Default.vue'
 import accountLayout from '@/layouts/Account.vue'
 
 
+// Notifications
+const notification = useNotification()
+
+
+// Routes
 const routes = [
     {
 		path: '/',
@@ -188,89 +195,119 @@ const router = createRouter({
 
 
 router.beforeResolve(async (to, from, next) => {
-	let store = useGlobalStore(),
-		DBData = await DBgetMultipleData('global', ['isRegister', 'isUserLock', 'userLockTimestamp', 'authTimestamp'])
+	try {
+		const store = useGlobalStore(),
+			DBData = await DBgetMultipleData('global', [
+				'isRegister',
+				'isUserLock',
+				'userLockTimestamp',
+				'authTimestamp'
+			])
 
-	// Auto auth
-	if (from.name !== 'Auth' && DBData.authTimestamp !== undefined && new Date() - new Date(DBData.authTimestamp) < store.authTime) {
-		if (!store.isAuthorized) {
-			// Auth
-			await store.auth()
-        }
-
-		if (!store.isInitialized) {
-            // Init app
-            await store.initApp()
-        }
-	}
-
-	// Check access
-	to.matched.some(record => {
-		let access = record.meta.accessDenied
-
-		if (access.length) {
-			// Not register
-			if (access.includes('not_register') && DBData.isRegister == undefined) {
-				// Redirect
-				next({ name: 'MainPage' })
-
-				return false
+		// Auto auth
+		if (from.name !== 'Auth' && DBData.authTimestamp !== undefined && new Date() - new Date(DBData.authTimestamp) < store.authTime) {
+			if (!store.isAuthorized) {
+				// Auth
+				await store.auth()
 			}
 
-			// Lock
-			else if (access.includes('locked') && DBData.isUserLock && (new Date() - new Date(DBData.userLockTimestamp) < store.userLockTime)) {
-				// Redirect
-				next({ name: 'Lock' })
-
-				return false
-			}
-
-			// Register
-			else if (access.includes('register') && DBData.isRegister) {
-				// Redirect
-				next({ name: 'Auth' })
-
-				return false
-			}
-
-			// Not authorized
-			else if (access.includes('not_authorized') && !store.isAuthorized) {
-				// Redirect
-				next({ name: 'Auth' })
-
-				return false
-			}
-
-			// Authorized
-			else if (access.includes('authorized') && store.isAuthorized) {
-				// Redirect
-				next({ name: 'Account' })
-
-				return false
-			}
-
-			else {
-				next()
+			if (!store.isInitialized) {
+				// Init app
+				await store.initApp()
 			}
 		}
-	})
+
+		// Check access
+		to.matched.some(record => {
+			let access = record.meta.accessDenied
+
+			if (access.length) {
+				// Not register
+				if (access.includes('not_register') && DBData.isRegister == undefined) {
+					// Redirect
+					next({ name: 'MainPage' })
+
+					return false
+				}
+
+				// Lock
+				else if (access.includes('locked') && DBData.isUserLock && (new Date() - new Date(DBData.userLockTimestamp) < store.userLockTime)) {
+					// Redirect
+					next({ name: 'Lock' })
+
+					return false
+				}
+
+				// Register
+				else if (access.includes('register') && DBData.isRegister) {
+					// Redirect
+					next({ name: 'Auth' })
+
+					return false
+				}
+
+				// Not authorized
+				else if (access.includes('not_authorized') && !store.isAuthorized) {
+					// Redirect
+					next({ name: 'Auth' })
+
+					return false
+				}
+
+				// Authorized
+				else if (access.includes('authorized') && store.isAuthorized) {
+					// Redirect
+					next({ name: 'Account' })
+
+					return false
+				}
+
+				else {
+					next()
+				}
+			}
+		})
+	} catch (error) {
+        console.error('Error in beforeResolve hook:', error.message)
+
+		// Clean notifications
+		notification.notify({
+			group: 'default',
+			clean: true
+		})
+
+		// Show notification
+		notification.notify({
+			group: 'default',
+			speed: 200,
+			duration: -100,
+			title: i18n.global.t('message.notification_error_title'),
+			type: 'error',
+			data: {
+				isCollapsible: true
+			}
+		})
+
+		next()
+    }
 })
 
 
 router.afterEach((to) => {
 	// Set analytics
 	if (window._paq && process.env.VUE_APP_IS_PRODUCTION === 'true') {
-	  // Set custom URL
-	  window._paq.push(['setCustomUrl', window.location.href])
+		// Set custom URL
+		window._paq.push(['setCustomUrl', window.location.href])
 
-	  // Send page view to Matomo
-	  window._paq.push(['trackPageView'])
+		// Send page view to Matomo
+		window._paq.push(['trackPageView'])
 
-	  // (Optional) Dispatch a custom event for Tag Manager
-	  const event = new Event('matomo_spa_url_change')
+		// (Optional) Dispatch a custom event for Tag Manager
+		const event = new Event('matomo_spa_url_change')
 
-	  window.dispatchEvent(event)
+		window.dispatchEvent(event)
 	}
 })
+
 
 export default router

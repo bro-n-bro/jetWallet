@@ -234,7 +234,7 @@
         msgAny = ref([]),
         amount = ref(''),
         isAmountReady = ref(false),
-        isFormValid = ref(computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcAvailableAmount()))
+        isFormValid = computed(() => isAmountReady.value && !!store.stakeCurrentValidator && calcAvailableAmount())
 
 
     onBeforeMount(() => {

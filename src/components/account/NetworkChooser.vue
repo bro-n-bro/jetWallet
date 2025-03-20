@@ -58,12 +58,16 @@
 
 
     // Change network
-    function changeNetwork(chain) {
-        // Hide dropdown
-        showDropdown.value = false
+    async function changeNetwork(chain) {
+        try {
+            // Hide dropdown
+            showDropdown.value = false
 
-        // Set current network
-        store.setCurrentNetwork(chain)
+            // Set current network
+            await store.setCurrentNetwork(chain)
+        } catch (error) {
+            console.error(`Components/Account/NetworkChooser.vue: ${error.message}`)
+        }
     }
 </script>
 

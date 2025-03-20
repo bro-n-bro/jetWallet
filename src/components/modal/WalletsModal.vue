@@ -59,8 +59,12 @@
 
 
     onBeforeMount(async () => {
-        // Get wallets
-        await store.getWallets()
+        try {
+            // Get wallets
+            await store.getWallets()
+        } catch (error) {
+            console.error(`Components/Modal/WalletsModal.vue: ${error.message}`)
+        }
     })
 
 

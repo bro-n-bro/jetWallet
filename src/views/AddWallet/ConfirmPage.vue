@@ -8,8 +8,3 @@
     // Components
     import ConfirmPage from '@/components/createWallet/ConfirmPage.vue'
 </script>
-
-
-<style scoped>
-
-</style>

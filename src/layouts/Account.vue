@@ -46,7 +46,7 @@
 
 
     // Handle touch move
-    function handleTouchMove(e) {
+    async function handleTouchMove(e) {
         if (isPulling.value && (store.networks[store.currentNetwork].currentTxHash || store.forcedUnlock)) {
             // Event "show_collapsible_notification"
             emitter.emit('show_collapsible_notification')
@@ -85,8 +85,12 @@
 
                 setTimeout(() => account.classList.remove('updating'), 500)
 
-                // Update all balances
-                store.updateAllBalances()
+                try {
+                    // Update all balances
+                    await store.updateAllBalances()
+                } catch (error) {
+                    console.error(`Layouts/Account.vue: ${error.message}`)
+                }
             }
         }
     }

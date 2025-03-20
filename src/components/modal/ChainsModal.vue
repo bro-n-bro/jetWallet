@@ -107,8 +107,12 @@
 
 
     onBeforeMount(async () => {
-        // Load chains
-        await loadChains()
+        try {
+            // Load chains
+            await loadChains()
+        } catch (error) {
+            console.error(`Components/Modal/ChainsModal.vue: ${error.message}`)
+        }
     })
 
 
@@ -138,37 +142,41 @@
 
     // Load chains
     async function loadChains() {
-        // Get chains
-        chainsList.value = ibc
-            .filter(el => el.chain_1.chain_name === store.currentNetwork || el.chain_2.chain_name === store.currentNetwork)
-            .filter((el, index, self) =>
-                self.findIndex(t =>
-                    (t.chain_1.chain_name === el.chain_1.chain_name && t.chain_2.chain_name === el.chain_2.chain_name) ||
-                    (t.chain_1.chain_name === el.chain_2.chain_name && t.chain_2.chain_name === el.chain_1.chain_name)
-                ) === index
-            )
+        try {
+            // Get chains
+            chainsList.value = ibc
+                .filter(el => el.chain_1.chain_name === store.currentNetwork || el.chain_2.chain_name === store.currentNetwork)
+                .filter((el, index, self) =>
+                    self.findIndex(t =>
+                        (t.chain_1.chain_name === el.chain_1.chain_name && t.chain_2.chain_name === el.chain_2.chain_name) ||
+                        (t.chain_1.chain_name === el.chain_2.chain_name && t.chain_2.chain_name === el.chain_1.chain_name)
+                    ) === index
+                )
 
-        // Get chain names
-        chainsList.value.forEach(el => {
-            let findChain = el.chain_2.chain_name === store.currentNetwork ? el.chain_1.chain_name : el.chain_2.chain_name
+            // Get chain names
+            chainsList.value.forEach(el => {
+                let findChain = el.chain_2.chain_name === store.currentNetwork ? el.chain_1.chain_name : el.chain_2.chain_name
 
-            // Get chain name
-            el.info = chains.find(chain => chain.chain_name === findChain)
-        })
+                // Get chain name
+                el.info = chains.find(chain => chain.chain_name === findChain)
+            })
 
-        // Clear chains list
-        chainsList.value = chainsList.value.filter(el => el.info !== undefined)
+            // Clear chains list
+            chainsList.value = chainsList.value.filter(el => el.info !== undefined)
 
-        // Load user channels
-        let userChannels = await store.getAllUserChannels()
+            // Load user channels
+            let userChannels = await store.getAllUserChannels()
 
-        // Merge arrays
-        if (userChannels !== undefined) {
-            chainsList.value = [...userChannels, ...chainsList.value]
+            // Merge arrays
+            if (userChannels !== undefined) {
+                chainsList.value = [...userChannels, ...chainsList.value]
+            }
+
+            // Default search result
+            searchResult.value = chainsList.value
+        } catch (error) {
+            console.error(`Components/Modal/ChainsModal.vue: ${error.message}`)
         }
-
-        // Default search result
-        searchResult.value = chainsList.value
     }
 
 
@@ -193,11 +201,15 @@
 
     // Delete user channel
     async function deleteUserChannel(chain) {
-        // Delete user channel
-        await store.deleteUserChannel(chain.info.pretty_name)
+        try {
+            // Delete user channel
+            await store.deleteUserChannel(chain.info.pretty_name)
 
-        // Reload chains
-        await loadChains()
+            // Reload chains
+            await loadChains()
+        } catch (error) {
+            console.error(`Components/Modal/ChainsModal.vue: ${error.message}`)
+        }
     }
 
 
@@ -229,13 +241,17 @@
 
     // Close add IBC channel modal
     async function closeAddIBCChannelModal({ reload }) {
-        if (reload) {
-            // Reload chains
-            await loadChains()
-        }
+        try {
+            if (reload) {
+                // Reload chains
+                await loadChains()
+            }
 
-        // Hide add IBC channel modal
-        showAddIBCChannelModal.value = false
+            // Hide add IBC channel modal
+            showAddIBCChannelModal.value = false
+        } catch (error) {
+            console.error(`Components/Modal/ChainsModal.vue: ${error.message}`)
+        }
     }
 
 

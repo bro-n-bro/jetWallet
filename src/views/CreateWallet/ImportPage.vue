@@ -8,8 +8,3 @@
     // Components
     import ImportPage from '@/components/createWallet/ImportPage.vue'
 </script>
-
-
-<style scoped>
-
-</style>

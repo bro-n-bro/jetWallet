@@ -136,43 +136,47 @@
 
     // Event "auth"
     async function auth() {
-        if (store.wallets.length > 1) {
-            // Remove
-            await store.removeWallet(props.wallet)
+        try {
+            if (store.wallets.length > 1) {
+                // Remove
+                await store.removeWallet(props.wallet)
 
-            // Close confirm modal
-            closeConfirmModal()
+                // Close confirm modal
+                closeConfirmModal()
 
-            // Event "close_edit_wallet_modal"
-            emitter.emit('close_edit_wallet_modal', {
-                back: false
-            })
+                // Event "close_edit_wallet_modal"
+                emitter.emit('close_edit_wallet_modal', {
+                    back: false
+                })
 
-            // Close modal
-            closeHandler(false)
+                // Close modal
+                closeHandler(false)
 
-            setTimeout(() => {
-                // Event "show_wallets_modal"
-                emitter.emit('show_wallets_modal')
-            }, 200)
+                setTimeout(() => {
+                    // Event "show_wallets_modal"
+                    emitter.emit('show_wallets_modal')
+                }, 200)
 
-            // Show notification
-            notification.notify({
-                group: 'default',
-                speed: 200,
-                duration: 1000,
-                title: i18n.global.t('message.notification_wallet_remove_success', { name: props.wallet.name }),
-                type: 'success',
-            })
-        } else {
-            // Event "start_reseting"
-            emitter.emit('start_reseting')
+                // Show notification
+                notification.notify({
+                    group: 'default',
+                    speed: 200,
+                    duration: 1000,
+                    title: i18n.global.t('message.notification_wallet_remove_success', { name: props.wallet.name }),
+                    type: 'success',
+                })
+            } else {
+                // Event "start_reseting"
+                emitter.emit('start_reseting')
 
-            // Clear all data
-            await store.clearAllData()
+                // Clear all data
+                await store.clearAllData()
 
-            // Redirect
-            setTimeout(() => router.push('/'))
+                // Redirect
+                setTimeout(() => router.push('/'))
+            }
+        } catch (error) {
+            console.error(`Components/Modal/RemoveWalletModal.vue: ${error.message}`)
         }
     }
 

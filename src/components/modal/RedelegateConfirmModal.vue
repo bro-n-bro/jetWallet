@@ -249,7 +249,7 @@
             // Redirect
             router.push('/account')
         } catch (error) {
-            console.log(error)
+            console.error(`Components/Modal/RedelegateConfirmModal.vue: ${error.message}`)
 
             // Show error
             showError(error)

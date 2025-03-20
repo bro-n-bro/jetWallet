@@ -157,81 +157,102 @@ export const useGlobalStore = defineStore('global', {
 
         // Get current wallet ID
         async getCurrentWalletID() {
-            // Get data from DB
-            let DBCurrentWalletID = await DBgetData('global', 'currentWalletID')
+            try {
+                // Get data from DB
+                let DBCurrentWalletID = await DBgetData('global', 'currentWalletID')
 
-            if (DBCurrentWalletID !== undefined) {
-                // Set data from DB
-                this.currentWalletID = DBCurrentWalletID
+                if (DBCurrentWalletID !== undefined) {
+                    // Set data from DB
+                    this.currentWalletID = DBCurrentWalletID
+                }
+            } catch (error) {
+                // Throw error
+                throw new Error(`getCurrentWalletID() failed: ${error.message}`)
             }
         },
 
 
         // Set current wallet ID
         async setCurrentWalletID(walletID = null) {
-            if (this.currentWalletID !== walletID) {
-                // Save in DB
-                await DBaddData('global', [
-                    ['currentWalletID', walletID]
-                ])
+            try {
+                if (this.currentWalletID !== walletID) {
+                    // Save in DB
+                    await DBaddData('global', [
+                        ['currentWalletID', walletID]
+                    ])
 
-                // Set data
-                this.currentWalletID = walletID
+                    // Set data
+                    this.currentWalletID = walletID
+                }
+            } catch (error) {
+                // Throw error
+                throw new Error(`setCurrentWalletID() failed: ${error.message}`)
             }
         },
 
 
         // Auth
         async auth() {
-            let promises = []
+            try {
+                await Promise.all([
+                    // Сhange auth limit
+                    this.updateUserAuthErrorLimit(this.authErrorLimit),
 
-            // Сhange auth limit
-            promises.push(this.updateUserAuthErrorLimit(this.authErrorLimit))
+                    // Save in DB
+                    DBaddData('global', [
+                        ['authTimestamp', new Date().toISOString()]
+                    ])
+                ])
 
-            // Save in DB
-            promises.push(DBaddData('global', [
-                ['authTimestamp', new Date().toISOString()]
-            ]))
-
-            await Promise.all(promises)
-
-            // Set authorized status
-            this.isAuthorized = true
+                // Set authorized status
+                this.isAuthorized = true
+            } catch (error) {
+                // Throw error
+                throw new Error(`auth() failed: ${error.message}`)
+            }
         },
 
 
         // Init APP
         async initApp() {
-            // Init status
-            this.isInitializing = true
-            this.isInitialized = false
-
-            // Forced unlock
-            this.forcedUnlock = false
-
-            // Reset data
-            this.currentAddress = ''
-
-            // Get current wallet ID
-            await this.getCurrentWalletID()
-
-            // Get DB data
-            let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, ['derivationPath', 'name', 'currentCurrency', 'currentNetwork', 'TxFeeCurrentLevel', 'TxFeeIsRemember'])
-
-            // Set data from DB
-            this.currentWalletDerivationPath = DBData.derivationPath
-            this.currentWalletName = DBData.name
-            this.currentCurrency = DBData.currentCurrency
-            this.TxFee.currentLevel = DBData.TxFeeCurrentLevel !== undefined ? DBData.TxFeeCurrentLevel : 'average'
-            this.TxFee.isRemember = DBData.TxFeeIsRemember !== undefined ? DBData.TxFeeIsRemember : false
-
-            // Set current network
-            // Set data from DB
-            this.networks[DBData.currentNetwork]
-                ? this.currentNetwork = DBData.currentNetwork
-                : this.currentNetwork = 'cosmoshub'
-
             try {
+                // Init status
+                this.isInitializing = true
+                this.isInitialized = false
+
+                // Forced unlock
+                this.forcedUnlock = false
+
+                // Reset data
+                this.currentAddress = ''
+
+                // Get current wallet ID
+                await this.getCurrentWalletID()
+
+                // Get DB data
+                let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, [
+                    'derivationPath',
+                    'name',
+                    'currentCurrency',
+                    'currentNetwork',
+                    'TxFeeCurrentLevel',
+                    'TxFeeIsRemember'
+                ])
+
+                // Set data from DB
+                this.currentWalletDerivationPath = DBData.derivationPath
+                this.currentWalletName = DBData.name
+                this.currentCurrency = DBData.currentCurrency
+                this.TxFee.currentLevel = DBData.TxFeeCurrentLevel !== undefined ? DBData.TxFeeCurrentLevel : 'average'
+                this.TxFee.isRemember = DBData.TxFeeIsRemember !== undefined ? DBData.TxFeeIsRemember : false
+
+
+                // Set current network
+                this.networks[DBData.currentNetwork]
+                    ? this.currentNetwork = DBData.currentNetwork
+                    : this.currentNetwork = 'cosmoshub'
+
+
                 // Get current address / check cache
                 let cacheCurrentAddress = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_currentAddress`)
 
@@ -290,21 +311,16 @@ export const useGlobalStore = defineStore('global', {
                         this.getBalances(),
                         this.getStakedBalances()
                     ])
-
-                    // Init status
-                    this.isInitialized = true
                 } else {
                     await Promise.all([
                         this.getBalances()
                     ])
-
-                    // Init status
-                    this.isInitializing = false
-                    this.isInitialized = true
                 }
-            } catch(error) {
-                console.log(error)
 
+                // Init status
+                this.isInitializing = false
+                this.isInitialized = true
+            } catch(error) {
                 // Clean notifications
                 notification.notify({
                     group: 'default',
@@ -325,343 +341,386 @@ export const useGlobalStore = defineStore('global', {
 
                 // Forced unlock
                 this.forcedUnlock = true
+
+                // Throw error
+                throw new Error(`init() failed: ${error.message}`)
             }
         },
 
 
         // Currencies price
         async getCurrenciesPrice() {
-            // Get from DB
-            let cachePrices = await DBgetData('global', 'prices')
+            try {
+                // Get from DB
+                let cachePrices = await DBgetData('global', 'prices')
 
-            if (cachePrices === undefined || (new Date() - new Date(cachePrices.timestamp) > this.cacheTime)) {
-                try {
+                if (cachePrices === undefined || (new Date() - new Date(cachePrices.timestamp) > this.cacheTime)) {
                     // Send request
-                    await fetch('https://rpc.bronbro.io/price_feed_api/tokens/')
-                        .then(response => response.json())
-                        .then(async data => {
-                            // Set data
-                            this.prices = data
+                    const response = await fetch('https://rpc.bronbro.io/price_feed_api/tokens/')
 
-                            // Save in DB
-                            await DBaddData('global', [
-                                ['prices', { data, timestamp: new Date().toISOString() }]
-                            ])
-                        })
-                } catch (error) {
-                    console.error(error)
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch currencies price. Status: ' + response.status)
+                    }
+
+                    const data = await response.json()
+
+                    // Set data
+                    this.prices = data
+
+                    // Save in DB
+                    await DBaddData('global', [
+                        ['prices', { data, timestamp: new Date().toISOString() }]
+                    ])
+                } else{
+                    // Set from cache
+                    this.prices = cachePrices.data
                 }
-            } else{
-                // Set from cache
-                this.prices = cachePrices.data
+            } catch (error) {
+                // Throw error
+                throw new Error(`getCurrenciesPrice() failed: ${error.message}`)
             }
         },
 
 
         // Get APR for current network
         async getCurrentNetworkAPR() {
-            // Get from DB
-            let cacheAPR = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_APR`)
+            try {
+                // Get from DB
+                let cacheAPR = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_APR`)
 
-            // Check
-            if (cacheAPR === undefined || (new Date() - new Date(cacheAPR.timestamp) > this.cacheTime)) {
-                try {
+                // Check
+                if (cacheAPR === undefined || (new Date() - new Date(cacheAPR.timestamp) > this.cacheTime)) {
                     // Send request
-                    await fetch('https://rpc.bronbro.io/networks/')
-                        .then(response => response.json())
-                        .then(async data => {
-                            // Find chain
-                            let chain = data.infos.find(chain => chain.denom === (this.networks[this.currentNetwork].token_name).toLowerCase())
+                    const response = await fetch('https://rpc.bronbro.io/networks/')
 
-                            if (chain) {
-                                // Set network APR
-                                this.networks[this.currentNetwork].APR = chain.apr
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch current network APR. Status: ' + response.status)
+                    }
 
-                                // Save in DB
-                                await DBaddData(`wallet${this.currentWalletID}`, [
-                                    [`${this.currentNetwork}_APR`, JSON.parse(JSON.stringify({
-                                        value: chain.apr,
-                                        timestamp: new Date().toISOString()
-                                    }))]
-                                ])
-                            }
-                        })
-                } catch (error) {
-                    console.log(error)
+                    const data = await response.json()
+
+                    // Find chain
+                    const chain = data.infos.find(chain => chain.denom === (this.networks[this.currentNetwork].token_name).toLowerCase())
+
+                    if (chain) {
+                        // Set network APR
+                        this.networks[this.currentNetwork].APR = chain.apr
+
+                        // Save in DB
+                        await DBaddData(`wallet${this.currentWalletID}`, [
+                            [`${this.currentNetwork}_APR`, JSON.parse(JSON.stringify({
+                                value: chain.apr,
+                                timestamp: new Date().toISOString()
+                            }))]
+                        ])
+                    }
+                } else {
+                    // Set from cache
+                    this.networks[this.currentNetwork].APR = cacheAPR.value
                 }
-            } else {
-                // Set from cache
-                this.networks[this.currentNetwork].APR = cacheAPR.value
+            } catch (error) {
+                // Throw error
+                throw new Error(`getCurrentNetworkAPR() failed: ${error.message}`)
             }
         },
 
 
         // Get balances
         async getBalances(forceUpdate = false) {
-            // Balances status
-            this.isBalancesGot = false
+            try {
+                // Balances status
+                this.isBalancesGot = false
 
-            // Reset data
-            this.balances = []
+                // Reset data
+                this.balances = []
 
-            // Get from DB
-            let cacheBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_balances`)
+                // Get from DB
+                let cacheBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_balances`)
 
-            if (forceUpdate || cacheBalances === undefined || (new Date() - new Date(cacheBalances.timestamp) > this.cacheTime)) {
-                // Send request
-                try {
-                    await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/bank/v1beta1/balances/${this.currentAddress}`)
-                        .then(response => response.json())
-                        .then(async data => {
-                            if (data.balances.length) {
-                                // Set data
-                                this.balances = data.balances
+                if (forceUpdate || cacheBalances === undefined || (new Date() - new Date(cacheBalances.timestamp) > this.cacheTime)) {
+                    // Send request
+                    const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/bank/v1beta1/balances/${this.currentAddress}`)
 
-                                for (let balance of this.balances) {
-                                    // Get balance info
-                                    await this.getBalanceInfo(balance)
-                                }
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch balances. Status: ' + response.status)
+                    }
 
-                                // Clear balances
-                                this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+                    const data = await response.json()
 
-                                // Save in DB
-                                await DBaddData(`wallet${this.currentWalletID}`, [
-                                    [`${this.currentNetwork}_balances`, JSON.parse(JSON.stringify({
-                                        value: this.balances,
-                                        timestamp: new Date().toISOString()
-                                    }))]
-                                ])
-                            }
-                        })
-                } catch (error) {
-                    console.error(error)
+                    if (data.balances.length) {
+                        // Set data
+                        this.balances = data.balances
+
+                        for (let balance of this.balances) {
+                            // Get balance info
+                            await this.getBalanceInfo(balance)
+                        }
+
+                        // Clear balances
+                        this.balances = this.balances.filter(obj => obj.hasOwnProperty('exponent'))
+
+                        // Save in DB
+                        await DBaddData(`wallet${this.currentWalletID}`, [
+                            [`${this.currentNetwork}_balances`, JSON.parse(JSON.stringify({
+                                value: this.balances,
+                                timestamp: new Date().toISOString()
+                            }))]
+                        ])
+                    }
+                } else {
+                    // Set from cache
+                    this.balances = cacheBalances.value
                 }
-            } else {
-                // Set from cache
-                this.balances = cacheBalances.value
-            }
 
-            // Balances status
-            this.isBalancesGot = true
+                // Balances status
+                this.isBalancesGot = true
+            } catch (error) {
+                // Throw error
+                throw new Error(`getBalances() failed: ${error.message}`)
+            }
         },
 
 
         // Get staked balances
         async getStakedBalances(forceUpdate = false) {
-            // Balances status
-            this.isStakedBalancesGot = false
+            try {
+                // Balances status
+                this.isStakedBalancesGot = false
 
-            // Reset data
-            this.stakedBalances = []
+                // Reset data
+                this.stakedBalances = []
 
-            // Get from DB
-            let cacheStakedBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_stakedBalances`)
+                // Get from DB
+                let cacheStakedBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_stakedBalances`)
 
-            if (forceUpdate || cacheStakedBalances === undefined || (new Date() - new Date(cacheStakedBalances.timestamp) > this.cacheTime)) {
-                // Send request
-                try {
-                    await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
-                        .then(response => response.json())
-                        .then(async data => {
-                            if (data.delegation_responses) {
-                                // Set data
-                                this.stakedBalances = data.delegation_responses.filter(el => el.balance.amount > 0)
+                if (forceUpdate || cacheStakedBalances === undefined || (new Date() - new Date(cacheStakedBalances.timestamp) > this.cacheTime)) {
+                    // Send request
+                    const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegations/${this.currentAddress}`)
 
-                                for (let item of this.stakedBalances) {
-                                    // Get balance info
-                                    await this.getBalanceInfo(item.balance)
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch staked balances. Status: ' + response.status)
+                    }
 
-                                    // Get validator info
-                                    await this.getValidatorInfo(item, item.delegation.validator_address)
-                                }
+                    const data = await response.json()
 
-                                // Clear balances
-                                this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
+                    if (data.delegation_responses) {
+                        // Set data
+                        this.stakedBalances = data.delegation_responses.filter(el => el.balance.amount > 0)
 
-                                // Save in DB
-                                await DBaddData(`wallet${this.currentWalletID}`, [
-                                    [`${this.currentNetwork}_stakedBalances`, JSON.parse(JSON.stringify({
-                                        value: this.stakedBalances,
-                                        timestamp: new Date().toISOString()
-                                    }))]
-                                ])
-                            }
-                        })
-                } catch (error) {
-                    console.error(error)
+                        for (let item of this.stakedBalances) {
+                            // Get balance info
+                            await this.getBalanceInfo(item.balance)
+
+                            // Get validator info
+                            await this.getValidatorInfo(item, item.delegation.validator_address)
+                        }
+
+                        // Clear balances
+                        this.stakedBalances = this.stakedBalances.filter(item => item.balance.hasOwnProperty('exponent'))
+
+                        // Save in DB
+                        await DBaddData(`wallet${this.currentWalletID}`, [
+                            [`${this.currentNetwork}_stakedBalances`, JSON.parse(JSON.stringify({
+                                value: this.stakedBalances,
+                                timestamp: new Date().toISOString()
+                            }))]
+                        ])
+                    }
+                } else {
+                    // Set from cache
+                    this.stakedBalances = cacheStakedBalances.value
                 }
-            } else {
-                // Set from cache
-                this.stakedBalances = cacheStakedBalances.value
-            }
 
-            // Staked balances status
-            this.isStakedBalancesGot = true
+                // Staked balances status
+                this.isStakedBalancesGot = true
+            } catch (error) {
+                // Throw error
+                throw new Error(`getStakedBalances() failed: ${error.message}`)
+            }
         },
 
 
         // Get rewards
         async getRewards() {
-            // Rewards status
-            this.isRewardsGot = false
-
-            // Reset data
-            this.rewardsBalances = []
-
-            // Request
             try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/distribution/v1beta1/delegators/${this.currentAddress}/rewards`)
-                    .then(response => response.json())
-                    .then(async data => {
-                        if (data.total.length) {
-                            // Set data
-                            this.rewardsBalances = data.total
+                // Rewards status
+                this.isRewardsGot = false
 
-                            for (let balance of this.rewardsBalances) {
-                                // Get balance info
-                                await this.getBalanceInfo(balance)
-                            }
+                // Reset data
+                this.rewardsBalances = []
 
-                            // Clear rewards
-                            this.rewardsBalances = this.rewardsBalances.filter(balance => balance.hasOwnProperty('exponent'))
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/distribution/v1beta1/delegators/${this.currentAddress}/rewards`)
 
-                            // Filter rewards
-                            this.rewardsBalances = this.rewardsBalances.filter(balance => balance.chain_info.chain_id == this.networks[this.currentNetwork].chain_id)
-                        }
-                    })
+                if (!response.ok) {
+                    throw new Error('Failed to fetch rewards. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                if (data.total.length) {
+                    // Set data
+                    this.rewardsBalances = data.total
+
+                    for (let balance of this.rewardsBalances) {
+                        // Get balance info
+                        await this.getBalanceInfo(balance)
+                    }
+
+                    // Clear rewards
+                    this.rewardsBalances = this.rewardsBalances.filter(balance => balance.hasOwnProperty('exponent'))
+
+                    // Filter rewards
+                    this.rewardsBalances = this.rewardsBalances.filter(balance => balance.chain_info.chain_id == this.networks[this.currentNetwork].chain_id)
+                }
+
+                // Rewards status
+                this.isRewardsGot = true
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getRewards() failed: ${error.message}`)
             }
-
-            // Rewards status
-            this.isRewardsGot = true
         },
 
 
         // Get unstaking balances
         async getUnstakingBalances () {
-            // Unstaking balances status
-            this.isUnstakingBalancesGot = false
-
-            // Reset data
-            this.unstakingBalances = []
-            this.networks[this.currentNetwork].totalUnstakingTokens = 0
-
-            // Request
             try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/unbonding_delegations`)
-                    .then(response => response.json())
-                    .then(async data => {
-                        // Set data
-                        this.unstakingBalances = data.unbonding_responses
+                // Unstaking balances status
+                this.isUnstakingBalancesGot = false
 
-                        for (let item of this.unstakingBalances) {
-                            // Calc total unstaking tokens
-                            item.entries.forEach(entry => this.networks[this.currentNetwork].totalUnstakingTokens += parseInt(entry.balance))
+                // Reset data
+                this.unstakingBalances = []
+                this.networks[this.currentNetwork].totalUnstakingTokens = 0
 
-                            // Get validator info
-                            await this.getValidatorInfo(item, item.validator_address)
-                        }
-                    })
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/unbonding_delegations`)
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch unstaking balances. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                // Set data
+                this.unstakingBalances = data.unbonding_responses
+
+                for (let item of this.unstakingBalances) {
+                    // Calc total unstaking tokens
+                    item.entries.forEach(entry => this.networks[this.currentNetwork].totalUnstakingTokens += parseInt(entry.balance))
+
+                    // Get validator info
+                    await this.getValidatorInfo(item, item.validator_address)
+                }
+
+                // Unstaking balances status
+                this.isUnstakingBalancesGot = true
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getUnstakingBalances() failed: ${error.message}`)
             }
-
-            // Unstaking balances status
-            this.isUnstakingBalancesGot = true
         },
 
 
         // Get redelegations
         async getRedelegations() {
-            // Request
             try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/redelegations`)
-                    .then(response => response.json())
-                    .then(async data => {
-                        // Set data
-                        this.redelegations = data.redelegation_responses
-                    })
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/redelegations`)
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch redelegations. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                // Set data
+                this.redelegations = data.redelegation_responses
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getRedelegations() failed: ${error.message}`)
             }
         },
 
 
         // Get balance info
         async getBalanceInfo(balance) {
-            // Denom traces
-            let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
+            try {
+                // Denom traces
+                let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
 
-            // Old base denom
-            balance.old_base_denom = base_denom
+                // Old base denom
+                balance.old_base_denom = base_denom
 
-            if (base_denom === 'share') {
-                return
-            }
-
-            // Get (token info/chain name) from assets
-            for (let asset of assets) {
-                // Exceptions
-                switch (base_denom) {
-                    case 'uusdc':
-                        var currentAsset = assets.find(el => el.chain_name === 'noble')
-                        break;
-
-                    // case 'utia':
-                    //     var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
-                    //     break;
-
-                    case 'udatom':
-                        var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
-
-                        base_denom = 'uatom'
-                        break;
-
-                    case 'drop':
-                        var currentAsset = assets.find(el => el.chain_name === 'celestia')
-
-                        base_denom = 'utia'
-                        break;
-
-                    case 'uboom':
-                        var currentAsset = assets.find(el => el.chain_name === 'neutron')
-
-                        base_denom = 'untrn'
-                        break;
-
-                    default:
-                        var currentAsset = asset
-                        break;
+                if (base_denom === 'share') {
+                    return
                 }
 
-                // Token info
-                let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
+                // Get (token info/chain name) from assets
+                for (let asset of assets) {
+                    // Exceptions
+                    switch (base_denom) {
+                        case 'uusdc':
+                            var currentAsset = assets.find(el => el.chain_name === 'noble')
+                            break;
 
-                if (tokenInfo) {
-                    // Set data
-                    balance.token_info = tokenInfo
-                    balance.chain_name = currentAsset.chain_name
+                        // case 'utia':
+                        //     var currentAsset = assets.find(el => el.chain_name === 'celestiatestnet3')
+                        //     break;
 
-                    break
+                        case 'udatom':
+                            var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
+
+                            base_denom = 'uatom'
+                            break;
+
+                        case 'drop':
+                            var currentAsset = assets.find(el => el.chain_name === 'celestia')
+
+                            base_denom = 'utia'
+                            break;
+
+                        case 'uboom':
+                            var currentAsset = assets.find(el => el.chain_name === 'neutron')
+
+                            base_denom = 'untrn'
+                            break;
+
+                        default:
+                            var currentAsset = asset
+                            break;
+                    }
+
+                    // Token info
+                    let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
+
+                    if (tokenInfo) {
+                        // Set data
+                        balance.token_info = tokenInfo
+                        balance.chain_name = currentAsset.chain_name
+
+                        break
+                    }
                 }
-            }
 
-            if (balance.token_info) {
-                // Format denom exponent
-                let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
+                if (balance.token_info) {
+                    // Format denom exponent
+                    let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
 
-                // Set exponent for denom
-                formatableToken
-                    ? balance.exponent = formatableToken.exponent
-                    : balance.exponent = balance.token_info.denom_units[1]?.exponent || 0
+                    // Set exponent for denom
+                    formatableToken
+                        ? balance.exponent = formatableToken.exponent
+                        : balance.exponent = balance.token_info.denom_units[1]?.exponent || 0
 
-                // Get chain info
-                balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
+                    // Get chain info
+                    balance.chain_info = chains.find(el => el.chain_name === balance.chain_name)
 
-                // Get price
-                balance.price = getPriceByDenom(balance.token_info.symbol)
+                    // Get price
+                    balance.price = getPriceByDenom(balance.token_info.symbol)
+                }
+            } catch (error) {
+                // Throw error
+                throw new Error(`getBalanceInfo() failed: ${error.message}`)
             }
         },
 
@@ -675,432 +734,507 @@ export const useGlobalStore = defineStore('global', {
         // Get validator info
         async getValidatorInfo(item, validator_address) {
             try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators/${validator_address}`)
-                    .then(res => res.json())
-                    .then(response => {
-                        // Set data
-                        item.validator_info = response.validator
-                    })
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators/${validator_address}`)
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch validator info. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                // Set data
+                item.validator_info = response.validator
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getValidatorInfo() failed: ${error.message}`)
             }
         },
 
 
         // Get secret from DB
         async getSecret(current = false) {
-            let DBWallets = null,
-                walletID = 0
+            try {
+                let DBWallets = null,
+                    walletID = 0
 
-            if (!current) {
-                // Get wallets
-                DBWallets = await DBgetData('global', 'wallets')
+                if (!current) {
+                    // Get wallets
+                    DBWallets = await DBgetData('global', 'wallets')
 
-                // Get wallet ID
-                walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
-            } else {
-                walletID = this.currentWalletID
+                    // Get wallet ID
+                    walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+                } else {
+                    walletID = this.currentWalletID
+                }
+
+                // Get from DB
+                const DBSecret = await DBgetMultipleData('secret', [
+                    `wallet${walletID}_aesKey`,
+                    `wallet${walletID}_secret`,
+                    `wallet${walletID}_secretIV`
+                ])
+
+                // Get wallet secret part two
+                const DBSecretPartTwo = await DBgetData(`wallet${walletID}`, 'secret')
+
+                // Restore the original secret
+                const restoredSecret = sss.combine([DBSecret[`wallet${walletID}_secret`], DBSecretPartTwo])
+
+                // Convert back to Uint8Array
+                const restoredUint8Array = new Uint8Array(restoredSecret)
+
+                // Return memo
+                return await decryptData(restoredUint8Array, DBSecret[`wallet${walletID}_secretIV`], DBSecret[`wallet${walletID}_aesKey`])
+            } catch (error) {
+                // Throw error
+                throw new Error(`getSecret() failed: ${error.message}`)
             }
-
-            // Get from DB
-            let DBSecret = await DBgetMultipleData('secret', [
-                `wallet${walletID}_aesKey`,
-                `wallet${walletID}_secret`,
-                `wallet${walletID}_secretIV`
-            ])
-
-            // Get wallet secret part two
-            let DBSecretPartTwo = await DBgetData(`wallet${walletID}`, 'secret')
-
-            // Restore the original secret
-            let restoredSecret = sss.combine([DBSecret[`wallet${walletID}_secret`], DBSecretPartTwo])
-
-            // Convert back to Uint8Array
-            let restoredUint8Array = new Uint8Array(restoredSecret)
-
-            // Return memo
-            return await decryptData(restoredUint8Array, DBSecret[`wallet${walletID}_secretIV`], DBSecret[`wallet${walletID}_aesKey`])
         },
 
 
         // Get private key from DB
         async getPrivateKey(current = false) {
-            let DBWallets = null,
-                walletID = 0
+            try {
+                let DBWallets = null,
+                    walletID = 0
 
-            if (!current) {
-                // Get wallets
-                DBWallets = await DBgetData('global', 'wallets')
+                if (!current) {
+                    // Get wallets
+                    DBWallets = await DBgetData('global', 'wallets')
 
-                // Get wallet ID
-                walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
-            } else {
-                walletID = this.currentWalletID
+                    // Get wallet ID
+                    walletID = DBWallets !== undefined ? DBWallets.length + 1 : 1
+                } else {
+                    walletID = this.currentWalletID
+                }
+
+                // Get from DB
+                const DBSecret = await DBgetMultipleData('secret', [
+                    `wallet${walletID}_aesKey`,
+                    `wallet${walletID}_privateKey`,
+                    `wallet${walletID}_secretIV`
+                ])
+
+                // Get wallet secret part two
+                const DBSecretPartTwo = await DBgetData(`wallet${walletID}`, 'privateKey')
+
+                // Restore the original secret
+                const restoredSecret = sss.combine([DBSecret[`wallet${walletID}_privateKey`], DBSecretPartTwo])
+
+                // Convert back to Uint8Array
+                const restoredUint8Array = new Uint8Array(restoredSecret)
+
+                // Return memo
+                return await decryptData(restoredUint8Array, DBSecret[`wallet${walletID}_secretIV`], DBSecret[`wallet${walletID}_aesKey`])
+            } catch (error) {
+                // Throw error
+                throw new Error(`getPrivateKey() failed: ${error.message}`)
             }
-
-            // Get from DB
-            let DBSecret = await DBgetMultipleData('secret', [
-                `wallet${walletID}_aesKey`,
-                `wallet${walletID}_privateKey`,
-                `wallet${walletID}_secretIV`
-            ])
-
-            // Get wallet secret part two
-            let DBSecretPartTwo = await DBgetData(`wallet${walletID}`, 'privateKey')
-
-            // Restore the original secret
-            let restoredSecret = sss.combine([DBSecret[`wallet${walletID}_privateKey`], DBSecretPartTwo])
-
-            // Convert back to Uint8Array
-            let restoredUint8Array = new Uint8Array(restoredSecret)
-
-            // Return memo
-            return await decryptData(restoredUint8Array, DBSecret[`wallet${walletID}_secretIV`], DBSecret[`wallet${walletID}_aesKey`])
         },
 
 
         // Find missing wallet ID
         async findMissingId(DBWallets = null) {
-            if (!DBWallets) {
-                // Get wallets
-                DBWallets = await DBgetData('global', 'wallets')
-            }
-
-            // Find the minimum missing value
-            let missingId = 1
-
-            if (DBWallets !== undefined) {
-                // Set IDs
-                let ids = DBWallets.map(el => el.id)
-
-                while (ids.includes(missingId)) {
-                    missingId++
+            try {
+                if (!DBWallets) {
+                    // Get wallets
+                    DBWallets = await DBgetData('global', 'wallets')
                 }
-            }
 
-            // Return value
-            return missingId
+                // Find the minimum missing value
+                let missingId = 1
+
+                if (DBWallets !== undefined) {
+                    // Set IDs
+                    let ids = DBWallets.map(el => el.id)
+
+                    while (ids.includes(missingId)) {
+                        missingId++
+                    }
+                }
+
+                // Return value
+                return missingId
+            } catch (error) {
+                // Throw error
+                throw new Error(`findMissingId() failed: ${error.message}`)
+            }
         },
 
 
         // Find next available wallet name
         async findNextAvailableWalletName(DBWallets = null) {
-            let i = 2,
-                name = this.defaultWalletName + i
-
-            if (!DBWallets) {
-                // Get wallets
-                DBWallets = await DBgetData('global', 'wallets')
-            }
-
-            if (DBWallets !== undefined) {
-                while (true) {
+            try {
+                let i = 2,
                     name = this.defaultWalletName + i
 
-                    // Check if a wallet with this name exists
-                    if (!DBWallets.some(el => el.name === name)) {
-                        return name
-                    }
-
-                    i++
+                if (!DBWallets) {
+                    // Get wallets
+                    DBWallets = await DBgetData('global', 'wallets')
                 }
-            }
 
-            // Return value
-            return name
+                if (DBWallets !== undefined) {
+                    while (true) {
+                        name = this.defaultWalletName + i
+
+                        // Check if a wallet with this name exists
+                        if (!DBWallets.some(el => el.name === name)) {
+                            return name
+                        }
+
+                        i++
+                    }
+                }
+
+                return name
+            } catch (error) {
+                // Throw error
+                throw new Error(`findNextAvailableWalletName() failed: ${error.message}`)
+            }
         },
 
 
         // Set secret
         async setSecret(secret) {
-            // Generate AES key
-            let aesKey = await generateAESKey()
+            try {
+                // Generate AES key
+                const aesKey = await generateAESKey()
 
-            // Encryption
-            let { ciphertext, iv } = await encryptData(secret, aesKey)
+                // Encryption
+                const { ciphertext, iv } = await encryptData(secret, aesKey)
 
-            // Split into 2 parts, both parts are required for recovery
-            let shares = sss.split(Buffer.from(ciphertext), {
-                shares: 2,
-                threshold: 2
-            })
+                // Split into 2 parts, both parts are required for recovery
+                const shares = sss.split(Buffer.from(ciphertext), {
+                    shares: 2,
+                    threshold: 2
+                })
 
-            // Get wallet ID
-            let walletID = await this.findMissingId()
+                // Get wallet ID
+                const walletID = await this.findMissingId()
 
-            // Save in DB
-            await DBaddData('secret', [
-                [`wallet${walletID}_aesKey`, aesKey],
-                [`wallet${walletID}_secret`, shares[0]],
-                [`wallet${walletID}_secretIV`, iv]
-            ])
+                // Save in DB
+                await DBaddData('secret', [
+                    [`wallet${walletID}_aesKey`, aesKey],
+                    [`wallet${walletID}_secret`, shares[0]],
+                    [`wallet${walletID}_secretIV`, iv]
+                ])
 
-            // Check DB storeName
-            await DBcheckStoreName(`wallet${walletID}`)
+                // Check DB storeName
+                await DBcheckStoreName(`wallet${walletID}`)
 
-            // Save in DB
-            await DBaddData(`wallet${walletID}`, [
-                ['secret', shares[1]],
-                ['createdBy', 'secret']
-            ])
+                // Save in DB
+                await DBaddData(`wallet${walletID}`, [
+                    ['secret', shares[1]],
+                    ['createdBy', 'secret']
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`setSecret() failed: ${error.message}`)
+            }
         },
 
 
         // Set private key
         async setPrivateKey(privateKey) {
-            // Generate AES key
-            let aesKey = await generateAESKey()
+            try {
+                // Generate AES key
+                const aesKey = await generateAESKey()
 
-            // Encryption
-            let { ciphertext, iv } = await encryptData(privateKey, aesKey)
+                // Encryption
+                const { ciphertext, iv } = await encryptData(privateKey, aesKey)
 
-            // Split into 2 parts, both parts are required for recovery
-            let shares = sss.split(Buffer.from(ciphertext), {
-                shares: 2,
-                threshold: 2
-            })
+                // Split into 2 parts, both parts are required for recovery
+                const shares = sss.split(Buffer.from(ciphertext), {
+                    shares: 2,
+                    threshold: 2
+                })
 
-            // Get wallet ID
-            let walletID = await this.findMissingId()
+                // Get wallet ID
+                const walletID = await this.findMissingId()
 
-            // Save in DB
-            await DBaddData('secret', [
-                [`wallet${walletID}_aesKey`, aesKey],
-                [`wallet${walletID}_privateKey`, shares[0]],
-                [`wallet${walletID}_secretIV`, iv]
-            ])
+                // Save in DB
+                await DBaddData('secret', [
+                    [`wallet${walletID}_aesKey`, aesKey],
+                    [`wallet${walletID}_privateKey`, shares[0]],
+                    [`wallet${walletID}_secretIV`, iv]
+                ])
 
-            await DBaddData(`wallet${walletID}`, [
-                ['privateKey', shares[1]],
-                ['createdBy', 'privateKey']
-            ])
+                await DBaddData(`wallet${walletID}`, [
+                    ['privateKey', shares[1]],
+                    ['createdBy', 'privateKey']
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`setPrivateKey() failed: ${error.message}`)
+            }
         },
 
 
         // Set current network
-        setCurrentNetwork(chain) {
-            // Update current network
-            this.currentNetwork = chain
+        async setCurrentNetwork(chain) {
+            try {
+                // Update current network
+                this.currentNetwork = chain
 
-            // Save in DB
-            DBaddData(`wallet${this.currentWalletID}`, [
-                ['currentNetwork', chain]
-            ])
+                // Save in DB
+                await DBaddData(`wallet${this.currentWalletID}`, [
+                    ['currentNetwork', chain]
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`setCurrentNetwork() failed: ${error.message}`)
+            }
         },
 
 
         // Create wallet
         async createWallet({ pinCode = null, walletName = null, isBiometricEnabled = null, isAdding = false, relativeWallet = null, derivationPath = this.tempDerivationPath }) {
-            // Get all wallets
-            let DBWallets = await DBgetData('global', 'wallets')
+            try {
+                // Get all wallets
+                const DBWallets = await DBgetData('global', 'wallets')
 
-            if (DBWallets === undefined) {
-                // Set array type
-                DBWallets = []
-            }
+                if (DBWallets === undefined) {
+                    // Set array type
+                    DBWallets = []
+                }
 
-            // Get wallet ID
-            let walletID = await this.findMissingId(DBWallets)
+                // Get wallet ID
+                const walletID = await this.findMissingId(DBWallets)
 
-            // Available wallet name
-            let availableWalletName = await this.findNextAvailableWalletName()
+                // Available wallet name
+                const availableWalletName = await this.findNextAvailableWalletName()
 
-            // Update wallets
-            DBWallets.push({
-                id: walletID,
-                name: walletName || availableWalletName
-            })
+                // Update wallets
+                DBWallets.push({
+                    id: walletID,
+                    name: walletName || availableWalletName
+                })
 
-            // Add data to wallet DB
-            await DBaddData(`wallet${walletID}`, [
-                ['id', walletID],
-                ['name', walletName || availableWalletName],
-                ['currentNetwork', 'cosmoshub'],
-                ['currentCurrency', 'USD'],
-                ['derivationPath', derivationPath],
-                ['subWallets', JSON.parse(JSON.stringify([]))],
-                ['relativeWallet', relativeWallet]
-            ])
-
-            // Add data to global DB
-            if (!isAdding) {
-                // Generate HMAC key
-                let hmacKey = await generateHMACKey()
-
-                await DBaddData('global', [
-                    ['isRegister', true],
-                    ['currentWalletID', walletID],
-                    ['hmacKey', hmacKey],
-                    ['pin', await hashDataWithKey(pinCode.join(''), hmacKey)],
-                    ['isBiometric', isBiometricEnabled],
-                    ['authErrorLimit', this.authErrorLimit],
-                    ['wallets', DBWallets]
+                // Add data to wallet DB
+                await DBaddData(`wallet${walletID}`, [
+                    ['id', walletID],
+                    ['name', walletName || availableWalletName],
+                    ['currentNetwork', 'cosmoshub'],
+                    ['currentCurrency', 'USD'],
+                    ['derivationPath', derivationPath],
+                    ['subWallets', JSON.parse(JSON.stringify([]))],
+                    ['relativeWallet', relativeWallet]
                 ])
-            } else {
-                await DBaddData('global', [
-                    ['wallets', DBWallets]
-                ])
+
+                // Add data to global DB
+                if (!isAdding) {
+                    // Generate HMAC key
+                    const hmacKey = await generateHMACKey()
+
+                    await DBaddData('global', [
+                        ['isRegister', true],
+                        ['currentWalletID', walletID],
+                        ['hmacKey', hmacKey],
+                        ['pin', await hashDataWithKey(pinCode.join(''), hmacKey)],
+                        ['isBiometric', isBiometricEnabled],
+                        ['authErrorLimit', this.authErrorLimit],
+                        ['wallets', DBWallets]
+                    ])
+                } else {
+                    await DBaddData('global', [
+                        ['wallets', DBWallets]
+                    ])
+                }
+
+                // Set authorized status
+                this.isAuthorized = true
+
+                // Return wallet ID
+                return walletID
+            } catch (error) {
+                // Throw error
+                throw new Error(`createWallet() failed: ${error.message}`)
             }
-
-            // Set authorized status
-            this.isAuthorized = true
-
-            // Return wallet ID
-            return walletID
         },
 
 
         // Create from exist wallet
         async createFromExistWallet() {
-            // Get secret from DB
-            let currentWalletSecret = await this.getSecret(true)
+            try {
+                // Get secret from DB
+                const currentWalletSecret = await this.getSecret(true)
 
-            // Get sub wallets of current wallet
-            let subWallets = await DBgetData(`wallet${this.currentWalletID}`, 'subWallets')
+                // Get sub wallets of current wallet
+                const subWallets = await DBgetData(`wallet${this.currentWalletID}`, 'subWallets')
 
-            // Set secret
-            await this.setSecret(currentWalletSecret)
+                // Set secret
+                await this.setSecret(currentWalletSecret)
 
-            // Create wallet
-            let newWalletID = await this.createWallet({
-                isAdding: true,
-                relativeWallet: this.currentWalletID,
-                derivationPath: this.defaultDerivationPath.replace(/\/\d+$/, `/${(subWallets.length + 1)}`)
-            })
+                // Create wallet
+                const newWalletID = await this.createWallet({
+                    isAdding: true,
+                    relativeWallet: this.currentWalletID,
+                    derivationPath: this.defaultDerivationPath.replace(/\/\d+$/, `/${(subWallets.length + 1)}`)
+                })
 
-            // Add new subwallet
-            subWallets.push(newWalletID)
+                // Add new subwallet
+                subWallets.push(newWalletID)
 
-            // Update current wallet
-            await DBaddData(`wallet${this.currentWalletID}`, [
-                ['subWallets', JSON.parse(JSON.stringify(subWallets))]
-            ])
+                // Update current wallet
+                await DBaddData(`wallet${this.currentWalletID}`, [
+                    ['subWallets', JSON.parse(JSON.stringify(subWallets))]
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`createFromExistWallet() failed: ${error.message}`)
+            }
         },
 
 
         // Get current wallet created by
         async getCurrentWalletCreatedBy() {
-            // Get data from DB
-            return await DBgetData(`wallet${this.currentWalletID}`, 'createdBy')
+            try {
+                // Get data from DB
+                return await DBgetData(`wallet${this.currentWalletID}`, 'createdBy')
+            } catch (error) {
+                // Throw error
+                throw new Error(`getCurrentWalletCreatedBy() failed: ${error.message}`)
+            }
         },
 
 
         // Update auth error limit
         async updateUserAuthErrorLimit(limit) {
-            await DBaddData('global', [
-                ['authErrorLimit', limit]
-            ])
+            try {
+                await DBaddData('global', [
+                    ['authErrorLimit', limit]
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`updateUserAuthErrorLimit() failed: ${error.message}`)
+            }
         },
 
 
         // Update TxFee info
         async updateTxFeeInfo() {
-            await DBaddData(`wallet${this.currentWalletID}`, [
-                ['TxFeeCurrentLevel', this.TxFee.currentLevel],
-                ['TxFeeIsRemember', this.TxFee.isRemember]
-            ])
+            try {
+                await DBaddData(`wallet${this.currentWalletID}`, [
+                    ['TxFeeCurrentLevel', this.TxFee.currentLevel],
+                    ['TxFeeIsRemember', this.TxFee.isRemember]
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`updateTxFeeInfo() failed: ${error.message}`)
+            }
         },
 
 
         // Update current currency
         async updateCurrentCurrency() {
-            switch (this.currentCurrency) {
-                case 'BTC':
-                    // Set current currency
-                    this.currentCurrency = 'ETH'
+            try {
+                switch (this.currentCurrency) {
+                    case 'BTC':
+                        // Set current currency
+                        this.currentCurrency = 'ETH'
 
-                    // Set current currency symbol
-                    this.currentCurrencySymbol = 'ETH'
+                        // Set current currency symbol
+                        this.currentCurrencySymbol = 'ETH'
 
-                    // Update in DB
-                    DBaddData(`wallet${this.currentWalletID}`, [
-                        ['currentCurrency', 'ETH']
-                    ])
+                        // Update in DB
+                        DBaddData(`wallet${this.currentWalletID}`, [
+                            ['currentCurrency', 'ETH']
+                        ])
 
-                    break;
+                        break;
 
-                case 'ETH':
-                    // Set current currency
-                    this.currentCurrency = 'USD'
+                    case 'ETH':
+                        // Set current currency
+                        this.currentCurrency = 'USD'
 
-                    // Set current currency symbol
-                    this.currentCurrencySymbol = '$'
+                        // Set current currency symbol
+                        this.currentCurrencySymbol = '$'
 
-                    // Update in DB
-                    DBaddData(`wallet${this.currentWalletID}`, [
-                        ['currentCurrency', 'USD']
-                    ])
+                        // Update in DB
+                        DBaddData(`wallet${this.currentWalletID}`, [
+                            ['currentCurrency', 'USD']
+                        ])
 
-                    break;
+                        break;
 
-                default:
-                    // Set current currency
-                    this.currentCurrency = 'BTC'
+                    default:
+                        // Set current currency
+                        this.currentCurrency = 'BTC'
 
-                    // Set current currency symbol
-                    this.currentCurrencySymbol = 'BTC'
+                        // Set current currency symbol
+                        this.currentCurrencySymbol = 'BTC'
 
-                    // Update in DB
-                    DBaddData(`wallet${this.currentWalletID}`, [
-                        ['currentCurrency', 'BTC']
-                    ])
+                        // Update in DB
+                        DBaddData(`wallet${this.currentWalletID}`, [
+                            ['currentCurrency', 'BTC']
+                        ])
 
-                    break;
+                        break;
+                }
+            } catch (error) {
+                // Throw error
+                throw new Error(`updateCurrentCurrency() failed: ${error.message}`)
             }
         },
 
 
         // Connect to websocket
         async connectWebsocket() {
-            // Close previous connections
-            Object.values(this.networks).forEach(network => {
-                if (network.websocket) {
-                    // Remove onmessage listener
-                    network.websocket.onopen = null
-                    network.websocket.onmessage = null
+            try {
+                // Close previous connections
+                Object.values(this.networks).forEach(network => {
+                    if (network.websocket) {
+                        // Remove onmessage listener
+                        network.websocket.onopen = null
+                        network.websocket.onmessage = null
 
-                    // Close connection
-                    network.websocket.close()
+                        // Close connection
+                        network.websocket.close()
+                    }
+                })
+
+                // Connect
+                this.networks[this.currentNetwork].websocket = new WebSocket(this.networks[this.currentNetwork].websocket_url)
+
+                // Listening events
+                this.networks[this.currentNetwork].websocket.onopen = () => {
+                    // Event Tx with recipient
+                    this.networks[this.currentNetwork].websocket.send(JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'subscribe',
+                        id: '1',
+                        params: {
+                            query: `tm.event='Tx' AND transfer.recipient='${this.currentAddress}'`
+                        }
+                    }))
                 }
-            })
 
-            // Connect
-            this.networks[this.currentNetwork].websocket = new WebSocket(this.networks[this.currentNetwork].websocket_url)
+                // WSS message event
+                this.networks[this.currentNetwork].websocket.onmessage = async msg => {
+                    const parsedMsg = JSON.parse(msg.data)
 
-            // Listening events
-            this.networks[this.currentNetwork].websocket.onopen = () => {
-                // Event Tx with recipient
-                this.networks[this.currentNetwork].websocket.send(JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'subscribe',
-                    id: '1',
-                    params: {
-                        query: `tm.event='Tx' AND transfer.recipient='${this.currentAddress}'`
-                    }
-                }))
-            }
+                    // If the result object is not empty
+                    if (parsedMsg.result && Object.keys(parsedMsg.result).length > 0) {
+                        // User recipient
+                        if (parsedMsg.id == '1') {
+                            // Update all balances
+                            this.updateAllBalances()
 
-            // WSS message event
-            this.networks[this.currentNetwork].websocket.onmessage = async msg => {
-                let parsedMsg = JSON.parse(msg.data)
+                            // Reset Tx Fee
+                            this.resetTxFee()
+                        }
 
-                // If the result object is not empty
-                if (parsedMsg.result && Object.keys(parsedMsg.result).length > 0) {
-                    // User recipient
-                    if (parsedMsg.id == '1') {
-                        // Update all balances
-                        this.updateAllBalances()
-
-                        // Reset Tx Fee
-                        this.resetTxFee()
-                    }
-
-                    // Transaction
-                    if (parsedMsg.id == '2') {
-                        // Check Tx result
-                        this.checkTxResult()
+                        // Transaction
+                        if (parsedMsg.id == '2') {
+                            // Check Tx result
+                            this.checkTxResult()
+                        }
                     }
                 }
+            } catch (error) {
+                // Throw error
+                throw new Error(`connectWebsocket() failed: ${error.message}`)
             }
         },
 
@@ -1115,7 +1249,7 @@ export const useGlobalStore = defineStore('global', {
         // Get minimum gas price
         TxFeeSetGasPrices() {
             // Get chain info
-            let chain = chains.find(el => el.chain_id === this.networks[this.currentNetwork].chain_id)
+            const chain = chains.find(el => el.chain_id === this.networks[this.currentNetwork].chain_id)
 
             // Set data
             this.TxFee.lowPrice = chain.fees.fee_tokens[0].fixed_min_gas_price ? chain.fees.fee_tokens[0].fixed_min_gas_price * 1.1 : chain.fees.fee_tokens[0].low_gas_price
@@ -1135,26 +1269,39 @@ export const useGlobalStore = defineStore('global', {
 
         // Set listener current tx
         setListenerCurrentTx() {
-            // Event Tx with hash
-            this.networks[this.currentNetwork].websocket.send(JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'subscribe',
-                id: '2',
-                params: {
-                    query: `tm.event='Tx' AND tx.hash='${(this.networks[this.currentNetwork].currentTxHash).toUpperCase()}'`
-                }
-            }))
+            try {
+                // Event Tx with hash
+                this.networks[this.currentNetwork].websocket.send(JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'subscribe',
+                    id: '2',
+                    params: {
+                        query: `tm.event='Tx' AND tx.hash='${(this.networks[this.currentNetwork].currentTxHash).toUpperCase()}'`
+                    }
+                }))
+            } catch (error) {
+                // Throw error
+                throw new Error(`setListenerCurrentTx() failed: ${error.message}`)
+            }
         },
 
 
         // Get Tx info
         async getTxInfo(txHash) {
             try {
-                // Request
-                return await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Tx info. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                return data
             } catch (error) {
-                // Throwing an exception
-                throw error
+                // Throw error
+                throw new Error(`getTxInfo() failed: ${error.message}`)
             }
         },
 
@@ -1162,7 +1309,7 @@ export const useGlobalStore = defineStore('global', {
         // Check Tx result
         async checkTxResult() {
             try {
-                let txResult = await this.getTxInfo(this.networks[this.currentNetwork].currentTxHash)
+                const txResult = await this.getTxInfo(this.networks[this.currentNetwork].currentTxHash)
 
                 if (txResult.code !== 5) {
                     // Clean notifications
@@ -1213,54 +1360,68 @@ export const useGlobalStore = defineStore('global', {
                     this.resetTxFee()
                 }
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`checkTxResult() failed: ${error.message}`)
             }
         },
 
 
         // Update all balances
         async updateAllBalances() {
-            let promises = []
+            try {
+                let promises = []
 
-            // Update balances
-            if (this.isBalancesGot) {
-                promises.push(this.getBalances(true))
+                // Update balances
+                if (this.isBalancesGot) {
+                    promises.push(this.getBalances(true))
+                }
+
+                // Update staked balances
+                if (this.isStakedBalancesGot) {
+                    promises.push(this.getStakedBalances(true))
+                }
+
+                // Update rewards
+                if (this.isRewardsGot) {
+                    promises.push(this.getRewards())
+                }
+
+                // Update unstaking balances
+                if (this.isUnstakingBalancesGot) {
+                    promises.push(this.getUnstakingBalances())
+                }
+
+                // Wait balances
+                await Promise.all(promises)
+            } catch (error) {
+                // Throw error
+                throw new Error(`updateAllBalances() failed: ${error.message}`)
             }
-
-            // Update staked balances
-            if (this.isStakedBalancesGot) {
-                promises.push(this.getStakedBalances(true))
-            }
-
-            // Update rewards
-            if (this.isRewardsGot) {
-                promises.push(this.getRewards())
-            }
-
-            // Update unstaking balances
-            if (this.isUnstakingBalancesGot) {
-                promises.push(this.getUnstakingBalances())
-            }
-
-            // Wait balances
-            await Promise.all(promises)
         },
 
 
         // Reset Tx Fee
         async resetTxFee() {
-            // Get DB data
-            let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, ['TxFeeCurrentLevel', 'TxFeeIsRemember'])
+            try {
+                // Get DB data
+                const DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, [
+                    'TxFeeCurrentLevel',
+                    'TxFeeIsRemember'
+                ])
 
-            // Reset data
-            this.TxFee = {
-                balance: {},
-                currentLevel: DBData.TxFeeCurrentLevel || 'average',
-                userGasAmount: 0,
-                gasAmount: 0,
-                isRemember: DBData.TxFeeIsRemember || false,
-                isGasAdjustmentAuto: true,
-                isEnough: false
+                // Reset data
+                this.TxFee = {
+                    balance: {},
+                    currentLevel: DBData.TxFeeCurrentLevel || 'average',
+                    userGasAmount: 0,
+                    gasAmount: 0,
+                    isRemember: DBData.TxFeeIsRemember || false,
+                    isGasAdjustmentAuto: true,
+                    isEnough: false
+                }
+            } catch (error) {
+                // Throw error
+                throw new Error(`resetTxFee() failed: ${error.message}`)
             }
         },
 
@@ -1268,14 +1429,20 @@ export const useGlobalStore = defineStore('global', {
         // Get network unbonding period
         async getNetworkUnbondingTime() {
             try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/params`)
-                    .then(res => res.json())
-                    .then(response => {
-                        // Set data
-                        this.networks[this.currentNetwork].unbondingTime = parseInt(response.params.unbonding_time) / 86400
-                    })
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/params`)
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch network unbonding time. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                // Set data
+                this.networks[this.currentNetwork].unbondingTime = parseInt(data.params.unbonding_time) / 86400
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getNetworkUnbondingTime() failed: ${error.message}`)
             }
         },
 
@@ -1283,12 +1450,19 @@ export const useGlobalStore = defineStore('global', {
         // Get all validators
         async getAllValidators() {
             try {
-                // Request
-                let result = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&pagination.limit=200`)
 
-                return result.validators
+                if (!response.ok) {
+                    throw new Error('Failed to fetch all validatots. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                return data.validators
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getAllValidators() failed: ${error.message}`)
             }
         },
 
@@ -1296,12 +1470,19 @@ export const useGlobalStore = defineStore('global', {
         // Get user validators
         async getUserValidators() {
             try {
-                // Request
-                let result = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/validators?status=BOND_STATUS_BONDED&pagination.limit=200`).then(res => res.json())
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/delegators/${this.currentAddress}/validators?status=BOND_STATUS_BONDED&pagination.limit=200`)
 
-                return result.validators
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user validatots. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                return data.validators
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getUserValidators() failed: ${error.message}`)
             }
         },
 
@@ -1309,33 +1490,45 @@ export const useGlobalStore = defineStore('global', {
         // Get total bonded tokens
         async getTotalBondedTokens() {
             try {
-                await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/pool`)
-                    .then(res => res.json())
-                    .then(response => {
-                        // Set data
-                        this.networks[this.currentNetwork].totalBondedTokens = parseInt(response.pool.bonded_tokens)
-                    })
+                // Send request
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/staking/v1beta1/pool`)
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user validatots. Status: ' + response.status)
+                }
+
+                const data = await response.json()
+
+                // Set data
+                this.networks[this.currentNetwork].totalBondedTokens = parseInt(data.pool.bonded_tokens)
             } catch (error) {
-                console.error(error)
+                // Throw error
+                throw new Error(`getUserValidators() failed: ${error.message}`)
             }
         },
 
 
         // Is unstaking cancel support
         async isUnstakingCancelSupport() {
-            let result = false,
-                cacheIsUnstakingCancelSupport = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_isUnstakingCancelSupport`)
+            try {
+                let result = false,
+                    cacheIsUnstakingCancelSupport = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_isUnstakingCancelSupport`)
 
-            // Check
-            if (cacheIsUnstakingCancelSupport === undefined || (new Date() - new Date(cacheIsUnstakingCancelSupport.timestamp) > this.cacheTime)) {
-                try {
-                    let response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/base/tendermint/v1beta1/node_info`),
-                        data = await response.json(),
-                        cosmos_sdk_version = data.application_version.cosmos_sdk_version,
+                // Check
+                if (cacheIsUnstakingCancelSupport === undefined || (new Date() - new Date(cacheIsUnstakingCancelSupport.timestamp) > this.cacheTime)) {
+                    const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/base/tendermint/v1beta1/node_info`)
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch is unstaking cancel support. Status: ' + response.status)
+                    }
+
+                    const data = await response.json()
+
+                    const cosmos_sdk_version = data.application_version.cosmos_sdk_version,
                         min_version = 'v0.46'
 
                     // Parsing versions
-                    let cosmos_sdk_version_parsed = cosmos_sdk_version.replace('v', '').split('-')[0].split('.').map(Number),
+                    const cosmos_sdk_version_parsed = cosmos_sdk_version.replace('v', '').split('-')[0].split('.').map(Number),
                         min_version_parsed = min_version.replace('v', '').split('-')[0].split('.').map(Number)
 
                     // Fill in the missing with zeros
@@ -1355,15 +1548,16 @@ export const useGlobalStore = defineStore('global', {
                             timestamp: new Date().toISOString()
                         }))]
                     ])
-                } catch (error) {
-                    console.error(error)
-                }
 
-                // Set data
-                this.networks[this.currentNetwork].isUnstakingCancelSupport = result
-            } else {
-                // Set from cache
-                this.networks[this.currentNetwork].isUnstakingCancelSupport = cacheIsUnstakingCancelSupport.value
+                    // Set data
+                    this.networks[this.currentNetwork].isUnstakingCancelSupport = result
+                } else {
+                    // Set from cache
+                    this.networks[this.currentNetwork].isUnstakingCancelSupport = cacheIsUnstakingCancelSupport.value
+                }
+            } catch (error) {
+                // Throw error
+                throw new Error(`isUnstakingCancelSupport() failed: ${error.message}`)
             }
         },
 
@@ -1374,7 +1568,8 @@ export const useGlobalStore = defineStore('global', {
                 // Get from DB
                 this.wallets = await DBgetData('global', 'wallets')
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`getWallets() failed: ${error.message}`)
             }
         },
 
@@ -1407,7 +1602,8 @@ export const useGlobalStore = defineStore('global', {
                     await this.getWallets()
                 }
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`updateWallet() failed: ${error.message}`)
             }
         },
 
@@ -1440,17 +1636,23 @@ export const useGlobalStore = defineStore('global', {
                     ['wallets', JSON.parse(JSON.stringify(this.wallets))]
                 ])
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`removeWallet() failed: ${error.message}`)
             }
         },
 
 
         // Set age confirmed
         async setAgeConfirmed() {
-            // Save in DB
-            await DBaddData('global', [
-                ['ageConfirmed', true]
-            ])
+            try {
+                // Save in DB
+                await DBaddData('global', [
+                    ['ageConfirmed', true]
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`setAgeConfirmed() failed: ${error.message}`)
+            }
         },
 
 
@@ -1458,38 +1660,49 @@ export const useGlobalStore = defineStore('global', {
         async getAgeConfirmed() {
             try {
                 // Get from DB
-                let DBAgeConfirmed = await DBgetData('global', 'ageConfirmed')
+                const DBAgeConfirmed = await DBgetData('global', 'ageConfirmed')
 
                 if (DBAgeConfirmed !== undefined) {
                     // Set result
                     this.isAgeConfirmed = DBAgeConfirmed
                 }
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`getAgeConfirmed() failed: ${error.message}`)
             }
         },
 
 
         // Set user lock
         async setUserLock() {
-            // Save in DB
-            await DBaddData('global', [
-                ['isUserLock', true],
-                ['userLockTimestamp', new Date().toISOString()]
-            ])
+            try {
+                // Save in DB
+                await DBaddData('global', [
+                    ['isUserLock', true],
+                    ['userLockTimestamp', new Date().toISOString()]
+                ])
+            } catch (error) {
+                // Throw error
+                throw new Error(`setUserLock() failed: ${error.message}`)
+            }
         },
 
 
         // Set user unlock
         async setUserUnlock() {
-            // Save in DB
-            await DBaddData('global', [
-                ['isUserLock', false],
-                ['userLockTimestamp', '']
-            ])
+            try {
+                // Save in DB
+                await DBaddData('global', [
+                    ['isUserLock', false],
+                    ['userLockTimestamp', '']
+                ])
 
-            // Сhange auth limit
-            await this.updateUserAuthErrorLimit(this.authErrorLimit)
+                // Сhange auth limit
+                await this.updateUserAuthErrorLimit(this.authErrorLimit)
+            } catch (error) {
+                // Throw error
+                throw new Error(`setUserLock() failed: ${error.message}`)
+            }
         },
 
 
@@ -1497,7 +1710,7 @@ export const useGlobalStore = defineStore('global', {
         async setUserChannel(channel) {
             try {
                 // Get from DB
-                let userChannels = await DBgetData('global', 'userChannels') || []
+                const userChannels = await DBgetData('global', 'userChannels') || []
 
                 // Add new channel
                 userChannels.push(channel)
@@ -1507,7 +1720,8 @@ export const useGlobalStore = defineStore('global', {
                     ['userChannels', JSON.parse(JSON.stringify(userChannels))]
                 ])
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`setUserChannel() failed: ${error.message}`)
             }
         },
 
@@ -1516,10 +1730,10 @@ export const useGlobalStore = defineStore('global', {
         async updateUserChannel(channel) {
             try {
                 // Get from DB
-                let userChannels = await DBgetData('global', 'userChannels') || []
+                const userChannels = await DBgetData('global', 'userChannels') || []
 
                 // Add new channel
-                let oldChannel = userChannels.find(el => el.info.pretty_name === channel.old.info.pretty_name)
+                const oldChannel = userChannels.find(el => el.info.pretty_name === channel.old.info.pretty_name)
 
                 // Update data
                 oldChannel.info = channel.info
@@ -1530,7 +1744,8 @@ export const useGlobalStore = defineStore('global', {
                     ['userChannels', JSON.parse(JSON.stringify(userChannels))]
                 ])
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`updateUserChannel() failed: ${error.message}`)
             }
         },
 
@@ -1541,7 +1756,8 @@ export const useGlobalStore = defineStore('global', {
                 // Get from DB
                 return await DBgetData('global', 'userChannels')
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`getAllUserChannels() failed: ${error.message}`)
             }
         },
 
@@ -1550,7 +1766,7 @@ export const useGlobalStore = defineStore('global', {
         async deleteUserChannel(chainName) {
             try {
                 // Get from DB
-                let userChannels = await DBgetData('global', 'userChannels')
+                const userChannels = await DBgetData('global', 'userChannels')
 
                 // Delete channel
                 userChannels = userChannels.filter(el => el.info.pretty_name !== chainName)
@@ -1560,7 +1776,8 @@ export const useGlobalStore = defineStore('global', {
                     ['userChannels', userChannels],
                 ])
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`deleteUserChannel() failed: ${error.message}`)
             }
         },
 
@@ -1574,7 +1791,8 @@ export const useGlobalStore = defineStore('global', {
                 // Reset all state
                 this.$reset()
             } catch (error) {
-                console.log(error)
+                // Throw error
+                throw new Error(`clearAllData() failed: ${error.message}`)
             }
         }
     }

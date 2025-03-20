@@ -104,8 +104,12 @@
 
 
     onBeforeMount(async () => {
-        // Load user channels
-        userChannels.value = await store.getAllUserChannels()
+        try {
+            // Load user channels
+            userChannels.value = await store.getAllUserChannels()
+        } catch (error) {
+            console.error(`Components/Modal/AddIBCChannelModal.vue: ${error.message}`)
+        }
     })
 
 
@@ -208,7 +212,7 @@
             // Close modal
             closeHandler(true)
         } catch (error) {
-            console.log(error)
+            console.error(`Components/Modal/AddIBCChannelModal.vue: ${error.message}`)
         }
     }
 </script>

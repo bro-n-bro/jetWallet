@@ -5,8 +5,13 @@ import { createSinger } from './createSinger'
 export const sendTx = async txBytes => {
     let { signingCosmWasmClient } = await createSinger()
 
-    // Broadcast
-    await signingCosmWasmClient.broadcastTx(txBytes, signingCosmWasmClient.broadcastTimeoutMs, signingCosmWasmClient.broadcastPollIntervalMs)
+    try {
+        // Broadcast
+        await signingCosmWasmClient.broadcastTx(txBytes, signingCosmWasmClient.broadcastTimeoutMs, signingCosmWasmClient.broadcastPollIntervalMs)
+    } catch (error) {
+        // Throw error
+        throw new Error(`sendTx() failed: ${error.message}`)
+    }
 }
 
 
