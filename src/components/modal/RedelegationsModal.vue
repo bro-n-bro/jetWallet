@@ -2,9 +2,9 @@
     <!-- Redelegations modal -->
     <section class="modal">
         <div class="modal_content">
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_redelegations_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -46,18 +46,47 @@
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { inject } from 'vue'
+    import { inject, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { calcTokenCost, formatTokenCost, formatTokenAmount, dateCalc } from '@/utils'
 
 
     const props = defineProps(['redelegations']),
         store = useGlobalStore(),
-        emitter = inject('emitter')
+        emitter = inject('emitter'),
+        isClosing = ref(false)
+
+
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_wallets_modal"
+            emitter.emit('close_redelegations_modal')
+        }, 200)
+    }
 </script>
 
 

@@ -3,9 +3,9 @@
     <section class="modal">
         <div class="modal_content">
             <!-- Tx fee modal data -->
-            <div class="data">
-                <!-- Back button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_tx_fee_modal')">
+            <div class="data" :class="{ closing: isClosing }">
+                <!-- Close button -->
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -160,7 +160,7 @@
 
                     <div class="field" v-else>
                         <!-- Gas adjustment field -->
-                        <input type="number" inputmode="numeric" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10"
+                        <input type="number" inputmode="decimal" class="input big" v-model="store.TxFee.userGasAmount" maxlength="10"
                             @input="validateUserGasAmount($event)">
                     </div>
                 </div>
@@ -169,18 +169,22 @@
                 <!-- Gas adjustment buttons -->
                 <div class="btns">
                     <!-- Close button -->
-                    <button class="btn" @click.prevent="emitter.emit('close_tx_fee_modal')">
+                    <button class="btn" @click.prevent="closeHandler()">
                         <span>{{ $t('message.btn_close') }}</span>
                     </button>
                 </div>
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { ref, inject, watch, computed, onMounted } from 'vue'
+    import { ref, inject, watch, computed, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { calcTokenCost, formatTokenCost, formatTokenAmount } from '@/utils'
 
@@ -196,13 +200,23 @@
             high: level_high
         },
         rollerWidth = ref(null),
-        rollerOffsetLeft = ref(null)
+        rollerOffsetLeft = ref(null),
+        isClosing = ref(false)
 
 
     onMounted(() => {
         // Set roller params
         rollerWidth.value = levels[store.TxFee.currentLevel].value.offsetWidth
         rollerOffsetLeft.value = levels[store.TxFee.currentLevel].value.offsetLeft
+
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
     })
 
 
@@ -223,6 +237,18 @@
         // Enough status
         store.TxFeeIsEnough()
     })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_wallets_modal"
+            emitter.emit('close_tx_fee_modal')
+        }, 200)
+    }
 
 
     // Validate user gas amount

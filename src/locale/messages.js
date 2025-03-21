@@ -16,12 +16,18 @@ export default {
             'age_modal_text': 'Are you 18 years old?',
 
 
+            // Index page
+            'index_page_title': 'Сreation of a new wallet',
+
+
             // Create page
             'create_wallet_agree_label1': 'Do not share your recovery phrase with ANYONE.',
             'create_wallet_agree_label2': 'Back up the phrase safely.',
 
             'create_wallet_agree_checkbox1': "I understand that I have access to my wallet solely because I possess the recovery phrase. If this phrase falls into someone else's hands, I will lose my funds.",
             'create_wallet_agree_checkbox2': 'I also understand that if I lose my recovery phrase, I will lose all the funds in this wallet.',
+
+            'create_wallet_derivation_path_label': 'Derivation path',
 
 
             // Confirm page
@@ -42,8 +48,11 @@ export default {
             'auth_enter_pin_label': 'Enter pin:',
             'auth_error_warning': 'You have {count} attempts left',
 
-            'auth_error_title': 'Incorrect pin!',
-            'auth_error_desc': 'The PIN code was entered incorrectly the maximum number of times. For security reasons, the current wallet will be deleted. You can restore it the next time you log into the app using your saved seed phrase or private key',
+
+            // User lock
+            'user_lock_title': 'Account blocked!',
+            'user_lock_desc': 'Your account has been blocked for {time} minutes due to multiple authorization errors. Unlocking will occur automatically after a period of time, you do not need to do anything for this.',
+            'user_lock_timer_label': 'Time left:',
 
 
             // Mnemonic
@@ -118,9 +127,21 @@ export default {
 
 
             // Send
-            'send_page_title': 'Send',
-            'send_amount_label': 'Amount:',
+            'send_confirm_page_title': 'Confirm',
+
+            'send_page_tab1': 'Send',
+            'send_page_tab2': 'IBC send',
+
+            'send_destination_chain_label': 'Destination Chain:',
             'send_address_label': 'Address:',
+            'send_amount_label': 'Amount:',
+
+            'send_destination_chain_placeholder': 'Select Chain',
+
+            'send_confirm_chain_from_label': 'From the network:',
+            'send_confirm_chain_to_label': 'To the network:',
+            'send_confirm_receiver_label': 'Receiver:',
+            'send_confirm_fee_label': 'Fee:',
 
 
             // Receive
@@ -149,13 +170,49 @@ export default {
             'validatoes_available_label': 'Available:',
 
 
+            // Chains
+            'chains_page_title': 'Select Chain',
+
+
             // Stats
-            'stats_title': 'Stats',
+            'stats_title': 'Staking Profit',
             'stats_token_label': 'Token:',
             'stats_available_label': 'Available:',
             'stats_staked_label': 'Staked:',
             'stats_personal_apr_label': 'Personal APR:',
             'stats_daily_profit_label': 'Est. daily profit:',
+
+
+            // Wrong seeds
+            'wrong_seeds_title': 'Wrong seeds',
+            'wrong_seeds_desc': 'Wrong seed phrase. Please try again.',
+
+
+            // Derivation path
+            'derivation_path_title': 'Derivation Path',
+            'derivation_path_desc': '<ul><li>You can create multipe addresses from one recovery phrase</li><li>A lost path cannot be recovered</li><li>If you are unfamiliar with this feature, skip or undo this step</li> </ul>',
+
+
+            // Seed phrase hint
+            'seed_phrase_hint_title': 'Seed phrase',
+
+
+            // Profile
+            'profile_title': 'My wallets',
+
+
+            // Edit wallet modal
+            'edit_wallet_name_label': 'Edit wallet name:',
+            'edit_wallet_seep_phrase_exp': 'You can see the seed phrases, but you need to go through verification.',
+
+
+            // Remove wallet
+            'remove_wallet_title': 'You are deleting wallet:',
+            'remove_wallet_desc': 'Enter the name of the wallet you want to delete. We warn you that you will not be able to return it.',
+
+
+            // Confirm by pin modal
+            'confirm_by_pin_title': 'Confirm by pin',
 
 
             // Redelegations
@@ -201,49 +258,60 @@ export default {
             'sign_tx_error_desc': 'You have entered an incorrect PIN 4 times. For security reasons, you will be returned to the main screen to protect your account and prevent unauthorized access.',
 
 
-            // Redirect modal
-            'redirect_modal_title': 'Return to the application.',
-            'redirect_modal_desc': 'You can now switch back to another application to continue.',
+            // Add IBC channek modal
+            'add_IBC_channel_title': 'Add IBC Channel',
+
+            'add_IBC_channel_chain_label': 'Destination Channel ID',
+            'add_IBC_channel_id_label': 'Source Channel ID:',
+
+            'add_IBC_channel_error_already_exists': 'Such a pair chain_id and channel_id already exists.',
 
 
             // Search
             'search_placeholder': 'Search...',
             'search_empty': 'Token not found...',
             'search_empty_validator': 'Validator not found...',
+            'search_empty_chains': 'Chain not found...',
 
 
-            // Jet Pack
-            'jp_connection_title': 'Request for connection',
-            'jp_send_tx_title': 'Request for transaction',
+            // Placeholders
+            'placeholder_address': 'Enter address',
+            'placeholder_amount': '{token} Amount',
+            'placeholder_memo': 'Required for sending to CEX',
+            'placeholder_memo2': 'Your Custom Memo',
+            'placeholder_wallet_name': 'Wallet Name',
 
-            'jp_connection_desc': "Some app ask to connect to your wallet. If you don't know who is asking, don't allow it.",
-
-            'jp_message_rejected': 'The user rejected the request.',
+            'placeholder_chain_ID': 'Chain ID',
+            'placeholder_source_channel_ID': 'Source Channel ID',
 
 
             // Notifications
             'notification_copied_title': 'Copied to clipboard',
             'notification_offline_title': 'You are offline',
+
+            'notification_wallet_added_success': 'Wallet added successfully.',
+            'notification_wallet_update_success': 'Wallet updated successfully.',
+            'notification_wallet_remove_success': '{name} deleted successfully.',
+
+            'notification_add_user_channel_success': 'IBC channel saved successfully.',
+
             'notification_tx_pending_title': 'Transaction is pending',
             'notification_tx_success_title': 'Success',
             'notification_tx_error_title': 'Error:',
+
             'notification_error_title': 'Something went wrong, try again later',
             'notification_error_invalid_paste_title': 'Incorrect address in the clipboard',
 
             'notification_explorer_link': 'Explorer',
 
-            'notification_jp_chain_id_not_passed': 'Parameter "chain_id" not passed.',
-            'notification_jp_chain_not_supported': 'Chain {chain_id} not supported.',
-            'notification_jp_get_address_success': 'You have successfully submitted your address.',
-            'notification_jp_get_address_reject': 'You have rejected the request to provide your address.',
-            'notification_jp_send_reject': 'You have rejected the request to send.',
-
 
             // Buttons
+            'btn_add_new_wallet': 'Add New Wallet',
+            'btn_from_exist_wallet': 'Create from existing wallet',
             'btn_create_wallet': 'Create new wallet',
             'btn_import_wallet': 'Import wallet',
-            'btn_import_existing_wallet': 'Import an existing wallet',
-            'btn_show': 'Show',
+            'btn_show': 'Ok. Show my phrases',
+            'btn_advanced': 'Advanced',
             'btn_next': 'Next',
             'btn_copy': 'Copy to clipboard',
             'btn_copy_small': 'Copy',
@@ -256,7 +324,9 @@ export default {
             'btn_stake': 'Earn',
             'btn_confirm_stake': 'Confirm Staking',
             'btn_confirm_unstake': 'Confirm Unstake',
+            'btn_confirm_send': 'Confirm Send',
             'btn_confirm_redelegate': 'Confirm',
+            'btn_confirm': 'Confirm',
             'btn_unstake': 'Unstake',
             'btn_redelegate': 'Switch validator',
             'btn_claim': 'Claim',
@@ -274,8 +344,14 @@ export default {
             'btn_share': 'Share',
             'btn_accept': 'Accept',
             'btn_paste': 'Paste',
+            'btn_remove': 'Delete',
+            'btn_add_chain': 'Add Chain',
+            'btn_save': 'Save',
+            'btn_try': 'Try',
+            'btn_show_seed_phrase': 'Show seed phrase',
 
 
+            'notification_tx_error_-32603': "tx already exists in cache",
             'notification_tx_error_2': "tx parse error",
             'notification_tx_error_3': "invalid sequence",
             'notification_tx_error_4': "unauthorized",

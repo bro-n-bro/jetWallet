@@ -1,8 +1,8 @@
 const network = {
     name: 'Neutron',
-    lcd_api: 'https://lcd.neutron.bronbro.io',
-    rpc_api: 'https://rpc.neutron.bronbro.io',
-    websocket_url: 'wss://rpc.neutron.bronbro.io:443/websocket',
+    lcd_api: 'https://lcd.neutron-1.bronbro.io',
+    rpc_api: 'https://rpc.neutron-1.bronbro.io',
+    websocket_url: 'wss://rpc.neutron-1.bronbro.io:443/websocket',
 
     denom: 'untrn',
     token_name: 'NTRN',

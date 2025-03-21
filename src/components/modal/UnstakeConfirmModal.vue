@@ -1,6 +1,6 @@
 <template>
     <!-- Unstake confirm modal -->
-    <section class="page_container inner_page_container unstake_confirm">
+    <section class="page_container inner_page_container unstake_confirm" :class="{ closing: isClosing }">
         <!-- Loader -->
         <Loader v-if="isProcess" />
 
@@ -8,7 +8,7 @@
             <!-- Unstake confirm head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_unstake_confirm_modal')">
+                <button class="back_btn" @click="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -157,7 +157,8 @@
 
                 <div class="field">
                     <!-- Unstake confirm field -->
-                    <input type="text" class="input big" v-model="memo">
+                    <input type="text" class="input big" v-model="memo"
+                        :placeholder="$t('message.placeholder_memo')">
                 </div>
             </div>
 
@@ -174,19 +175,12 @@
 
 
     <!-- Sign transaction modal -->
-    <transition name="modal">
     <SignTxModal v-if="showSignTxModal"/>
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showSignTxModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, computed, onBeforeMount, onUnmounted } from 'vue'
+    import { ref, inject, computed, onBeforeMount, onUnmounted, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
     import { useNotification } from '@kyvg/vue3-notification'
@@ -207,7 +201,8 @@
         votingPower = ref(0),
         memo = ref(''),
         feeCost = computed(() => formatTokenAmount(store.TxFee.userGasAmount * store.TxFee[`${store.TxFee.currentLevel}Price`], store.TxFee.balance.exponent)),
-        isProcess = ref(false)
+        isProcess = ref(false),
+        isClosing = ref(false)
 
 
     onBeforeMount(() => {
@@ -216,20 +211,45 @@
     })
 
 
+    onMounted(() => {
+        // Event "auth"
+        emitter.on('auth', auth)
+
+        // Event "close_sign_tx_modal"
+        emitter.on('close_sign_tx_modal', closeSignTxModal)
+    })
+
+
     onUnmounted(() => {
         // Unlisten events
-        emitter.off('auth')
-        emitter.off('close_sign_tx_modal')
+        emitter.off('auth', auth)
+        emitter.off('close_sign_tx_modal', closeSignTxModal)
     })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_stake_confirm_modal"
+            emitter.emit('close_unstake_confirm_modal')
+        }, 200)
+    }
 
 
     // Calc voting power
     async function calcVotingPower() {
-        // Get total bonded tokens
-        await store.getTotalBondedTokens()
+        try {
+            // Get total bonded tokens
+            await store.getTotalBondedTokens()
 
-        // Set data
-        votingPower.value = store.unstakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
+            // Set data
+            votingPower.value = store.unstakeCurrentValidator.tokens / store.networks[store.currentNetwork].totalBondedTokens
+        } catch (error) {
+            console.error(`Components/Modal/UnstakeConfirmModal.vue: ${error.message}`)
+        }
     }
 
 
@@ -268,19 +288,16 @@
 
             // Send Tx
             sendTx(txBytes).catch(error => {
-                console.log(error)
+                console.error(`Components/Modal/UnstakeConfirmModal.vue: ${error.message}`)
 
                 // Show error
                 showError(error)
             })
 
-            // Check Tx result
-            store.checkTxResult()
-
             // Redirect
             router.push('/account')
         } catch (error) {
-            console.log(error)
+            console.error(`Components/Modal/UnstakeConfirmModal.vue: ${error.message}`)
 
             // Show error
             showError(error)
@@ -335,37 +352,24 @@
     }
 
 
-    // Event "auth"
-    emitter.on('auth', () => {
-        // Hide SignTx modal
+    // Close SignTx modal
+    function closeSignTxModal() {
+        // Show SignTx modal
         showSignTxModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
+    }
+
+
+    // Auth
+    function auth() {
+        // Close modal
+        closeHandler()
 
         // Undelegate tokens
         undelegate()
-    })
-
-
-    // Event "close_sign_tx_modal"
-    emitter.on('close_sign_tx_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide SignTx modal
-        showSignTxModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 
@@ -380,7 +384,15 @@
         width: 100%;
         height: 100%;
 
+        animation: .25s slideLeft forwards linear;
+
         background: #170232;
+    }
+
+
+    .unstake_confirm.closing
+    {
+        animation: .25s slideRight forwards linear;
     }
 
 

@@ -9,6 +9,7 @@ import Notifications from '@kyvg/vue3-notification'
 import velocity from 'velocity-animate'
 import { register } from 'swiper/element/bundle'
 import VueCountdown from '@chenfengyuan/vue-countdown'
+import VueMatomo from 'vue-matomo'
 
 import { vFocus } from './directives/v-focus'
 import { vParallax } from './directives/v-parallax'
@@ -32,6 +33,10 @@ app.use(pinia)
 app.use(router)
 app.use(i18n)
 app.use(Notifications, { velocity })
+app.use(VueMatomo, {
+    host: 'https://metrics.jetwallet.app/',
+    siteId: 1
+})
 
 
 // Vue provide

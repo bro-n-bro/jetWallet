@@ -3,9 +3,9 @@
     <section class="modal">
         <div class="modal_content">
             <!-- Receive amount data -->
-            <div class="data">
+            <div class="data" :class="{ closing: isClosing }">
                 <!-- Close button -->
-                <button class="close_btn" @click.prevent="emitter.emit('close_receive_amount_modal')">
+                <button class="close_btn" @click.prevent="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_close"></use></svg>
                 </button>
 
@@ -16,11 +16,11 @@
 
                 <!-- Amount -->
                 <div class="amount_field">
-                     <!-- Amount label -->
+                    <!-- Amount label -->
                     <div class="field_label">
                         {{ $t('message.receive_amount_label') }}
 
-                         <!-- Amount cost -->
+                        <!-- Amount cost -->
                         <div class="cost">
                             {{ formatTokenCost(calcTokenCost(store.networks[store.currentNetwork].token_name, (amount * Math.pow(10, store.networks[store.currentNetwork].exponent)), store.networks[store.currentNetwork].exponent)) }}
 
@@ -29,19 +29,23 @@
                     </div>
 
                     <div class="field">
-                         <!-- Amount field -->
-                        <input type="number" inputmode="numeric" class="input big" v-model="amount" placeholder="0.00"
+                        <!-- Amount field -->
+                        <input type="number" inputmode="decimal" class="input big" v-model="amount" placeholder="0.00"
                             @input="validateAmount($event)">
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+
+    <!-- Modal overlay -->
+    <div class="modal_overlay" :class="{ closing: isClosing }" @click.prevent="closeHandler()"></div>
 </template>
 
 
 <script setup>
-    import { ref, inject } from 'vue'
+    import { ref, inject, onMounted, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { calcTokenCost, formatTokenCost } from '@/utils'
 
@@ -49,7 +53,32 @@
     const props = defineProps(['amount']),
         store = useGlobalStore(),
         emitter = inject('emitter'),
-        amount = ref(props.amount)
+        amount = ref(props.amount),
+        isClosing = ref(false)
+
+
+    onMounted(() => {
+        // Event "close_any_modal"
+        emitter.on('close_any_modal', closeHandler)
+    })
+
+
+    onUnmounted(() => {
+        // Unlisten events
+        emitter.off('close_any_modal', closeHandler)
+    })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_receive_amount_modal"
+            emitter.emit('close_receive_amount_modal')
+        }, 200)
+    }
 
 
     // Validate amount

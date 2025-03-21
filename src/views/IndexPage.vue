@@ -1,41 +1,12 @@
 <template>
     <!-- Index page -->
-    <section class="page_container index_page">
-        <div class="cont">
-            <!-- Index page logo -->
-            <div class="logo">
-                <img src="@/assets/logo.svg" alt="" loading="lazy">
-            </div>
-
-            <!-- Index page data -->
-            <div class="page_data_wrap">
-                <div class="page_data">
-                    <!-- Index page image -->
-                    <div class="image">
-                        <img src="@/assets/index_page_img.svg" alt="" loading="lazy">
-                    </div>
-
-                    <!-- Index page buttons -->
-                    <div class="btns">
-                        <!-- Create wallet button -->
-                        <router-link to="/create_wallet" class="btn">
-                            <span>{{ $t('message.btn_create_wallet') }}</span>
-                        </router-link>
-
-                        <!-- Import wallet button -->
-                        <router-link to="/import_wallet" class="btn purple_btn">
-                            <span>{{ $t('message.btn_import_wallet') }}</span>
-                        </router-link>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <IndexPage />
 </template>
 
 
 <script setup>
-
+    // Components
+    import IndexPage from '@/components/IndexPage.vue'
 </script>
 
 

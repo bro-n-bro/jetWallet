@@ -13,9 +13,6 @@
 		<meta name="msapplication-TileColor" content="#950FFF">
 		<meta name="theme-color" content="#950FFF">
 
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 		<link rel="apple-touch-icon" sizes="180x180" href="<%= BASE_URL %>apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="<%= BASE_URL %>favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="<%= BASE_URL %>favicon-16x16.png">
@@ -28,12 +25,17 @@
 
 		<link rel="stylesheet" href="<%= BASE_URL %>css/styles.css" async>
 
-		<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 		<script src="<%= BASE_URL %>js/telegram-web-app.js"></script>
 	</head>
 
     <body>
+		<!-- APP -->
         <div class="wrap" id="app"></div>
+
+		<!-- Loader -->
+		<div class="loader_wrap">
+			<div class="loader"><span></span></div>
+		</div>
     </body>
 
 	<script>

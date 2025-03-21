@@ -58,12 +58,16 @@
 
 
     // Change network
-    function changeNetwork(chain) {
-        // Hide dropdown
-        showDropdown.value = false
+    async function changeNetwork(chain) {
+        try {
+            // Hide dropdown
+            showDropdown.value = false
 
-        // Set current network
-        store.setCurrentNetwork(chain)
+            // Set current network
+            await store.setCurrentNetwork(chain)
+        } catch (error) {
+            console.error(`Components/Account/NetworkChooser.vue: ${error.message}`)
+        }
     }
 </script>
 
@@ -100,7 +104,7 @@
         flex-wrap: wrap;
         justify-content: space-between;
 
-        min-width: 148px;
+        min-width: 156px;
         padding: 6px 10px;
 
         text-align: left;
@@ -184,7 +188,7 @@
         overflow: auto;
         flex-direction: column;
 
-        max-height: 345px;
+        max-height: 237px;
         padding-top: 4px;
 
         gap: 8px;

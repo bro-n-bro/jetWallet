@@ -20,19 +20,12 @@
 
 
     <!-- Tx fee modal -->
-    <transition name="modal">
     <TxFeeModal v-if="showTxFeeModal" />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showTxFeeModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { inject, ref, onBeforeMount, computed, onUnmounted } from 'vue'
+    import { inject, ref, onBeforeMount, onMounted, computed, onUnmounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { formatTokenAmount, simulateTx, calcTokenCost, formatTokenCost } from '@/utils'
 
@@ -48,43 +41,53 @@
 
 
     onBeforeMount(async () => {
-        // Reset data
-        await store.resetTxFee()
+        try {
+            // Reset data
+            await store.resetTxFee()
 
-        // Set current balance
-        store.TxFeeGetCurrentBalance(store.networks[store.currentNetwork].denom)
+            // Set current balance
+            store.TxFeeGetCurrentBalance(store.networks[store.currentNetwork].denom)
 
-        // Set gas prices
-        store.TxFeeSetGasPrices()
+            // Set gas prices
+            store.TxFeeSetGasPrices()
 
-        // Simulate Tx
-        if (store.TxFee.balance.amount) {
-            await simulateTx(props.msgAny)
-        } else {
-            // Set default gas amount
-            if (props.txType === 'send') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_send
+            // Simulate Tx
+            if (store.TxFee.balance.amount) {
+                await simulateTx(props.msgAny)
+            } else {
+                // Set default gas amount
+                if (props.txType === 'send') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_send
+                }
+
+                if (props.txType === 'claim') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_claim
+                }
+
+                if (props.txType === 'stake') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_stake
+                }
+
+                if (props.txType === 'unstake') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_unstake
+                }
+
+                if (props.txType === 'redelegate') {
+                    store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_redelegate
+                }
             }
 
-            if (props.txType === 'claim') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_claim
-            }
-
-            if (props.txType === 'stake') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_stake
-            }
-
-            if (props.txType === 'unstake') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_unstake
-            }
-
-            if (props.txType === 'redelegate') {
-                store.TxFee.gasAmount = store.TxFee.userGasAmount = store.networks[store.currentNetwork].gas_amount_redelegate
-            }
+            // Enough status
+            store.TxFeeIsEnough()
+        } catch (error) {
+            console.error(`Components/TxFee.vue: ${error.message}`)
         }
+    })
 
-        // Enough status
-        store.TxFeeIsEnough()
+
+    onMounted(() => {
+        // Event "close_tx_fee_modal"
+        emitter.on('close_tx_fee_modal', closeTxFeeModal)
     })
 
 
@@ -93,8 +96,7 @@
         store.TxFee.isEnough = false
 
         // Unlisten events
-        emitter.off('close_any_modal')
-        emitter.off('close_tx_fee_modal')
+        emitter.off('close_tx_fee_modal', closeTxFeeModal)
     })
 
 
@@ -108,24 +110,14 @@
     }
 
 
-    // Event "close_tx_fee_modal"
-    emitter.on('close_tx_fee_modal', () => {
+    // Clos TxFee modal
+    function closeTxFeeModal() {
         // Hide TxFee modal
         showTxFeeModal.value = false
 
         // Update status
         store.isAnyModalOpen = false
-    })
-
-
-    // Event "close_any_modal"
-    emitter.on('close_any_modal', () => {
-        // Hide TxFee modal
-        showTxFeeModal.value = false
-
-        // Update status
-        store.isAnyModalOpen = false
-    })
+    }
 </script>
 
 

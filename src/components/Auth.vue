@@ -62,9 +62,8 @@
         </div>
     </div>
 
-
     <!-- Biometric button -->
-    <button class="biometric_btn" @click.prevent="checkBiometricAccess" v-if="isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit">
+    <button class="biometric_btn" @click.prevent="checkBiometricAccess()" v-if="props.mode === 'all' && (isBiometricAvailable && userAuthErrorLimit == store.authErrorLimit)">
         <!-- Biometric button text -->
         <span>{{ $t('message.btn_biometric2') }}</span>
 
@@ -84,7 +83,8 @@
     <div class="btns">
         <!-- Login button -->
         <button class="btn" :class="{ disabled: !isFormValid }" @click.prevent="login()" v-if="userAuthErrorLimit < store.authErrorLimit">
-            <span v-if="store.isAuthorized">{{ $t('message.btn_sign') }}</span>
+            <span v-if="store.isAuthorized & props.mode === 'pin'">{{ $t('message.btn_confirm') }}</span>
+            <span v-else-if="store.isAuthorized">{{ $t('message.btn_sign') }}</span>
             <span v-else>{{ $t('message.btn_login') }}</span>
         </button>
     </div>
@@ -94,10 +94,19 @@
 <script setup>
     import { onBeforeMount, ref, watch, computed, inject } from 'vue'
     import { useGlobalStore } from '@/store'
+    import { useRouter } from 'vue-router'
     import { hashDataWithKey } from '@/utils'
+    import { DBgetMultipleData } from '@/utils/db'
 
 
-    const store = useGlobalStore(),
+    const props = defineProps({
+            mode: {
+                type: String,
+                default: 'all'
+            }
+        }),
+        store = useGlobalStore(),
+        router = useRouter(),
         emitter = inject('emitter'),
         pinCode = ref(['', '', '', '', '', '']),
         pinDB = ref(''),
@@ -110,32 +119,38 @@
 
 
     onBeforeMount(async () => {
-        // Get data from DB
-        let result = await store.getMultipleData(['pin', 'hmacKey', 'authErrorLimit', 'isBiometric'])
+        try {
+            // Get data from DB
+            let DBData = await DBgetMultipleData('global', ['pin', 'authErrorLimit', 'isBiometric', 'hmacKey'])
 
-        // Set pin from DB
-        pinDB.value = result.pin
+            // Set pin from DB
+            pinDB.value = DBData.pin
 
-        // Set hmacKey from DB
-        hmacKey.value = result.hmacKey
+            // Set hmacKey from DB
+            hmacKey.value = DBData.hmacKey
 
-        // Set user auth error limit
-        userAuthErrorLimit.value = result.authErrorLimit
+            // Set user auth error limit
+            userAuthErrorLimit.value = DBData.authErrorLimit
 
-        // Set biometric status from DB
-        isBiometric.value = result.isBiometric
+            if (props.mode === 'all') {
+                // Set biometric status from DB
+                isBiometric.value = DBData.isBiometric
 
-        // Is biometric available
-        isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
+                // Is biometric available
+                isBiometricAvailable.value = Telegram.WebApp.BiometricManager.isBiometricAvailable
 
-        // Biometric type
-        if (Telegram.WebApp.BiometricManager.biometricType != 'unknown') {
-            biometricType.value = Telegram.WebApp.BiometricManager.biometricType
-        }
+                // Biometric type
+                if (Telegram.WebApp.BiometricManager.biometricType != 'unknown') {
+                    biometricType.value = Telegram.WebApp.BiometricManager.biometricType
+                }
 
-        // Check biometric access
-        if (isBiometricAvailable.value && isBiometric.value) {
-            checkBiometricAccess()
+                // Check biometric access
+                if (isBiometricAvailable.value && isBiometric.value) {
+                    checkBiometricAccess()
+                }
+            }
+        } catch (error) {
+            console.error(`Components/Auth.vue: ${error.message}`)
         }
     })
 
@@ -146,7 +161,7 @@
             document.activeElement.blur()
         }
 
-        // Compare pins
+        // Login
         if (pinCode.value[5].length && userAuthErrorLimit.value === store.authErrorLimit) {
             login()
         }
@@ -155,9 +170,11 @@
 
     // Move focus
     function moveFocus(event, nextIndex) {
-        if (event.target.value.length >= 1 && nextIndex < 6) {
-            event.target.closest('.row').querySelector(`.field:nth-child(${nextIndex + 1}) input`).focus()
-        }
+        setTimeout(() => {
+            if (event.target.value.length >= 1 && nextIndex < 6) {
+                event.target.closest('.row').querySelector(`.field:nth-child(${nextIndex + 1}) input`).focus()
+            }
+        })
     }
 
 
@@ -192,59 +209,76 @@
 
     // Login
     async function login() {
-        // Compare pins
-        let compareResult = await comparePINCode()
+        try {
+            // Compare pins
+            let compareResult = await comparePINCode()
 
-        if (compareResult) {
-            // Update limit
-            userAuthErrorLimit.value = store.authErrorLimit
+            if (compareResult) {
+                // Update limit
+                userAuthErrorLimit.value = store.authErrorLimit
 
-            // Set event auth
-            emitter.emit('auth')
-        } else {
-            // Set auth error
-            await setAuthError()
+                // Set event auth
+                emitter.emit('auth')
+            } else {
+                // Set auth error
+                await setAuthError()
+            }
+        } catch (error) {
+            console.error(`Components/Auth.vue: ${error.message}`)
         }
     }
 
 
     // Compare pin code
     async function comparePINCode() {
-        // Encrypt the PIN
-        let pinHash = await hashDataWithKey(pinCode.value.join(''), hmacKey.value)
+        try {
+            // Encrypt the PIN
+            let pinHash = await hashDataWithKey(pinCode.value.join(''), hmacKey.value)
 
-        return pinHash === pinDB.value
+            return pinHash === pinDB.value
+        } catch (error) {
+            console.error(`Components/Auth.vue: ${error.message}`)
+        }
     }
 
 
     // Set auth error
     async function setAuthError() {
-        // Set error
-        wrongPin.value = true
+        try {
+            // Set error
+            wrongPin.value = true
 
-        let newLimit = userAuthErrorLimit.value - 1
+            let newLimit = userAuthErrorLimit.value - 1
 
-        // Update limit
-        userAuthErrorLimit.value = newLimit
+            // Update limit
+            userAuthErrorLimit.value = newLimit
 
-        if (!store.isAuthorized) {
-            newLimit
+            if (!store.isAuthorized) {
                 // Сhange auth limit
-                ? store.updateUserAuthErrorLimit(newLimit)
-                // Set event show_error_auth_modal
-                : emitter.emit('show_error_auth_modal')
-        } else {
-            if (!newLimit) {
-                // Set event show_error_sign_tx_modal
-                emitter.emit('show_error_sign_tx_modal')
+                await store.updateUserAuthErrorLimit(newLimit)
+
+                if (!newLimit) {
+                    // Set user lock
+                    await store.setUserLock()
+
+                    // Redirect
+                    router.push('/lock')
+                }
+            } else {
+                if (!newLimit) {
+                    // Set event show_error_sign_tx_modal
+                    emitter.emit('show_error_sign_tx_modal')
+                }
             }
+
+            // Clear data
+            pinCode.value = ['', '', '', '', '', '']
+
+            // Reset data
+            wrongPin.value = false
+        } catch (error) {
+            console.error(`Components/Auth.vue: ${error.message}`)
         }
-
-        // Clear data
-        pinCode.value = ['', '', '', '', '', '']
-
-        // Reset data
-        wrongPin.value = false
     }
 
 

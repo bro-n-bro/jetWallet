@@ -14,7 +14,7 @@
             <!-- Balance value -->
             <div v-else class="val">
                 <span @click.prevent="store.updateAllBalances()">
-                    {{ formatTokenCost(calcStakedBalancesCost()) }}
+                    {{ formatTokenCost(calcStakedBalancesCost()) + store.currentCurrencySymbol }}
                 </span>
             </div>
 
@@ -37,7 +37,7 @@
             </router-link>
 
             <!-- Unstake button -->
-            <router-link to="/account/unstake" class="btn" :class="{ disabled: !store.isBalancesGot }">
+            <router-link to="/account/unstake" class="btn" :class="{ disabled: !store.isStakedBalancesGot || !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_unstake"></use></svg>
                 </div>
@@ -46,7 +46,7 @@
             </router-link>
 
             <!-- Redelegate button -->
-            <router-link to="/account/redelegate" class="btn" :class="{ disabled: !store.isStakedBalancesGot }">
+            <router-link to="/account/redelegate" class="btn" :class="{ disabled: !store.isStakedBalancesGot || !store.stakedBalances.length }">
                 <div class="icon">
                     <svg><use xlink:href="@/assets/sprite.svg#ic_redelegate"></use></svg>
                 </div>
@@ -57,10 +57,10 @@
 
 
         <!-- Android Animation -->
-        <AndroidAnimation v-if="store.isBalancesGot && store.isStakedBalancesGot && props.swiperActiveIndex == 1 && device.vendor !== 'Apple'" />
+        <AndroidAnimation v-if="store.isBalancesGot && store.isStakedBalancesGot && props.swiperActiveIndex === 1 && device.vendor !== 'Apple'" />
 
         <!-- IOS Animation -->
-        <IOSAnimation v-if="store.isBalancesGot && store.isStakedBalancesGot && props.swiperActiveIndex == 1 && device.vendor === 'Apple'" />
+        <IOSAnimation v-if="store.isBalancesGot && store.isStakedBalancesGot && props.swiperActiveIndex === 1 && device.vendor === 'Apple'" />
     </div>
 </template>
 
@@ -90,9 +90,9 @@
         position: relative;
         z-index: 3;
 
-        height: 266px;
+        height: 296px;
         overflow: hidden;
-        padding: 67px 22px 19px;
+        padding: 97px 22px 19px;
         border-radius: 0 0 20px 20px;
     }
 

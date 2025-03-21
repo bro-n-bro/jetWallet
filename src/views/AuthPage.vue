@@ -10,83 +10,78 @@
             <!-- Auth page data -->
             <div class="page_data_wrap">
                 <div class="page_data">
+                    <!-- Loader -->
+                    <Loader v-if="loading" />
+
                     <!-- Auth -->
                     <Auth />
 
-                    <!-- Buttons -->
-                    <div class="btns">
-                        <!-- Login button -->
-                        <button class="btn" @click.prevent="deleteAll()">
-                            <span>Delete address</span>
-                        </button>
+                    <div class="version">
+                        {{ version }}
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-
-    <!-- Auth error modal -->
-    <transition name="modal">
-    <AuthErrorModal v-if="showErrorAuthModal" />
-    </transition>
-
-    <!-- Overlay -->
-    <transition name="fade">
-    <div class="modal_overlay" @click.prevent="emitter.emit('close_any_modal')" v-if="showErrorAuthModal"></div>
-    </transition>
 </template>
 
 
 <script setup>
-    import { ref, inject, onUnmounted } from 'vue'
+    import { ref, inject, onUnmounted, onMounted } from 'vue'
     import { useGlobalStore } from '@/store'
     import { useRouter } from 'vue-router'
+    import { DBgetData } from '@/utils/db'
 
     // Components
     import Auth from '@/components/Auth.vue'
-    import AuthErrorModal from '@/components/modal/AuthErrorModal.vue'
+    import Loader from '@/components/Loader.vue'
 
 
     const store = useGlobalStore(),
         router = useRouter(),
         emitter = inject('emitter'),
-        showErrorAuthModal = ref(false)
+        loading = ref(true),
+        version = process.env.APP_VERSION || 'unknown'
+
+
+    onMounted(async () => {
+        try {
+            // Get data from DB
+            let DBUserLockTimestamp = await DBgetData('global', 'userLockTimestamp')
+
+            if (new Date(DBUserLockTimestamp) - new Date() < store.userLockTime) {
+                // Set user unlock
+                await store.setUserUnlock()
+            }
+
+            // Hide loader
+            loading.value = false
+        } catch (error) {
+            console.error(`AuthPage.vue: ${error.message}`)
+        }
+    })
 
 
     onUnmounted(() => {
         // Unlisten events
         emitter.off('auth')
-        emitter.off('show_error_auth_modal')
     })
-
-
-    async function deleteAll() {
-        // Clear data
-        await store.clearAllData()
-
-        // Redirect
-        router.push('/')
-    }
 
 
     // Event "auth"
-    emitter.on('auth', () => {
-        // Сhange auth limit
-        store.updateUserAuthErrorLimit(store.authErrorLimit)
+    emitter.on('auth', async () => {
+        try {
+            // Auth
+            await store.auth()
 
-        // Set authorized status
-        store.isAuthorized = true
+            // Hide loader
+            loading.value = false
 
-        // Redirect
-        router.push('/account')
-    })
-
-
-    // Event "show_error_auth_modal"
-    emitter.on('show_error_auth_modal', () => {
-        // Show error auth modal
-        showErrorAuthModal.value = true
+            // Redirect
+            router.push('/account')
+        } catch (error) {
+            console.error(`AuthPage.vue: ${error.message}`)
+        }
     })
 </script>
 
@@ -95,5 +90,17 @@
     .btns
     {
         margin-top: 0;
+    }
+
+
+    .version
+    {
+        font-size: 10px;
+
+        margin-top: 12px;
+
+        text-align: center;
+
+        opacity: .5;
     }
 </style>

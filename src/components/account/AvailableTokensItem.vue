@@ -3,7 +3,9 @@
         <div class="token">
             <!-- Token logo -->
             <div class="logo">
-                <img :src="props.balance.token_info.logo_URIs.svg" alt="" loading="lazy">
+                <img src="@/assets/boom_token_logo.svg" alt="" v-if="props.balance.old_base_denom === 'uboom'">
+                <img :src="props.balance.token_info.logo_URIs.svg" alt="" v-else-if="props.balance.token_info.logo_URIs.svg">
+                <img :src="props.balance.token_info.logo_URIs.png" alt="" v-else>
 
                 <!-- Token check -->
                 <div class="check" v-if="isCurrentToken(props.balance.denom)">
@@ -12,15 +14,21 @@
             </div>
 
             <!-- Token denom -->
-            <div class="denom">
+            <!-- <div class="denom">
                 {{ props.balance.token_info.symbol }}
+            </div> -->
+
+            <div class="denom">
+                <span v-if="props.balance.old_base_denom === 'drop' || props.balance.old_base_denom === 'udatom'">d{{ props.balance.token_info.symbol }}</span>
+                <span v-else-if="props.balance.old_base_denom === 'uboom'">BOOM</span>
+                <span v-else>{{ props.balance.token_info.symbol }}</span>
             </div>
 
             <!-- Token amount -->
             <div class="amount">
                 <!-- Token amount value -->
                 <div class="val">
-                    {{ formatTokenAmount(props.balance.amount, props.balance.exponent).toLocaleString('ru-RU', { maximumFractionDigits: 7 }).replace(',', '.') }}
+                    {{ formatTokenAmount(props.balance.amount, props.balance.exponent).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 7 }).replace(',', '.') }}
                 </div>
 
                 <!-- Token amount cost -->
@@ -115,8 +123,8 @@
     {
         display: block;
 
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
     }
 
 

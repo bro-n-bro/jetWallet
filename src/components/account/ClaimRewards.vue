@@ -19,7 +19,7 @@
 
                         <!-- Claim rewards cost -->
                         <div class="cost">
-                            ~ <div class="odometer" v-odometer="rewardsCost"></div> $
+                            ≈ <div class="odometer" v-odometer="rewardsCost"></div> $
                         </div>
                     </div>
 
@@ -74,9 +74,13 @@
 
 
     onBeforeMount(async() => {
-        if (store.isInitialized) {
-            // Get rewards
-            await getRewards()
+        try {
+            if (store.isInitialized) {
+                // Get rewards
+                await getRewards()
+            }
+        } catch (error) {
+            console.error(`Components/Account/ClaimRewards.vue: ${error.message}`)
         }
     })
 
@@ -93,8 +97,12 @@
             clearInterval(intervalID.value)
         }
 
-        // Get rewards
-        await getRewards()
+        try {
+            // Get rewards
+            await getRewards()
+        } catch (error) {
+            console.error(`Components/Account/ClaimRewards.vue: ${error.message}`)
+        }
     })
 
 
@@ -120,12 +128,16 @@
 
     // Get rewards
     async function getRewards() {
-        if (store.isInitialized) {
-            // Ready status
-            isReady.value = false
+        try {
+            if (store.isInitialized) {
+                // Ready status
+                isReady.value = false
 
-            // Get rewards
-            await store.getRewards()
+                // Get rewards
+                await store.getRewards()
+            }
+        } catch (error) {
+            console.error(`Components/Account/ClaimRewards.vue: ${error.message}`)
         }
     }
 
@@ -147,7 +159,7 @@
 
         // Update rewards with timeout
         if (!rewardsCost.value && stakedBalancesCost.value) {
-            setTimeout(async () => await getRewards(), 5000)
+            // setTimeout(async () => await getRewards(), 5000)
         }
 
         // Update rewards cost

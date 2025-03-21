@@ -3,7 +3,7 @@
 ![build_dev](https://github.com/bro-n-bro/jetWallet/workflows/build_dev/badge.svg)
 ![Last Commit](https://img.shields.io/github/last-commit/bro-n-bro/jetWallet.svg)
 ![GitHub stars](https://img.shields.io/github/stars/bro-n-bro/jetWallet.svg?style=social&label=Star)
-![Dev-Version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/bro-n-bro/jetWallet/dev/version-badge.json)
+![Version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/bro-n-bro/jetWallet/dev/version-badge.json)
 
 ![logo](logo.png)
 
@@ -33,7 +33,7 @@ JetWallet is a Telegram mini-app designed to manage a cryptocurrency wallet with
 |---------|---------|---------|---------|---------|
 | ![](./screenshots/auth.PNG)  | ![](./screenshots/mainscreen.PNG)  | ![](./screenshots/sendscreen.PNG)  | ![](./screenshots/stakescreen.PNG)  | ![](./screenshots/stakingscreen.PNG)  |
 
- 
+
 
 ## Contributing
 We welcome contributions to the project. If you want to help develop JetWallet, please review the current issues in the GitHub repository or create a new issue to discuss new ideas or changes.

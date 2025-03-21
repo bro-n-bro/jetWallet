@@ -1,11 +1,11 @@
 <template>
     <!-- Validators page -->
-    <section class="page_container inner_page_container validators_page">
+    <section class="page_container inner_page_container validators_page" :class="{ closing: isClosing }">
         <div class="cont">
             <!-- Validators page head -->
             <div class="head">
                 <!-- Back button -->
-                <button class="back_btn" @click="emitter.emit('close_validators_modal')">
+                <button class="back_btn" @click="closeHandler()">
                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_arrow_hor"></use></svg>
                 </button>
 
@@ -26,13 +26,15 @@
                 <!-- Validators list -->
                 <div class="list" v-if="searchResult.length">
                     <!-- Validators item -->
-                    <div class="item" v-for="(validator, index) in searchResult" :key="index">
+                    <div class="item" v-for="(validator) in searchResult" :key="validator.operator_address">
                         <div class="validator_wrap" @click.prevent="setValidator(validator)" :class="{ current: isCurrentValidator(validator.operator_address) }">
                             <!-- Validator -->
                             <div class="validator">
                                 <!-- Validator logo -->
                                 <div class="logo">
-                                    <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                                    <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt=""
+                                        @error="imageLoadError($event)"
+                                        @load="imageLoadSuccess($event)">
 
                                     <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
 
@@ -97,7 +99,7 @@
 <script setup>
     import { ref, inject, onBeforeMount } from 'vue'
     import { useGlobalStore } from '@/store'
-    import { imageLoadError, getNetworkLogo, formatTokenAmount } from '@/utils'
+    import { imageLoadError, imageLoadSuccess, getNetworkLogo, formatTokenAmount } from '@/utils'
 
     // Components
     import Loader from '@/components/Loader.vue'
@@ -109,39 +111,56 @@
         emitter = inject('emitter'),
         isValidatorsGot = ref(false),
         validators = ref([]),
-        searchResult = ref([])
+        searchResult = ref([]),
+        isClosing = ref(false)
 
 
     onBeforeMount(async() => {
-        if (props.unstake) {
-            // Get validators
-            validators.value = (await store.getUserValidators()).validators
-        } else if(props.redelegate) {
-            if (props.redelegate === 'from') {
+        try {
+            if (props.unstake) {
                 // Get validators
-                validators.value = (await store.getUserValidators()).validators
+                validators.value = await store.getUserValidators()
+            } else if(props.redelegate) {
+                if (props.redelegate === 'from') {
+                    // Get validators
+                    validators.value = await store.getUserValidators()
+                } else {
+                    // Get validators (Exclude validator from)
+                    validators.value = (await store.getAllValidators()).filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
+                }
             } else {
-                // Get validators (Exclude validator from)
-                validators.value = (await store.getAllValidators()).validators.filter(validator => validator.operator_address !== store.redelegateValidatorFrom?.operator_address)
+                // Get validators
+                validators.value = await store.getAllValidators()
             }
-        } else {
-            // Get validators
-            validators.value = (await store.getAllValidators()).validators
+
+            // Sort by voiting power
+            validators.value.sort((a, b) => {
+                if (parseInt(a.tokens) > parseInt(b.tokens)) { return -1 }
+                if (parseInt(a.tokens) < parseInt(b.tokens)) { return 1 }
+                return 0
+            })
+
+            // Default search result
+            searchResult.value = validators.value
+
+            // Hide loader
+            isValidatorsGot.value = true
+        } catch (error) {
+            console.error(`Components/Modal/ValidatorsModal.vue: ${error.message}`)
         }
-
-        // Sort by voiting power
-        validators.value.sort((a, b) => {
-            if (parseInt(a.tokens) > parseInt(b.tokens)) { return -1 }
-            if (parseInt(a.tokens) < parseInt(b.tokens)) { return 1 }
-            return 0
-        })
-
-        // Default search result
-        searchResult.value = validators.value
-
-        // Hide loader
-        isValidatorsGot.value = true
     })
+
+
+    // Close modal
+    function closeHandler() {
+        // Closing animation
+        isClosing.value = true
+
+        setTimeout(() => {
+            // Event "close_validators_modal"
+            emitter.emit('close_validators_modal')
+        }, 200)
+    }
 
 
     // Is staked validator
@@ -200,8 +219,8 @@
             store.stakeCurrentValidator = validator
         }
 
-        // Event "close_validators_modal"
-        emitter.emit('close_validators_modal')
+        // Close modal
+        closeHandler()
     }
 
 
@@ -233,7 +252,15 @@
         width: 100%;
         height: 100%;
 
+        animation: .25s slideLeft forwards linear;
+
         background: #170232;
+    }
+
+
+    .validators_page.closing
+    {
+        animation: .25s slideRight forwards linear;
     }
 
 
