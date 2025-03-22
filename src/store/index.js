@@ -122,7 +122,7 @@ export const useGlobalStore = defineStore('global', {
             },
             {
                 token_name: 'ETH',
-                format_token_name: 'axleth',
+                format_token_name: 'eth',
                 exponent: 0
             }
         ]
