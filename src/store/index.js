@@ -992,7 +992,7 @@ export const useGlobalStore = defineStore('global', {
         async createWallet({ pinCode = null, walletName = null, isBiometricEnabled = null, isAdding = false, relativeWallet = null, derivationPath = this.tempDerivationPath }) {
             try {
                 // Get all wallets
-                const DBWallets = await DBgetData('global', 'wallets')
+                let DBWallets = await DBgetData('global', 'wallets')
 
                 if (DBWallets === undefined) {
                     // Set array type
