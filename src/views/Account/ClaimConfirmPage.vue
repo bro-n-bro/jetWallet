@@ -104,7 +104,7 @@
     <SignTxModal v-if="showSignTxModal"/>
 
     <!-- Tx warning modal -->
-    <TxWarningModal v-if="showTxWarningModal"/>
+    <!-- <TxWarningModal v-if="showTxWarningModal"/> -->
 </template>
 
 

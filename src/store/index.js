@@ -508,11 +508,13 @@ export const useGlobalStore = defineStore('global', {
                         this.stakedBalances = data.delegation_responses.filter(el => el.balance.amount > 0)
 
                         for (let item of this.stakedBalances) {
-                            // Get balance info
-                            await this.getBalanceInfo(item.balance)
+                            await Promise.all([
+                                // Get balance info
+                                this.getBalanceInfo(item.balance),
 
-                            // Get validator info
-                            await this.getValidatorInfo(item, item.delegation.validator_address)
+                                // Get validator info
+                                this.getValidatorInfo(item, item.delegation.validator_address)
+                            ])
                         }
 
                         // Clear balances
