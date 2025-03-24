@@ -32,7 +32,7 @@
                             <div class="validator">
                                 <!-- Validator logo -->
                                 <div class="logo">
-                                    <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${validator.operator_address}.png`" alt=""
+                                    <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].chain_registry_alias}/moniker/${validator.operator_address}.png`" alt=""
                                         @error="imageLoadError($event)"
                                         @load="imageLoadSuccess($event)">
 

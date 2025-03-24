@@ -10,6 +10,7 @@ const network = {
     prefix: 'omniflix',
     explorer_link: 'https://www.mintscan.io/omniflix/tx/{tx_hash}',
     alias: 'omniflixhub',
+    chain_registry_alias: 'omniflix',
     exponent: 6,
     gas_adjustment: 1.6,
     address_length: 20,

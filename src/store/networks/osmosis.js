@@ -10,6 +10,7 @@ const network = {
     prefix: 'osmo',
     explorer_link: 'https://www.mintscan.io/osmosis/tx/{tx_hash}',
     alias: 'osmosis',
+    chain_registry_alias: 'osmosis',
     exponent: 6,
     gas_adjustment: 1.3,
     address_length: 20,

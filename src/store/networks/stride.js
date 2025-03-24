@@ -10,6 +10,7 @@ const network = {
     prefix: 'stride',
     explorer_link: 'https://www.mintscan.io/stride/tx/{tx_hash}',
     alias: 'stride',
+    chain_registry_alias: 'stride',
     exponent: 6,
     gas_adjustment: 1.3,
     address_length: 20,

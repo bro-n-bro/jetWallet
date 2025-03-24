@@ -10,6 +10,7 @@ const network = {
     prefix: 'bostrom',
     explorer_link: 'https://ping.pub/bostrom/tx/{tx_hash}',
     alias: 'localbostrom',
+    chain_registry_alias: 'bostrom',
     exponent: 0,
     gas_adjustment: 1.3,
     address_length: 20,

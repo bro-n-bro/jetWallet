@@ -10,6 +10,7 @@ const network = {
     prefix: 'neutron',
     explorer_link: 'https://www.mintscan.io/neutron/tx/{tx_hash}',
     alias: 'neutron',
+    chain_registry_alias: 'neutron',
     exponent: 6,
     gas_adjustment: 1.6,
     address_length: 20,

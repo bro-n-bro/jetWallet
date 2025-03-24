@@ -10,6 +10,7 @@ const network = {
     prefix: 'gravity',
     explorer_link: 'https://www.mintscan.io/gravity-bridge/tx/{tx_hash}',
     alias: 'gravitybridge',
+    chain_registry_alias: 'gravity-bridge',
     exponent: 6,
     gas_adjustment: 1.3,
     address_length: 20,

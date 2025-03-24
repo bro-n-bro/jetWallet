@@ -10,6 +10,7 @@ const network = {
     prefix: 'dym',
     explorer_link: 'https://www.mintscan.io/dymension/tx/{tx_hash}',
     alias: 'dymension',
+    chain_registry_alias: 'dymension',
     exponent: 6,
     gas_adjustment: 1.3,
     address_length: 20,

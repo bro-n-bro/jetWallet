@@ -11,6 +11,7 @@ const network = {
     prefix: 'neutron',
     explorer_link: 'https://neutron.celat.one/pion-1/txs/{tx_hash}',
     alias: 'pion',
+    chain_registry_alias: 'neutron',
     exponent: 6,
     gas_adjustment: 1.6,
     address_length: 20,

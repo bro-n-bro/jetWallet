@@ -10,6 +10,7 @@ const network = {
     prefix: 'cosmos',
     explorer_link: 'https://www.mintscan.io/cosmos/tx/{tx_hash}',
     alias: 'cosmoshub',
+    chain_registry_alias: 'cosmos',
     exponent: 6,
     gas_adjustment: 1.6,
     address_length: 20,

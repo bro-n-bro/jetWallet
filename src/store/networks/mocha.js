@@ -11,6 +11,7 @@ const network = {
     prefix: 'celestia',
     explorer_link: 'https://mintscan.io/celestia-testnet/txs/{tx_hash}',
     alias: 'mocha',
+    chain_registry_alias: 'celestia',
     exponent: 6,
     gas_adjustment: 1.4,
     address_length: 20,
