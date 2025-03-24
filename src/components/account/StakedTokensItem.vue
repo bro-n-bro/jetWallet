@@ -27,7 +27,7 @@
 
                     <!-- Token validator logo -->
                     <div class="logo">
-                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${props.item.validator_info.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
+                        <img :src="`https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${store.networks[store.currentNetwork].prefix}/moniker/${props.item.validator_info?.operator_address}.png`" alt="" loading="lazy" @error="imageLoadError($event)">
 
                         <svg class="icon"><use xlink:href="@/assets/sprite.svg#ic_user"></use></svg>
                     </div>

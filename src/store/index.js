@@ -159,7 +159,7 @@ export const useGlobalStore = defineStore('global', {
         async getCurrentWalletID() {
             try {
                 // Get data from DB
-                let DBCurrentWalletID = await DBgetData('global', 'currentWalletID')
+                const DBCurrentWalletID = await DBgetData('global', 'currentWalletID')
 
                 if (DBCurrentWalletID !== undefined) {
                     // Set data from DB
@@ -230,7 +230,7 @@ export const useGlobalStore = defineStore('global', {
                 await this.getCurrentWalletID()
 
                 // Get DB data
-                let DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, [
+                const DBData = await DBgetMultipleData(`wallet${this.currentWalletID}`, [
                     'derivationPath',
                     'name',
                     'currentCurrency',
@@ -254,11 +254,11 @@ export const useGlobalStore = defineStore('global', {
 
 
                 // Get current address / check cache
-                let cacheCurrentAddress = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_currentAddress`)
+                const cacheCurrentAddress = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_currentAddress`)
 
                 if (cacheCurrentAddress === undefined) {
                     // Get address
-                    let address = await getAddress()
+                    const address = await getAddress()
 
                     // Set current address
                     this.currentAddress = address
@@ -352,7 +352,7 @@ export const useGlobalStore = defineStore('global', {
         async getCurrenciesPrice() {
             try {
                 // Get from DB
-                let cachePrices = await DBgetData('global', 'prices')
+                const cachePrices = await DBgetData('global', 'prices')
 
                 if (cachePrices === undefined || (new Date() - new Date(cachePrices.timestamp) > this.cacheTime)) {
                     // Send request
@@ -386,7 +386,7 @@ export const useGlobalStore = defineStore('global', {
         async getCurrentNetworkAPR() {
             try {
                 // Get from DB
-                let cacheAPR = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_APR`)
+                const cacheAPR = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_APR`)
 
                 // Check
                 if (cacheAPR === undefined || (new Date() - new Date(cacheAPR.timestamp) > this.cacheTime)) {
@@ -435,7 +435,7 @@ export const useGlobalStore = defineStore('global', {
                 this.balances = []
 
                 // Get from DB
-                let cacheBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_balances`)
+                const cacheBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_balances`)
 
                 if (forceUpdate || cacheBalances === undefined || (new Date() - new Date(cacheBalances.timestamp) > this.cacheTime)) {
                     // Send request
@@ -491,7 +491,7 @@ export const useGlobalStore = defineStore('global', {
                 this.stakedBalances = []
 
                 // Get from DB
-                let cacheStakedBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_stakedBalances`)
+                const cacheStakedBalances = await DBgetData(`wallet${this.currentWalletID}`, `${this.currentNetwork}_stakedBalances`)
 
                 if (forceUpdate || cacheStakedBalances === undefined || (new Date() - new Date(cacheStakedBalances.timestamp) > this.cacheTime)) {
                     // Send request
@@ -692,7 +692,7 @@ export const useGlobalStore = defineStore('global', {
                     }
 
                     // Token info
-                    let tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
+                    const tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
 
                     if (tokenInfo) {
                         // Set data
@@ -705,7 +705,7 @@ export const useGlobalStore = defineStore('global', {
 
                 if (balance.token_info) {
                     // Format denom exponent
-                    let formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
+                    const formatableToken = this.formatableTokens.find(el => el.token_name === balance.token_info.base.toUpperCase())
 
                     // Set exponent for denom
                     formatableToken
@@ -744,7 +744,7 @@ export const useGlobalStore = defineStore('global', {
                 const data = await response.json()
 
                 // Set data
-                item.validator_info = response.validator
+                item.validator_info = data.validator
             } catch (error) {
                 // Throw error
                 throw new Error(`getValidatorInfo() failed: ${error.message}`)
@@ -1290,7 +1290,7 @@ export const useGlobalStore = defineStore('global', {
         async getTxInfo(txHash) {
             try {
                 // Send request
-                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`).then(res => res.json())
+                const response = await fetch(`${this.networks[this.currentNetwork].lcd_api}/cosmos/tx/v1beta1/txs/${txHash.toUpperCase()}`)
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch Tx info. Status: ' + response.status)
@@ -1308,7 +1308,7 @@ export const useGlobalStore = defineStore('global', {
 
         // Check Tx result
         async checkTxResult() {
-            try {
+            // try {
                 const txResult = await this.getTxInfo(this.networks[this.currentNetwork].currentTxHash)
 
                 if (txResult.code !== 5) {
@@ -1359,10 +1359,10 @@ export const useGlobalStore = defineStore('global', {
                     // Reset Tx Fee
                     this.resetTxFee()
                 }
-            } catch (error) {
-                // Throw error
-                throw new Error(`checkTxResult() failed: ${error.message}`)
-            }
+            // } catch (error) {
+            //     // Throw error
+            //     throw new Error(`checkTxResult() failed: ${error.message}`)
+            // }
         },
 
 
@@ -1524,7 +1524,7 @@ export const useGlobalStore = defineStore('global', {
 
                     const data = await response.json()
 
-                    const cosmos_sdk_version = data.application_version.cosmos_sdk_version,
+                    let cosmos_sdk_version = data.application_version.cosmos_sdk_version,
                         min_version = 'v0.46'
 
                     // Parsing versions
@@ -1733,7 +1733,7 @@ export const useGlobalStore = defineStore('global', {
                 const userChannels = await DBgetData('global', 'userChannels') || []
 
                 // Add new channel
-                const oldChannel = userChannels.find(el => el.info.pretty_name === channel.old.info.pretty_name)
+                let oldChannel = userChannels.find(el => el.info.pretty_name === channel.old.info.pretty_name)
 
                 // Update data
                 oldChannel.info = channel.info
@@ -1766,7 +1766,7 @@ export const useGlobalStore = defineStore('global', {
         async deleteUserChannel(chainName) {
             try {
                 // Get from DB
-                const userChannels = await DBgetData('global', 'userChannels')
+                let userChannels = await DBgetData('global', 'userChannels')
 
                 // Delete channel
                 userChannels = userChannels.filter(el => el.info.pretty_name !== chainName)

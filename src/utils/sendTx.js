@@ -3,7 +3,7 @@ import { createSinger } from './createSinger'
 
 // Send Tx
 export const sendTx = async txBytes => {
-    let { signingCosmWasmClient } = await createSinger()
+    const { signingCosmWasmClient } = await createSinger()
 
     try {
         // Broadcast
