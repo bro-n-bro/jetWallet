@@ -148,6 +148,7 @@ body
     color: var(--text_color);
 }
 
+
 body.lock
 {
     overflow: hidden;
