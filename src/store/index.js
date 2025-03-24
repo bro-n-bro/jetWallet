@@ -1061,7 +1061,7 @@ export const useGlobalStore = defineStore('global', {
                 const currentWalletSecret = await this.getSecret(true)
 
                 // Get sub wallets of current wallet
-                const subWallets = await DBgetData(`wallet${this.currentWalletID}`, 'subWallets')
+                let subWallets = await DBgetData(`wallet${this.currentWalletID}`, 'subWallets')
 
                 // Set secret
                 await this.setSecret(currentWalletSecret)
@@ -1528,7 +1528,7 @@ export const useGlobalStore = defineStore('global', {
                         min_version = 'v0.46'
 
                     // Parsing versions
-                    const cosmos_sdk_version_parsed = cosmos_sdk_version.replace('v', '').split('-')[0].split('.').map(Number),
+                    let cosmos_sdk_version_parsed = cosmos_sdk_version.replace('v', '').split('-')[0].split('.').map(Number),
                         min_version_parsed = min_version.replace('v', '').split('-')[0].split('.').map(Number)
 
                     // Fill in the missing with zeros
@@ -1710,7 +1710,7 @@ export const useGlobalStore = defineStore('global', {
         async setUserChannel(channel) {
             try {
                 // Get from DB
-                const userChannels = await DBgetData('global', 'userChannels') || []
+                let userChannels = await DBgetData('global', 'userChannels') || []
 
                 // Add new channel
                 userChannels.push(channel)
