@@ -649,19 +649,19 @@ export const useGlobalStore = defineStore('global', {
         async getBalanceInfo(balance) {
             try {
                 // Denom traces
-                let { base_denom } = await denomTraces(balance.denom, this.currentNetwork)
+                let denomTrace = await denomTraces(balance.denom, this.currentNetwork)
 
                 // Old base denom
-                balance.old_base_denom = base_denom
+                balance.old_base_denom = denomTrace.base
 
-                if (base_denom === 'share') {
+                if (denomTrace.base === 'share') {
                     return
                 }
 
                 // Get (token info/chain name) from assets
                 for (let asset of assets) {
                     // Exceptions
-                    switch (base_denom) {
+                    switch (denomTrace.base) {
                         case 'uusdc':
                             var currentAsset = assets.find(el => el.chain_name === 'noble')
                             break;
@@ -673,19 +673,19 @@ export const useGlobalStore = defineStore('global', {
                         case 'udatom':
                             var currentAsset = assets.find(el => el.chain_name === 'cosmoshub')
 
-                            base_denom = 'uatom'
+                            base = 'uatom'
                             break;
 
                         case 'drop':
                             var currentAsset = assets.find(el => el.chain_name === 'celestia')
 
-                            base_denom = 'utia'
+                            base = 'utia'
                             break;
 
                         case 'uboom':
                             var currentAsset = assets.find(el => el.chain_name === 'neutron')
 
-                            base_denom = 'untrn'
+                            base = 'untrn'
                             break;
 
                         default:
@@ -694,7 +694,7 @@ export const useGlobalStore = defineStore('global', {
                     }
 
                     // Token info
-                    const tokenInfo = currentAsset.assets.find(token => token.base === base_denom)
+                    const tokenInfo = currentAsset.assets.find(token => token.base === denomTrace.base)
 
                     if (tokenInfo) {
                         // Set data
